@@ -83,7 +83,7 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
                   }}
                   className="flex min-h-[52px] w-full items-center gap-2.5 px-3.5 py-2 text-left"
                 >
-                  <LineBadge number={a.lineNumber} color={a.lineColor} size="sm" className="h-7 min-w-7" />
+                  <LineBadge number={a.lineNumber} color={a.lineColor} size="row" />
                   <span className="min-w-0 flex-1">
                     <span className="block break-words text-label font-semibold text-ink-2">{a.destination}</span>
                     <span className="mt-0.5 inline-block">

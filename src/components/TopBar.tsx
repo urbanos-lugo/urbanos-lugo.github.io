@@ -183,7 +183,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
           {lines.length > 0 && <Heading>{t.search.lines}</Heading>}
           {lines.map((line) => (
             <Row key={line.id} onClick={choose(() => onSelectLine(line))}>
-              <LineBadge number={line.number} color={line.color} size="md" className="h-[38px] w-[38px] font-semibold" />
+              <LineBadge number={line.number} color={line.color} size="md" />
               <span className="min-w-0 flex-1 break-words text-body font-medium">{line.name}</span>
             </Row>
           ))}

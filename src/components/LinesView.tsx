@@ -10,6 +10,7 @@ import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDura
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
 import { SaveStar, Segmented } from './ui/controls';
+import { LineBadge } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
 
 /** The categories the dataset actually uses, in the order the lines declare them. */
@@ -169,9 +170,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                     {/* The name keeps a floor of 6rem and goes under the number when both do not fit:
                         with the type at 200% it was cut to its first letter, "R…". */}
                     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1.5">
-                      <span className="w-9 h-9 rounded-md flex items-center justify-center font-black text-white text-body shadow-xs shrink-0" style={{ backgroundColor: line.color }}>
-                        {line.number}
-                      </span>
+                      <LineBadge number={line.number} color={line.color} size="md" className="shadow-xs" />
                       <div className="min-w-[6rem] flex-1">
                         {/* Keep the end of the name, not the beginning: nine distinct openings across twenty-four lines, seventeen distinct endings. */}
                         <div className="font-bold text-body text-ink leading-tight flex items-baseline gap-1.5 min-w-0" title={line.name}>
@@ -223,9 +222,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             <div className="flex flex-col justify-between gap-4 border-b border-line pb-5 2xl:flex-row 2xl:items-center">
               {/* Wrapping: at 200% text the chips and the name ran 144 px past the card. */}
               <div className="flex flex-wrap items-center gap-4">
-                <span className="w-14 h-14 rounded-control flex items-center justify-center font-black text-white text-title shadow-sm shrink-0" style={{ backgroundColor: currentLine.color }}>
-                  {currentLine.number}
-                </span>
+                <LineBadge number={currentLine.number} color={currentLine.color} size="xl" className="shadow-sm" />
                 <div className="min-w-[min(10rem,100%)] flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-label font-bold px-2 py-0.5 rounded bg-surface text-ink-2 uppercase tracking-wider">{t.lines.lineLabel(currentLine.number)}</span>

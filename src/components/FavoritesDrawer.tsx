@@ -139,7 +139,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
                       {/* The number, once: they printed the line's id, and the 11 and its three
                           variants, "11-Igrexa de Bóveda" among them, are all an "11" on the bus. */}
                       {linesByNumber(stop.lines).map((line) => (
-                        <LineBadge key={line.number} number={line.number} color={line.color} size="sm" className="h-auto min-w-0 py-0.5 font-black" />
+                        <LineBadge key={line.number} number={line.number} color={line.color} size="inline" />
                       ))}
                     </div>
                   </SavedRow>
@@ -153,7 +153,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
                 favoriteLines.map((line) => (
                   <SavedRow key={line.id} onOpen={open(() => onSelectLine(line))} onRemove={() => onRemoveFavoriteLine(line.id)} removeLabel={t.favourites.remove}>
                     <div className="flex items-center gap-2.5">
-                      <LineBadge number={line.number} color={line.color} size="sm" className="h-7 w-7 rounded-md shadow-xs font-black" />
+                      <LineBadge number={line.number} color={line.color} size="row" />
                       <div className="min-w-0">
                         <span className="break-words font-bold text-body text-ink group-hover:text-accent">{line.name}</span>
                         <div className="text-label text-ink-3 mt-0.5 flex flex-wrap items-center gap-x-2">

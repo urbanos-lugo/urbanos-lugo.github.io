@@ -76,7 +76,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
             busLegs.map((seg, k) => (
               <Fragment key={k}>
                 {k > 0 && <span className="text-label text-ink-3">→</span>}
-                <LineBadge number={seg.line?.number ?? ''} color={seg.line?.color ?? ''} size="sm" className="h-auto min-w-0 font-black" />
+                <LineBadge number={seg.line?.number ?? ''} color={seg.line?.color ?? ''} size="inline" />
               </Fragment>
             ))
           )}

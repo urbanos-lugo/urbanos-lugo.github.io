@@ -149,7 +149,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                   next ? (
                     <span className="mt-2.5 flex flex-wrap items-center gap-1.5 text-body">
                       <span className="text-label text-ink-3">{t.stopHome.nextLater}</span>
-                      <LineBadge number={next.lineNumber} color={lineById(next.lineId)?.color ?? ''} size="sm" className="h-[26px] min-w-[26px] rounded-[5px]" />
+                      <LineBadge number={next.lineNumber} color={lineById(next.lineId)?.color ?? ''} size="row" />
                       <span className="tnum font-semibold">
                         {next.daysAhead > 0 && <span className="mr-1 font-sans text-estimated">{dayWord(lang, next.daysAhead)}</span>}
                         {next.precision === 'estimated' && <span className="text-ink-3">~</span>}
@@ -163,7 +163,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                   <span className="mt-2.5 flex flex-wrap items-center gap-2">
                     {arrivals.map((a, i) => (
                       <span key={`${a.lineId}-${i}`} className="flex items-center gap-1.5">
-                        <LineBadge number={a.lineNumber} color={a.lineColor} size="sm" className="h-[26px] min-w-[26px] rounded-[5px]" />
+                        <LineBadge number={a.lineNumber} color={a.lineColor} size="row" />
                         <span className="tnum text-body font-semibold">
                           {a.etaMinutes === 0 ? (
                             t.common.arrivingNow
