@@ -251,7 +251,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {/* Columns of at least 6rem, so they follow the text: two on a phone at the default size,
                 one from 125% up. In two fixed columns at 200% the frequency's label ran 64 px
                 into the next one. */}
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-x-4 gap-y-3 rounded-control border border-line bg-surface/50 p-3 sm:grid-cols-3">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-x-4 gap-y-3 rounded-control border border-line bg-surface/60 p-3 sm:grid-cols-3">
               <Fact icon={Clock} label={t.lines.frequency}>
                 <span className="font-sans font-semibold">{frequencyLabel(currentLine, lang)}</span>
               </Fact>

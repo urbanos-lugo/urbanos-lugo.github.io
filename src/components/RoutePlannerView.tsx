@@ -636,7 +636,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               {canStart && !boardingSoon && startTripButton(false)}
 
               {/* The small print, folded: worth reading once, not on the way to the thing that was asked for. */}
-              <details className="disclosure rounded-control border border-edge bg-surface/40">
+              <details className="disclosure rounded-control border border-edge bg-surface">
                 <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 text-label font-semibold text-ink-2">
                   <span className="sr-only">{t.planner.tripInfoTitle}</span>
                   <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
@@ -714,7 +714,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                     >
                       {/* One line: from the middle of the map it had half the width, and at 200% text
                           it broke into three and covered the route. */}
-                      <span className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-accent bg-bg/90 px-3 py-1.5 text-label font-semibold text-ink shadow-sm backdrop-blur-sm">
+                      <span className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-accent bg-bg/95 px-3 py-1.5 text-label font-semibold text-ink shadow-sm backdrop-blur-xs">
                         {t.planner.stepByStepTitle}
                         <ChevronDown className="h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2.5} aria-hidden="true" />
                       </span>
