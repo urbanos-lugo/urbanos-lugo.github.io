@@ -428,7 +428,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                   <label className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-label font-semibold text-ink-2">
                     <Clock className="w-3.5 h-3.5 text-accent shrink-0" />
                     <span className="shrink-0">{timeMode === 'arrive' ? t.planner.arriveByLabel : t.planner.departAtLabel}</span>
-                    <input type="time" value={timeValue} onChange={(e) => setTimeValue(e.target.value)} className="px-2 py-1 rounded border border-edge bg-bg font-mono text-body" />
+                    <input type="time" value={timeValue} onChange={(e) => setTimeValue(e.target.value)} className="h-11 rounded-control border border-edge bg-bg px-2 font-mono text-body text-ink" />
                   </label>
                 )}
               </div>

@@ -85,7 +85,7 @@ export function MapControls(p: MapControlsProps) {
       {p.preset === 'stop' && p.aroundStop && (
         <div className="mt-2.5 rounded-control border border-accent bg-accent/10 p-3">
           <p className="text-label leading-relaxed text-ink">{t.map.aroundStopActive(p.aroundStop.name, AROUND_STOP_RADIUS_M)}</p>
-          <button onClick={() => p.onPreset('all')} className="mt-2 flex h-9 items-center rounded-control border border-edge bg-bg px-3 text-label font-semibold text-ink-2">
+          <button onClick={() => p.onPreset('all')} className="mt-2 flex h-11 items-center rounded-control border border-edge bg-bg px-3 text-label font-semibold text-ink-2">
             {t.map.aroundStopClear}
           </button>
         </div>
