@@ -544,7 +544,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 <div className="p-3.5 rounded-control bg-warn border border-warn text-warn-ink text-label font-bold flex items-start gap-2.5 shadow-xs">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-extrabold uppercase tracking-wide">{t.planner.serviceNoticeTitle}</div>
+                    <div className="font-bold uppercase tracking-wider">{t.planner.serviceNoticeTitle}</div>
                     <div className="mt-0.5 font-medium">{planResult.serviceNotice}</div>
                   </div>
                 </div>

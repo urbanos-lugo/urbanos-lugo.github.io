@@ -82,7 +82,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
                 </div>
                 <div className="min-w-0">
                   <h2 className="break-words font-bold text-ink text-body uppercase tracking-tight">{t.favourites.title}</h2>
-                  <p className="text-label text-ink-3 font-medium">{t.favourites.subtitle}</p>
+                  <p className="text-label text-ink-3">{t.favourites.subtitle}</p>
                 </div>
               </div>
               <button onClick={onClose} aria-label={t.favourites.close} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-3 transition-colors hover:bg-surface hover:text-ink-2">

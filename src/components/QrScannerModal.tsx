@@ -137,7 +137,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
           </div>
           <div className="min-w-[min(8rem,100%)] flex-1">
             <h2 className="break-words font-bold text-emph text-ink uppercase tracking-tight">{t.qr.title}</h2>
-            <p className="text-label text-ink-3 font-medium">{t.qr.subtitle}</p>
+            <p className="text-label text-ink-3">{t.qr.subtitle}</p>
           </div>
         </div>
 

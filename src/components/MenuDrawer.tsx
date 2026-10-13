@@ -29,7 +29,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
       <button className="anim-fade-full absolute inset-0 bg-scrim" onClick={onClose} aria-label={t.menu.close} tabIndex={-1} />
       <div className="@container anim-slide-in absolute inset-y-0 right-0 flex w-[306px] max-w-[85vw] flex-col border-l border-line bg-bg">
         <div className="flex items-center justify-between border-b border-line px-[18px] py-4">
-          <span className="text-emph font-semibold">{t.nav.appName}</span>
+          <span className="text-emph font-semibold tracking-[-0.012em]">{t.nav.appName}</span>
           <button onClick={onClose} className="flex h-11 w-11 items-center justify-center rounded-control text-ink-2" aria-label={t.menu.close}>
             <X className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
           </button>

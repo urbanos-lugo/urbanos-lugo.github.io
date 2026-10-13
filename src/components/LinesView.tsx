@@ -410,7 +410,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                   &larr;
                 </button>
                 <div className="order-1 basis-full text-center leading-tight @min-[16rem]:order-none @min-[16rem]:basis-0 @min-[16rem]:flex-1">
-                  <div className="text-label font-bold text-accent uppercase tracking-widest">{t.lines.showingRun}</div>
+                  <div className="text-label font-bold text-accent uppercase tracking-wider">{t.lines.showingRun}</div>
                   <div className="text-body font-black text-accent font-mono">
                     {derived(shownRun, 0) && '~'}
                     {formatMinutes(shownRun.minutesByStopIndex[0])}
@@ -512,7 +512,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                                 {formatMinutes(passingMinutes)} &middot; {t.lines.passed}
                               </span>
                             ) : relativeMinutes === 0 ? (
-                              <span className="text-official font-extrabold">
+                              <span className="text-official font-bold">
                                 {derived(shownRun, idx) && <span className="text-ink-3">~</span>}
                                 {t.lines.nowAt}
                               </span>

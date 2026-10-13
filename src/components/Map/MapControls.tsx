@@ -14,7 +14,7 @@ export const AROUND_STOP_RADIUS_M = 400;
 export const NEARBY_RADIUS_M = 750;
 
 const card = 'bg-bg rounded-card p-3.5 shadow-sm border border-edge';
-const heading = 'text-label font-bold text-ink-3 uppercase tracking-widest block mb-2';
+const heading = 'text-label font-bold text-ink-3 uppercase tracking-wider block mb-2';
 
 export interface MapControlsProps {
   sheetRef: RefObject<HTMLDivElement | null>;
@@ -105,7 +105,7 @@ export function MapControls(p: MapControlsProps) {
     >
       {/* The handle: which way the sheet goes, and its own way out. Gone at `lg`. */}
       <div className="order-first -mt-1 flex items-center justify-between gap-2 lg:hidden">
-        <span className="text-label font-bold uppercase tracking-widest text-ink-3">{t.map.controls}</span>
+        <span className="text-label font-bold uppercase tracking-wider text-ink-3">{t.map.controls}</span>
         <button type="button" onClick={p.onCloseSheet} aria-label={t.map.closeControls} className="flex h-11 w-11 items-center justify-center rounded-full text-ink-2">
           <ChevronDown className="h-5 w-5" aria-hidden="true" />
         </button>
@@ -119,14 +119,14 @@ export function MapControls(p: MapControlsProps) {
               <Navigation className="w-4 h-4 text-accent" />
               {t.map.mapTitle}
             </h2>
-            <p className="text-label text-ink-3 font-medium">{t.map.subtitle}</p>
+            <p className="text-label text-ink-3">{t.map.subtitle}</p>
           </div>
           <div className="text-right">
             <span className="flex items-center gap-1 text-label font-black text-estimated">
               <Bus className="w-3.5 h-3.5 text-estimated" aria-hidden="true" />
               {p.busCount} {t.map.scheduledBusesCount}
             </span>
-            <span className="text-label text-ink-3 font-medium">{t.map.stopsCount(p.stopCount, p.stopsWithQr)}</span>
+            <span className="text-label text-ink-3">{t.map.stopsCount(p.stopCount, p.stopsWithQr)}</span>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2 mt-2.5">
@@ -189,7 +189,7 @@ export function MapControls(p: MapControlsProps) {
 
       <div className={card}>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-label font-bold text-ink-3 uppercase tracking-widest">
+          <span className="text-label font-bold text-ink-3 uppercase tracking-wider">
             {t.map.linesList}
             {p.pickedLineIds.length > 0 && <span className="ml-1.5 text-accent">· {t.map.linesPicked(p.pickedLineIds.length)}</span>}
           </span>
