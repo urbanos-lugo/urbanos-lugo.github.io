@@ -205,7 +205,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                   {next && (
                     <span className="tnum ml-auto shrink-0 text-right">
                       <span className="block text-emph font-bold">
-                        {next.precision === 'published' ? '' : '~'}
+                        {next.precision !== 'published' && <span className="text-ink-3">~</span>}
                         {next.etaMinutes}
                       </span>
                       <span className="block text-label text-ink-2">{t.common.min}</span>
