@@ -733,9 +733,9 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               </Notice>
             </div>
           ) : (
-            <div className="bg-bg rounded-card py-8 px-cap-8 text-center border border-edge">
-              <AlertCircle className="w-8 h-8 text-ink-3 mx-auto mb-2" />
-              <p className="text-body text-ink-2 font-medium">{timeMode === 'arrive' ? t.planner.noArriveOption : t.planner.noRouteFound}</p>
+            <div className="rounded-card border border-dashed border-edge px-cap-5 py-10 text-center">
+              <AlertCircle className="mx-auto mb-3 h-7 w-7 text-ink-3" strokeWidth={1.6} aria-hidden="true" />
+              <p className="text-body text-ink-2">{timeMode === 'arrive' ? t.planner.noArriveOption : t.planner.noRouteFound}</p>
             </div>
           )}
         </div>

@@ -413,9 +413,9 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             <p className="text-label text-ink-3">{t.arrivals.nearbyLinesHint}</p>
             <ul className="mt-2.5 flex flex-col gap-1.5">
               {nearbyLines.map(({ line, nearestStop, walkMeters }) => (
-                <li key={line.id} style={tint(line.color)} className="tint tint-edge flex items-center gap-3 rounded-control border px-2.5 py-2">
+                <li key={line.id} style={tint(line.color)} className="tint tint-edge flex flex-wrap items-center gap-x-3 gap-y-1 rounded-control border px-cap-2.5 py-2">
                   {lineButton(line.id, line.number, line.color)}
-                  <span className="min-w-0 flex-1">
+                  <span className="min-w-[min(6rem,100%)] flex-1">
                     <span className="block break-words text-body font-semibold">
                       {nearestStop.name}
                     </span>
