@@ -130,7 +130,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
               {t.stopHome.scan}
             </button>
             {/* A link, not a field: the field is at the top of the screen, the hardest place for a thumb, and this puts the cursor there. */}
-            <button onClick={() => document.getElementById('site-search')?.focus()} className="flex h-11 items-center px-1 text-body font-medium text-ink-2 underline">
+            <button onClick={() => document.getElementById('site-search')?.focus()} className="flex h-11 items-center px-1 text-body font-medium text-ink-2 underline underline-offset-2">
               {t.stopHome.orSearchAbove}
             </button>
           </div>
@@ -224,7 +224,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
             icon={History}
             tint="text-ink-2"
             action={
-              <button onClick={onClearRecent} className="h-11 px-2 text-label font-medium text-ink-2 underline">
+              <button onClick={onClearRecent} className="inline-flex h-11 min-w-11 items-center justify-end text-label font-semibold text-accent underline underline-offset-2">
                 {t.stopHome.clearRecent}
               </button>
             }

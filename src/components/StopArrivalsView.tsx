@@ -614,7 +614,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         </summary>
         <p className="text-label leading-relaxed text-ink-3">{t.arrivals.positionChecked}</p>
         <p className="mt-1.5 text-label leading-relaxed text-ink-3">{t.arrivals.reportNotCouncil}</p>
-        <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center text-label font-semibold text-accent underline">
+        <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center text-label font-semibold text-accent underline underline-offset-2">
           {t.arrivals.reportCta}
         </a>
       </details>

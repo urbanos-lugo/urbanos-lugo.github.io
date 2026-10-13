@@ -189,7 +189,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
                   <span>
                     {t.fares.source}{' '}
                     {/* One line of text is a 70x16 box; padding pulled back by its own margin gives the thumb 44 px without moving the line. */}
-                    <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="inline-block py-3.5 -my-3.5 font-semibold text-accent underline">
+                    <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="inline-block py-3.5 -my-3.5 font-semibold text-accent underline underline-offset-2">
                       buslugo.com
                     </a>
                   </span>

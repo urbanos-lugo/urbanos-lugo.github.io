@@ -412,7 +412,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                   <div className="text-label text-accent font-semibold">
                     {t.lines.runOf(runIndex + 1, runs.length)}
                     {runIndex !== currentRunIndex && (
-                      <button onClick={() => setPickedRunIndex(null)} className="ml-1.5 underline font-bold">
+                      <button onClick={() => setPickedRunIndex(null)} className="ml-1.5 underline underline-offset-2 font-bold">
                         {t.lines.backToNow}
                       </button>
                     )}
