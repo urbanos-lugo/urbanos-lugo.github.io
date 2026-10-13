@@ -11,7 +11,7 @@ interface ItineraryProps {
   onSelectLine: (line: BusLine) => void;
 }
 
-const NODE = { bus: 'bg-accent text-on-accent', wait: 'bg-warn text-warn-ink', walk: 'bg-ink text-on-accent' };
+const NODE = { bus: 'bg-accent text-on-accent', wait: 'bg-warn text-warn-ink', walk: 'bg-ink text-bg' };
 const CARD = { bus: 'border-edge bg-surface/30', wait: 'border-warn bg-warn/40', walk: 'border-edge bg-surface/60' };
 const ICON = { bus: Bus, wait: Clock, walk: Footprints };
 
@@ -120,7 +120,7 @@ export function Itinerary({ segments, onSelectStop, onSelectLine }: ItineraryPro
         const Icon = ICON[seg.type];
         return (
           <div key={idx} className="relative">
-            <div className={`absolute -left-6 top-1.5 w-5 h-5 rounded-full border-2 border-white shadow-xs flex items-center justify-center ${NODE[seg.type]}`}>
+            <div className={`absolute -left-6 top-1.5 w-5 h-5 rounded-full border-2 border-bg shadow-xs flex items-center justify-center ${NODE[seg.type]}`}>
               <Icon className="w-3 h-3" />
             </div>
             <div className={`py-4 px-cap-4 rounded-card border transition-all ${CARD[seg.type]}`}>

@@ -460,7 +460,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                     className="relative group cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent rounded-control"
                   >
                     <div
-                      className={`absolute -left-6 top-2.5 w-5 h-5 rounded-full border-2 border-white shadow-xs flex items-center justify-center transition-transform group-hover:scale-125 ${
+                      className={`absolute -left-6 top-2.5 w-5 h-5 rounded-full border-2 border-bg shadow-xs flex items-center justify-center transition-transform group-hover:scale-125 ${
                         busHere ? 'bg-estimated ring-2 ring-estimated' : isFirst || isLast ? 'bg-accent ring-2 ring-accent' : 'bg-ink-3 group-hover:bg-ink-2'
                       }`}
                     />
