@@ -1,14 +1,19 @@
 import { ChevronDown, Star, TriangleAlert, type LucideIcon } from 'lucide-react';
 import { useState, type CSSProperties, type ReactNode } from 'react';
 
-/** A 44 px square icon button; `on` swaps it to the warm "active" fill. */
+/**
+ * A 44 px square icon button. With `on` it is a toggle, said with aria-pressed, and `on`
+ * swaps it to the warm "active" fill; without, it is a plain button that says nothing of
+ * being pressed (the map and share buttons are not switches).
+ */
 export function IconButton({
   icon: Icon,
   label,
-  on = false,
+  on,
   onClick,
   title,
   fill,
+  strokeWidth,
   className = '',
   iconClassName = '',
 }: {
@@ -19,6 +24,7 @@ export function IconButton({
   title?: string;
   /** Fill the icon (a starred star). */
   fill?: boolean;
+  strokeWidth?: number;
   className?: string;
   iconClassName?: string;
 }) {
@@ -30,7 +36,7 @@ export function IconButton({
       title={title}
       className={`flex h-11 w-11 items-center justify-center rounded-control border ${on ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${className}`}
     >
-      <Icon className={`h-4.5 w-4.5 ${iconClassName}`} strokeWidth={fill === undefined ? 2 : 1.8} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />
+      <Icon className={`h-4.5 w-4.5 ${iconClassName}`} strokeWidth={strokeWidth ?? (fill === undefined ? 2 : 1.8)} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />
     </button>
   );
 }

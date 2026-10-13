@@ -238,7 +238,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-                {onToggleFavoriteLine && <SaveStar key={currentLine.id} on={isSaved} label={isSaved ? t.lines.unsaveLine : t.lines.saveLine} className="bg-bg" onToggle={() => onToggleFavoriteLine(currentLine.id)} />}
+                {onToggleFavoriteLine && <SaveStar key={currentLine.id} on={isSaved} label={isSaved ? t.lines.unsaveLine : t.lines.saveLine} onToggle={() => onToggleFavoriteLine(currentLine.id)} />}
                 {/* min-h rather than h: at a narrow column the label wraps to two lines. */}
                 <button id="btn-view-line-map" onClick={() => onViewLineOnMap(currentLine)} className="flex min-h-11 items-center gap-1.5 rounded-control bg-accent px-4 py-2 text-body font-semibold text-on-accent">
                   <MapPin className="w-4 h-4" />

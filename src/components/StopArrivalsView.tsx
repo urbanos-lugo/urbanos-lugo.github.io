@@ -338,9 +338,13 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               toggleAlarm();
             }}
           />
-          <button onClick={copyShareLink} aria-label={copiedLink ? t.arrivals.copied : t.arrivals.share} className="flex h-11 w-11 items-center justify-center rounded-control border border-edge bg-surface text-ink-2">
-            {copiedLink ? <Check className="anim-tick-in h-4.5 w-4.5 text-official" strokeWidth={2.4} aria-hidden="true" /> : <Share2 className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />}
-          </button>
+          <IconButton
+            icon={copiedLink ? Check : Share2}
+            label={copiedLink ? t.arrivals.copied : t.arrivals.share}
+            strokeWidth={copiedLink ? 2.4 : 2}
+            iconClassName={copiedLink ? 'anim-tick-in text-official' : ''}
+            onClick={copyShareLink}
+          />
           {/* The tick is the confirmation for the eye; this is the one for the ear. */}
           <span role="status" className="sr-only">
             {copiedLink ? t.arrivals.copied : ''}
