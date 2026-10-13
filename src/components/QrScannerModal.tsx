@@ -125,9 +125,9 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             onClose();
           }}
           aria-label={t.qr.close}
-          className="absolute top-3.5 right-3.5 flex h-11 w-11 items-center justify-center rounded-control text-ink-3 transition-colors hover:bg-surface hover:text-ink-2"
+          className="absolute top-3.5 right-3.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface"
         >
-          <X className="w-5 h-5" />
+          <X className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
         </button>
 
         {/* Clear of the close button over the corner, and wrapping: at 200% text the heading ran

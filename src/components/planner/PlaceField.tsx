@@ -1,4 +1,4 @@
-import { LocateFixed, MapPin } from 'lucide-react';
+import { LocateFixed, MapPin, X } from 'lucide-react';
 import { useT } from '../../i18n';
 import { MAX_QUERY_LENGTH } from '../../utils/searchUtils';
 import { rankLandmarks, rankStops } from '../../utils/places';
@@ -88,8 +88,8 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
         </button>
       )}
       {trailing?.kind === 'clear' && (
-        <button onClick={trailing.onClick} aria-label={t.search.clear} className="absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-label text-ink-3">
-          ✕
+        <button onClick={trailing.onClick} aria-label={t.search.clear} className="absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-ink-3">
+          <X className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
         </button>
       )}
       {open && suggestions.length > 0 && (

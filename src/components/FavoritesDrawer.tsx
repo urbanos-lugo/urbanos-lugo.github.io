@@ -85,8 +85,8 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
                   <p className="text-label text-ink-3">{t.favourites.subtitle}</p>
                 </div>
               </div>
-              <button onClick={onClose} aria-label={t.favourites.close} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-3 transition-colors hover:bg-surface hover:text-ink-2">
-                <X className="h-5 w-5" aria-hidden="true" />
+              <button onClick={onClose} aria-label={t.favourites.close} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface">
+                <X className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
               </button>
             </div>
             {/* The tabs' icons go with the star, for the same reason: the word before the picture. */}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, type CSSProperties } from 'react';
-import { ArrowLeft, Bell, Check, ChevronDown, Clock, Map as MapIcon, Share2 } from 'lucide-react';
+import { ArrowLeft, Bell, Check, ChevronDown, Clock, Map as MapIcon, Share2, X } from 'lucide-react';
 import { BusStop, BusLine, ServiceAlert, StopArrival } from '../types';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
 import { changesNow, closedAt, pastTimetable, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
@@ -469,8 +469,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {firedMessage && (
         <div role="alert" className="anim-rise mt-3 flex items-start justify-between gap-3 rounded-control bg-official p-3 text-label font-semibold text-on-official">
           <span>{firedMessage}</span>
-          <button onClick={() => setFiredMessage(null)} aria-label={t.arrivals.dismiss} className="shrink-0 underline">
-            ✕
+          <button onClick={() => setFiredMessage(null)} aria-label={t.arrivals.dismiss} className="-m-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-control">
+            <X className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
           </button>
         </div>
       )}
