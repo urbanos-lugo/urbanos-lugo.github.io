@@ -53,8 +53,8 @@ const AXE_SOURCE = readFileSync(createRequire(import.meta.url).resolve('axe-core
 const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'];
 const DESKTOP = { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false };
 
-type Lang = 'gl' | 'es' | 'en';
-type Theme = 'light' | 'dark';
+export type Lang = 'gl' | 'es' | 'en';
+export type Theme = 'light' | 'dark';
 
 /**
  * What a finding can be, and the success criterion it answers to. `size` and `target44`
@@ -90,7 +90,7 @@ const KINDS = {
 type Kind = keyof typeof KINDS;
 const HOUSE: Kind[] = ['size', 'target44', 'room'];
 
-interface Finding {
+export interface Finding {
   kind: Kind;
   where: string;
   detail: string;
@@ -117,10 +117,14 @@ const PREPARE = `(() => {
   history.replaceState(history.state, '', location.pathname + location.search);
   const Real = Date;
   let offset = set.clock - Real.now();
+  let later = 0;
   // A setup can move the clock on: the ride asks whether the bus was caught only once its
   // departure has gone by, and the pulse of the next stop exists only on the bus.
-  window.__auditLater = (ms) => { offset += ms; };
-  class Pinned extends Real { constructor(...a) { if (a.length) super(...a); else super(Real.now() + offset); } static now() { return Real.now() + offset; } }
+  window.__auditLater = (ms) => { offset += ms; later += ms; };
+  // Frozen, the clock does not tick at all: the buses on the map stand still, so two runs
+  // photograph the same frame (visualDiff.ts).
+  const now = () => (set.frozen ? set.clock + later : Real.now() + offset);
+  class Pinned extends Real { constructor(...a) { if (a.length) super(...a); else super(now()); } static now() { return now(); } }
   window.Date = Pinned;
   try { localStorage.clear(); sessionStorage.clear(); for (const [k, v] of Object.entries(set.stored)) localStorage.setItem(k, v); } catch (e) {}
   const where = set.geo === 'granted' ? { coords: { latitude: set.at[0], longitude: set.at[1], accuracy: 12 }, timestamp: Real.now() } : null;
@@ -141,6 +145,7 @@ interface Prepared {
   stored: Record<string, string>;
   geo: 'granted' | 'denied' | 'none';
   at: [number, number];
+  frozen?: boolean;
 }
 
 /** The keys PRIVACY.md says the app keeps on the device, by store: what a state leaves there is held to these. */
@@ -850,7 +855,10 @@ const REACH = `
     el.dispatchEvent(new Event('input', { bubbles: true }));
   };
   const pause = (ms) => new Promise((r) => setTimeout(r, ms));
-  const until = async (test, ms = 6000) => { const end = Date.now() + ms; while (Date.now() < end) { if (test()) return true; await pause(100); } return false; };
+  // performance.now, not Date: the page's Date is pinned, and frozen it never reaches the end.
+  const until = async (test, ms = 6000) => { const end = performance.now() + ms; while (performance.now() < end) { if (test()) return true; await pause(100); } return false; };
+  /** Until what read() returns has stopped changing for 600 ms: a suggestion list fills in steps, and under load the first pick was a different place. */
+  const steady = async (read, ms = 5000) => { let last = read(), same = 0; const end = performance.now() + ms; while (performance.now() < end) { await pause(150); const now = read(); if (now === last) { if (++same >= 4) return true; } else { same = 0; last = now; } } return false; };
 `;
 
 /** The handful of interface words the setups look for, in the language of the pass. */
@@ -880,7 +888,7 @@ const words = (d: typeof gl) => ({
 type Words = ReturnType<typeof words>;
 const DICT: Record<Lang, typeof gl> = { gl, es, en };
 
-interface State {
+export interface State {
   screen: 'paradas' | 'linhas' | 'mapa' | 'ruta' | 'avisos' | 'tarifas';
   name: string;
   /** In the page; returns true, or what could not be found. Gets the interface words as T. */
@@ -908,9 +916,9 @@ const savedBoard = `const card = document.querySelector('main ul li button');
   await pause(500);`;
 const planned = `const o = document.getElementById('input-origin-query'), d = document.getElementById('input-dest-query');
   if (!o || !d) return 'no planner fields';
-  fill(o, 'Praza Maior'); await pause(500);
+  fill(o, 'Praza Maior'); await pause(500); await steady(() => o.parentElement.textContent);
   let opt = [...o.parentElement.querySelectorAll('button')].find((b) => /Praza Maior/i.test(b.textContent)); if (opt) { opt.click(); await pause(300); }
-  fill(d, 'HULA'); await pause(500);
+  fill(d, 'HULA'); await pause(500); await steady(() => d.parentElement.textContent);
   opt = [...d.parentElement.querySelectorAll('button')].find((b) => /HULA/i.test(b.textContent)); if (opt) { opt.click(); await pause(300); }
   // Picking a suggestion plans the trip and folds the form, "Calcular ruta" with it: pressed
   // only when it is still there to press.
@@ -928,7 +936,7 @@ const ONE_INCIDENT = `const counts = [...document.querySelectorAll('[aria-label]
 /** The stops near a position, each with its walk: "~240 m". */
 const NEAR_LIST = `/~\\s?\\d+\\s?m(?![a-z])/i.test(document.querySelector('main').innerText)`;
 
-const STATES: State[] = [
+export const STATES: State[] = [
   { screen: 'paradas', name: 'inicio', promise: ONE_INCIDENT },
   { screen: 'paradas', name: 'gardadas', stored: REGULAR },
   {
@@ -1107,7 +1115,7 @@ const STATES: State[] = [
 /* Running a state                                                                       */
 /* ------------------------------------------------------------------------------------- */
 
-interface Pass {
+export interface Pass {
   name: string;
   desktop: boolean;
   lang: Lang;
@@ -1135,7 +1143,7 @@ const noise = /\[vite\]|React DevTools|Download the React/;
 /** What refusing every other host makes the page say, which is this audit's doing and not the app's. */
 const refused = /ERR_BLOCKED_BY_CLIENT|ERR_INTERNET_DISCONNECTED|openfreemap|tile\.openstreetmap|Failed to fetch|AJAXError|NetworkError|status code 500|500 \(Internal Server Error\)/;
 
-interface Worker {
+export interface Worker {
   page: Session;
   api: Api;
   logged: string[];
@@ -1144,7 +1152,7 @@ interface Worker {
   agora: number;
 }
 
-async function worker(browser: Browser): Promise<Worker> {
+export async function worker(browser: Browser): Promise<Worker> {
   // Isolated: the pages run side by side and one origin's storage is shared by every page in
   // a context, so one state's preparation cleared another's saved stops and language mid-load.
   const page = await browser.newPage(true);
@@ -1172,7 +1180,12 @@ async function worker(browser: Browser): Promise<Worker> {
   return w;
 }
 
-async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> {
+/**
+ * Loads a state and does what a person does to get there: the setup, then the tap. What it
+ * could not reach comes back as findings; null if the app never drew at all. Shared with
+ * visualDiff.ts, which photographs each state instead of measuring it, on a frozen clock.
+ */
+export async function reach(w: Worker, pass: Pass, state: State, frozen = false): Promise<Finding[] | null> {
   const { page } = w;
   w.api = state.api ?? 'incidents';
   w.logged.length = w.thrown.length = w.agora = 0;
@@ -1183,6 +1196,7 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
     stored: { ...(state.stored ?? {}), 'urbanos-lugo-lang': pass.lang, 'urbanos-lugo-theme': pass.themes[0] },
     geo: state.geo ?? 'none',
     at: LUGO_CENTER,
+    frozen,
   };
   const path = state.screen === 'paradas' ? '' : `${state.screen}/`;
   // Through a blank page: two states on the same address differ only in the fragment, and a
@@ -1193,7 +1207,7 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
   try {
     await page.waitFor('document.querySelector("main h1")', 15_000);
   } catch {
-    return [{ pass: pass.name, state: label(state), theme: pass.themes[0], findings: [{ kind: 'reach', where: label(state), detail: 'the app never drew' }], measured: 0, named: 0, tightest: Infinity, axePassed: 0, review: [], title: '', nav: '' }];
+    return null;
   }
   await sleep(state.screen === 'mapa' ? 1800 : 900);
   if (state.setup) {
@@ -1229,6 +1243,13 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
       findings.push({ kind: 'reach', where: label(state), detail: state.tap === 'mapCentre' ? 'the stop sheet never opened' : box ? 'the bus popup never opened' : 'no bus wholly on the map to tap' });
     }
   }
+  return findings;
+}
+
+async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> {
+  const { page } = w;
+  const findings = await reach(w, pass, state);
+  if (!findings) return [{ pass: pass.name, state: label(state), theme: pass.themes[0], findings: [{ kind: 'reach', where: label(state), detail: 'the app never drew' }], measured: 0, named: 0, tightest: Infinity, axePassed: 0, review: [], title: '', nav: '' }];
 
   const results: Result[] = [];
   for (const theme of pass.themes) {
@@ -1322,7 +1343,7 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
   return results;
 }
 
-const label = (s: State) => `${s.screen}/${s.name}`;
+export const label = (s: State) => `${s.screen}/${s.name}`;
 
 /**
  * Every transition and entrance where it ends, which is what the reader sees a quarter of a
@@ -1331,7 +1352,7 @@ const label = (s: State) => `${s.screen}/${s.name}`;
  * light to dark measured 1.03:1 against its own text. The loops cannot be finished and are
  * left alone; they are waits, and never what text sits on.
  */
-const SETTLE = `(() => { for (const a of document.getAnimations()) { try { a.finish(); } catch (e) {} } return true; })()`;
+export const SETTLE = `(() => { for (const a of document.getAnimations()) { try { a.finish(); } catch (e) {} } return true; })()`;
 
 /* ------------------------------------------------------------------------------------- */
 /* What a state cannot show                                                              */
@@ -1684,121 +1705,124 @@ async function siteDataRefused(): Promise<Finding[]> {
 /* The run                                                                               */
 /* ------------------------------------------------------------------------------------- */
 
-const quick = process.argv[2] === 'quick';
-const PASSES: Pass[] = quick
-  ? [{ name: 'phone gl', desktop: false, lang: 'gl', themes: ['light', 'dark'], deep: true }]
-  : [
-      { name: 'phone gl', desktop: false, lang: 'gl', themes: ['light', 'dark'], deep: true },
-      { name: 'phone es', desktop: false, lang: 'es', themes: ['light'], deep: false },
-      { name: 'phone en', desktop: false, lang: 'en', themes: ['light'], deep: false },
-      { name: 'desktop gl', desktop: true, lang: 'gl', themes: ['light', 'dark'], deep: true },
-    ];
-const PAGES = Number(process.env.AUDIT_PAGES ?? 4);
+// Imported by visualDiff.ts for its states; run, it audits.
+if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
+  const quick = process.argv[2] === 'quick';
+  const PASSES: Pass[] = quick
+    ? [{ name: 'phone gl', desktop: false, lang: 'gl', themes: ['light', 'dark'], deep: true }]
+    : [
+        { name: 'phone gl', desktop: false, lang: 'gl', themes: ['light', 'dark'], deep: true },
+        { name: 'phone es', desktop: false, lang: 'es', themes: ['light'], deep: false },
+        { name: 'phone en', desktop: false, lang: 'en', themes: ['light'], deep: false },
+        { name: 'desktop gl', desktop: true, lang: 'gl', themes: ['light', 'dark'], deep: true },
+      ];
+  const PAGES = Number(process.env.AUDIT_PAGES ?? 4);
 
-let ran = false;
-const started = Date.now();
-await withBrowser(async (browser) => {
-  ran = true;
-  // For an edit loop: AUDIT_STATES and AUDIT_PASSES take a pattern for the state ("ruta/hora")
-  // and the pass ("desktop"); the sequences after the states run whatever these say.
-  const only = (pattern: string | undefined, value: string) => !pattern || new RegExp(pattern).test(value);
-  const jobs = PASSES.filter((pass) => only(process.env.AUDIT_PASSES, pass.name)).flatMap((pass) =>
-    STATES.filter((s) => !(pass.desktop && s.phoneOnly) && !(!pass.desktop && s.desktopOnly) && only(process.env.AUDIT_STATES, label(s))).map((state) => ({ pass, state })),
-  );
-  const results: Result[] = [];
-  let next = 0;
-  await Promise.all(
-    Array.from({ length: Math.min(PAGES, jobs.length) }, async () => {
-      const w = await worker(browser);
-      while (next < jobs.length) {
-        const { pass, state } = jobs[next++];
-        try {
-          results.push(...(await runState(w, pass, state)));
-        } catch (error) {
-          results.push({ pass: pass.name, state: label(state), theme: pass.themes[0], findings: [{ kind: 'reach', where: label(state), detail: `the run broke: ${String(error).slice(0, 200)}` }], measured: 0, named: 0, tightest: Infinity, axePassed: 0, review: [], title: '', nav: '' });
+  let ran = false;
+  const started = Date.now();
+  await withBrowser(async (browser) => {
+    ran = true;
+    // For an edit loop: AUDIT_STATES and AUDIT_PASSES take a pattern for the state ("ruta/hora")
+    // and the pass ("desktop"); the sequences after the states run whatever these say.
+    const only = (pattern: string | undefined, value: string) => !pattern || new RegExp(pattern).test(value);
+    const jobs = PASSES.filter((pass) => only(process.env.AUDIT_PASSES, pass.name)).flatMap((pass) =>
+      STATES.filter((s) => !(pass.desktop && s.phoneOnly) && !(!pass.desktop && s.desktopOnly) && only(process.env.AUDIT_STATES, label(s))).map((state) => ({ pass, state })),
+    );
+    const results: Result[] = [];
+    let next = 0;
+    await Promise.all(
+      Array.from({ length: Math.min(PAGES, jobs.length) }, async () => {
+        const w = await worker(browser);
+        while (next < jobs.length) {
+          const { pass, state } = jobs[next++];
+          try {
+            results.push(...(await runState(w, pass, state)));
+          } catch (error) {
+            results.push({ pass: pass.name, state: label(state), theme: pass.themes[0], findings: [{ kind: 'reach', where: label(state), detail: `the run broke: ${String(error).slice(0, 200)}` }], measured: 0, named: 0, tightest: Infinity, axePassed: 0, review: [], title: '', nav: '' });
+          }
         }
+        await w.page.close();
+      }),
+    );
+    const extra: { name: string; findings: Finding[] }[] = [];
+    /** A sequence that breaks is a check that did not run, which is a finding, not a crash. */
+    const sequence = async (name: string, run: () => Promise<Finding[]>) => {
+      try {
+        extra.push({ name, findings: await run() });
+      } catch (error) {
+        extra.push({ name, findings: [{ kind: 'reach', where: name, detail: `the run broke: ${String(error).slice(0, 200)}` }] });
       }
-      await w.page.close();
-    }),
-  );
-  const extra: { name: string; findings: Finding[] }[] = [];
-  /** A sequence that breaks is a check that did not run, which is a finding, not a crash. */
-  const sequence = async (name: string, run: () => Promise<Finding[]>) => {
-    try {
-      extra.push({ name, findings: await run() });
-    } catch (error) {
-      extra.push({ name, findings: [{ kind: 'reach', where: name, detail: `the run broke: ${String(error).slice(0, 200)}` }] });
+    };
+    let visited = 'menu not opened';
+    await sequence('keyboard: the menu, both ways, and the planner', async () => {
+      const kb = await keyboard(browser);
+      visited = kb.visited;
+      return kb.findings;
+    });
+    await sequence('map: hover labels and panning without a drag', () => mapPointer(browser));
+    await sequence('forced colours', () => forced(browser));
+    await sequence('reduced motion', () => motion(browser));
+    await sequence('site data refused', () => siteDataRefused());
+    await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
+
+    // 3.2.3 and 2.4.2, across the states of a pass: the navigation is the same in the same
+    // order everywhere, and each screen has a title of its own.
+    for (const pass of PASSES) {
+      const mine = results.filter((r) => r.pass === pass.name && r.theme === pass.themes[0]);
+      const navs = new Map<string, string[]>();
+      for (const r of mine) if (r.nav) navs.set(r.nav, [...(navs.get(r.nav) ?? []), r.state]);
+      if (navs.size > 1) extra.push({ name: `${pass.name}: navigation`, findings: [{ kind: 'nav', where: pass.name, detail: `the navigation differs between states: ${[...navs.entries()].map(([n, s]) => `"${n}" on ${s.slice(0, 3).join(', ')}`).join(' / ')}` }] });
+      const titles = new Map<string, Set<string>>();
+      // A state that never drew has no title to share; the reach finding already says so.
+      for (const r of mine) if (r.title) titles.set(r.state.split('/')[0], (titles.get(r.state.split('/')[0]) ?? new Set()).add(r.title));
+      const perScreen = [...titles.entries()].map(([screen, set]) => [screen, [...set][0]] as const);
+      const shared = perScreen.filter(([, t], i) => perScreen.findIndex(([, u]) => u === t) !== i);
+      if (shared.length) extra.push({ name: `${pass.name}: titles`, findings: shared.map(([screen, t]) => ({ kind: 'title' as Kind, where: screen, detail: `2.4.2: "${t}" is the title of another screen too` })) });
     }
-  };
-  let visited = 'menu not opened';
-  await sequence('keyboard: the menu, both ways, and the planner', async () => {
-    const kb = await keyboard(browser);
-    visited = kb.visited;
-    return kb.findings;
+
+    /* --- the report --- */
+    results.sort((a, b) => (a.pass + a.state + a.theme).localeCompare(b.pass + b.state + b.theme));
+    console.log('\n=== what was looked at ===');
+    for (const pass of PASSES) {
+      console.log(`\n  ${pass.name}`);
+      for (const r of results.filter((x) => x.pass === pass.name)) {
+        const reach = r.findings.filter((f) => f.kind === 'reach');
+        console.log(
+          `    ${r.state.padEnd(26)} ${r.theme.padEnd(5)} ${String(r.measured).padStart(4)} texts, tightest ${r.tightest === Infinity ? '  - ' : r.tightest.toFixed(2)}, ${String(r.named).padStart(3)} named, axe ${String(r.axePassed).padStart(2)} rules passed` +
+            (r.focus ? `, Tab ${r.focus.reached}/${r.focus.of}` : '') +
+            (reach.length ? `  [NOT REACHED: ${reach.map((f) => f.detail).join('; ')}]` : ''),
+        );
+      }
+    }
+
+    const all = [...results.flatMap((r) => r.findings.map((f) => ({ ...f, at: `${r.pass} · ${r.state} · ${r.theme}` }))), ...extra.flatMap((e) => e.findings.map((f) => ({ ...f, at: e.name })))];
+    for (const kind of Object.keys(KINDS) as Kind[]) {
+      const rows = all.filter((f) => f.kind === kind);
+      console.log(`\n=== ${KINDS[kind]} ===${rows.length ? `  ${rows.length}` : '  none'}`);
+      // The same defect in every theme and pass is one defect: grouped by where and what.
+      const grouped = new Map<string, string[]>();
+      for (const f of rows) grouped.set(`${f.where}\n      ${f.detail}`, [...(grouped.get(`${f.where}\n      ${f.detail}`) ?? []), f.at]);
+      for (const [what, where] of [...grouped.entries()].slice(0, 60)) console.log(`    ${what}\n      in ${where.length > 3 ? `${where.slice(0, 3).join('; ')} and ${where.length - 3} more` : where.join('; ')}`);
+      if (grouped.size > 60) console.log(`    ... and ${grouped.size - 60} more`);
+    }
+
+    const review = new Map<string, number>();
+    for (const r of results) for (const item of r.review) review.set(item.split(' ')[0], (review.get(item.split(' ')[0]) ?? 0) + 1);
+    console.log('\n=== axe could not decide (needs a look, not a failure) ===');
+    console.log(review.size ? `  ${[...review.entries()].map(([id, n]) => `${id} in ${n} state${n === 1 ? '' : 's'}`).join(', ')}` : '  nothing');
+    console.log(`\n=== keyboard ===\n  ${visited}`);
+
+    // Everything, for whoever wants to count or compare two runs: AUDIT_JSON=path.
+    if (process.env.AUDIT_JSON) writeFileSync(process.env.AUDIT_JSON, JSON.stringify({ results: results.map(({ review: _, ...r }) => r), extra }, null, 1));
+
+    const gated = all.filter((f) => !HOUSE.includes(f.kind));
+    console.log('\n=== totals ===');
+    console.log(`  ${results.length} state-theme measurements over ${new Set(results.map((r) => r.pass + r.state)).size} states and ${PASSES.length} passes, in ${Math.round((Date.now() - started) / 1000)} s`);
+    console.log(`  ${results.reduce((s, r) => s + r.measured, 0)} texts measured, ${results.reduce((s, r) => s + r.named, 0)} controls named`);
+    console.log(`  WCAG 2.2 A/AA: ${gated.length} finding${gated.length === 1 ? '' : 's'}${gated.length ? ` (${(Object.keys(KINDS) as Kind[]).filter((k) => !HOUSE.includes(k)).map((k) => [k, gated.filter((f) => f.kind === k).length] as const).filter(([, n]) => n).map(([k, n]) => `${k} ${n}`).join(', ')})` : ''}`);
+    console.log(`  house bar: under 12 px ${all.filter((f) => f.kind === 'size').length}, under 44 px ${all.filter((f) => f.kind === 'target44').length}, under 48 px between the bars ${all.filter((f) => f.kind === 'room').length}`);
+    if (gated.length) process.exitCode = 1;
   });
-  await sequence('map: hover labels and panning without a drag', () => mapPointer(browser));
-  await sequence('forced colours', () => forced(browser));
-  await sequence('reduced motion', () => motion(browser));
-  await sequence('site data refused', () => siteDataRefused());
-  await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
-
-  // 3.2.3 and 2.4.2, across the states of a pass: the navigation is the same in the same
-  // order everywhere, and each screen has a title of its own.
-  for (const pass of PASSES) {
-    const mine = results.filter((r) => r.pass === pass.name && r.theme === pass.themes[0]);
-    const navs = new Map<string, string[]>();
-    for (const r of mine) if (r.nav) navs.set(r.nav, [...(navs.get(r.nav) ?? []), r.state]);
-    if (navs.size > 1) extra.push({ name: `${pass.name}: navigation`, findings: [{ kind: 'nav', where: pass.name, detail: `the navigation differs between states: ${[...navs.entries()].map(([n, s]) => `"${n}" on ${s.slice(0, 3).join(', ')}`).join(' / ')}` }] });
-    const titles = new Map<string, Set<string>>();
-    // A state that never drew has no title to share; the reach finding already says so.
-    for (const r of mine) if (r.title) titles.set(r.state.split('/')[0], (titles.get(r.state.split('/')[0]) ?? new Set()).add(r.title));
-    const perScreen = [...titles.entries()].map(([screen, set]) => [screen, [...set][0]] as const);
-    const shared = perScreen.filter(([, t], i) => perScreen.findIndex(([, u]) => u === t) !== i);
-    if (shared.length) extra.push({ name: `${pass.name}: titles`, findings: shared.map(([screen, t]) => ({ kind: 'title' as Kind, where: screen, detail: `2.4.2: "${t}" is the title of another screen too` })) });
-  }
-
-  /* --- the report --- */
-  results.sort((a, b) => (a.pass + a.state + a.theme).localeCompare(b.pass + b.state + b.theme));
-  console.log('\n=== what was looked at ===');
-  for (const pass of PASSES) {
-    console.log(`\n  ${pass.name}`);
-    for (const r of results.filter((x) => x.pass === pass.name)) {
-      const reach = r.findings.filter((f) => f.kind === 'reach');
-      console.log(
-        `    ${r.state.padEnd(26)} ${r.theme.padEnd(5)} ${String(r.measured).padStart(4)} texts, tightest ${r.tightest === Infinity ? '  - ' : r.tightest.toFixed(2)}, ${String(r.named).padStart(3)} named, axe ${String(r.axePassed).padStart(2)} rules passed` +
-          (r.focus ? `, Tab ${r.focus.reached}/${r.focus.of}` : '') +
-          (reach.length ? `  [NOT REACHED: ${reach.map((f) => f.detail).join('; ')}]` : ''),
-      );
-    }
-  }
-
-  const all = [...results.flatMap((r) => r.findings.map((f) => ({ ...f, at: `${r.pass} · ${r.state} · ${r.theme}` }))), ...extra.flatMap((e) => e.findings.map((f) => ({ ...f, at: e.name })))];
-  for (const kind of Object.keys(KINDS) as Kind[]) {
-    const rows = all.filter((f) => f.kind === kind);
-    console.log(`\n=== ${KINDS[kind]} ===${rows.length ? `  ${rows.length}` : '  none'}`);
-    // The same defect in every theme and pass is one defect: grouped by where and what.
-    const grouped = new Map<string, string[]>();
-    for (const f of rows) grouped.set(`${f.where}\n      ${f.detail}`, [...(grouped.get(`${f.where}\n      ${f.detail}`) ?? []), f.at]);
-    for (const [what, where] of [...grouped.entries()].slice(0, 60)) console.log(`    ${what}\n      in ${where.length > 3 ? `${where.slice(0, 3).join('; ')} and ${where.length - 3} more` : where.join('; ')}`);
-    if (grouped.size > 60) console.log(`    ... and ${grouped.size - 60} more`);
-  }
-
-  const review = new Map<string, number>();
-  for (const r of results) for (const item of r.review) review.set(item.split(' ')[0], (review.get(item.split(' ')[0]) ?? 0) + 1);
-  console.log('\n=== axe could not decide (needs a look, not a failure) ===');
-  console.log(review.size ? `  ${[...review.entries()].map(([id, n]) => `${id} in ${n} state${n === 1 ? '' : 's'}`).join(', ')}` : '  nothing');
-  console.log(`\n=== keyboard ===\n  ${visited}`);
-
-  // Everything, for whoever wants to count or compare two runs: AUDIT_JSON=path.
-  if (process.env.AUDIT_JSON) writeFileSync(process.env.AUDIT_JSON, JSON.stringify({ results: results.map(({ review: _, ...r }) => r), extra }, null, 1));
-
-  const gated = all.filter((f) => !HOUSE.includes(f.kind));
-  console.log('\n=== totals ===');
-  console.log(`  ${results.length} state-theme measurements over ${new Set(results.map((r) => r.pass + r.state)).size} states and ${PASSES.length} passes, in ${Math.round((Date.now() - started) / 1000)} s`);
-  console.log(`  ${results.reduce((s, r) => s + r.measured, 0)} texts measured, ${results.reduce((s, r) => s + r.named, 0)} controls named`);
-  console.log(`  WCAG 2.2 A/AA: ${gated.length} finding${gated.length === 1 ? '' : 's'}${gated.length ? ` (${(Object.keys(KINDS) as Kind[]).filter((k) => !HOUSE.includes(k)).map((k) => [k, gated.filter((f) => f.kind === k).length] as const).filter(([, n]) => n).map(([k, n]) => `${k} ${n}`).join(', ')})` : ''}`);
-  console.log(`  house bar: under 12 px ${all.filter((f) => f.kind === 'size').length}, under 44 px ${all.filter((f) => f.kind === 'target44').length}, under 48 px between the bars ${all.filter((f) => f.kind === 'room').length}`);
-  if (gated.length) process.exitCode = 1;
-});
-// Under CI a run that could not start is a failure: the gate would otherwise pass by not looking.
-if (!ran && process.env.CI) process.exitCode = 1;
+  // Under CI a run that could not start is a failure: the gate would otherwise pass by not looking.
+  if (!ran && process.env.CI) process.exitCode = 1;
+}

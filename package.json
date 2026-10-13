@@ -46,7 +46,9 @@
     "worker:build": "esbuild worker/index.ts --bundle --format=esm --platform=neutral --target=es2022 --outfile=worker/dist/worker.js",
     "fonts:import": "tsx tools/importFonts.ts",
     "measure:browser": "tsx tools/stressBrowser.ts",
-    "audit:browser": "tsx tools/auditBrowser.ts"
+    "audit:browser": "tsx tools/auditBrowser.ts",
+    "visual:shoot": "tsx tools/visualDiff.ts shoot",
+    "visual:compare": "tsx tools/visualDiff.ts compare"
   },
   "dependencies": {
     "@maplibre/maplibre-gl-leaflet": "^0.1.4",
