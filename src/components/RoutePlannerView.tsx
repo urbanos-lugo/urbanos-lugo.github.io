@@ -636,7 +636,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 </span>
                 {/* These times are for a bus the measured walk no longer reaches, and the replan found nothing better. */}
                 {!shown.reachable && (
-                  <span className="flex w-full items-center gap-2 rounded-md border border-warn bg-warn px-2.5 py-1.5 text-label font-bold text-warn-ink">
+                  <span className="flex w-full items-center gap-2 rounded-control border border-warn bg-warn px-2.5 py-1.5 text-label font-bold text-warn-ink">
                     <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                     {t.planner.unreachableWalk}
                   </span>
@@ -646,7 +646,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               {canStart && !boardingSoon && startTripButton(false)}
 
               {/* The small print, folded: worth reading once, not on the way to the thing that was asked for. */}
-              <details className="disclosure rounded-md border border-edge bg-surface/40">
+              <details className="disclosure rounded-control border border-edge bg-surface/40">
                 <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 text-label font-semibold text-ink-2">
                   <span className="sr-only">{t.planner.tripInfoTitle}</span>
                   <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />

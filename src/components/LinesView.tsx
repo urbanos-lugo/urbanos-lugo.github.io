@@ -251,7 +251,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {/* Columns of at least 6rem, so they follow the text: two on a phone at the default size,
                 one from 125% up. In two fixed columns at 200% the frequency's label ran 64 px
                 into the next one. */}
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-x-4 gap-y-3 rounded-md border border-line bg-surface/50 p-3 sm:grid-cols-3">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-x-4 gap-y-3 rounded-control border border-line bg-surface/50 p-3 sm:grid-cols-3">
               <Fact icon={Clock} label={t.lines.frequency}>
                 <span className="font-sans font-semibold">{frequencyLabel(currentLine, lang)}</span>
               </Fact>
@@ -290,7 +290,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               const until = mine && runsUntil(mine, now);
               if (!today || (!mine && !today.general.length)) return null;
               return (
-                <div className="rounded-md border border-warn bg-warn p-3 text-label leading-relaxed text-warn-ink">
+                <div className="rounded-control border border-warn bg-warn p-3 text-label leading-relaxed text-warn-ink">
                   <p className="flex gap-2 font-semibold">
                     <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
                     <span>{t.lines.noticeToday}</span>
@@ -316,7 +316,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 Folded under its heading and days: the box above says what it changes today, and open the two repeated each other on a phone. */}
             {notices.flatMap((alert) =>
               (alert.sections ?? []).filter((section) => namesLine(section, currentLine)).map((section, i) => (
-                <details key={`${alert.id}-${i}`} className="disclosure rounded-md border border-warn bg-warn/60 text-label leading-relaxed text-warn-ink">
+                <details key={`${alert.id}-${i}`} className="disclosure rounded-control border border-warn bg-warn/60 text-label leading-relaxed text-warn-ink">
                   <summary className="flex min-h-11 cursor-pointer items-start gap-2 p-3 font-semibold">
                     <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
                     <span className="min-w-0 flex-1">
@@ -346,7 +346,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             )}
 
             {direction.geometrySource && direction.geometrySource !== 'osm' && (
-              <p className="flex gap-2 rounded-md border border-line bg-surface/50 p-3 text-label leading-relaxed text-ink-2">
+              <p className="flex gap-2 rounded-control border border-line bg-surface/50 p-3 text-label leading-relaxed text-ink-2">
                 <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
                 <span>
                   <span className="font-semibold text-ink">{t.lines.approximatePathTitle}.</span> {t.lines.approximatePath}
@@ -370,7 +370,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                   aria-label={guessed ? `${t.lines.viewRunAt(time)}, ${t.lines.estimatedSr}` : t.lines.viewRunAt(time)}
                   // The run on show is the one filled in: said as well as drawn.
                   aria-pressed={idx === runIndex}
-                  className={`tnum flex h-11 items-center justify-center rounded-[7px] border px-2.5 text-label font-semibold ${idx === runIndex ? 'border-ink bg-ink text-bg' : 'border-edge text-ink-2'}`}
+                  className={`tnum flex h-11 items-center justify-center rounded-control border px-2.5 text-label font-semibold ${idx === runIndex ? 'border-ink bg-ink text-bg' : 'border-edge text-ink-2'}`}
                 >
                   {guessed && <span>~</span>}
                   {time}
@@ -495,13 +495,13 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                       </div>
                       <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2.5 self-start sm:shrink-0 sm:self-auto">
                         {busHere && (
-                          <div className="flex shrink-0 items-center gap-1.5 rounded-md bg-official px-1.5 py-1 text-label font-bold text-on-official shadow-xs">
+                          <div className="flex shrink-0 items-center gap-1.5 rounded bg-official px-1.5 py-1 text-label font-bold text-on-official shadow-xs">
                             <Bus className="h-3.5 w-3.5" aria-hidden="true" />
                             <span className="hidden sm:inline">{t.lines.busScheduledHere}</span>
                             <span className="sr-only sm:hidden">{t.lines.busScheduledHere}</span>
                           </div>
                         )}
-                        <div className="flex min-w-0 items-center gap-1 px-2.5 py-1 rounded-md bg-surface border border-edge text-ink font-mono text-label font-bold">
+                        <div className="flex min-w-0 items-center gap-1 px-2.5 py-1 rounded bg-surface border border-edge text-ink font-mono text-label font-bold">
                           <Clock className="w-3.5 h-3.5 text-accent" />
                           <span>
                             {passingMinutes === undefined ? (

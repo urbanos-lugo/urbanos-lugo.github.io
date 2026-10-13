@@ -124,7 +124,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             onClose();
           }}
           aria-label={t.qr.close}
-          className="absolute top-3.5 right-3.5 flex h-11 w-11 items-center justify-center rounded-md text-ink-3 transition-colors hover:bg-surface hover:text-ink-2"
+          className="absolute top-3.5 right-3.5 flex h-11 w-11 items-center justify-center rounded-control text-ink-3 transition-colors hover:bg-surface hover:text-ink-2"
         >
           <X className="w-5 h-5" />
         </button>
@@ -155,7 +155,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             isScanning ? stopCamera() : setIsScanning(true);
           }}
           disabled={!hasBarcodeDetector}
-          className="mb-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-edge bg-surface py-2.5 text-label font-bold uppercase tracking-wider text-ink transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+          className="mb-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface py-2.5 text-label font-bold uppercase tracking-wider text-ink transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
         >
           {hasBarcodeDetector ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
           <span>{hasBarcodeDetector ? (isScanning ? t.qr.stopScan : t.qr.scanBtn) : t.qr.noCamera}</span>
@@ -183,14 +183,14 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             aria-label={t.qr.inputLabel}
             aria-invalid={errorMsg ? true : undefined}
             aria-describedby={errorMsg ? 'qr-manual-error' : undefined}
-            className="min-h-11 w-full rounded-md border border-edge bg-surface px-3.5 py-2.5 text-body font-semibold text-ink placeholder:text-ink-3 focus:bg-bg focus:outline-hidden focus:ring-2 focus:ring-accent"
+            className="min-h-11 w-full rounded-control border border-edge bg-surface px-3.5 py-2.5 text-body font-semibold text-ink placeholder:text-ink-3 focus:bg-bg focus:outline-hidden focus:ring-2 focus:ring-accent"
           />
           {errorMsg && (
             <p id="qr-manual-error" role="alert" className="text-label font-bold text-warn-ink px-1">
               {errorMsg}
             </p>
           )}
-          <button onClick={() => lookup()} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-accent py-2.5 text-label font-bold uppercase tracking-wider text-on-accent shadow-xs transition-all hover:bg-accent">
+          <button onClick={() => lookup()} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-accent py-2.5 text-label font-bold uppercase tracking-wider text-on-accent shadow-xs transition-all hover:bg-accent">
             <span>{t.qr.searchBtn}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
@@ -206,7 +206,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
                   setInputCode(stop.code);
                   lookup(stop.code);
                 }}
-                className="group flex min-h-11 w-full items-center justify-between gap-2 rounded-md border border-edge bg-surface p-2.5 text-left text-label transition-colors hover:bg-surface"
+                className="group flex min-h-11 w-full items-center justify-between gap-2 rounded-control border border-edge bg-surface p-2.5 text-left text-label transition-colors hover:bg-surface"
               >
                 <span className="min-w-0 break-words font-semibold text-ink group-hover:text-accent">{stop.name}</span>
                 <span className="font-mono text-accent font-bold shrink-0">{stop.code}</span>
@@ -215,7 +215,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
           </div>
         </div>
 
-        <p className="text-label text-ink-3 mt-4 leading-relaxed bg-surface p-3 rounded-md border border-line">{t.qr.howItWorks}</p>
+        <p className="text-label text-ink-3 mt-4 leading-relaxed bg-surface p-3 rounded-control border border-line">{t.qr.howItWorks}</p>
       </div>
     </div>
   );

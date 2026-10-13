@@ -73,7 +73,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
       {/* The one thing that matters, first and biggest. While the alert stands the whole card turns. */}
       <div className={`space-y-4 rounded-card border py-6 px-cap-6 shadow-sm ${phase === 'alighting' ? 'border-warn bg-warn/40' : 'border-edge bg-bg'}`}>
         {phase === 'alighting' && segment?.toStop && (
-          <p role="alert" className="anim-rise rounded-md border border-warn bg-warn px-3 py-2.5 text-body font-semibold text-warn-ink">
+          <p role="alert" className="anim-rise rounded-control border border-warn bg-warn px-3 py-2.5 text-body font-semibold text-warn-ink">
             {t.arrivals.alarmFired(segment.toStop.name)}
           </p>
         )}
@@ -151,7 +151,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
 
         {/* Asked, not guessed: the printed departure plus three minutes has gone by and the phone has not seen the bus move. */}
         {asking && segment?.line && (
-          <div role="group" aria-live="polite" className="anim-rise space-y-2 rounded-md border border-warn bg-warn/40 p-3">
+          <div role="group" aria-live="polite" className="anim-rise space-y-2 rounded-control border border-warn bg-warn/40 p-3">
             <p className="text-body font-semibold text-ink">{t.companion.caughtIt(segment.line.number, formatMinutes(times.departureMinutes))}</p>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" onClick={companion.boarded} className="flex min-h-11 items-center justify-center rounded-control bg-accent px-3 text-body font-semibold text-on-accent">

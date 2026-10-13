@@ -160,7 +160,7 @@ export function MapControls(p: MapControlsProps) {
           <span className={heading}>{t.map.nearbyTitle(NEARBY_RADIUS_M)}</span>
           <div className="space-y-1 max-h-[150px] overflow-y-auto pr-1">
             {p.nearbyLines.map(({ line, nearestStop, walkMeters }) => (
-              <button key={line.id} onClick={() => p.onSelectLine(line)} className="w-full p-2 rounded-md text-left flex items-center gap-2 text-label bg-surface border border-line hover:bg-surface transition-colors">
+              <button key={line.id} onClick={() => p.onSelectLine(line)} className="w-full p-2 rounded-control text-left flex items-center gap-2 text-label bg-surface border border-line hover:bg-surface transition-colors">
                 <LineBadge number={line.number} color={line.color} size="sm" />
                 <span className="min-w-0 flex-1 break-words text-ink-2">{nearestStop.name}</span>
                 <span className="tnum shrink-0 font-semibold text-ink-3">~{walkMeters} m</span>
@@ -172,13 +172,13 @@ export function MapControls(p: MapControlsProps) {
 
       <div className={card}>
         <span className={heading}>{t.map.layers}</span>
-        <div className="grid grid-cols-3 gap-1 bg-surface p-1 rounded-md text-label">
+        <div className="grid grid-cols-3 gap-1 bg-surface p-1 rounded-control text-label">
           {layerButtons.map(({ id, Icon, tint, label }) => (
             <button
               key={id}
               onClick={() => p.onToggleLayer(id)}
               aria-pressed={p.layers[id]}
-              className={`h-11 rounded-control font-semibold flex items-center justify-center gap-1 transition-all ${p.layers[id] ? 'bg-bg text-ink shadow-xs' : 'text-ink-3'}`}
+              className={`h-11 rounded-[7px] font-semibold flex items-center justify-center gap-1 transition-all ${p.layers[id] ? 'bg-bg text-ink shadow-xs' : 'text-ink-3'}`}
             >
               <Icon className={`w-3 h-3 ${tint}`} />
               <span>{label}</span>
@@ -216,7 +216,7 @@ export function MapControls(p: MapControlsProps) {
                   {/* The row is a switch, and a tick is what says so. */}
                   {isSelected && <Check className="ml-auto h-4 w-4 shrink-0 text-accent" strokeWidth={3} aria-hidden="true" />}
                 </button>
-                <button onClick={() => p.onOpenLine(line)} title={t.map.openLineInfo} aria-label={`${t.map.openLineInfo}: ${line.number}`} className="flex min-h-11 w-11 shrink-0 items-center justify-center rounded-r-[8px]">
+                <button onClick={() => p.onOpenLine(line)} title={t.map.openLineInfo} aria-label={`${t.map.openLineInfo}: ${line.number}`} className="flex min-h-11 w-11 shrink-0 items-center justify-center rounded-r-[9px]">
                   <ChevronRight className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-ink-3'}`} aria-hidden="true" />
                 </button>
               </div>

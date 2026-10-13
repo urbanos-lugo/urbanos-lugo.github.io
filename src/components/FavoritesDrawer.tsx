@@ -30,7 +30,7 @@ function SavedRow({ onOpen, onRemove, removeLabel, children }: { onOpen: () => v
       </button>
       <div className="ml-auto flex shrink-0 items-center">
         {/* 44 px like every other control: at 28 it sat a finger's width from the arrow. */}
-        <button onClick={onRemove} aria-label={removeLabel} title={removeLabel} className="flex h-11 w-11 items-center justify-center text-ink-3 hover:text-warn-ink rounded-md hover:bg-warn transition-colors">
+        <button onClick={onRemove} aria-label={removeLabel} title={removeLabel} className="flex h-11 w-11 items-center justify-center text-ink-3 hover:text-warn-ink rounded-control hover:bg-warn transition-colors">
           <Trash2 className="w-4 h-4" aria-hidden="true" />
         </button>
         {/* The row's own button already opens it: this one is for the eye, not a second stop for a screen reader. */}
@@ -77,7 +77,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
               <div className="flex min-w-0 items-center gap-2.5">
                 {/* The star is the title's decoration: where the heading has less than 14rem it goes,
                     rather than the heading breaking as "FAVORI-TOS". */}
-                <div className="hidden w-9 h-9 shrink-0 rounded-md bg-warn items-center justify-center @min-[14rem]:flex">
+                <div className="hidden w-9 h-9 shrink-0 rounded-control bg-warn items-center justify-center @min-[14rem]:flex">
                   <Star className="w-5 h-5 fill-current text-warn-ink" />
                 </div>
                 <div className="min-w-0">
@@ -85,7 +85,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
                   <p className="text-label text-ink-3 font-medium">{t.favourites.subtitle}</p>
                 </div>
               </div>
-              <button onClick={onClose} aria-label={t.favourites.close} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-ink-3 transition-colors hover:bg-surface hover:text-ink-2">
+              <button onClick={onClose} aria-label={t.favourites.close} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-3 transition-colors hover:bg-surface hover:text-ink-2">
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
