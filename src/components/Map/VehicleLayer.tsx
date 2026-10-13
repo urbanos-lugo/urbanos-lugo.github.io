@@ -3,7 +3,7 @@ import L from 'leaflet';
 import { translations, useLang, type Lang } from '../../i18n';
 import { escapeHtml } from '../../utils/html';
 import { ScheduledBus } from '../../types';
-import { POPUP_CLEAR_OF_CONTROLS, badgeHtml, popupBox, rowButtonStyle } from './popupHtml';
+import { POPUP_CLEAR_OF_CONTROLS, badgeHtml, popupBox, rowButtonClass } from './popupHtml';
 
 interface VehicleLayerProps {
   map: L.Map | null;
@@ -41,11 +41,11 @@ function popupNode(bus: ScheduledBus, onOpenLine: (lineId: string) => void, lang
   const occupancy = { low: t.map.occupancyLow, medium: t.map.occupancyMedium, high: t.map.occupancyHigh }[bus.occupancy];
   const node = document.createElement('div');
   node.innerHTML = popupBox(
-    `<button type="button" data-open-line="1" style="${rowButtonStyle} margin-bottom:6px; padding:0;">${badgeHtml(bus.lineColor, bus.lineNumber)}` +
-      `<span style="font-weight:600; font-size:13px; color:var(--c-ink); text-decoration:underline; text-underline-offset:2px;">${escapeHtml(bus.destination)}</span></button>` +
-      `<div style="font-size:12px; color:var(--c-ink-2);">${escapeHtml(t.map.nextStop)}: <b>${escapeHtml(bus.nextStopName)}</b></div>` +
-      `<div style="font-size:12px; color:var(--c-ink-3);">${escapeHtml(t.map.occupancyLabel)}: ${escapeHtml(occupancy)}</div>` +
-      `<div style="font-size:12px; color:var(--c-estimated-fg); margin-top:6px; line-height:1.4;">${t.map.estimatedPosition}</div>`,
+    `<button type="button" data-open-line="1" class="${rowButtonClass} mb-1.5">${badgeHtml(bus.lineColor, bus.lineNumber)}` +
+      `<span class="text-label font-semibold text-ink underline underline-offset-2">${escapeHtml(bus.destination)}</span></button>` +
+      `<div class="text-label text-ink-2">${escapeHtml(t.map.nextStop)}: <b>${escapeHtml(bus.nextStopName)}</b></div>` +
+      `<div class="text-label text-ink-3">${escapeHtml(t.map.occupancyLabel)}: ${escapeHtml(occupancy)}</div>` +
+      `<div class="mt-1.5 text-label text-estimated">${t.map.estimatedPosition}</div>`,
   );
   node.querySelector('button[data-open-line]')?.addEventListener('click', () => onOpenLine(bus.lineId));
   return node;

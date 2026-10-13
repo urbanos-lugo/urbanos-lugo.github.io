@@ -1,16 +1,16 @@
 import { escapeHtml } from '../../utils/html';
 
 /**
- * Leaflet popups live outside React, so their markup is strings: the tokens are read
- * through var() and every value that came from the dataset goes through escapeHtml.
+ * Leaflet popups live outside React, so their markup is strings: they carry the same classes
+ * as the rest of the app, and every value that came from the dataset goes through escapeHtml.
  */
 
-/** A line's number on its colour, the badge printed on the poles, as inline HTML. */
+/** A line's number on its colour, the badge printed on the poles: LineBadge's 'sm', as HTML. */
 export const badgeHtml = (color: string, number: string): string =>
-  `<span style="background-color:${escapeHtml(color)}; color:#fff; font-weight:700; font-size:12px; padding:3px 7px; border-radius:5px;">${escapeHtml(number)}</span>`;
+  `<span class="tnum flex shrink-0 items-center justify-center font-bold text-white h-6 min-w-6 rounded px-1.5 text-label" style="background-color:${escapeHtml(color)}">${escapeHtml(number)}</span>`;
 
-/** The unstyled button a popup row is made of, with room for a real click handler after insertion. */
-export const rowButtonStyle = 'display:flex; align-items:center; gap:8px; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit;';
+/** The button a popup row is made of, with room for a real click handler after insertion. */
+export const rowButtonClass = 'flex cursor-pointer items-center gap-2 text-left';
 
 /**
  * Where a popup on the network map may sit. Leaflet pans the map to fit a popup inside its
@@ -20,6 +20,8 @@ export const rowButtonStyle = 'display:flex; align-items:center; gap:8px; backgr
  */
 export const POPUP_CLEAR_OF_CONTROLS = { autoPanPaddingTopLeft: [12, 124] as [number, number], autoPanPaddingBottomRight: [12, 80] as [number, number] };
 
-/** A popup's outer box. */
-export const popupBox = (inner: string, minWidth = 200): string =>
-  `<div style="min-width: ${minWidth}px; padding: 2px; font-family: var(--font-sans); color: var(--c-ink);">${inner}</div>`;
+/** A popup's outer box; `wide` for the rows that carry two buttons. */
+export const popupBox = (inner: string, wide = false): string => {
+  const popupWidth = wide ? 'min-w-[210px]' : 'min-w-[200px]';
+  return `<div class="${popupWidth} p-0.5 font-sans text-ink">${inner}</div>`;
+};

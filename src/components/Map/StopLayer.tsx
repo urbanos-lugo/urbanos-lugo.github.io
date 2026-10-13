@@ -92,7 +92,7 @@ export function StopLayer({ map, stops, visibleLineIds, selectedStop, showStops,
         const marker = L.circleMarker([stop.lat, stop.lng], stopDotStyle(colors, rung.radius, selected));
         const code = poleCode(stop);
         marker.bindTooltip(
-          `<div style="font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--c-ink); padding: 3px 5px;">${code ? `<span style="color: var(--c-accent); margin-right: 5px;">${escapeHtml(code)}</span>` : ''}${escapeHtml(stop.name)}</div>`,
+          `<div class="font-sans text-label font-semibold text-ink">${code ? `<span class="mr-1 text-accent">${escapeHtml(code)}</span>` : ''}${escapeHtml(stop.name)}</div>`,
           { direction: 'top', offset: [0, -8], opacity: 0.95, className: 'stop-hover-tooltip' },
         );
         // Claim the click: the route layer answers map clicks within twenty pixels of a

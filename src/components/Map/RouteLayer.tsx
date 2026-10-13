@@ -7,7 +7,7 @@ import { directionLabel } from '../../utils/serviceLabels';
 import { BusDirection, BusLine, BusStop } from '../../types';
 import { stopById } from '../../data/transitData';
 import { metresBetween } from '../../utils/geo';
-import { POPUP_CLEAR_OF_CONTROLS, badgeHtml, popupBox, rowButtonStyle } from './popupHtml';
+import { POPUP_CLEAR_OF_CONTROLS, badgeHtml, popupBox, rowButtonClass } from './popupHtml';
 
 interface RouteLayerProps {
   map: L.Map | null;
@@ -150,9 +150,8 @@ function linesHerePopup(hits: { line: BusLine; dir: BusDirection }[], lang: Lang
   const node = document.createElement('div');
   node.className = 'font-sans';
   node.innerHTML = popupBox(
-    `<div style="font-size: 12px; font-weight: 700; color: var(--c-ink-3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">${escapeHtml(t.map.linesHere)}</div>` +
-      `<div data-rows="1" style="display: flex; flex-direction: column; gap: 4px;"></div>`,
-    210,
+    `<div class="mb-1.5 text-label font-bold uppercase tracking-wider text-ink-3">${escapeHtml(t.map.linesHere)}</div>` + `<div data-rows="1" class="flex flex-col gap-1"></div>`,
+    true,
   );
   const byLine = new Map<string, { line: BusLine; dirs: BusDirection[] }>();
   for (const { line, dir } of hits) byLine.set(line.id, { line, dirs: [...(byLine.get(line.id)?.dirs ?? []), dir] });
@@ -160,12 +159,12 @@ function linesHerePopup(hits: { line: BusLine; dir: BusDirection }[], lang: Lang
   for (const { line, dirs } of byLine.values()) {
     const where = dirs.length > 1 ? t.map.bothDirections : directionLabel(dirs[0], lang);
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex; align-items:stretch; gap:4px;';
+    row.className = 'flex items-stretch gap-1';
     row.innerHTML =
-      `<button type="button" data-draw="1" title="${escapeHtml(t.map.drawRoute)}" style="${rowButtonStyle} flex:1; min-height:44px; padding:0 8px;">` +
-      `${badgeHtml(line.color, line.number)}<span style="font-size:13px; color:var(--c-ink-2);">${escapeHtml(where)}</span></button>` +
+      `<button type="button" data-draw="1" title="${escapeHtml(t.map.drawRoute)}" class="${rowButtonClass} min-h-11 flex-1 px-2">` +
+      `${badgeHtml(line.color, line.number)}<span class="text-label text-ink-2">${escapeHtml(where)}</span></button>` +
       `<button type="button" data-open="1" title="${escapeHtml(t.map.openLineInfo)}" aria-label="${escapeHtml(t.map.openLineInfo)}: ${escapeHtml(line.number)}" ` +
-      `style="min-height:44px; width:44px; background:none; border:none; cursor:pointer; color:var(--c-accent); font-size:16px;">&rarr;</button>`;
+      `class="min-h-11 w-11 cursor-pointer text-body text-accent">&rarr;</button>`;
     row.querySelector('button[data-draw]')?.addEventListener('click', () => onSelect(line));
     row.querySelector('button[data-open]')?.addEventListener('click', () => onOpen(line));
     rows.appendChild(row);
