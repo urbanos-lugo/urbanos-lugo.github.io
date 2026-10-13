@@ -115,7 +115,7 @@ export function MapControls(p: MapControlsProps) {
       <div className={`${card} p-4`}>
         <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-line">
           <div>
-            <h2 className="font-bold text-ink text-body uppercase tracking-wider flex items-center gap-1.5">
+            <h2 className="font-bold text-ink text-body uppercase tracking-wider flex items-center gap-2">
               <Navigation className="w-4 h-4 text-accent" />
               {t.map.mapTitle}
             </h2>
