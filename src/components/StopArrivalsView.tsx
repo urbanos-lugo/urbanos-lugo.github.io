@@ -408,7 +408,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {/* Folded, directly under the toggle: at a stop with fourteen lines the list runs past the fold. */}
       {nearbyLines.length > 0 && (
         <details className="disclosure mt-3 rounded-control border border-edge bg-surface">
-          <summary className="flex h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
+          <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
             {t.arrivals.nearbyLinesTitle}
             <span className="tnum rounded-control border border-edge px-1.5 py-0.5 text-ink-3">{nearbyLines.length}</span>
             <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
@@ -568,7 +568,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
       {/* Under the answer, not over it: the night-before question, folded like the other tools. */}
       <details className="disclosure mt-3 rounded-control border border-edge bg-surface">
-        <summary className="flex h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
+        <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
           <Clock className="h-3.5 w-3.5 shrink-0 text-accent" aria-hidden="true" />
           {t.arrivals.atTimeSummary}
           <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
@@ -588,7 +588,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             otherwise reached only by knowing its name (WCAG 2.1.1). Folded like the lines nearby. */}
         {polesNearby.length > 0 && (
           <details className="disclosure mt-2 rounded-control border border-edge bg-surface">
-            <summary className="flex h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
+            <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
               {t.arrivals.polesNearby}
               <span className="tnum rounded-control border border-edge px-1.5 py-0.5 text-ink-3">{polesNearby.length}</span>
               <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
@@ -627,7 +627,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
       {nonePublished ? (
         <details className="disclosure mt-4 border-t border-line pt-3">
-          <summary className="flex h-11 cursor-pointer items-center text-label font-semibold text-ink-2">
+          <summary className="flex min-h-11 cursor-pointer items-center text-label font-semibold text-ink-2">
             {t.arrivals.whyEstimatedTitle}
             <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
           </summary>
