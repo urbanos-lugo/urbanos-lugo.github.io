@@ -77,7 +77,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
               <div className="flex min-w-0 items-center gap-2.5">
                 {/* The star is the title's decoration: where the heading has less than 14rem it goes,
                     rather than the heading breaking as "FAVORI-TOS". */}
-                <div className="hidden w-9 h-9 shrink-0 rounded-md bg-warn items-center justify-center text-estimated @min-[14rem]:flex">
+                <div className="hidden w-9 h-9 shrink-0 rounded-md bg-warn items-center justify-center @min-[14rem]:flex">
                   <Star className="w-5 h-5 fill-current text-warn-ink" />
                 </div>
                 <div className="min-w-0">
@@ -107,7 +107,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
                   id: 'lines',
                   label: (
                     <span className="flex items-center justify-center gap-1.5">
-                      <Route className="hidden w-3.5 h-3.5 shrink-0 text-estimated @min-[14rem]:block" />
+                      <Route className="hidden w-3.5 h-3.5 shrink-0 @min-[14rem]:block" />
                       {t.favourites.tabLines} ({favoriteLines.length})
                     </span>
                   ),

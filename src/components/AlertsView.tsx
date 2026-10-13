@@ -127,7 +127,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-emph font-bold text-ink uppercase tracking-wider flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-estimated" />
+              <AlertTriangle className="w-5 h-5 text-warn-ink" />
               {t.fares.alertsTitle}
             </h2>
             <p className="text-label text-ink-3 mt-0.5">{t.fares.alertsSubtitle}</p>
@@ -206,7 +206,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
           <h3 className="text-label font-bold text-ink-2 uppercase tracking-wider">{t.fares.structuralTitle}</h3>
           <p className="mt-1 text-label leading-relaxed text-ink-3">{t.fares.structuralSource}</p>
           {/* They are reviewed monthly; two months means a review was missed, and the reader is told. */}
-          {monthsSinceReview >= 2 && <p className="mt-1 text-label font-semibold leading-relaxed text-estimated">{t.fares.structuralStale(monthsSinceReview)}</p>}
+          {monthsSinceReview >= 2 && <p className="mt-1 text-label font-semibold leading-relaxed text-warn-ink">{t.fares.structuralStale(monthsSinceReview)}</p>}
           <div className="mb-3" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {structuralNotices.map((alert) => (

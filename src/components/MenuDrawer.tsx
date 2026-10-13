@@ -53,7 +53,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
               aria-label={badge > 0 ? `${label}: ${badge}` : undefined}
               className="flex min-h-14 items-center gap-4 rounded-card px-cap-3 py-2 text-left"
             >
-              <Icon className={`h-5 w-5 shrink-0 ${id === 'info' ? 'text-estimated' : 'text-ink-2'}`} strokeWidth={2} aria-hidden="true" />
+              <Icon className={`h-5 w-5 shrink-0 ${id === 'info' ? 'text-warn-ink' : 'text-ink-2'}`} strokeWidth={2} aria-hidden="true" />
               <span className="min-w-0 flex-1 break-words text-emph font-semibold">{label}</span>
               {/* A space the row does not draw, between the words and the count: run together, the
                   text read "servizo1", which did not match the name "servizo (1)" (2.5.3). */}{' '}

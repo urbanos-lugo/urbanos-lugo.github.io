@@ -161,7 +161,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
           <span>{hasBarcodeDetector ? (isScanning ? t.qr.stopScan : t.qr.scanBtn) : t.qr.noCamera}</span>
         </button>
         {cameraError && (
-          <p role="alert" className="text-label font-bold text-estimated px-1 mb-2">
+          <p role="alert" className="text-label font-bold text-warn-ink px-1 mb-2">
             {cameraError}
           </p>
         )}

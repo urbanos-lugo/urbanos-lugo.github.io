@@ -542,9 +542,9 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
             <div className="space-y-4 bg-bg rounded-card py-4 px-cap-4 sm:p-6 shadow-sm border border-edge">
               {!planResult.isServiceActive && planResult.serviceNotice && (
                 <div className="p-3.5 rounded-control bg-warn border border-warn text-warn-ink text-label font-bold flex items-start gap-2.5 shadow-xs">
-                  <AlertCircle className="w-4 h-4 text-estimated shrink-0 mt-0.5" />
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-extrabold uppercase tracking-wide text-estimated">{t.planner.serviceNoticeTitle}</div>
+                    <div className="font-extrabold uppercase tracking-wide">{t.planner.serviceNoticeTitle}</div>
                     <div className="mt-0.5 font-medium">{planResult.serviceNotice}</div>
                   </div>
                 </div>
@@ -575,7 +575,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 return (
                   <details className="disclosure rounded-control border border-warn bg-warn text-label text-warn-ink">
                     <summary className="flex min-h-11 cursor-pointer items-start gap-2.5 p-3.5">
-                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-estimated" aria-hidden="true" />
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                       <span className="min-w-0 flex-1">
                         <span className="block font-semibold">{affected.length > 0 ? t.planner.noticeOnTrip(affected) : t.arrivals.noticeGeneral}</span>
                         {lateNow.map((l) => (
@@ -637,7 +637,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 {/* These times are for a bus the measured walk no longer reaches, and the replan found nothing better. */}
                 {!shown.reachable && (
                   <span className="flex w-full items-center gap-2 rounded-md border border-warn bg-warn px-2.5 py-1.5 text-label font-bold text-warn-ink">
-                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-estimated" aria-hidden="true" />
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                     {t.planner.unreachableWalk}
                   </span>
                 )}
@@ -739,7 +739,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               </div>
 
               <div className="p-3 rounded-control bg-warn border border-warn flex items-start gap-2.5 text-label text-warn-ink font-medium">
-                <AlertCircle className="w-4 h-4 text-estimated shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>{t.planner.transferFreeNotice}</span>
               </div>
             </div>
