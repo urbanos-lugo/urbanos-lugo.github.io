@@ -532,7 +532,7 @@
   .leaflet-bar a.leaflet-disabled {
     background: var(--c-bg) !important;
     color: var(--c-ink-3) !important;
-    opacity: 0.45;
+    opacity: 0.5;
   }
 
   /* A row tinted with its own line colour, mixed against whatever the background
