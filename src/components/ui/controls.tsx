@@ -1,4 +1,4 @@
-import { Star, type LucideIcon } from 'lucide-react';
+import { ChevronDown, Star, TriangleAlert, type LucideIcon } from 'lucide-react';
 import { useState, type CSSProperties, type ReactNode } from 'react';
 
 /** A 44 px square icon button; `on` swaps it to the warm "active" fill. */
@@ -59,12 +59,48 @@ export function SaveStar({ on, onToggle, label, className }: { on: boolean; onTo
   );
 }
 
-/** A quiet bordered paragraph under the header: a status, a hint, a warning when `warn`. */
-export function Notice({ children, warn = false, role, className = 'mt-3' }: { children: ReactNode; warn?: boolean; role?: 'alert' | 'status'; className?: string }) {
+/**
+ * A quiet bordered paragraph under the header: a status, a hint, a warning when `warn`.
+ * With an `icon`, it leads the text, which keeps its own column beside it.
+ */
+export function Notice({ children, warn = false, role, icon: Icon, className = 'mt-3' }: { children: ReactNode; warn?: boolean; role?: 'alert' | 'status'; icon?: LucideIcon; className?: string }) {
   return (
-    <div role={role} className={`anim-rise rounded-control border p-3 text-label leading-relaxed ${warn ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${className}`}>
-      {children}
+    <div role={role} className={`anim-rise rounded-control border p-3 text-label leading-relaxed ${warn ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${Icon ? 'flex gap-2' : ''} ${className}`}>
+      {Icon ? (
+        <>
+          <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+          <div className="min-w-0 flex-1">{children}</div>
+        </>
+      ) : (
+        children
+      )}
     </div>
+  );
+}
+
+/**
+ * The operator's notice folded to its heading, as on the board, the planner and a line's
+ * page: the same element in three places, written three ways until 13 October 2026. The
+ * body lines up under the heading's text: the summary's padding, the icon and the gap,
+ * in rem like them, so it still lines up at 200 % text.
+ */
+export function NoticeDisclosure({ summary, children, seeFull, className = '' }: { summary: ReactNode; children: ReactNode; seeFull?: { label: string; onOpen: () => void }; className?: string }) {
+  return (
+    <details className={`disclosure rounded-control border border-warn bg-warn text-label leading-relaxed text-warn-ink ${className}`}>
+      <summary className="flex min-h-11 cursor-pointer items-start gap-2 p-3">
+        <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+        <span className="min-w-0 flex-1">{summary}</span>
+        <ChevronDown className="disclosure-chevron mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+      </summary>
+      <div className="px-3 pb-1 pl-8.5">
+        {children}
+        {seeFull && (
+          <button onClick={seeFull.onOpen} className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2">
+            {seeFull.label}
+          </button>
+        )}
+      </div>
+    </details>
   );
 }
 

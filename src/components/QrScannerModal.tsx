@@ -6,6 +6,7 @@ import { useT } from '../i18n';
 import { BusStop } from '../types';
 import { BUS_STOPS } from '../data/transitData';
 import { findStop } from '../utils/places';
+import { Notice } from './ui/controls';
 
 interface QrScannerModalProps {
   isOpen: boolean;
@@ -215,7 +216,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
           </div>
         </div>
 
-        <p className="text-label text-ink-3 mt-4 leading-relaxed bg-surface p-3 rounded-control border border-line">{t.qr.howItWorks}</p>
+        <Notice className="mt-4">{t.qr.howItWorks}</Notice>
       </div>
     </div>
   );

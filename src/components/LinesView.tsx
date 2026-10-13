@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
-import { ArrowLeft, Bus, Calendar, ChevronDown, ChevronRight, Clock, MapPin, Route, Star, TriangleAlert } from 'lucide-react';
+import { ArrowLeft, Bus, Calendar, ChevronRight, Clock, MapPin, Route, Star, TriangleAlert } from 'lucide-react';
 import { useLang, useT } from '../i18n';
 import { BusLine, BusStop, ServiceAlert } from '../types';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
@@ -9,7 +9,7 @@ import { getScheduledBuses } from '../utils/vehicles';
 import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDuration, type ScheduledRun } from '../utils/schedule';
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
-import { SaveStar, Segmented } from './ui/controls';
+import { Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { LineBadge } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
 
@@ -290,7 +290,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               const until = mine && runsUntil(mine, now);
               if (!today || (!mine && !today.general.length)) return null;
               return (
-                <div className="rounded-control border border-warn bg-warn p-3 text-label leading-relaxed text-warn-ink">
+                <Notice warn className="">
                   <p className="flex gap-2 font-semibold">
                     <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
                     <span>{t.lines.noticeToday}</span>
@@ -308,7 +308,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                     </p>
                   ))}
                   {today.general.length > 0 && <p className="mt-1">{t.arrivals.noticeGeneral}</p>}
-                </div>
+                </Notice>
               );
             })()}
 
@@ -316,10 +316,11 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 Folded under its heading and days: the box above says what it changes today, and open the two repeated each other on a phone. */}
             {notices.flatMap((alert) =>
               (alert.sections ?? []).filter((section) => namesLine(section, currentLine)).map((section, i) => (
-                <details key={`${alert.id}-${i}`} className="disclosure rounded-control border border-warn bg-warn/60 text-label leading-relaxed text-warn-ink">
-                  <summary className="flex min-h-11 cursor-pointer items-start gap-2 p-3 font-semibold">
-                    <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
-                    <span className="min-w-0 flex-1">
+                <NoticeDisclosure
+                  key={`${alert.id}-${i}`}
+                  seeFull={onOpenAlerts && { label: t.lines.seeFullNotice, onOpen: onOpenAlerts }}
+                  summary={
+                    <span className="font-semibold">
                       {t.lines.operatorNotice}
                       {alert.description !== alert.title && (
                         <>
@@ -327,31 +328,21 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                         </>
                       )}
                     </span>
-                    <ChevronDown className="disclosure-chevron mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
-                  </summary>
-                  <div className="px-3 pb-1 pl-[34px]">
-                    {section.paragraphs.map((paragraph, j) => (
-                      <p key={j} lang={NOTICE_LANG} className="mt-1 first:mt-0">
-                        {paragraph}
-                      </p>
-                    ))}
-                    {onOpenAlerts && (
-                      <button onClick={onOpenAlerts} className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2">
-                        {t.lines.seeFullNotice}
-                      </button>
-                    )}
-                  </div>
-                </details>
+                  }
+                >
+                  {section.paragraphs.map((paragraph, j) => (
+                    <p key={j} lang={NOTICE_LANG} className="mt-1 first:mt-0">
+                      {paragraph}
+                    </p>
+                  ))}
+                </NoticeDisclosure>
               )),
             )}
 
             {direction.geometrySource && direction.geometrySource !== 'osm' && (
-              <p className="flex gap-2 rounded-control border border-line bg-surface/50 p-3 text-label leading-relaxed text-ink-2">
-                <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
-                <span>
-                  <span className="font-semibold text-ink">{t.lines.approximatePathTitle}.</span> {t.lines.approximatePath}
-                </span>
-              </p>
+              <Notice icon={TriangleAlert} className="">
+                <span className="font-semibold text-ink">{t.lines.approximatePathTitle}.</span> {t.lines.approximatePath}
+              </Notice>
             )}
           </div>
 

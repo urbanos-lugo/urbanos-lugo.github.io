@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, type CSSProperties } from 'react';
-import { ArrowLeft, Bell, Check, ChevronDown, Clock, Map as MapIcon, Share2, TriangleAlert } from 'lucide-react';
+import { ArrowLeft, Bell, Check, ChevronDown, Clock, Map as MapIcon, Share2 } from 'lucide-react';
 import { BusStop, BusLine, ServiceAlert, StopArrival } from '../types';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
 import { changesNow, closedAt, pastTimetable, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
@@ -14,7 +14,7 @@ import { clockDriftFromTimetable, deviceTimeZone } from '../utils/clock';
 import { useOperatorTimes } from '../hooks/useOperatorTimes';
 import { Provenance } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
-import { IconButton, Notice, SaveStar, Segmented } from './ui/controls';
+import { IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { watchForStop, ringAlarm, notify, requestNotificationPermission, ALARM_RADIUS_M, AlarmHandle } from '../services/stopAlarm';
 
 interface StopArrivalsViewProps {
@@ -354,10 +354,11 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           Once a line is past its last printed call here, its end time and the notice's word
           for it come up into the heading: then they are the only answer the board has. */}
       {noticeSections.length > 0 && (
-        <details className="disclosure anim-rise mt-3 rounded-control border border-warn bg-warn text-label leading-relaxed text-warn-ink">
-          <summary className="flex min-h-11 cursor-pointer items-start gap-2 p-3">
-            <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
-            <span className="min-w-0 flex-1">
+        <NoticeDisclosure
+          className="anim-rise mt-3"
+          seeFull={onOpenAlerts && { label: t.lines.seeFullNotice, onOpen: onOpenAlerts }}
+          summary={
+            <>
               <span className="block font-semibold">{t.arrivals.operatorNoticeFor(noticeLines)}</span>
               {closedHere.lines.length > 0 && <span className="mt-1 block font-semibold">{t.arrivals.noticeClosedHere(closedHere.lines, closedHere.instead)}</span>}
               {movedHere.length > 0 && (
@@ -374,25 +375,18 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                 </span>
               ))}
               {lateNow.length > 0 && <span className="block">{t.arrivals.noticeNoDepartures}</span>}
-            </span>
-            <ChevronDown className="disclosure-chevron mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
-          </summary>
-          <div className="px-3 pb-1 pl-[34px]">
-            {noticeDays && <p lang={NOTICE_LANG}>{noticeDays}</p>}
-            {lateLater.map((l) => (
-              <p key={l.line} className="mt-1">
-                {t.arrivals.noticeRunsUntil(l.line, l.time, l.to)}
-              </p>
-            ))}
-            {lateLater.length > 0 && lateNow.length === 0 && <p>{t.arrivals.noticeNoDepartures}</p>}
-            {(noticeNow?.general.length ?? 0) > 0 && <p className="mt-1">{t.arrivals.noticeGeneral}</p>}
-            {onOpenAlerts && (
-              <button onClick={onOpenAlerts} className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2">
-                {t.lines.seeFullNotice}
-              </button>
-            )}
-          </div>
-        </details>
+            </>
+          }
+        >
+          {noticeDays && <p lang={NOTICE_LANG}>{noticeDays}</p>}
+          {lateLater.map((l) => (
+            <p key={l.line} className="mt-1">
+              {t.arrivals.noticeRunsUntil(l.line, l.time, l.to)}
+            </p>
+          ))}
+          {lateLater.length > 0 && lateNow.length === 0 && <p>{t.arrivals.noticeNoDepartures}</p>}
+          {(noticeNow?.general.length ?? 0) > 0 && <p className="mt-1">{t.arrivals.noticeGeneral}</p>}
+        </NoticeDisclosure>
       )}
 
       {/* By time when you will take whatever comes, by line when you are waiting for one in particular. */}

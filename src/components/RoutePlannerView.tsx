@@ -13,7 +13,7 @@ import { useWalkPaths } from '../hooks/useWalkPaths';
 import { useClock } from '../hooks/useClock';
 import { boardingIsNow, type TripPlace } from '../utils/tripProgress';
 import { SectionLabel } from './ui/SectionLabel';
-import { Segmented } from './ui/controls';
+import { Notice, NoticeDisclosure, Segmented } from './ui/controls';
 import { PlaceField, suggestionsFor, type Suggestion } from './planner/PlaceField';
 import { TripOptions } from './planner/TripOptions';
 import { Itinerary } from './planner/Itinerary';
@@ -541,13 +541,10 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
             /* The column owns the rhythm; the blocks say nothing about spacing. */
             <div className="space-y-4 bg-bg rounded-card py-4 px-cap-4 sm:p-6 shadow-sm border border-edge">
               {!planResult.isServiceActive && planResult.serviceNotice && (
-                <div className="p-3.5 rounded-control bg-warn border border-warn text-warn-ink text-label font-bold flex items-start gap-2.5 shadow-xs">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <div>
-                    <div className="font-bold uppercase tracking-wider">{t.planner.serviceNoticeTitle}</div>
-                    <div className="mt-0.5 font-medium">{planResult.serviceNotice}</div>
-                  </div>
-                </div>
+                <Notice warn icon={AlertCircle} className="">
+                  <div className="font-bold uppercase tracking-wider">{t.planner.serviceNoticeTitle}</div>
+                  <div className="mt-0.5">{planResult.serviceNotice}</div>
+                </Notice>
               )}
 
               {/* The operator's notice on the lines this trip takes: until when they run, which stops they skip (never proposed), and the traffic cuts.
@@ -573,10 +570,10 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 const lateNow = late.filter((l) => l.now);
                 const lateLater = late.filter((l) => !l.now);
                 return (
-                  <details className="disclosure rounded-control border border-warn bg-warn text-label text-warn-ink">
-                    <summary className="flex min-h-11 cursor-pointer items-start gap-2.5 p-3.5">
-                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                      <span className="min-w-0 flex-1">
+                  <NoticeDisclosure
+                    seeFull={onOpenAlerts && { label: t.lines.seeFullNotice, onOpen: onOpenAlerts }}
+                    summary={
+                      <>
                         <span className="block font-semibold">{affected.length > 0 ? t.planner.noticeOnTrip(affected) : t.arrivals.noticeGeneral}</span>
                         {lateNow.map((l) => (
                           <span key={l.line} className="mt-1 block font-semibold">
@@ -584,36 +581,29 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           </span>
                         ))}
                         {lateNow.length > 0 && <span className="block">{t.arrivals.noticeNoDepartures}</span>}
-                      </span>
-                      <ChevronDown className="disclosure-chevron mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
-                    </summary>
-                    <div className="px-3.5 pb-1 pl-10">
-                      {lateLater.map((l) => (
-                        <p key={l.line} className="mt-1 first:mt-0">
-                          {t.arrivals.noticeRunsUntil(l.line, l.time, l.to)}
+                      </>
+                    }
+                  >
+                    {lateLater.map((l) => (
+                      <p key={l.line} className="mt-1 first:mt-0">
+                        {t.arrivals.noticeRunsUntil(l.line, l.time, l.to)}
+                      </p>
+                    ))}
+                    {lateLater.length > 0 && <p>{t.arrivals.noticeNoDepartures}</p>}
+                    {stops.flatMap((c) => [
+                      ...c.closed.map((s) => (
+                        <p key={`closed-${c.line}-${s.stopId}`} className="mt-1 first:mt-0">
+                          {c.line}: {t.lines.noticeClosedStop(stopById(s.stopId)?.name ?? s.stopId, s.instead)}
                         </p>
-                      ))}
-                      {lateLater.length > 0 && <p>{t.arrivals.noticeNoDepartures}</p>}
-                      {stops.flatMap((c) => [
-                        ...c.closed.map((s) => (
-                          <p key={`closed-${c.line}-${s.stopId}`} className="mt-1 first:mt-0">
-                            {c.line}: {t.lines.noticeClosedStop(stopById(s.stopId)?.name ?? s.stopId, s.instead)}
-                          </p>
-                        )),
-                        ...c.moved.map((s) => (
-                          <p key={`moved-${c.line}-${s.stopId}`} className="mt-1 first:mt-0">
-                            {c.line}: {t.lines.noticeMovedStop(stopById(s.stopId)?.name ?? s.stopId, s.to)}
-                          </p>
-                        )),
-                      ])}
-                      {affected.length > 0 && cuts && <p className="mt-1 first:mt-0">{t.arrivals.noticeGeneral}</p>}
-                      {onOpenAlerts && (
-                        <button onClick={onOpenAlerts} className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2">
-                          {t.lines.seeFullNotice}
-                        </button>
-                      )}
-                    </div>
-                  </details>
+                      )),
+                      ...c.moved.map((s) => (
+                        <p key={`moved-${c.line}-${s.stopId}`} className="mt-1 first:mt-0">
+                          {c.line}: {t.lines.noticeMovedStop(stopById(s.stopId)?.name ?? s.stopId, s.to)}
+                        </p>
+                      )),
+                    ])}
+                    {affected.length > 0 && cuts && <p className="mt-1 first:mt-0">{t.arrivals.noticeGeneral}</p>}
+                  </NoticeDisclosure>
                 );
               })()}
 
@@ -738,10 +728,9 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 <Itinerary segments={planResult.segments} onSelectStop={onSelectStop} onSelectLine={onSelectLine} />
               </div>
 
-              <div className="p-3 rounded-control bg-warn border border-warn flex items-start gap-2.5 text-label text-warn-ink font-medium">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>{t.planner.transferFreeNotice}</span>
-              </div>
+              <Notice warn icon={AlertCircle} className="">
+                {t.planner.transferFreeNotice}
+              </Notice>
             </div>
           ) : (
             <div className="bg-bg rounded-card py-8 px-cap-8 text-center border border-edge">
