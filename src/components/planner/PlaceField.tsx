@@ -104,7 +104,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
                   {sug.name}
                 </span>
               </div>
-              {sug.code && <span className="text-label font-mono font-bold bg-surface text-ink-2 px-1.5 py-0.5 rounded shrink-0">#{sug.code}</span>}
+              {sug.code && <span className="tnum shrink-0 rounded bg-surface px-2 py-1 text-label text-ink-2">{sug.code}</span>}
             </button>
           ))}
         </div>

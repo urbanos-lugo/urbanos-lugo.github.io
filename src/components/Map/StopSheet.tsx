@@ -57,7 +57,7 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
           <p className="text-label text-ink-3">
             {code && (
               <>
-                {t.map.stopCode}: <b className="text-ink-2">{code}</b> &bull;{' '}
+                {t.map.stopCode}: <b className="tnum text-ink-2">{code}</b> &bull;{' '}
               </>
             )}
             {stop.zone}

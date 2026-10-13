@@ -479,7 +479,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                           {poleCode(stop) && (
                             <>
                               {' '}
-                              &bull; {t.lines.codeShort} <span className="font-mono font-bold text-ink-2">{poleCode(stop)}</span>
+                              &bull; {t.lines.codeShort} <span className="tnum font-bold text-ink-2">{poleCode(stop)}</span>
                             </>
                           )}
                         </div>

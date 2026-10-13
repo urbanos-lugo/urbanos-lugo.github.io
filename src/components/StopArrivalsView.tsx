@@ -317,7 +317,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         <div className="min-w-0">
           <h2 className="text-title font-semibold tracking-[-0.012em]">{selectedStop.name}</h2>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            {poleCode(selectedStop) && <span className="tnum rounded bg-surface px-2 py-1 text-label font-medium text-ink-2">{poleCode(selectedStop)}</span>}
+            {poleCode(selectedStop) && <span className="tnum rounded bg-surface px-2 py-1 text-label text-ink-2">{poleCode(selectedStop)}</span>}
             <span className="text-label text-ink-3">
               {selectedStop.zone} · {t.common.lines(selectedStop.lines.length)}
               {selectedStop.shelter === true ? ` · ${t.arrivals.shelter}` : ''}

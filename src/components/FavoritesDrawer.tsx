@@ -131,7 +131,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
                     <div className="text-label text-ink-3 mt-0.5 ml-6">
                       {poleCode(stop) && (
                         <>
-                          {t.favourites.codeShort} <span className="font-mono font-bold text-ink-2">{poleCode(stop)}</span> &bull;{' '}
+                          {t.favourites.codeShort} <span className="tnum font-bold text-ink-2">{poleCode(stop)}</span> &bull;{' '}
                         </>
                       )}
                       {stop.zone}
