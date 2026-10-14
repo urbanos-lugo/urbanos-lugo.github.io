@@ -143,7 +143,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
         </div>
 
         {isScanning && (
-          <div className="relative rounded-control overflow-hidden bg-ink mb-3 aspect-video">
+          <div className="relative rounded-control overflow-hidden bg-ink mb-3 aspect-camera">
             <video ref={videoRef} playsInline muted className="w-full h-full object-cover" />
             <div className="absolute inset-0 border-heavy border-on-camera/frame m-10 rounded-control pointer-events-none" />
             <span className="absolute bottom-2 inset-x-0 text-center text-label font-bold text-on-camera drop-shadow-on-camera">{t.qr.scanning}</span>

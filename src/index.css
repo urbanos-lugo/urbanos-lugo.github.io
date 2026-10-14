@@ -190,6 +190,9 @@
 }
 
 @theme inline {
+  /* Tailwind's own scales are cleared: every value a class can take is named below. */
+  --*: initial;
+
   /* The layout's breakpoints, under Tailwind's variant names. */
   --breakpoint-sm: 40rem;
   --breakpoint-md: 48rem;
@@ -350,6 +353,7 @@
   --grid-template-columns-facts: repeat(auto-fit, minmax(6rem, 1fr)); /* a line's facts follow the text */
   --grid-template-columns-option: auto 1fr;
   --grid-template-columns-option-wide: auto 1fr auto;
+  --aspect-camera: 16 / 9; /* the QR reader's camera picture */
 
   /* ------------------------------------------------------------------ shape */
   /* Two radii for the whole app: a card and a control. Four values -- 8, 9, 10 and 12 px --
