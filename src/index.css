@@ -62,6 +62,33 @@
   --c-warn-bg: oklch(0.965 0.024 80);  /* #fcf2e2 */
   --c-warn-fg: oklch(0.4 0.075 80);  /* #5d420e */
   --c-scrim: oklch(0.2 0.014 40 / 0.42);
+
+  /* Colours that stay put when the theme changes. The mark is the flat fleet red; the
+     favicon, the theme-color and the manifest carry it as a literal, since none of them
+     can read this file, and a check holds the three to this line. */
+  --c-brand: #d81f26;
+  /* Ink on a line's own colour. White on every line colour measures at least 4.50:1, the
+     5ES green being the floor; on a pin pale enough that white would not read (the trip
+     map's A and B), the dark ink instead. */
+  --c-on-line: #ffffff;
+  --c-on-pale-pin: #191514;
+  /* The QR reader's frame and its caption, drawn over the camera's picture. */
+  --c-on-camera: #ffffff;
+
+  /* The map's own colours. Leaflet bakes a colour into a layer when it makes the layer, so
+     Map/palette.ts reads these off <html> once per theme. The names written beside the dots
+     are the app's ink, haloed in its ground. The accent stays off the map: several lines
+     are red, and a red marker would vanish on its own line (DECIDIDO, 27 August). */
+  --c-map-stop: #4d4541;
+  --c-map-ring: #ffffff;
+  --c-map-selected: #0c72cb;
+  --c-map-name: var(--c-ink);
+  --c-map-halo: var(--c-bg);
+  --c-map-me: #08569a;
+  --c-map-walk: #534b48;
+  --c-map-walk-guess: #817875;
+  --c-map-origin: #014e8e;
+  --c-map-destination: #047857;
 }
 
 .dark {
@@ -92,6 +119,15 @@
   --c-warn-bg: oklch(0.235 0.03 80);  /* #261c0d */
   --c-warn-fg: oklch(0.87 0.09 80);  /* #f4ce90 */
   --c-scrim: oklch(0.08 0.012 34 / 0.6);
+
+  --c-map-stop: #b9b3af;
+  --c-map-ring: #191514;
+  --c-map-selected: #57a8ff;
+  --c-map-me: #82bcfc;
+  --c-map-walk: #d0c9c7;
+  --c-map-walk-guess: #9e9694;
+  --c-map-origin: #3c95f0;
+  --c-map-destination: #34d399;
 }
 
 /**
@@ -154,10 +190,13 @@
 }
 
 @theme inline {
-  /* Two radii for the whole app: a card and a control. Four values -- 8, 9, 10 and 12 px
-     -- were in use for the same things, 120 times, with no rule deciding which. */
-  --radius-card: 0.75rem;
-  --radius-control: 0.625rem;
+  /* The layout's breakpoints, under Tailwind's variant names. */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-2xl: 96rem;
+
+  /* ------------------------------------------------------------------ colour */
   --color-bg: var(--c-bg);
   --color-surface: var(--c-surface);
   --color-line: var(--c-line);
@@ -180,8 +219,37 @@
   --color-warn-ink: var(--c-warn-fg);
   --color-scrim: var(--c-scrim);
 
+  --color-on-line: var(--c-on-line);
+  --color-on-camera: var(--c-on-camera);
+
+  /* How much of a colour shows through, as a modifier (bg-surface/quiet) or an opacity. The
+     colour says what it is; this says how strongly. */
+  --opacity-glass: 95%;     /* a control floating over moving content: the map, a list */
+  --opacity-lifted: 80%;    /* a panel a step lighter than the tinted card it sits on */
+  --opacity-quiet: 60%;     /* a panel quieter than a card */
+  --opacity-half: 50%;      /* the official ring on a stop the timetable puts a bus at */
+  --opacity-wash: 40%;      /* a fill that only tints: a row under the pointer, the ride's alarm card */
+  --opacity-faint: 30%;     /* the bus step's card in the itinerary */
+  --opacity-tint: 10%;      /* the accent behind a callout */
+  --opacity-frame: 70%;     /* the QR reader's frame over the camera's picture */
+  --opacity-branch: 90%;    /* a line's branch beside its number, on the line's own colour */
+  --opacity-struck: 60%;    /* a departure the notice says will not stop here, struck through */
+  --opacity-disabled: 50%;  /* a control that cannot be pressed now */
+  --opacity-attention: 55%; /* the disc that calls the eye to «Vou nesta» once */
+
+  /* How much of a line's own colour tints its row (.tint, below): quiet on the board, beside
+     the provenance chips; strong in the lists, where the colour has to name the line
+     (DECIDIDO, 1 October). The measurements are at the rules. */
+  --tint-quiet: 13%;
+  --tint-quiet-edge: 26%;
+  --tint-strong: 40%;
+  --tint-strong-edge: 100%;
+
+  /* ------------------------------------------------------------------ type */
   --font-sans: 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif;
   --font-mono: 'Atkinson Hyperlegible Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --default-font-family: var(--font-sans);
+  --default-mono-font-family: var(--font-mono);
 
   /* 12 · 15 · 19 · 23 · 29 · 46 at the default root size, but in rem so the
      reader's own setting scales all of it together. */
@@ -197,6 +265,162 @@
   --text-num--line-height: 1;
   --text-hero: 2.875rem;
   --text-hero--line-height: 0.92;
+
+  --leading-prose: 1.625;   /* label-sized prose that runs to several lines: notes, notices */
+  --leading-snug: 1.25;     /* a name or a figure set tighter than its size's own leading */
+
+  --tracking-caps: 0.05em;      /* small capitals over a block, and the provenance chips */
+  --tracking-title: -0.012em;   /* a screen's title, the app's name */
+  --tracking-display: -0.025em; /* the big figures, and the old dialogs' uppercase titles */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* ------------------------------------------------------------------ space and size */
+  /* The unit every gap and padding is a whole or half multiple of: 4 px at the default size. */
+  --spacing: 0.25rem;
+  /* A spacing step as it measures on a 320 px phone at the default size: px-cap-* stops there. */
+  --cap-step: 1.25vw;
+
+  /* The 44 px floor every target clears, in rem so it grows with the type; and the same
+     floor in px inside the top bar, which is sized in px so it does not double at 200 %. */
+  --spacing-tap: 2.75rem;
+  --spacing-tap-bar: 44px;
+  --spacing-bar-field: 46px;  /* the top bar's field and menu button: the floor and two borders */
+  --spacing-tab: 60px;        /* a tab in the bottom bar, aimed at without looking */
+  --spacing-row-departure: 52px; /* a departure row in the map's stop sheet */
+
+  /* A name keeps this much of the row before whatever stands beside it wraps underneath;
+     never more than the row has. */
+  --spacing-floor-name: min(6rem, 100%);
+  --spacing-floor-row: min(7rem, 100%);      /* a saved row's body, before its buttons */
+  --spacing-floor-title: min(8rem, 100%);    /* a title or a route beside a button */
+  --spacing-floor-heading: min(10rem, 100%); /* a line's name beside its xl badge */
+  --spacing-floor-status: min(11rem, 100%);  /* the notices' status sentence beside its button */
+
+  /* Maps: in a card, on the ride, and on the map screen by breakpoint (.h-map-viewport). */
+  --spacing-map-card: 240px;
+  --spacing-map-card-sm: 280px;
+  --spacing-map-ride: 37vh;
+  --spacing-map-ride-min: 280px;
+  --spacing-map-ride-max: 420px;
+  --spacing-map-ride-min-lg: 360px;
+  --spacing-map-tablet: 62vh;
+  --spacing-map-tablet-min: 380px;
+  --spacing-map-desktop: 540px;
+
+  /* How tall a panel or a list may grow before it scrolls. */
+  --spacing-sheet-max: 78dvh;       /* the map's controls sheet: the map stays visible above */
+  --spacing-stop-sheet-max: 70%;    /* the stop sheet leaves a third of the map */
+  --spacing-chips-max: 45dvh;       /* the unfolded line chips */
+  --spacing-results-max: 60vh;      /* the search results */
+  --spacing-suggestions-max: 14rem; /* a field's suggestions */
+  --spacing-list-nearby-max: 150px; /* the map panel's nearby lines */
+  --spacing-list-lines-max: 175px;  /* the map panel's lines, about four rows */
+  --spacing-popup: 200px;           /* a map popup's width, and the wider one with two buttons a row */
+  --spacing-popup-wide: 210px;
+  --spacing-sheet-foot: max(0.875rem, env(safe-area-inset-bottom)); /* clear of the home indicator */
+
+  /* Widths: the page, the reading column, the dialogs and drawers, the desktop rail. Also
+     the container queries (@min-*): what a component needs before it shows its extras. */
+  --container-page: 80rem;
+  --container-column: 48rem;
+  --container-dialog: 32rem;
+  --container-drawer: 28rem;
+  --container-menu: 306px;
+  --container-menu-max: 85vw;
+  --container-rail: 236px;
+  --container-icons: 14rem;      /* a drawer's title tile and tab icons */
+  --container-chevron: 15rem;    /* the menu rows' chevron */
+  --container-stepper: 16rem;    /* the run stepper's arrows beside its times */
+  --container-option-row: 18rem; /* a trip option's three columns */
+
+  --grid-template-columns-facts: repeat(auto-fit, minmax(6rem, 1fr)); /* a line's facts follow the text */
+  --grid-template-columns-option: auto 1fr;
+  --grid-template-columns-option-wide: auto 1fr auto;
+
+  /* ------------------------------------------------------------------ shape */
+  /* Two radii for the whole app: a card and a control. Four values -- 8, 9, 10 and 12 px --
+     were in use for the same things, 120 times, with no rule deciding which. The rest are
+     what the two leave room for. */
+  --radius-card: 0.75rem;
+  --radius-control: 0.625rem;
+  --seg-inset: 3px; /* the gap between a segmented track and the thumb inside it */
+  --radius-inset: calc(var(--radius-control) - var(--seg-inset)); /* a control inside a track */
+  --radius-control-inner: calc(var(--radius-control) - var(--default-border-width)); /* inside a bordered control */
+  --radius-badge: 7px;    /* a line's number on its colour, as on the poles */
+  --radius-tag: 0.25rem;  /* a small tag: a code, a provenance chip, a small badge */
+  --radius-sheet: 1rem;   /* the top of a sheet rising from the bottom */
+  --radius-map-bar: 14px; /* Leaflet's zoom bar */
+  --radius-pill: calc(infinity * 1px);
+
+  --default-border-width: 1px;  /* the hairline */
+  --border-width-strong: 2px;   /* a line's own edge on its tinted row, a rail, a marker's ring */
+  --border-width-dashed: 1.5px; /* the dash of ~ ESTIMADO */
+  --border-width-heavy: 3px;    /* the bar of a chosen option, the QR reader's frame */
+  --ring-width-hair: 1px;
+  --ring-width-strong: 2px;
+  --ring-offset-width-gap: 2px;
+  --outline-width-focus: 2px;
+  --outline-offset-focus: 2px;
+  --text-underline-offset-link: 2px;
+
+  /* Elevation, by what the thing does over what is under it. */
+  --shadow-hair: 0 1px 2px 0 rgb(0 0 0 / 0.05);  /* the slightest lift: a pressed toggle, a node on a rail */
+  --shadow-raised: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); /* a card, a chip on the map */
+  --shadow-float: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* a list over the page, a button over the map */
+  --shadow-overlay: 0 25px 50px -12px rgb(0 0 0 / 0.25); /* a sheet, a drawer, a dialog */
+  --shadow-map-bar: 0 4px 12px oklch(0 0 0 / 0.16);
+  --shadow-tooltip: 0 2px 10px rgb(0 0 0 / 0.18);
+  --shadow-pin: 0 1px 4px rgb(0 0 0 / 0.4);
+  --drop-shadow-marker: 0 1px 2px rgb(0 0 0 / 0.35);
+  --drop-shadow-on-camera: 0 1px 2px rgb(0 0 0 / 0.1), 0 1px 1px rgb(0 0 0 / 0.06);
+
+  --blur-glass: 4px; /* behind a control floating over the map */
+  --blur-bar: 8px;   /* behind the ride's bar, over the list it is stuck to */
+
+  /* Stacking. Leaflet's panes sit at 400 to 1000 inside a map, so what floats over a map
+     starts at its overlay pane; the page's own layers sit above any map. */
+  --z-index-raised: 10;      /* a bar stuck over the list it belongs to */
+  --z-index-dropdown: 30;    /* a field's suggestions over the form */
+  --z-index-map-float: 400;  /* a control floating on a map, level with Leaflet's overlay pane */
+  --z-index-map-chips: 401;  /* the line chips, over the buses' notice that follows them */
+  --z-index-map-overlay: 500; /* the scrim under the map's controls sheet */
+  --z-index-map-sheet: 520;  /* the stop sheet, inside the map's card */
+  --z-index-nav: 1200;       /* the bottom bar */
+  --z-index-sheet: 1250;     /* the map's controls sheet, over the bottom bar */
+  --z-index-results: 1300;   /* the search results */
+  --z-index-dialog: 2000;    /* drawers, the QR reader, the skip link */
+
+  /* ------------------------------------------------------------------ motion */
+  /* Six durations, 120 to 240 ms, each the length of a kind of gesture (DECIDIDO, 20 September). */
+  --transition-duration-drop: 120ms;   /* a list dropping under its field */
+  --transition-duration-swap: 160ms;   /* a fade or a settle in place; a control's colour */
+  --transition-duration-mark: 180ms;   /* a tick, a screen pushed in, an opened disclosure's body */
+  --transition-duration-move: 200ms;   /* a block rising, a thumb or a chevron moving, a sheet sliding */
+  --transition-duration-panel: 220ms;  /* a drawer sliding in, a block folding */
+  --transition-duration-arrive: 240ms; /* a sheet arriving, and the confirmations: star, bell, badge, count, ring */
+  --transition-delay-attention: 300ms; /* the ring around «Vou nesta» waits this long */
+  --transition-delay-stagger: 150ms;   /* between the dots of «Calculando» */
+  --default-transition-duration: 150ms; /* a control's colour on hover or selection */
+
+  --ease-enter: cubic-bezier(0.2, 0.7, 0.2, 1); /* something arriving and settling */
+  --ease-sheet: cubic-bezier(0.2, 0.8, 0.2, 1); /* a sheet rising from the bottom */
+  --ease-fade: ease-out;
+  --ease-swing: ease-in-out;
+  --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* The loops: the two waits (a placeholder pulsing, an icon turning while it syncs), the
+     dots of «Calculando», and the ride's pulse, which beats twice and stops. */
+  --animate-waiting: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-syncing: spin 1s linear infinite;
+  --animate-bounce: dot-bounce 1s var(--ease-swing) infinite;
+  --animate-pulse-ring: pulse-ring 2s var(--ease-fade) 2;
+  @keyframes pulse { 50% { opacity: 0.5; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
 }
 
 /* Motion, all of it. Opacity and transform only -- they compose on the GPU -- and nothing
@@ -240,30 +464,30 @@
 @keyframes pulse-ring { from { opacity: 0.45; transform: scale(1); } to { opacity: 0; transform: scale(2.25); } }
 
 @layer components {
-  .anim-rise { animation: rise 200ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .anim-drop { animation: drop 120ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .anim-fade { animation: fade 160ms ease-out; }
-  .anim-fade-full { animation: fade-full 200ms ease-out; }
-  .anim-slide-in { animation: slide-in 220ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .anim-sheet-up { animation: sheet-up 240ms cubic-bezier(0.2, 0.8, 0.2, 1); }
-  .anim-push-in { animation: push-in 180ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .anim-scale-in { animation: scale-in 160ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .anim-pop { animation: pop 240ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .anim-ring { animation: ring 240ms ease-in-out; transform-origin: 50% 15%; }
-  .anim-tick-in { animation: tick-in 180ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .anim-badge-in { animation: badge-in 240ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .anim-roll-in { animation: roll-in 240ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .anim-rise { animation: rise var(--transition-duration-move) var(--ease-enter); }
+  .anim-drop { animation: drop var(--transition-duration-drop) var(--ease-enter); }
+  .anim-fade { animation: fade var(--transition-duration-swap) var(--ease-fade); }
+  .anim-fade-full { animation: fade-full var(--transition-duration-move) var(--ease-fade); }
+  .anim-slide-in { animation: slide-in var(--transition-duration-panel) var(--ease-enter); }
+  .anim-sheet-up { animation: sheet-up var(--transition-duration-arrive) var(--ease-sheet); }
+  .anim-push-in { animation: push-in var(--transition-duration-mark) var(--ease-enter); }
+  .anim-scale-in { animation: scale-in var(--transition-duration-swap) var(--ease-enter); }
+  .anim-pop { animation: pop var(--transition-duration-arrive) var(--ease-enter); }
+  .anim-ring { animation: ring var(--transition-duration-arrive) var(--ease-swing); transform-origin: 50% 15%; }
+  .anim-tick-in { animation: tick-in var(--transition-duration-mark) var(--ease-enter); }
+  .anim-badge-in { animation: badge-in var(--transition-duration-arrive) var(--ease-enter); }
+  .anim-roll-in { animation: roll-in var(--transition-duration-arrive) var(--ease-enter); }
   .anim-attention { position: relative; isolation: isolate; }
-  .anim-attention::after { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: color-mix(in oklch, var(--c-accent) 55%, transparent); opacity: 0; animation: attention 240ms ease-out 300ms; }
+  .anim-attention::after { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: color-mix(in oklch, var(--c-accent) var(--opacity-attention), transparent); opacity: 0; animation: attention var(--transition-duration-arrive) var(--ease-fade) var(--transition-delay-attention); }
   /* «Calculando» while the planner works: three dots bouncing in turn. Transform only, so
      the compositor keeps them moving while the plan holds the main thread, which "arrive
      by" does for seconds on a slow phone. */
-  .calc-dots > span { display: inline-block; animation: dot-bounce 1s ease-in-out infinite; }
-  .calc-dots > span:nth-child(2) { animation-delay: 150ms; }
-  .calc-dots > span:nth-child(3) { animation-delay: 300ms; }
+  .calc-dots > span { display: inline-block; animation: var(--animate-bounce); }
+  .calc-dots > span:nth-child(2) { animation-delay: var(--transition-delay-stagger); }
+  .calc-dots > span:nth-child(3) { animation-delay: calc(var(--transition-delay-stagger) * 2); }
   /* `isolation` keeps the disc behind the arrow but in front of the list's own background. */
-  .live-dot { position: relative; isolation: isolate; border-radius: 9999px; }
-  .live-dot::after { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--c-accent); animation: pulse-ring 2s ease-out 2; }
+  .live-dot { position: relative; isolation: isolate; border-radius: var(--radius-pill); }
+  .live-dot::after { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--c-accent); animation: var(--animate-pulse-ring); }
 
   /* A block that opens and closes in place: the grid-row trick, which needs no measured
      height. Closed, the content is also invisible to the Tab key and the screen reader
@@ -276,8 +500,8 @@
      chips -- measured 929 px of it, so the card ran 553 px past the right edge of a 390 px
      screen while the page's own scrollWidth said nothing (the screens scroll inside
      <main>). The explicit column is the second guard for the same thing. */
-  .fold { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr; transition: grid-template-rows 220ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .fold > * { overflow: hidden; min-height: 0; min-width: 0; transition: visibility 220ms; }
+  .fold { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr; transition: grid-template-rows var(--transition-duration-panel) var(--ease-enter); }
+  .fold > * { overflow: hidden; min-height: 0; min-width: 0; transition: visibility var(--transition-duration-panel); }
   .fold-closed { grid-template-rows: 0fr; }
   .fold-closed > * { visibility: hidden; }
   /* The planner's form: clipped only while it moves, so the suggestion lists under its
@@ -291,20 +515,20 @@
   /* One control for "which of these views": a thumb slides to the pressed option instead
      of the fill jumping from one button to the next. The buttons carry `aria-pressed`;
      the thumb is decoration. `--n` options, `--i` pressed. */
-  .seg { position: relative; display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); padding: 3px; border: 1px solid var(--c-border); border-radius: var(--radius-control); }
-  .seg-thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / var(--n, 2)); border-radius: calc(var(--radius-control) - 3px); background: var(--c-ink); transform: translateX(calc(var(--i, 0) * 100%)); transition: transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .seg { position: relative; display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); padding: var(--seg-inset); border: var(--default-border-width) solid var(--c-border); border-radius: var(--radius-control); }
+  .seg-thumb { position: absolute; top: var(--seg-inset); bottom: var(--seg-inset); left: var(--seg-inset); width: calc((100% - 2 * var(--seg-inset)) / var(--n, 2)); border-radius: var(--radius-inset); background: var(--c-ink); transform: translateX(calc(var(--i, 0) * 100%)); transition: transform var(--transition-duration-move) var(--ease-enter); }
   /* A floor, not a height, and room at the sides: a line's two directions are named by
      their last stop, and "Sentido Rda. Muralla 56 (Sindicatos)" takes two lines in half
      a phone. With a fixed 44 px and no padding the two lines filled the pill edge to edge.
      The side room stops growing with the type where the screen has none to give, like
      px-cap below: at 200 % it was 20 px a side and "Paradas" broke as "Para-das". */
-  .seg-btn { position: relative; z-index: 1; min-height: 2.75rem; padding: 0.25rem min(0.625rem, 3.125vw); line-height: 1.25; border-radius: calc(var(--radius-control) - 3px); font-size: var(--text-body); font-weight: 500; color: var(--c-ink-2); transition: color 160ms; }
+  .seg-btn { position: relative; z-index: 1; min-height: var(--spacing-tap); padding: var(--spacing) min(calc(var(--spacing) * 2.5), calc(var(--cap-step) * 2.5)); line-height: var(--leading-snug); border-radius: var(--radius-inset); font-size: var(--text-body); font-weight: var(--font-weight-medium); color: var(--c-ink-2); transition: color var(--transition-duration-swap); }
   /* The pressed button carries the fill itself, but only once the thumb has arrived: its
      fill lands 200 ms late, all at once, and until then the thumb is what shows. A delay
      with no frames in between, not an animation, so nothing repaints while it waits. At
      rest the fill is the button's, so a contrast audit reading the button's own
      background finds the ink it is really on rather than the page behind it. */
-  .seg-on { color: var(--c-bg); font-weight: 600; background: var(--c-ink); transition: color 160ms, background-color 0s 200ms; }
+  .seg-on { color: var(--c-bg); font-weight: var(--font-weight-semibold); background: var(--c-ink); transition: color var(--transition-duration-swap), background-color 0s var(--transition-duration-move); }
   .seg-dense .seg-btn { font-size: var(--text-label); }
   /* A word wider than its option breaks rather than spilling into the next one: at 200 %
      text "Chegar antes" ran 14 px past its third of the track. */
@@ -314,27 +538,35 @@
      lines at the default size and broke words at 200 %. */
   @media (width < 40rem) {
     .seg-stack { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; }
-    .seg-stack .seg-thumb { right: 3px; bottom: auto; width: auto; height: calc((100% - 6px) / var(--n, 2)); transform: translateY(calc(var(--i, 0) * 100%)); }
+    .seg-stack .seg-thumb { right: var(--seg-inset); bottom: auto; width: auto; height: calc((100% - 2 * var(--seg-inset)) / var(--n, 2)); transform: translateY(calc(var(--i, 0) * 100%)); }
   }
 
   /* Native <details>: the chevron turns and the body fades in; where the browser can
      interpolate `auto`, the height opens too. Where it cannot, the first two alone. */
-  .disclosure summary .disclosure-chevron { transition: transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .disclosure summary .disclosure-chevron { transition: transform var(--transition-duration-move) var(--ease-enter); }
   .disclosure[open] summary .disclosure-chevron { transform: rotate(180deg); }
-  .disclosure[open] > :not(summary) { animation: fade-full 180ms ease-out; }
+  .disclosure[open] > :not(summary) { animation: fade-full var(--transition-duration-mark) var(--ease-fade); }
   @supports (interpolate-size: allow-keywords) {
     .disclosure { interpolate-size: allow-keywords; }
-    .disclosure::details-content { block-size: 0; overflow: hidden; transition: block-size 220ms cubic-bezier(0.2, 0.7, 0.2, 1), content-visibility 220ms allow-discrete; }
+    .disclosure::details-content { block-size: 0; overflow: hidden; transition: block-size var(--transition-duration-panel) var(--ease-enter), content-visibility var(--transition-duration-panel) allow-discrete; }
     .disclosure[open]::details-content { block-size: auto; }
   }
 }
 
 /* Side padding that grows with the type only while the screen has room: never past what the
-   same step measures on a 320 px phone at the default size (1.25vw a step there). In plain
+   same step measures on a 320 px phone at the default size (--cap-step). In plain
    rem, with the type at 200 % on a 375 px phone, the page, the panel and the card between
    them kept 172 px of the width and left a line's name 51 px: "R…". */
 @utility px-cap-* {
-  padding-inline: min(calc(var(--spacing) * --value(number)), calc(1.25vw * --value(number)));
+  padding-inline: min(calc(var(--spacing) * --value(number)), calc(var(--cap-step) * --value(number)));
+}
+/* The same cap on the left alone (the strip of page beside the favourites panel), and as a
+   negative margin, for the ride's bar that reaches the screen's edge through the gutter. */
+@utility pl-cap-* {
+  padding-left: min(calc(var(--spacing) * --value(number)), calc(var(--cap-step) * --value(number)));
+}
+@utility -mx-cap-* {
+  margin-inline: calc(-1 * min(calc(var(--spacing) * --value(number)), calc(var(--cap-step) * --value(number))));
 }
 
 @layer base {
@@ -404,13 +636,13 @@
   }
   @media (min-width: 40rem) {
     .h-map-viewport {
-      height: 62vh;
-      min-height: 380px;
+      height: var(--spacing-map-tablet);
+      min-height: var(--spacing-map-tablet-min);
     }
   }
   @media (min-width: 64rem) {
     .h-map-viewport {
-      height: 540px;
+      height: var(--spacing-map-desktop);
       min-height: 0;
     }
   }
@@ -460,8 +692,8 @@
   .leaflet-tooltip {
     background: var(--c-bg) !important;
     color: var(--c-ink) !important;
-    border: 1px solid var(--c-border) !important;
-    box-shadow: 0 2px 10px rgb(0 0 0 / 0.18) !important;
+    border: var(--default-border-width) solid var(--c-border) !important;
+    box-shadow: var(--shadow-tooltip) !important;
     font-family: var(--font-sans);
   }
   .leaflet-tooltip-top::before {
@@ -504,21 +736,21 @@
      beats anything in @layer base however late it comes. */
   .leaflet-bar,
   .leaflet-touch .leaflet-bar {
-    border: 1px solid var(--c-border) !important;
-    border-radius: 14px !important;
-    box-shadow: 0 4px 12px oklch(0 0 0 / 0.16) !important;
+    border: var(--default-border-width) solid var(--c-border) !important;
+    border-radius: var(--radius-map-bar) !important;
+    box-shadow: var(--shadow-map-bar) !important;
     /* So the children's square corners are cut by the rounded container instead of
        poking out of it. */
     overflow: hidden;
   }
   .leaflet-touch .leaflet-bar a,
   .leaflet-bar a {
-    width: 44px !important;
-    height: 44px !important;
-    line-height: 44px !important;
+    width: var(--spacing-tap-bar) !important;
+    height: var(--spacing-tap-bar) !important;
+    line-height: var(--spacing-tap-bar) !important;
     background: var(--c-bg) !important;
     color: var(--c-ink-2) !important;
-    border-bottom: 1px solid var(--c-line) !important;
+    border-bottom: var(--default-border-width) solid var(--c-line) !important;
   }
   .leaflet-bar a:last-child {
     border-bottom: none !important;
@@ -532,7 +764,7 @@
   .leaflet-bar a.leaflet-disabled {
     background: var(--c-bg) !important;
     color: var(--c-ink-3) !important;
-    opacity: 0.5;
+    opacity: var(--opacity-disabled);
   }
 
   /* A row tinted with its own line colour, mixed against whatever the background
@@ -546,10 +778,10 @@
      was too low to notice; at 40% every warm line was wrong. oklab mixes in
      rectangular coordinates, so a red mixed toward a near-neutral just gets paler. */
   .tint {
-    background: color-mix(in oklab, var(--line) var(--tint-mix, 13%), var(--c-bg));
+    background: color-mix(in oklab, var(--line) var(--tint-mix, var(--tint-quiet)), var(--c-bg));
   }
   .tint-edge {
-    border-color: color-mix(in oklab, var(--line) var(--tint-edge-mix, 26%), var(--c-bg));
+    border-color: color-mix(in oklab, var(--line) var(--tint-edge-mix, var(--tint-quiet-edge)), var(--c-bg));
   }
 
   /* The lines list is 24 rows of tint with nothing between them, so the tint has to
@@ -567,11 +799,11 @@
      The border then takes the colour at full strength, where nothing is written and
      the bar is 3:1 — that is what makes a line recognisable at a glance. */
   .tint-strong {
-    --tint-mix: 40%;
-    --tint-edge-mix: 100%;
+    --tint-mix: var(--tint-strong);
+    --tint-edge-mix: var(--tint-strong-edge);
   }
   .tint-strong.tint-edge {
-    border-width: 2px;
+    border-width: var(--border-width-strong);
   }
 
   /* There was a `filter: brightness(2.8)` on the dark tile pane here, and taking it out
@@ -596,8 +828,8 @@
   /* The focus ring appears instantly — animating it hides it from anyone who
      navigates fast with a keyboard. */
   :focus-visible {
-    outline: 2px solid var(--c-accent);
-    outline-offset: 2px;
+    outline: var(--outline-width-focus) solid var(--c-accent);
+    outline-offset: var(--outline-offset-focus);
   }
   /* Forced colours -- Windows' contrast themes, and readers who set their own -- repaint every
      fill and tint in the system's few, and a pressed button, the current tab and the current
@@ -607,13 +839,13 @@
   @media (forced-colors: active) {
     [aria-pressed='true'],
     [aria-current]:not([aria-current='false']) {
-      outline: 2px solid Highlight;
-      outline-offset: -4px;
+      outline: var(--outline-width-focus) solid Highlight;
+      outline-offset: calc(var(--outline-width-focus) * -2);
     }
     [aria-pressed='true']:focus-visible,
     [aria-current]:not([aria-current='false']):focus-visible {
-      outline: 4px double Highlight;
-      outline-offset: 2px;
+      outline: calc(var(--outline-width-focus) * 2) double Highlight;
+      outline-offset: var(--outline-offset-focus);
     }
   }
   @media (prefers-reduced-motion: reduce) {
