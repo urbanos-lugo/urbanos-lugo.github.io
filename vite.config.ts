@@ -175,8 +175,9 @@ export default defineConfig({
         description: 'Non oficial. Liñas, paradas e tempos de paso do autobús urbano de Lugo',
         lang: 'gl',
         theme_color: '#d81f26',
-        // Dark is the default theme, so the splash has to be dark too.
-        background_color: '#0d0e11',
+        // Dark is the default theme, so the splash has to be dark too: the dark theme's ground
+        // (index.css's --c-bg, as its sRGB fallback gives it), which a check holds.
+        background_color: '#110d0d',
         display: 'standalone',
         start_url: base,
         scope: base,
