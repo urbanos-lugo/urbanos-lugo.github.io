@@ -272,7 +272,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   );
   const provenance = (a: StopArrival) => <Provenance precision={a.precision} extra={a.etaTime} title={a.precision === 'published' ? t.arrivals.publishedHint : t.arrivals.estimatedHint} />;
   // The timetable still has these buses here; the operator's notice says they will not stop. Both are said, the time struck through.
-  const notHereChip = <span className="rounded border border-warn bg-warn px-1.5 py-0.5 text-label font-semibold text-warn-ink">{t.arrivals.noticeNotHere}</span>;
+  const notHereChip = <span className="rounded-tag border border-warn bg-warn px-1.5 py-0.5 text-label font-semibold text-warn-ink">{t.arrivals.noticeNotHere}</span>;
   // The line is in the name, not only on the badge: fourteen in a row read as "7, button".
   const lineButton = (id: string, number: string, color: string) => (
     <LineBadge
@@ -317,7 +317,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         <div className="min-w-0">
           <h2 className="text-title font-semibold tracking-[-0.012em]">{selectedStop.name}</h2>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            {poleCode(selectedStop) && <span className="tnum rounded bg-surface px-2 py-1 text-label text-ink-2">{poleCode(selectedStop)}</span>}
+            {poleCode(selectedStop) && <span className="tnum rounded-tag bg-surface px-2 py-1 text-label text-ink-2">{poleCode(selectedStop)}</span>}
             <span className="text-label text-ink-3">
               {selectedStop.zone} · {t.common.lines(selectedStop.lines.length)}
               {selectedStop.shelter === true ? ` · ${t.arrivals.shelter}` : ''}
@@ -598,7 +598,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                 <li key={pole.id}>
                   <button onClick={() => onSelectStop(pole)} className="flex min-h-11 w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-edge bg-bg px-3 py-2 text-left">
                     <span className="min-w-[min(6rem,100%)] flex-1 break-words text-body font-semibold">{pole.name}</span>
-                    {poleCode(pole) && <span className="tnum shrink-0 rounded bg-surface px-2 py-1 text-label text-ink-2">{poleCode(pole)}</span>}
+                    {poleCode(pole) && <span className="tnum shrink-0 rounded-tag bg-surface px-2 py-1 text-label text-ink-2">{poleCode(pole)}</span>}
                     <span className="tnum shrink-0 text-label text-ink-2">~{pole.walkMeters} m</span>
                   </button>
                 </li>

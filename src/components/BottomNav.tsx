@@ -40,7 +40,7 @@ export function BottomNav({ activeTab, setActiveTab, tripActive = false }: Botto
               <Icon className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
               {tripActive && id === 'plan' && (
                 <>
-                  <span className="absolute -right-1.5 -top-1 h-2.5 w-2.5 rounded-full border-2 border-bg bg-accent" aria-hidden="true" />
+                  <span className="absolute -right-1.5 -top-1 h-2.5 w-2.5 rounded-pill border-2 border-bg bg-accent" aria-hidden="true" />
                   <span className="sr-only">{t.companion.onTrip}</span>
                 </>
               )}

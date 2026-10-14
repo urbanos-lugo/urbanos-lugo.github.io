@@ -37,7 +37,7 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
               <span className="flex-1">{label}</span>
               {tripActive && id === 'plan' && (
                 <>
-                  <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${on ? 'bg-bg' : 'bg-accent'}`} aria-hidden="true" />
+                  <span className={`h-2.5 w-2.5 shrink-0 rounded-pill ${on ? 'bg-bg' : 'bg-accent'}`} aria-hidden="true" />
                   <span className="sr-only">{t.companion.onTrip}</span>
                 </>
               )}

@@ -13,7 +13,7 @@ interface LineChipsProps {
   onAll: () => void;
 }
 
-const chip = 'pointer-events-auto flex h-11 shrink-0 items-center rounded-full border shadow-sm backdrop-blur-xs';
+const chip = 'pointer-events-auto flex h-11 shrink-0 items-center rounded-pill border shadow-raised backdrop-blur-glass';
 
 /** The numbers more than one line answers to (four are numbered 11), so only those chips carry a branch name. */
 const sharedNumbers = (() => {
@@ -78,7 +78,7 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
               aria-pressed={isSelected}
               aria-label={`${t.lines.lineLabel(branch ? `${line.number} ${branch}` : line.number)}: ${line.name}`}
               title={line.name}
-              className={`pointer-events-auto flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 text-label font-black text-on-line shadow-sm ${isSelected ? 'ring-2 ring-ink ring-offset-2 ring-offset-bg' : ''}`}
+              className={`pointer-events-auto flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-pill px-3.5 text-label font-black text-on-line shadow-raised ${isSelected ? 'ring-2 ring-ink ring-offset-2 ring-offset-bg' : ''}`}
               style={{ backgroundColor: line.color }}
             >
               <span>{line.number}</span>

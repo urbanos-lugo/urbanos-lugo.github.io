@@ -372,7 +372,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
           >
             {/* A bare wrapper: the row can only shrink to its item's padding and border, so the card itself as the item left a 30 px stub when folded. */}
             <div>
-          <div className="bg-bg rounded-card py-3.5 px-cap-3.5 sm:p-6 shadow-sm border border-edge">
+          <div className="bg-bg rounded-card py-3.5 px-cap-3.5 sm:p-6 shadow-raised border border-edge">
             <h2 className="sr-only">{t.planner.title}</h2>
             <div className="relative">
               <div className="relative rounded-card border border-edge bg-surface">
@@ -404,7 +404,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 <button
                   id="btn-swap-stops"
                   onClick={swap}
-                  className="absolute left-1 top-1/2 flex h-11 w-11 -translate-x-1 -translate-y-1/2 items-center justify-center rounded-full text-ink-2 before:absolute before:h-9 before:w-9 before:rounded-full before:border before:border-edge before:bg-bg before:shadow-xs"
+                  className="absolute left-1 top-1/2 flex h-11 w-11 -translate-x-1 -translate-y-1/2 items-center justify-center rounded-pill text-ink-2 before:absolute before:h-9 before:w-9 before:rounded-pill before:border before:border-edge before:bg-bg before:shadow-hair"
                   aria-label={t.planner.swap}
                   title={t.planner.swap}
                 >
@@ -520,7 +520,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           calculate(originQuery, qp.query);
                         }}
                         aria-pressed={chosen}
-                        className={`inline-flex h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full px-3.5 text-label font-semibold transition-colors ${
+                        className={`inline-flex h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-pill px-3.5 text-label font-semibold transition-colors ${
                           chosen ? 'bg-accent text-on-accent' : 'bg-surface text-ink-2'
                         }`}
                       >
@@ -539,7 +539,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
         <div ref={answerRef} tabIndex={-1} className={`anim-rise space-y-4 lg:animate-none lg:col-span-7 lg:block ${folded ? '' : 'hidden'}`}>
           {planResult && shown ? (
             /* The column owns the rhythm; the blocks say nothing about spacing. */
-            <div className="space-y-4 bg-bg rounded-card py-4 px-cap-4 sm:p-6 shadow-sm border border-edge">
+            <div className="space-y-4 bg-bg rounded-card py-4 px-cap-4 sm:p-6 shadow-raised border border-edge">
               {!planResult.isServiceActive && planResult.serviceNotice && (
                 <Notice warn icon={AlertCircle} className="">
                   <div className="font-bold uppercase tracking-wider">{t.planner.serviceNoticeTitle}</div>
@@ -714,7 +714,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                     >
                       {/* One line: from the middle of the map it had half the width, and at 200% text
                           it broke into three and covered the route. */}
-                      <span className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-accent bg-bg/glass px-3 py-1.5 text-label font-semibold text-ink shadow-sm backdrop-blur-xs">
+                      <span className="flex items-center gap-1.5 whitespace-nowrap rounded-pill border border-accent bg-bg/glass px-3 py-1.5 text-label font-semibold text-ink shadow-raised backdrop-blur-glass">
                         {t.planner.stepByStepTitle}
                         <ChevronDown className="h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2.5} aria-hidden="true" />
                       </span>

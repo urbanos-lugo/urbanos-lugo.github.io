@@ -24,7 +24,7 @@ function SavedRow({ onOpen, onRemove, removeLabel, children }: { onOpen: () => v
   return (
     // The buttons go under the text when both do not fit: beside it at 200% text the stop's
     // zone spilled 54 px out of the row.
-    <div className="py-3.5 px-cap-3.5 rounded-control border border-edge hover:border-accent hover:bg-surface/wash transition-all flex flex-wrap items-center justify-between gap-3 group bg-bg shadow-xs">
+    <div className="py-3.5 px-cap-3.5 rounded-control border border-edge hover:border-accent hover:bg-surface/wash transition-all flex flex-wrap items-center justify-between gap-3 group bg-bg shadow-hair">
       <button type="button" onClick={onOpen} className="min-w-[min(7rem,100%)] flex-1 cursor-pointer text-left">
         {children}
       </button>
@@ -72,7 +72,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
           narrower than its content wants: at 200% text it was 80 px wider than the screen
           and hid its own close button. */}
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-[min(2.5rem,12.5vw)]">
-        <div className="anim-slide-in w-screen min-w-0 max-w-md bg-bg shadow-2xl flex flex-col border-l border-edge">
+        <div className="anim-slide-in w-screen min-w-0 max-w-md bg-bg shadow-overlay flex flex-col border-l border-edge">
           <div className="@container py-5 px-cap-5 border-b border-edge bg-surface">
             <div className="flex items-center justify-between gap-3 mb-4">
               <div className="flex min-w-0 items-center gap-2.5">

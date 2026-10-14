@@ -65,7 +65,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
         {label}
       </label>
       <span className="pointer-events-none absolute left-5 top-0 flex h-12 items-center text-ink-2" aria-hidden="true">
-        <span className={`h-2 w-2 rounded-full ${first ? 'bg-ink-2' : 'border-2 border-ink-2'}`} />
+        <span className={`h-2 w-2 rounded-pill ${first ? 'bg-ink-2' : 'border-2 border-ink-2'}`} />
       </span>
       <input
         id={id}
@@ -75,7 +75,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         placeholder={placeholder}
-        className={`anim-fade h-12 w-full bg-transparent pl-11 pr-12 text-body font-semibold text-ink placeholder:text-ink-3 focus:outline-hidden focus:ring-2 focus:ring-accent ${first ? 'focus:rounded-t-xl' : 'focus:rounded-b-xl'}`}
+        className={`anim-fade h-12 w-full bg-transparent pl-11 pr-12 text-body font-semibold text-ink placeholder:text-ink-3 focus:outline-hidden focus:ring-2 focus:ring-accent ${first ? 'focus:rounded-t-card' : 'focus:rounded-b-card'}`}
       />
       {trailing?.kind === 'gps' && (
         <button
@@ -93,7 +93,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
         </button>
       )}
       {open && suggestions.length > 0 && (
-        <div className="anim-drop absolute left-0 right-0 top-full mt-1 bg-bg border border-edge rounded-control shadow-md z-30 divide-y divide-line max-h-56 overflow-y-auto">
+        <div className="anim-drop absolute left-0 right-0 top-full mt-1 bg-bg border border-edge rounded-control shadow-float z-30 divide-y divide-line max-h-56 overflow-y-auto">
           {suggestions.map((sug) => (
             <button key={sug.id} type="button" onClick={() => onPick(sug.name)} className="w-full p-2.5 text-label hover:bg-surface cursor-pointer flex items-center justify-between gap-2 transition-colors text-left">
               {/* The name whole, on two lines when it needs them: cut, two poles of one street were
@@ -104,7 +104,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
                   {sug.name}
                 </span>
               </div>
-              {sug.code && <span className="tnum shrink-0 rounded bg-surface px-2 py-1 text-label text-ink-2">{sug.code}</span>}
+              {sug.code && <span className="tnum shrink-0 rounded-tag bg-surface px-2 py-1 text-label text-ink-2">{sug.code}</span>}
             </button>
           ))}
         </div>

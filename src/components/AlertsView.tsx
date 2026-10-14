@@ -28,7 +28,7 @@ const external = 'inline-flex min-h-11 items-center text-label font-bold text-ac
  */
 function LinesAffected({ lines }: { lines: string[] }) {
   const t = useT();
-  const chip = 'text-label font-black bg-bg px-1.5 py-0.5 rounded shadow-xs text-ink border border-edge';
+  const chip = 'text-label font-black bg-bg px-1.5 py-0.5 rounded-tag shadow-hair text-ink border border-edge';
   if (lines.length >= 10 || lines.includes('Todas')) return <span className={`${chip} font-bold px-2 whitespace-nowrap`}>{t.fares.allLines}</span>;
   return (
     <>
@@ -51,7 +51,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
     <div className={`py-5 px-cap-5 rounded-card border transition-all ${warning ? 'bg-warn/quiet border-warn' : 'bg-surface/quiet border-edge'}`}>
       {source && <span className="text-label font-bold uppercase tracking-wider text-ink-3">{source}</span>}
       <div className="mb-2 mt-1 flex flex-wrap items-center justify-between gap-2">
-        <span className={`text-label font-black uppercase tracking-wider px-2 py-0.5 rounded ${warning ? 'bg-warn text-warn-ink' : 'bg-surface text-accent'}`}>{when}</span>
+        <span className={`text-label font-black uppercase tracking-wider px-2 py-0.5 rounded-tag ${warning ? 'bg-warn text-warn-ink' : 'bg-surface text-accent'}`}>{when}</span>
         {/* Under the date when both do not fit, rather than a third of the row: "Todas as liñas"
             ran 26 px off the screen at 200% text. */}
         <div className="ml-auto flex flex-wrap items-center gap-1 justify-end">
@@ -114,7 +114,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
   return (
     <div className="max-w-7xl mx-auto px-cap-4 sm:px-6 lg:px-8 py-6 space-y-8">
       {(hour >= 22 || hour < 6) && (
-        <div className="p-4 rounded-card bg-surface border border-edge shadow-sm flex items-start gap-3">
+        <div className="p-4 rounded-card bg-surface border border-edge shadow-raised flex items-start gap-3">
           <Clock className="w-5 h-5 text-ink-2 shrink-0 mt-0.5" />
           <div className="text-label">
             <div className="text-body font-semibold">{t.fares.nightWindowTitle}</div>

@@ -9,11 +9,11 @@
  * drifted into nine geometries; geometry belongs here, not at the call.
  */
 const SIZES = {
-  inline: 'min-w-6 rounded px-1.5 py-0.5 text-label',
-  sm: 'h-6 min-w-6 rounded px-1.5 text-label',
-  row: 'h-7 min-w-7 rounded px-1.5 text-label',
-  md: 'h-9 min-w-9 rounded-[7px] px-1.5 text-body',
-  lg: 'h-11 w-11 rounded-[7px] text-body',
+  inline: 'min-w-6 rounded-tag px-1.5 py-0.5 text-label',
+  sm: 'h-6 min-w-6 rounded-tag px-1.5 text-label',
+  row: 'h-7 min-w-7 rounded-tag px-1.5 text-label',
+  md: 'h-9 min-w-9 rounded-badge px-1.5 text-body',
+  lg: 'h-11 w-11 rounded-badge text-body',
   xl: 'h-14 w-14 rounded-control text-title',
 } as const;
 

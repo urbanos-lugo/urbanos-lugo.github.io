@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { LANGS, LANG_CODE, LANG_NAME, useLang, useT, type Lang } from '../../i18n';
 import type { ThemeChoice } from '../../hooks/useTheme';
 
-const pressed = (on: boolean) => `h-11 flex-1 rounded-[7px] border text-label font-semibold ${on ? 'border-ink bg-ink text-bg' : 'border-edge text-ink-2'}`;
+const pressed = (on: boolean) => `h-11 flex-1 rounded-inset border text-label font-semibold ${on ? 'border-ink bg-ink text-bg' : 'border-edge text-ink-2'}`;
 
 /** A labelled row of settings buttons. The heading beside the group is for the eye; the group carries the name. */
 function Row({ icon: Icon, label, children }: { icon: LucideIcon; label: string; children: ReactNode }) {

@@ -71,7 +71,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
       </h2>
 
       {/* The one thing that matters, first and biggest. While the alert stands the whole card turns. */}
-      <div className={`space-y-4 rounded-card border py-6 px-cap-6 shadow-sm ${phase === 'alighting' ? 'border-warn bg-warn/wash' : 'border-edge bg-bg'}`}>
+      <div className={`space-y-4 rounded-card border py-6 px-cap-6 shadow-raised ${phase === 'alighting' ? 'border-warn bg-warn/wash' : 'border-edge bg-bg'}`}>
         {phase === 'alighting' && segment?.toStop && (
           <p role="alert" className="anim-rise rounded-control border border-warn bg-warn px-3 py-2.5 text-body font-semibold text-warn-ink">
             {t.arrivals.alarmFired(segment.toStop.name)}
@@ -211,7 +211,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
                 <li key={stop.id} aria-current={isNext ? 'step' : undefined} className={`flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 ${passed ? 'text-ink-3' : 'text-ink'}`}>
                   {/* The arrow is where the GPS says you are, the one measured thing on this screen, so it is the one thing that pulses. */}
                   <span className={`flex h-4 w-4 shrink-0 items-center justify-center ${isNext ? 'live-dot' : ''}`} aria-hidden="true">
-                    {passed ? <Check className="anim-tick-in h-4 w-4 text-official" strokeWidth={2.6} /> : isNext ? <ArrowRight className="anim-drop h-4 w-4 text-accent" strokeWidth={2.6} /> : <span className="h-1.5 w-1.5 rounded-full bg-ink-3" />}
+                    {passed ? <Check className="anim-tick-in h-4 w-4 text-official" strokeWidth={2.6} /> : isNext ? <ArrowRight className="anim-drop h-4 w-4 text-accent" strokeWidth={2.6} /> : <span className="h-1.5 w-1.5 rounded-pill bg-ink-3" />}
                   </span>
                   {/* The name keeps a floor and "baixas aquí" goes under it when both do not fit: beside it
                       at 200 % text the name had 100 px and its longest word ran out of the row. */}
@@ -228,7 +228,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           the page's own gutter, which stops growing with the type where the phone has no room
           (px-cap-3.5): in plain rem it grew past it and the bar ran 11 px off the screen at 200 %.
           `trip-bar`: <main> leaves its height free below whatever takes the focus (App.tsx). */}
-      <div className="trip-bar anim-sheet-up sticky bottom-0 z-10 -mx-[min(0.875rem,4.375vw)] border-t border-line bg-bg/glass px-[min(0.875rem,4.375vw)] py-3 backdrop-blur-sm lg:-mx-6 lg:px-6">
+      <div className="trip-bar anim-sheet-up sticky bottom-0 z-10 -mx-[min(0.875rem,4.375vw)] border-t border-line bg-bg/glass px-[min(0.875rem,4.375vw)] py-3 backdrop-blur-bar lg:-mx-6 lg:px-6">
         <button type="button" onClick={companion.finish} className={`flex min-h-12 w-full items-center justify-center rounded-control px-4 text-body font-semibold ${phase === 'walking' ? 'bg-accent text-on-accent' : 'border border-edge bg-bg text-ink'}`}>
           {phase === 'walking' ? t.companion.arrivedDone : t.companion.finish}
         </button>

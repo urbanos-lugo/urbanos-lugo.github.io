@@ -165,7 +165,7 @@ export default function App() {
     <LangContext.Provider value={lang}>
       <div className="flex h-viewport bg-bg text-ink lg:flex-row">
         {/* First in the document, so it is the first Tab stop. */}
-        <a href="#contido" className="sr-only focus:not-sr-only focus:absolute focus:z-[2000] focus:m-2 focus:rounded focus:bg-accent focus:px-3 focus:py-2 focus:text-body focus:font-bold focus:text-on-accent">
+        <a href="#contido" className="sr-only focus:not-sr-only focus:absolute focus:z-[2000] focus:m-2 focus:rounded-tag focus:bg-accent focus:px-3 focus:py-2 focus:text-body focus:font-bold focus:text-on-accent">
           {t.nav.skipToContent}
         </a>
         <SideNav activeTab={activeTab} setActiveTab={goToTab} alertCount={alerts.announcedIncidents} tripActive={companion.trip !== null} setLang={setLang} theme={theme} setTheme={setTheme} />
