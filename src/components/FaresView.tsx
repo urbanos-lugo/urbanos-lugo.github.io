@@ -14,7 +14,7 @@ const card = 'rounded-card border border-edge bg-bg py-5 px-cap-5 shadow-raised'
 const link = 'inline-flex min-h-11 items-center font-bold text-label text-accent underline underline-offset-2';
 
 const Title = ({ icon: Icon, children, small = false }: { icon: LucideIcon; children: ReactNode; small?: boolean }) => (
-  <h2 className={`font-bold text-ink uppercase tracking-wider flex items-center gap-2 ${small ? 'text-body' : 'text-emph'}`}>
+  <h2 className={`font-bold text-ink uppercase tracking-caps flex items-center gap-2 ${small ? 'text-body' : 'text-emph'}`}>
     <Icon className={`${small ? 'w-4 h-4' : 'w-5 h-5'} text-accent`} aria-hidden="true" />
     {children}
   </h2>
@@ -22,8 +22,8 @@ const Title = ({ icon: Icon, children, small = false }: { icon: LucideIcon; chil
 
 const Bullets = ({ title, lines, hollow = false }: { title: string; lines: string[]; hollow?: boolean }) => (
   <div>
-    <h3 className="text-label font-bold uppercase tracking-wider text-ink-2">{title}</h3>
-    <ul className="mt-2 space-y-1.5 text-label leading-relaxed text-ink">
+    <h3 className="text-label font-bold uppercase tracking-caps text-ink-2">{title}</h3>
+    <ul className="mt-2 space-y-1.5 text-label leading-prose text-ink">
       {lines.map((line) => (
         <li key={line} className="flex gap-2">
           <span className={`mt-[7px] h-1.5 w-1.5 shrink-0 rounded-pill ${hollow ? 'border border-ink-3' : 'bg-ink-3'}`} aria-hidden="true" />
@@ -56,12 +56,12 @@ export function FaresView() {
             return (
               <div key={fare.id} className={`${card} flex flex-col justify-between`}>
                 <div>
-                  <span className="text-label font-bold text-accent bg-surface border border-edge px-2 py-0.5 rounded-tag uppercase tracking-wider">{words.badge}</span>
+                  <span className="text-label font-bold text-accent bg-surface border border-edge px-2 py-0.5 rounded-tag uppercase tracking-caps">{words.badge}</span>
                   <h3 className="font-bold text-body text-ink mt-2.5">{words.title}</h3>
                   {/* No invented number when the operator publishes none. */}
                   <div className="text-title font-black text-ink mt-1 font-mono">{fare.price || <span className="text-body text-ink-3">{t.fares.priceNotPublished}</span>}</div>
                   <p className="text-label font-bold text-ink-2 mt-1">{copy(words.subtitle, minutes)}</p>
-                  <p className="text-label text-ink-3 mt-2 leading-relaxed">{copy(words.details, minutes)}</p>
+                  <p className="text-label text-ink-3 mt-2 leading-prose">{copy(words.details, minutes)}</p>
                 </div>
                 <a href={fare.sourceUrl} target="_blank" rel="noopener noreferrer" className={`${link} mt-3 self-start`}>
                   {fare.source}

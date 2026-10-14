@@ -33,8 +33,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, { failed: boole
     const { t } = this.props;
     return (
       <div className="mx-auto w-full max-w-3xl px-cap-3.5 py-8" role="alert">
-        <h2 className="text-title font-semibold tracking-[-0.012em]">{t.error.title}</h2>
-        <p className="mt-2 text-body leading-relaxed text-ink-2">{t.error.body}</p>
+        <h2 className="text-title font-semibold tracking-title">{t.error.title}</h2>
+        <p className="mt-2 text-body leading-prose text-ink-2">{t.error.body}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button onClick={() => window.location.reload()} className="flex h-11 items-center rounded-control bg-accent px-4 text-body font-semibold text-on-accent">
             {t.error.reload}

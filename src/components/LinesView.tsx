@@ -114,7 +114,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
         <div className={`space-y-4 lg:relative lg:col-span-5 lg:block lg:h-full lg:overflow-y-auto lg:pb-4 ${showDetail ? 'hidden' : ''}`}>
           <div className="space-y-4 bg-bg rounded-card border border-edge py-4 px-cap-4 shadow-raised lg:p-5">
             <div>
-              <h2 className="font-bold text-ink text-body uppercase tracking-wider flex items-center gap-2">
+              <h2 className="font-bold text-ink text-body uppercase tracking-caps flex items-center gap-2">
                 <Route className="w-4 h-4 text-accent" />
                 {t.lines.title}
               </h2>
@@ -173,7 +173,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                       <LineBadge number={line.number} color={line.color} size="md" className="shadow-hair" />
                       <div className="min-w-[6rem] flex-1">
                         {/* Keep the end of the name, not the beginning: nine distinct openings across twenty-four lines, seventeen distinct endings. */}
-                        <div className="font-bold text-body text-ink leading-tight flex items-baseline gap-1.5 min-w-0" title={line.name}>
+                        <div className="font-bold text-body text-ink leading-name flex items-baseline gap-1.5 min-w-0" title={line.name}>
                           {/* Only while the row is a whole screen wide: in the desktop's list column both
                               halves were cut, "Opuesto Pis... – Rúa Mercad...", even at 1920 px. */}
                           <span className="hidden truncate text-ink-2 font-semibold sm:inline lg:hidden">{parts.slice(0, -1).join(' - ')}</span>
@@ -225,7 +225,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 <LineBadge number={currentLine.number} color={currentLine.color} size="xl" className="shadow-raised" />
                 <div className="min-w-[min(10rem,100%)] flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-label font-bold px-2 py-0.5 rounded-tag bg-surface text-ink-2 uppercase tracking-wider">{t.lines.lineLabel(currentLine.number)}</span>
+                    <span className="text-label font-bold px-2 py-0.5 rounded-tag bg-surface text-ink-2 uppercase tracking-caps">{t.lines.lineLabel(currentLine.number)}</span>
                     {currentLine.category === 'hospital' && <span className="text-label font-bold px-2 py-0.5 rounded-tag bg-warn text-warn-ink">{t.lines.categories.hospital}</span>}
                     {busesOnLine.length > 0 && (
                       <span title={t.lines.enRouteHint} className="text-label font-bold px-2 py-0.5 rounded-tag bg-surface text-ink-2 flex items-center gap-1 border border-edge">
@@ -347,7 +347,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
           </div>
 
           <div className="bg-bg rounded-card py-5 px-cap-5 shadow-raised border border-edge">
-            <h3 className="font-bold text-ink text-body uppercase tracking-wider mb-2 flex items-center gap-2">
+            <h3 className="font-bold text-ink text-body uppercase tracking-caps mb-2 flex items-center gap-2">
               <Clock className="w-4 h-4 text-accent" />
               {t.lines.scheduleTable} &mdash; {direction.origin} ({departures.length})
             </h3>
@@ -368,13 +368,13 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 </button>
               ))}
             </div>
-            {departures.some((d) => d.derived) && <p className="mt-2 text-label leading-relaxed text-ink-3">{t.lines.derivedDepartures}</p>}
+            {departures.some((d) => d.derived) && <p className="mt-2 text-label leading-prose text-ink-3">{t.lines.derivedDepartures}</p>}
           </div>
 
           <div className="@container space-y-4 bg-bg rounded-card py-6 px-cap-6 shadow-raised border border-edge">
             <div className="flex flex-col gap-3">
               <div>
-                <h3 className="font-bold text-ink text-body uppercase tracking-wider flex items-center gap-2">
+                <h3 className="font-bold text-ink text-body uppercase tracking-caps flex items-center gap-2">
                   <Route className="w-4 h-4 text-accent" />
                   {t.lines.stopsInDirection} ({direction.stops.length})
                 </h3>
@@ -400,8 +400,8 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 <button onClick={() => setPickedRunIndex(Math.max(0, runIndex - 1))} disabled={runIndex === 0} aria-label={t.lines.previousRun} title={t.lines.previousRun} className="order-2 @min-[16rem]:order-none flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
                   &larr;
                 </button>
-                <div className="order-1 basis-full text-center leading-tight @min-[16rem]:order-none @min-[16rem]:basis-0 @min-[16rem]:flex-1">
-                  <div className="text-label font-bold text-accent uppercase tracking-wider">{t.lines.showingRun}</div>
+                <div className="order-1 basis-full text-center leading-name @min-[16rem]:order-none @min-[16rem]:basis-0 @min-[16rem]:flex-1">
+                  <div className="text-label font-bold text-accent uppercase tracking-caps">{t.lines.showingRun}</div>
                   <div className="text-body font-black text-accent font-mono">
                     {derived(shownRun, 0) && '~'}
                     {formatMinutes(shownRun.minutesByStopIndex[0])}

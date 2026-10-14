@@ -137,7 +137,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             <QrCode className="w-6 h-6" />
           </div>
           <div className="min-w-[min(8rem,100%)] flex-1">
-            <h2 className="break-words font-bold text-emph text-ink uppercase tracking-tight">{t.qr.title}</h2>
+            <h2 className="break-words font-bold text-emph text-ink uppercase tracking-display">{t.qr.title}</h2>
             <p className="text-label text-ink-3">{t.qr.subtitle}</p>
           </div>
         </div>
@@ -198,7 +198,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
         </div>
 
         <div className="mt-5 pt-4 border-t border-line">
-          <span className="text-label font-bold text-ink-2 uppercase tracking-wider block mb-2">{t.qr.popularDemos}</span>
+          <span className="text-label font-bold text-ink-2 uppercase tracking-caps block mb-2">{t.qr.popularDemos}</span>
           <div className="space-y-1.5">
             {demos.map((stop) => (
               <button

@@ -41,7 +41,7 @@ function searchAll(q: string) {
   };
 }
 
-const Heading = ({ children }: { children: string }) => <div className="tnum px-4 pb-1.5 pt-3 text-label font-medium tracking-[0.05em] text-ink-3">{children.toUpperCase()}</div>;
+const Heading = ({ children }: { children: string }) => <div className="tnum px-4 pb-1.5 pt-3 text-label font-medium tracking-caps text-ink-3">{children.toUpperCase()}</div>;
 const Row = ({ onClick, children }: { onClick: () => void; children: ReactNode }) => (
   <button onClick={onClick} className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 border-t border-line-soft px-cap-4 py-3 text-left">
     {children}
@@ -146,7 +146,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
           {alertCount > 0 && (
-            <span className="anim-badge-in tnum absolute -right-1.5 -top-1.5 min-w-5 rounded-control bg-warn px-1 text-center text-label font-bold leading-5 text-warn-ink" aria-hidden="true">
+            <span className="anim-badge-in tnum absolute -right-1.5 -top-1.5 min-w-5 rounded-control bg-warn px-1 text-center text-label font-bold leading-count text-warn-ink" aria-hidden="true">
               {alertCount}
             </span>
           )}

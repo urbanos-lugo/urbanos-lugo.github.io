@@ -49,9 +49,9 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
   const quoted = source ? NOTICE_LANG : undefined;
   return (
     <div className={`py-5 px-cap-5 rounded-card border transition-all ${warning ? 'bg-warn/quiet border-warn' : 'bg-surface/quiet border-edge'}`}>
-      {source && <span className="text-label font-bold uppercase tracking-wider text-ink-3">{source}</span>}
+      {source && <span className="text-label font-bold uppercase tracking-caps text-ink-3">{source}</span>}
       <div className="mb-2 mt-1 flex flex-wrap items-center justify-between gap-2">
-        <span className={`text-label font-black uppercase tracking-wider px-2 py-0.5 rounded-tag ${warning ? 'bg-warn text-warn-ink' : 'bg-surface text-accent'}`}>{when}</span>
+        <span className={`text-label font-black uppercase tracking-caps px-2 py-0.5 rounded-tag ${warning ? 'bg-warn text-warn-ink' : 'bg-surface text-accent'}`}>{when}</span>
         {/* Under the date when both do not fit, rather than a third of the row: "Todas as liñas"
             ran 26 px off the screen at 200% text. */}
         <div className="ml-auto flex flex-wrap items-center gap-1 justify-end">
@@ -64,7 +64,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
       </h3>
       {/* The operator posts a notice as one line, so the title and the description are the same words. */}
       {alert.description !== alert.title && (
-        <p lang={quoted} className="text-label text-ink-2 mt-1.5 leading-relaxed">
+        <p lang={quoted} className="text-label text-ink-2 mt-1.5 leading-prose">
           {alert.description}
         </p>
       )}
@@ -73,7 +73,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
         <div key={i} lang={quoted} className="mt-3 border-t border-line pt-3">
           <h4 className="break-words text-label font-semibold text-ink">{section.heading}</h4>
           {section.paragraphs.map((paragraph, j) => (
-            <p key={j} className="mt-1 text-label leading-relaxed text-ink-2">
+            <p key={j} className="mt-1 text-label leading-prose text-ink-2">
               {paragraph}
             </p>
           ))}
@@ -118,7 +118,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
           <Clock className="w-5 h-5 text-ink-2 shrink-0 mt-0.5" />
           <div className="text-label">
             <div className="text-body font-semibold">{t.fares.nightWindowTitle}</div>
-            <p className="mt-1 text-ink-2 leading-relaxed">{t.fares.nightWindowBody}</p>
+            <p className="mt-1 text-ink-2 leading-prose">{t.fares.nightWindowBody}</p>
           </div>
         </div>
       )}
@@ -126,7 +126,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-emph font-bold text-ink uppercase tracking-wider flex items-center gap-2">
+            <h2 className="text-emph font-bold text-ink uppercase tracking-caps flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-warn-ink" />
               {t.fares.alertsTitle}
             </h2>
@@ -157,7 +157,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
 
         {/* Where these came from when it was not from asking just now: the static build reads the last snapshot, and a stale incident read as current is the worse mistake. */}
         {liveAlerts.length > 0 && (snapshotAt || unreachable) && (
-          <p className={`rounded-card border px-4 py-3 text-label leading-relaxed ${stale ? 'border-warn bg-warn/quiet text-warn-ink' : 'border-edge bg-surface text-ink-2'}`}>
+          <p className={`rounded-card border px-4 py-3 text-label leading-prose ${stale ? 'border-warn bg-warn/quiet text-warn-ink' : 'border-edge bg-surface text-ink-2'}`}>
             {unreachable && !snapshotAt ? t.fares.unknownStatusDesc : t.fares.snapshotNotice(formatInstant(snapshotAt ?? undefined, locale))}
           </p>
         )}
@@ -179,7 +179,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
               </div>
               <div className="min-w-[min(11rem,100%)] flex-1">
                 <h3 className={`break-words text-body font-bold ${unreachable || stale ? 'text-ink' : 'text-official'}`}>{statusTitle}</h3>
-                <p className="text-label text-ink-2 mt-0.5 leading-relaxed">{statusDesc}</p>
+                <p className="text-label text-ink-2 mt-0.5 leading-prose">{statusDesc}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-label text-official font-medium">
                   <span>
                     {t.fares.lastCheck} <b>{formatInstant(snapshotAt ?? data?.lastSyncTime, locale)}</b>
@@ -203,10 +203,10 @@ export function AlertsView({ alerts }: AlertsViewProps) {
         )}
 
         <div className="pt-2">
-          <h3 className="text-label font-bold text-ink-2 uppercase tracking-wider">{t.fares.structuralTitle}</h3>
-          <p className="mt-1 text-label leading-relaxed text-ink-3">{t.fares.structuralSource}</p>
+          <h3 className="text-label font-bold text-ink-2 uppercase tracking-caps">{t.fares.structuralTitle}</h3>
+          <p className="mt-1 text-label leading-prose text-ink-3">{t.fares.structuralSource}</p>
           {/* They are reviewed monthly; two months means a review was missed, and the reader is told. */}
-          {monthsSinceReview >= 2 && <p className="mt-1 text-label font-semibold leading-relaxed text-warn-ink">{t.fares.structuralStale(monthsSinceReview)}</p>}
+          {monthsSinceReview >= 2 && <p className="mt-1 text-label font-semibold leading-prose text-warn-ink">{t.fares.structuralStale(monthsSinceReview)}</p>}
           <div className="mb-3" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {structuralNotices.map((alert) => (
@@ -220,7 +220,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
       {councilNews.length > 0 && (
         <div className="space-y-4">
           <div>
-            <h2 className="text-emph font-bold text-ink uppercase tracking-wider flex items-center gap-2">
+            <h2 className="text-emph font-bold text-ink uppercase tracking-caps flex items-center gap-2">
               <Newspaper className="w-5 h-5 text-ink-2" />
               {t.fares.newsTitle}
             </h2>
@@ -229,12 +229,12 @@ export function AlertsView({ alerts }: AlertsViewProps) {
           <ul className="divide-y divide-line rounded-card border border-edge bg-surface/quiet">
             {councilNews.map((item) => (
               <li key={item.id} className="p-4 sm:p-5">
-                <span className="text-label font-bold uppercase tracking-wider text-ink-3">{formatInstant(item.date, locale)}</span>
+                <span className="text-label font-bold uppercase tracking-caps text-ink-3">{formatInstant(item.date, locale)}</span>
                 <h3 lang={NOTICE_LANG} className="mt-1 font-bold text-ink text-body">
                   {item.title}
                 </h3>
                 {item.description !== item.title && (
-                  <p lang={NOTICE_LANG} className="text-label text-ink-2 mt-1.5 leading-relaxed">
+                  <p lang={NOTICE_LANG} className="text-label text-ink-2 mt-1.5 leading-prose">
                     {item.description}
                   </p>
                 )}

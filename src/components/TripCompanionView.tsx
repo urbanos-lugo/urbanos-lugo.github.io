@@ -17,8 +17,8 @@ const RouteMap = lazy(() => import('./Map/RouteMap').then((m) => ({ default: m.R
 /** As tall as the answer above it: 37vh is 300 on a 375x812, held so a short phone and a tall desktop both get a map. */
 const MAP_HEIGHT = 'h-[37vh] min-h-[280px] max-h-[420px] lg:min-h-[360px]';
 const TICK_MS = 15_000;
-const label = 'text-label font-bold uppercase tracking-wider text-ink-2';
-const headline = 'mt-1 break-words text-title font-bold leading-tight text-ink';
+const label = 'text-label font-bold uppercase tracking-caps text-ink-2';
+const headline = 'mt-1 break-words text-title font-bold leading-name text-ink';
 
 /**
  * "Vou no bus": the screen for the ride itself, glanced at one-handed on a moving bus. One
@@ -122,7 +122,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
             <p className={headline}>{segment?.toStop?.name}</p>
             <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-t border-line pt-3">
               <span className="flex items-baseline gap-2">
-                <span className="tnum text-num font-bold tracking-[-0.025em] text-ink">{progress?.stopsRemaining ?? '—'}</span>
+                <span className="tnum text-num font-bold tracking-display text-ink">{progress?.stopsRemaining ?? '—'}</span>
                 <span className="text-body text-ink-3">{t.companion.stops(progress?.stopsRemaining ?? 0)}</span>
               </span>
               {/* Wrapping, as the card above does: at 200 % text the minutes, the time and the
@@ -142,7 +142,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
             </div>
             {nextStop && !nextStop.isAlighting && (
               <p className="mt-3">
-                <span className="block text-label font-bold uppercase tracking-wider text-ink-3">{t.map.nextStop}</span>
+                <span className="block text-label font-bold uppercase tracking-caps text-ink-3">{t.map.nextStop}</span>
                 <span className="block text-body font-semibold text-ink">{nextStop.name}</span>
               </p>
             )}

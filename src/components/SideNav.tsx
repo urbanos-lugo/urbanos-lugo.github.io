@@ -25,7 +25,7 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
     // A landmark, so a screen reader moving by landmark does not meet a rail with holes in it.
     <aside aria-label={t.nav.appName} className="hidden w-[236px] shrink-0 flex-col border-r border-line bg-bg lg:flex">
       <div className="px-5 pb-4 pt-5">
-        <span className="text-emph font-semibold tracking-[-0.012em]">{t.nav.appName}</span>
+        <span className="text-emph font-semibold tracking-title">{t.nav.appName}</span>
       </div>
 
       <nav className="flex flex-col gap-0.5 px-2.5" aria-label={t.nav.main}>
@@ -59,7 +59,7 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
 
       <div className="mt-auto flex flex-col gap-3 border-t border-line p-3.5">
         <Settings {...settings} />
-        <p className="px-1 text-label leading-relaxed text-ink-3">{t.menu.sourceShort}</p>
+        <p className="px-1 text-label leading-prose text-ink-3">{t.menu.sourceShort}</p>
       </div>
     </aside>
   );

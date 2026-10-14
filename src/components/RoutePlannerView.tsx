@@ -457,7 +457,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               {(recentRoutes.length > 0 || cleared.length > 0) && (
                 <div>
                   <div className="mb-2 flex items-baseline justify-between gap-3">
-                    <span className="text-label font-bold uppercase tracking-wider text-ink-2">{t.planner.recentRoutes}</span>
+                    <span className="text-label font-bold uppercase tracking-caps text-ink-2">{t.planner.recentRoutes}</span>
                     <button
                       type="button"
                       onClick={() => {
@@ -506,7 +506,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 </div>
               )}
               <div>
-                <span className="text-label font-bold text-ink-2 uppercase tracking-wider block mb-2">{t.planner.quickDestinations}</span>
+                <span className="text-label font-bold text-ink-2 uppercase tracking-caps block mb-2">{t.planner.quickDestinations}</span>
                 {/* A rail on a phone, wrapping from sm: the right shape for a shortcut, where you see the one you wanted or you type. */}
                 <div className="-mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
                   {QUICK_DESTINATIONS.map((qp) => {
@@ -542,7 +542,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
             <div className="space-y-4 bg-bg rounded-card py-4 px-cap-4 sm:p-6 shadow-raised border border-edge">
               {!planResult.isServiceActive && planResult.serviceNotice && (
                 <Notice warn icon={AlertCircle} className="">
-                  <div className="font-bold uppercase tracking-wider">{t.planner.serviceNoticeTitle}</div>
+                  <div className="font-bold uppercase tracking-caps">{t.planner.serviceNoticeTitle}</div>
                   <div className="mt-0.5">{planResult.serviceNotice}</div>
                 </Notice>
               )}
@@ -612,7 +612,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               {/* The three numbers that answer "should I do this trip", on one baseline: how long on the left, when on the right. */}
               <div key={answered} className="anim-rise flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3">
                 <span className="flex items-baseline gap-2">
-                  <span className="tnum text-num font-bold tracking-[-0.025em]">{shown.durationMinutes}</span>
+                  <span className="tnum text-num font-bold tracking-display">{shown.durationMinutes}</span>
                   <span className="text-body text-ink-3">{t.common.min}</span>
                 </span>
                 <span className="flex flex-wrap items-baseline gap-x-2">
@@ -656,19 +656,19 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 <div className="px-3 pb-3">
                   {measuredWalk && (
                     <div className="mt-1 flex items-center justify-between gap-3 text-label text-ink">
-                      <span className="text-label font-bold uppercase tracking-wider text-ink-2">{t.planner.measuredWalkTitle}</span>
+                      <span className="text-label font-bold uppercase tracking-caps text-ink-2">{t.planner.measuredWalkTitle}</span>
                       <span className="font-mono font-black">
                         {measuredWalk.minutes} min · {formatKm(measuredWalk.meters)} km
                       </span>
                     </div>
                   )}
-                  <p className="mt-2 text-label leading-relaxed text-ink-2">
-                    <span className="font-bold uppercase tracking-wider text-ink-2">{t.planner.timeProvenanceTitle}</span> {measuredWalk ? t.planner.timeProvenanceMeasured : t.planner.timeProvenance}
+                  <p className="mt-2 text-label leading-prose text-ink-2">
+                    <span className="font-bold uppercase tracking-caps text-ink-2">{t.planner.timeProvenanceTitle}</span> {measuredWalk ? t.planner.timeProvenanceMeasured : t.planner.timeProvenance}
                   </p>
                   {planResult.fare && planResult.fare.busLegs > 0 && (
                     <div className="mt-3 border-t border-line pt-2 text-label text-ink">
                       {/* Both fares, neither struck through: the ordinary one applies to everyone without a card. */}
-                      <span className="mb-1 block text-label font-bold uppercase tracking-wider text-ink-2">{t.planner.fareTitle}</span>
+                      <span className="mb-1 block text-label font-bold uppercase tracking-caps text-ink-2">{t.planner.fareTitle}</span>
                       <div className="flex items-baseline justify-between gap-3">
                         <span className="text-label text-ink">{t.planner.fareSingle}</span>
                         <span className="tnum text-body font-black text-ink">{planResult.fare.singleTicketEuros.toFixed(2).replace('.', ',')} €</span>
@@ -724,7 +724,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               </div>
 
               <div ref={stepsRef} className="scroll-mt-3">
-                <span className="text-label font-bold text-ink-2 uppercase tracking-wider block mb-2">{t.planner.stepByStepTitle}</span>
+                <span className="text-label font-bold text-ink-2 uppercase tracking-caps block mb-2">{t.planner.stepByStepTitle}</span>
                 <Itinerary segments={planResult.segments} onSelectStop={onSelectStop} onSelectLine={onSelectLine} />
               </div>
 

@@ -14,11 +14,11 @@ export function Provenance({ precision, extra, title }: { precision: Precision; 
   return precision === 'published' ? (
     <span title={title} className="inline-flex items-center gap-1.5 rounded-tag bg-official px-2 py-1 text-on-official">
       <Check className="h-2.5 w-2.5 shrink-0 stroke-chip" aria-hidden="true" />
-      <span className="tnum text-label font-semibold tracking-[0.05em]">{text}</span>
+      <span className="tnum text-label font-semibold tracking-caps">{text}</span>
     </span>
   ) : (
     <span title={title} className="inline-flex items-center gap-1.5 rounded-tag border-[1.5px] border-dashed border-estimated-line px-[7px] py-[3px] text-estimated">
-      <span className="tnum text-label font-semibold tracking-[0.05em]">{text}</span>
+      <span className="tnum text-label font-semibold tracking-caps">{text}</span>
     </span>
   );
 }

@@ -69,7 +69,7 @@ export function SaveStar({ on, onToggle, label, className }: { on: boolean; onTo
  */
 export function Notice({ children, warn = false, role, icon: Icon, className = 'mt-3' }: { children: ReactNode; warn?: boolean; role?: 'alert' | 'status'; icon?: LucideIcon; className?: string }) {
   return (
-    <div role={role} className={`anim-rise rounded-control border p-3 text-label leading-relaxed ${warn ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${Icon ? 'flex gap-2' : ''} ${className}`}>
+    <div role={role} className={`anim-rise rounded-control border p-3 text-label leading-prose ${warn ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${Icon ? 'flex gap-2' : ''} ${className}`}>
       {Icon ? (
         <>
           <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
@@ -90,7 +90,7 @@ export function Notice({ children, warn = false, role, icon: Icon, className = '
  */
 export function NoticeDisclosure({ summary, children, seeFull, className = '' }: { summary: ReactNode; children: ReactNode; seeFull?: { label: string; onOpen: () => void }; className?: string }) {
   return (
-    <details className={`disclosure rounded-control border border-warn bg-warn text-label leading-relaxed text-warn-ink ${className}`}>
+    <details className={`disclosure rounded-control border border-warn bg-warn text-label leading-prose text-warn-ink ${className}`}>
       <summary className="flex min-h-11 cursor-pointer items-start gap-2 p-3">
         <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         <span className="min-w-0 flex-1">{summary}</span>

@@ -14,7 +14,7 @@ export const AROUND_STOP_RADIUS_M = 400;
 export const NEARBY_RADIUS_M = 750;
 
 const card = 'bg-bg rounded-card p-3.5 shadow-raised border border-edge';
-const heading = 'text-label font-bold text-ink-3 uppercase tracking-wider block mb-2';
+const heading = 'text-label font-bold text-ink-3 uppercase tracking-caps block mb-2';
 
 export interface MapControlsProps {
   sheetRef: RefObject<HTMLDivElement | null>;
@@ -84,7 +84,7 @@ export function MapControls(p: MapControlsProps) {
       </div>
       {p.preset === 'stop' && p.aroundStop && (
         <div className="mt-2.5 rounded-control border border-accent bg-accent/tint p-3">
-          <p className="text-label leading-relaxed text-ink">{t.map.aroundStopActive(p.aroundStop.name, AROUND_STOP_RADIUS_M)}</p>
+          <p className="text-label leading-prose text-ink">{t.map.aroundStopActive(p.aroundStop.name, AROUND_STOP_RADIUS_M)}</p>
           <button onClick={() => p.onPreset('all')} className="mt-2 flex h-11 items-center rounded-control border border-edge bg-bg px-3 text-label font-semibold text-ink-2">
             {t.map.aroundStopClear}
           </button>
@@ -105,7 +105,7 @@ export function MapControls(p: MapControlsProps) {
     >
       {/* The handle: which way the sheet goes, and its own way out. Gone at `lg`. */}
       <div className="order-first -mt-1 flex items-center justify-between gap-2 lg:hidden">
-        <span className="text-label font-bold uppercase tracking-wider text-ink-3">{t.map.controls}</span>
+        <span className="text-label font-bold uppercase tracking-caps text-ink-3">{t.map.controls}</span>
         <button type="button" onClick={p.onCloseSheet} aria-label={t.map.closeControls} className="flex h-11 w-11 items-center justify-center rounded-pill text-ink-2">
           <ChevronDown className="h-5 w-5" aria-hidden="true" />
         </button>
@@ -115,7 +115,7 @@ export function MapControls(p: MapControlsProps) {
       <div className={`${card} p-4`}>
         <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-line">
           <div>
-            <h2 className="font-bold text-ink text-body uppercase tracking-wider flex items-center gap-2">
+            <h2 className="font-bold text-ink text-body uppercase tracking-caps flex items-center gap-2">
               <Navigation className="w-4 h-4 text-accent" />
               {t.map.mapTitle}
             </h2>
@@ -147,7 +147,7 @@ export function MapControls(p: MapControlsProps) {
           </button>
         </div>
         {p.locate.error && (
-          <p role="alert" className="mt-2 text-label leading-relaxed text-ink-2">
+          <p role="alert" className="mt-2 text-label leading-prose text-ink-2">
             {p.locate.error}
           </p>
         )}
@@ -189,7 +189,7 @@ export function MapControls(p: MapControlsProps) {
 
       <div className={card}>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-label font-bold text-ink-3 uppercase tracking-wider">
+          <span className="text-label font-bold text-ink-3 uppercase tracking-caps">
             {t.map.linesList}
             {p.pickedLineIds.length > 0 && <span className="ml-1.5 text-accent">· {t.map.linesPicked(p.pickedLineIds.length)}</span>}
           </span>

@@ -150,7 +150,7 @@ function linesHerePopup(hits: { line: BusLine; dir: BusDirection }[], lang: Lang
   const node = document.createElement('div');
   node.className = 'font-sans';
   node.innerHTML = popupBox(
-    `<div class="mb-1.5 text-label font-bold uppercase tracking-wider text-ink-3">${escapeHtml(t.map.linesHere)}</div>` + `<div data-rows="1" class="flex flex-col gap-1"></div>`,
+    `<div class="mb-1.5 text-label font-bold uppercase tracking-caps text-ink-3">${escapeHtml(t.map.linesHere)}</div>` + `<div data-rows="1" class="flex flex-col gap-1"></div>`,
     true,
   );
   const byLine = new Map<string, { line: BusLine; dirs: BusDirection[] }>();

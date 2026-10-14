@@ -115,7 +115,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
 
   return (
     <div className="mx-auto w-full max-w-3xl px-cap-3.5 pb-8 pt-4">
-      <h2 className="flex items-center gap-2 text-title font-semibold tracking-[-0.012em]">
+      <h2 className="flex items-center gap-2 text-title font-semibold tracking-title">
         <Star className="h-5 w-5 shrink-0 text-warn-ink stroke-filled" fill="currentColor" aria-hidden="true" />
         {t.stopHome.saved}
       </h2>
@@ -123,7 +123,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
       {saved.length === 0 ? (
         <div className="mt-4 rounded-card border border-dashed border-edge py-5 px-cap-5">
           <p className="text-body font-semibold">{t.stopHome.emptyTitle}</p>
-          <p className="mt-1.5 text-body leading-relaxed text-ink-2">{t.stopHome.emptyBody}</p>
+          <p className="mt-1.5 text-body leading-prose text-ink-2">{t.stopHome.emptyBody}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             <button onClick={onOpenQrScanner} className="flex h-11 items-center gap-2 rounded-control bg-accent px-4 text-body font-semibold text-on-accent">
               <QrCode className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />

@@ -82,7 +82,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
                   <Star className="w-5 h-5 fill-current text-warn-ink" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="break-words font-bold text-ink text-body uppercase tracking-tight">{t.favourites.title}</h2>
+                  <h2 className="break-words font-bold text-ink text-body uppercase tracking-display">{t.favourites.title}</h2>
                   <p className="text-label text-ink-3">{t.favourites.subtitle}</p>
                 </div>
               </div>

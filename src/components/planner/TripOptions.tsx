@@ -99,7 +99,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
 
   return (
     <div>
-      <span className="text-label font-bold text-ink-2 uppercase tracking-wider block mb-2">{t.planner.optionsTitle}</span>
+      <span className="text-label font-bold text-ink-2 uppercase tracking-caps block mb-2">{t.planner.optionsTitle}</span>
       {/* A container, so a row can tell when it is narrow for its text: below 18rem the clocks go
           under the lines and the duration. Between the two at 200% text the clocks ran 88 px out
           of their column and "Co paseo medido xa non chegas a este bus" was printed over the

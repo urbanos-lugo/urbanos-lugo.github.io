@@ -257,7 +257,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
   /** Minutes, with the tilde carrying "derived" in the figure; overdue is quieter, the least certain thing on the screen. */
   const Minutes = ({ arrival }: { arrival: StopArrival }) => (
-    <span className={`tnum shrink-0 text-num font-bold tracking-[-0.025em] ${arrival.overdueMinutes ? 'text-ink-3' : arrival.etaMinutes === 0 ? 'text-accent' : 'text-ink-max'}`}>
+    <span className={`tnum shrink-0 text-num font-bold tracking-display ${arrival.overdueMinutes ? 'text-ink-3' : arrival.etaMinutes === 0 ? 'text-accent' : 'text-ink-max'}`}>
       {arrival.overdueMinutes ? (
         <span className="text-emph">{t.common.overdue(arrival.overdueMinutes)}</span>
       ) : arrival.etaMinutes === 0 ? (
@@ -315,7 +315,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
       <header className="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-title font-semibold tracking-[-0.012em]">{selectedStop.name}</h2>
+          <h2 className="text-title font-semibold tracking-title">{selectedStop.name}</h2>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             {poleCode(selectedStop) && <span className="tnum rounded-tag bg-surface px-2 py-1 text-label text-ink-2">{poleCode(selectedStop)}</span>}
             <span className="text-label text-ink-3">
@@ -481,7 +481,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {/* What the operator says, only for somebody who arrived by scanning the pole: for them it is the thing they were reaching for, not a second opinion. A label and a number: their `towards` is a route description six words long. */}
       {operatorTimes && operatorTimes.departures.length > 0 && (
         <section className="mt-4 rounded-card border border-edge bg-surface/quiet py-3.5 px-cap-3.5">
-          <h3 className="text-label font-bold uppercase tracking-wider text-ink-2">{t.arrivals.operatorSaysTitle}</h3>
+          <h3 className="text-label font-bold uppercase tracking-caps text-ink-2">{t.arrivals.operatorSaysTitle}</h3>
           <ul className="mt-2 space-y-1.5">
             {operatorTimes.departures.map((departure, i) => (
               <li key={`${departure.line}-${i}`} className="flex items-baseline justify-between gap-3">
@@ -492,7 +492,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-label leading-relaxed text-ink-3">{t.arrivals.operatorSaysNote(new Date(operatorTimes.fetchedAt).toLocaleTimeString(LOCALE[lang], { hour: '2-digit', minute: '2-digit' }))}</p>
+          <p className="mt-2 text-label leading-prose text-ink-3">{t.arrivals.operatorSaysNote(new Date(operatorTimes.fetchedAt).toLocaleTimeString(LOCALE[lang], { hour: '2-digit', minute: '2-digit' }))}</p>
         </section>
       )}
 
@@ -615,14 +615,14 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           {t.arrivals.reportPosition}
           <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
         </summary>
-        <p className="text-label leading-relaxed text-ink-3">{t.arrivals.positionChecked}</p>
-        <p className="mt-1.5 text-label leading-relaxed text-ink-3">{t.arrivals.reportNotCouncil}</p>
+        <p className="text-label leading-prose text-ink-3">{t.arrivals.positionChecked}</p>
+        <p className="mt-1.5 text-label leading-prose text-ink-3">{t.arrivals.reportNotCouncil}</p>
         <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center text-label font-semibold text-accent underline underline-offset-2">
           {t.arrivals.reportCta}
         </a>
       </details>
 
-      {anyOverdue && <p className="mt-4 border-t border-line pt-3.5 text-label leading-relaxed text-ink-3">{t.common.overdueNote}</p>}
+      {anyOverdue && <p className="mt-4 border-t border-line pt-3.5 text-label leading-prose text-ink-3">{t.common.overdueNote}</p>}
 
       {nonePublished ? (
         <details className="disclosure mt-4 border-t border-line pt-3">
@@ -630,10 +630,10 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             {t.arrivals.whyEstimatedTitle}
             <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
           </summary>
-          <p className="pb-1 text-label leading-relaxed text-ink-3">{t.arrivals.whyEstimated(timingPoints.published, timingPoints.total)}</p>
+          <p className="pb-1 text-label leading-prose text-ink-3">{t.arrivals.whyEstimated(timingPoints.published, timingPoints.total)}</p>
         </details>
       ) : (
-        arrivals.length > 0 && <p className="mt-4 border-t border-line pt-3.5 text-label leading-relaxed text-ink-3">{t.arrivals.precisionNote}</p>
+        arrivals.length > 0 && <p className="mt-4 border-t border-line pt-3.5 text-label leading-prose text-ink-3">{t.arrivals.precisionNote}</p>
       )}
     </div>
   );

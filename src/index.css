@@ -267,7 +267,8 @@
   --text-hero--line-height: 0.92;
 
   --leading-prose: 1.625;   /* label-sized prose that runs to several lines: notes, notices */
-  --leading-snug: 1.25;     /* a name or a figure set tighter than its size's own leading */
+  --leading-name: 1.25;     /* a name or a figure that wraps, set tighter than its size's own leading */
+  --leading-count: calc(var(--spacing) * 5); /* a count badge's one line: as tall as its floor is wide */
 
   --tracking-caps: 0.05em;      /* small capitals over a block, and the provenance chips */
   --tracking-title: -0.012em;   /* a screen's title, the app's name */
@@ -529,7 +530,7 @@
      a phone. With a fixed 44 px and no padding the two lines filled the pill edge to edge.
      The side room stops growing with the type where the screen has none to give, like
      px-cap below: at 200 % it was 20 px a side and "Paradas" broke as "Para-das". */
-  .seg-btn { position: relative; z-index: 1; min-height: var(--spacing-tap); padding: var(--spacing) min(calc(var(--spacing) * 2.5), calc(var(--cap-step) * 2.5)); line-height: var(--leading-snug); border-radius: var(--radius-inset); font-size: var(--text-body); font-weight: var(--font-weight-medium); color: var(--c-ink-2); transition: color var(--transition-duration-swap); }
+  .seg-btn { position: relative; z-index: 1; min-height: var(--spacing-tap); padding: var(--spacing) min(calc(var(--spacing) * 2.5), calc(var(--cap-step) * 2.5)); line-height: var(--leading-name); border-radius: var(--radius-inset); font-size: var(--text-body); font-weight: var(--font-weight-medium); color: var(--c-ink-2); transition: color var(--transition-duration-swap); }
   /* The pressed button carries the fill itself, but only once the thumb has arrived: its
      fill lands 200 ms late, all at once, and until then the thumb is what shows. A delay
      with no frames in between, not an animation, so nothing repaints while it waits. At
