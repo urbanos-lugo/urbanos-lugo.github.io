@@ -24,7 +24,7 @@ export function BottomNav({ activeTab, setActiveTab, tripActive = false }: Botto
       {/* The mark slides from the tab you left to the one you chose, which is the whole of what a tab change looks like; `aria-current` says which tab is on. */}
       <span
         aria-hidden="true"
-        className="absolute -top-px left-0 h-0.5 bg-accent transition-transform duration-200 ease-[cubic-bezier(0.2,0.7,0.2,1)]"
+        className="absolute -top-px left-0 h-0.5 bg-accent transition-transform duration-move ease-enter"
         style={{ width: `${100 / items.length}%`, transform: `translateX(${Math.max(current, 0) * 100}%)`, opacity: current < 0 ? 0 : 1 }}
       />
       {items.map(({ id, Icon, label }) => {

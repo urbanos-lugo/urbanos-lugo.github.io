@@ -269,7 +269,7 @@ export default function App() {
                   <Suspense
                     fallback={
                       <div className="max-w-7xl mx-auto px-cap-4 py-10">
-                        <div className="flex h-[540px] animate-pulse items-center justify-center rounded-card bg-surface text-body font-medium text-ink-3">{t.map.loadingMap}</div>
+                        <div className="flex h-[540px] animate-waiting items-center justify-center rounded-card bg-surface text-body font-medium text-ink-3">{t.map.loadingMap}</div>
                       </div>
                     }
                   >

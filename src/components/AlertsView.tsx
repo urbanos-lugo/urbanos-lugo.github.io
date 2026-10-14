@@ -144,7 +144,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
               cooldown > 0 ? 'cursor-not-allowed border border-edge bg-surface text-ink-3' : 'bg-accent hover:bg-accent text-on-accent disabled:opacity-disabled'
             }`}
           >
-            {isSyncing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : cooldown > 0 ? <Clock className="w-3.5 h-3.5 text-ink-2" /> : <RefreshCw className="w-3.5 h-3.5" />}
+            {isSyncing ? <RefreshCw className="w-3.5 h-3.5 animate-syncing" /> : cooldown > 0 ? <Clock className="w-3.5 h-3.5 text-ink-2" /> : <RefreshCw className="w-3.5 h-3.5" />}
             <span>{isSyncing ? t.fares.refreshing : cooldown > 0 ? t.fares.cooldownText(cooldown) : t.fares.refreshBtn}</span>
           </button>
           {/* The check, for the ear: that it is under way, and what it found. It changed only the

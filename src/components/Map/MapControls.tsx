@@ -99,7 +99,7 @@ export function MapControls(p: MapControlsProps) {
       role={p.sheetOpen ? 'dialog' : undefined}
       aria-modal={p.sheetOpen ? true : undefined}
       aria-label={p.sheetOpen ? t.map.controls : undefined}
-      className={`order-2 flex flex-col gap-3.5 lg:order-none lg:col-span-4 fixed inset-x-0 bottom-0 z-sheet max-h-[78dvh] overflow-y-auto rounded-t-sheet border-t border-edge bg-surface p-3.5 shadow-overlay transition-transform duration-200 motion-reduce:transition-none lg:static lg:z-auto lg:max-h-none lg:overflow-visible lg:visible lg:translate-y-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none ${
+      className={`order-2 flex flex-col gap-3.5 lg:order-none lg:col-span-4 fixed inset-x-0 bottom-0 z-sheet max-h-[78dvh] overflow-y-auto rounded-t-sheet border-t border-edge bg-surface p-3.5 shadow-overlay transition-transform duration-move motion-reduce:transition-none lg:static lg:z-auto lg:max-h-none lg:overflow-visible lg:visible lg:translate-y-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none ${
         p.sheetOpen ? 'translate-y-0' : 'invisible translate-y-full'
       }`}
     >

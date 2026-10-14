@@ -409,7 +409,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                   title={t.planner.swap}
                 >
                   {/* Turns with the swap, so the button shows what it just did to the fields. */}
-                  <ArrowDownUp className="relative h-4 w-4 transition-transform duration-[240ms] ease-[cubic-bezier(0.2,0.7,0.2,1)]" style={{ transform: `rotate(${swaps * 180}deg)` }} />
+                  <ArrowDownUp className="relative h-4 w-4 transition-transform duration-arrive ease-enter" style={{ transform: `rotate(${swaps * 180}deg)` }} />
                 </button>
               </div>
 
@@ -703,7 +703,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 </div>
                 <div className={`fold ${showMap ? '' : 'fold-closed'}`}>
                   <div className="relative">
-                    <Suspense fallback={<div className="w-full h-[240px] sm:h-[280px] rounded-card bg-surface animate-pulse" />}>
+                    <Suspense fallback={<div className="w-full h-[240px] sm:h-[280px] rounded-card bg-surface animate-waiting" />}>
                       <RouteMap plan={planResult} origin={endpoints.origin} destination={endpoints.destination} walkPaths={walkPaths} className="w-full h-[240px] sm:h-[280px] rounded-card overflow-hidden border border-edge z-0" />
                     </Suspense>
                     {/* The map ends at the fold on a phone, so the chip that says the trip is written out further down sits on it. */}
