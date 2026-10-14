@@ -560,6 +560,10 @@
     .disclosure::details-content { block-size: 0; overflow: hidden; transition: block-size var(--transition-duration-panel) var(--ease-enter), content-visibility var(--transition-duration-panel) allow-discrete; }
     .disclosure[open]::details-content { block-size: auto; }
   }
+
+  /* The ~ ESTIMADO chip: the HORARIO OFICIAL chip's box (px-2 py-1) with its dashed edge
+     taken out of the padding, so the two stand the same size side by side. */
+  .chip-estimated { padding: calc(var(--spacing) - var(--border-width-dash)) calc(var(--spacing) * 2 - var(--border-width-dash)); }
 }
 
 /* Side padding that grows with the type only while the screen has room: never past what the
