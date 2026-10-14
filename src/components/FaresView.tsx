@@ -26,7 +26,7 @@ const Bullets = ({ title, lines, hollow = false }: { title: string; lines: strin
     <ul className="mt-2 space-y-1.5 text-label leading-prose text-ink">
       {lines.map((line) => (
         <li key={line} className="flex gap-2">
-          <span className={`mt-[7px] h-1.5 w-1.5 shrink-0 rounded-pill ${hollow ? 'border border-ink-3' : 'bg-ink-3'}`} aria-hidden="true" />
+          <span className={`mt-1.75 h-1.5 w-1.5 shrink-0 rounded-pill ${hollow ? 'border border-ink-3' : 'bg-ink-3'}`} aria-hidden="true" />
           <span>{line}</span>
         </li>
       ))}
