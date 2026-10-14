@@ -1308,7 +1308,7 @@ non é unha opinión sobre como debe verse un cadro horario ás once. O script q
 antes do primeiro pintado vai en liña na páxina, co SHA-256 dos seus bytes exactos na
 política de seguridade (`src/security/themeInit.ts` é a única fonte das dúas cousas), e
 `<html>` xa vén con `class="dark"`, así que non hai destello branco nin sequera sen
-JavaScript. A escala tipográfica está en `rem` (12·15·19·23·29·46 px sobre unha
+JavaScript. A escala tipográfica está en `rem` (12·15·19·23·29 px sobre unha
 base de 16), así que o axuste de tamaño de letra do sistema operativo funciona en toda
 a aplicación en lugar de quedar conxelado en píxeles. `prefers-reduced-motion` desactiva
 transicións e animacións.

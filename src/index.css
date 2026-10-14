@@ -255,7 +255,7 @@
   --default-font-family: var(--font-sans);
   --default-mono-font-family: var(--font-mono);
 
-  /* 12 · 15 · 19 · 23 · 29 · 46 at the default root size, but in rem so the
+  /* 12 · 15 · 19 · 23 · 29 at the default root size, but in rem so the
      reader's own setting scales all of it together. */
   --text-label: 0.75rem;
   --text-label--line-height: 1.35;
@@ -267,8 +267,6 @@
   --text-title--line-height: 1.2;
   --text-num: 1.8125rem;
   --text-num--line-height: 1;
-  --text-hero: 2.875rem;
-  --text-hero--line-height: 0.92;
   /* The map's markers are drawn in the map's own pixels, which do not follow the reader's
      type size: a trip's pin, and a bus's number (two digits, and three). */
   --text-map-pin: 12px;
