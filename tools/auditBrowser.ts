@@ -1183,14 +1183,15 @@ export async function worker(browser: Browser): Promise<Worker> {
 /**
  * Loads a state and does what a person does to get there: the setup, then the tap. What it
  * could not reach comes back as findings; null if the app never drew at all. Shared with
- * visualDiff.ts, which photographs each state instead of measuring it, on a frozen clock.
+ * visualDiff.ts, which photographs each state instead of measuring it, on a frozen clock and
+ * with reduced motion, so nothing is caught on its way.
  */
-export async function reach(w: Worker, pass: Pass, state: State, frozen = false): Promise<Finding[] | null> {
+export async function reach(w: Worker, pass: Pass, state: State, frozen = false, media: { name: string; value: string }[] = []): Promise<Finding[] | null> {
   const { page } = w;
   w.api = state.api ?? 'incidents';
   w.logged.length = w.thrown.length = w.agora = 0;
   await page.send('Emulation.setDeviceMetricsOverride', pass.desktop ? DESKTOP : PHONE);
-  await page.send('Emulation.setEmulatedMedia', { features: [] });
+  await page.send('Emulation.setEmulatedMedia', { features: media });
   const prepared: Prepared = {
     clock: state.night ? NIGHT : DAY,
     stored: { ...(state.stored ?? {}), 'urbanos-lugo-lang': pass.lang, 'urbanos-lugo-theme': pass.themes[0] },

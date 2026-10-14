@@ -46,29 +46,32 @@ const PASSES: Shot[] = [
 /**
  * Every animation where it rests: an entrance finished, a loop stopped at its first frame (the
  * waits that spin or pulse would otherwise be caught at a different phase each run), and the
- * caret, which blinks, out of sight.
+ * caret, which blinks, out of sight. Then the page is left until it stops changing for
+ * `quietMs`: an answer computed after the first paint, a walk measured and the options
+ * reordered, a pin added to a map, a chunk arriving.
  */
-const STILL = `(async () => {
+const STILL = `async function (quietMs) {
   if (!document.getElementById('visual-still')) {
     const s = document.createElement('style');
     s.id = 'visual-still';
     // The focus indicators too: whether Chrome draws a ring after a scripted focus depends on what
     // happened to be focused a moment before, and under load that varied between two runs of one
     // build. audit:browser judges the focus; these photographs judge everything else.
+    // And the one label that counts real seconds, the notices' "wait (Ns)" after a check: the
+    // button is photographed, its count is not.
     s.textContent = '*, *::before, *::after { caret-color: transparent !important; }'
-      + ' *:focus, *:focus-visible, *:has(:focus-visible) { outline-color: transparent !important; --tw-ring-shadow: 0 0 #0000 !important; }';
+      + ' *:focus, *:focus-visible, *:has(:focus-visible) { outline-color: transparent !important; --tw-ring-shadow: 0 0 #0000 !important; }'
+      + ' #sync-alerts-btn > span { visibility: hidden !important; }';
     document.head.append(s);
   }
-  // Until the page stops changing for 800 ms (at most 8 s): an answer computed after the first
-  // paint, a walk measured, a chunk arriving. The map's own panes are left out, since the buses
-  // redraw every three seconds whether or not anything moved.
+  // The buses on the map are left out: they redraw every three seconds whether or not they moved.
   await new Promise((done) => {
-    let timer = setTimeout(finish, 800);
-    const cap = setTimeout(finish, 8000);
+    let timer = setTimeout(finish, quietMs);
+    const cap = setTimeout(finish, quietMs * 10);
     const watch = new MutationObserver((list) => {
-      if (list.every((m) => m.target instanceof Element && m.target.closest('.leaflet-pane'))) return;
+      if (list.every((m) => m.target instanceof Element && m.target.closest('.custom-bus-marker'))) return;
       clearTimeout(timer);
-      timer = setTimeout(finish, 800);
+      timer = setTimeout(finish, quietMs);
     });
     function finish() { watch.disconnect(); clearTimeout(timer); clearTimeout(cap); done(); }
     watch.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true });
@@ -81,7 +84,7 @@ const STILL = `(async () => {
   }
   await document.fonts.ready;
   return true;
-})()`;
+}`;
 
 /** The box a person scrolls in this state: inside an open dialog if there is one, else the biggest. */
 const SCROLLER = `(() => {
@@ -118,17 +121,17 @@ async function photograph(page: Session, path: string): Promise<void> {
  * frame or two, and a rounded corner rasterised on that layer differs in a few pixels of its
  * antialiasing from the same corner drawn with the page (measured: 75 and 140 px, all corners).
  */
-async function still(page: Session): Promise<void> {
-  await page.evaluate(STILL);
+async function still(page: Session, quietMs = 600): Promise<void> {
+  await page.call(STILL, quietMs);
   await sleep(500);
-  await page.evaluate(STILL);
+  await page.call(STILL, 300);
   await sleep(200);
 }
 
 async function shootState(w: Worker, pass: Shot, state: State, dir: string): Promise<{ state: string; reached: string[] | null; frames: number }> {
   const { page } = w;
   const at = join(dir, pass.name.replace(/\s+/g, '-'), label(state).replace(/[/\s]+/g, '-'));
-  const findings = await reach(w, pass, state, true);
+  const findings = await reach(w, pass, state, true, [{ name: 'prefers-reduced-motion', value: 'reduce' }]);
   if (pass.width) {
     // reach() sets the pass's own metrics; the narrower phone is set again and laid out from scratch.
     await page.send('Emulation.setDeviceMetricsOverride', { ...(pass.desktop ? DESKTOP : PHONE), width: pass.width });
@@ -146,7 +149,9 @@ async function shootState(w: Worker, pass: Shot, state: State, dir: string): Pro
       await page.call(`function (dark) { document.documentElement.classList.toggle('dark', dark); }`, theme === 'dark');
       await sleep(400);
     }
-    await still(page);
+    // The first frame waits longest: what the app computes after it lands (a walk measured, the
+    // options reordered by it) arrives in its own time.
+    await still(page, 2000);
     await photograph(page, join(at, `${theme}-landed.png`));
     frames++;
     const pages = Math.min(await page.evaluate<number>(SCROLLER), 12);
