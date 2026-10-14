@@ -239,7 +239,7 @@ async function guard(page: Session, mode: () => Api, seen: (url: URL) => void = 
     if (m === 'offline') return void page.send('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' }).catch(() => undefined);
     if (m === 'down') return send(500, { error: 'fixture' });
     if (url.pathname.includes('/agora')) return send(200, AGORA);
-    if (m === 'slow') return void setTimeout(() => send(200, INCIDENTS), 3000);
+    if (m === 'slow') return void setTimeout(() => send(200, INCIDENTS), Number(process.env.AUDIT_SLOW_MS ?? 3000));
     send(200, m === 'quiet' ? QUIET : INCIDENTS);
   });
 }

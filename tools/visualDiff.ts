@@ -27,6 +27,10 @@ import { STATES, label, reach, worker, type Pass, type State, type Theme, type W
 
 const DESKTOP = { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false };
 
+// The notices' "checking" state is a check still running: the fixture answers it after 3 s for
+// audit:browser, and a slow run photographed the cooldown after it instead. Here it never ends.
+process.env.AUDIT_SLOW_MS ??= String(10 * 60_000);
+
 interface Shot extends Pass {
   /** A narrower phone, from the first paint. */
   width?: number;
@@ -63,6 +67,16 @@ const STILL = `async function (quietMs) {
       + ' *:focus, *:focus-visible, *:has(:focus-visible) { outline-color: transparent !important; --tw-ring-shadow: 0 0 #0000 !important; }'
       + ' #sync-alerts-btn > span { display: none !important; }';
     document.head.append(s);
+  }
+  // The planner's walks are routed from a chunk loaded on demand, the pedestrian network. Under
+  // load its answer landed after the quiet window in one run of two (a walk read 6 min in one
+  // and 7 in the other), so on the planner the same module is awaited first.
+  if (/\\/(ruta|route)\\b/.test(location.pathname)) {
+    if (window.__walkChunk === undefined) {
+      const sw = await fetch('/sw.js').then((r) => r.text()).catch(() => '');
+      window.__walkChunk = (sw.match(/assets\\/walk-network-[\\w-]+\\.js/) || [''])[0];
+    }
+    if (window.__walkChunk) { try { await import('/' + window.__walkChunk); } catch (e) {} }
   }
   // The buses on the map are left out: they redraw every three seconds whether or not they moved.
   await new Promise((done) => {
