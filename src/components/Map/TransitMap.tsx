@@ -277,7 +277,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                 and beneath them when those open; one tap takes the buses off again. */}
             {layers.buses && (
               <div className="pointer-events-none absolute inset-x-0 top-16 z-[400] flex justify-center px-3 lg:top-3">
-                <p className="pointer-events-auto flex items-center gap-1 rounded-full border-[1.5px] border-dashed border-estimated-line bg-bg/95 pl-3.5 text-estimated shadow-sm backdrop-blur-xs">
+                <p className="pointer-events-auto flex items-center gap-1 rounded-full border-[1.5px] border-dashed border-estimated-line bg-bg/glass pl-3.5 text-estimated shadow-sm backdrop-blur-xs">
                   <span className="text-label font-semibold">~ {t.map.busesEstimatedNotice}</span>
                   <button type="button" onClick={() => setLayers((l) => ({ ...l, buses: false }))} aria-label={t.map.hideBuses} title={t.map.hideBuses} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink-2">
                     <X className="h-4 w-4" aria-hidden="true" />
@@ -294,8 +294,8 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
               aria-pressed={follow.isFollowing}
               aria-label={locateLabel}
               title={locateLabel}
-              className={`pointer-events-auto absolute bottom-5 left-3 z-[400] flex h-12 w-12 items-center justify-center rounded-full border shadow-md backdrop-blur-xs disabled:opacity-50 lg:hidden ${
-                follow.isFollowing ? 'border-accent bg-bg/95 text-accent' : 'border-edge bg-bg/95 text-ink-2'
+              className={`pointer-events-auto absolute bottom-5 left-3 z-[400] flex h-12 w-12 items-center justify-center rounded-full border shadow-md backdrop-blur-xs disabled:opacity-disabled lg:hidden ${
+                follow.isFollowing ? 'border-accent bg-bg/glass text-accent' : 'border-edge bg-bg/glass text-ink-2'
               }`}
             >
               <LocateFixed className="h-5 w-5" aria-hidden="true" />
@@ -305,7 +305,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
               type="button"
               onClick={() => setSheetOpen(true)}
               aria-expanded={sheetOpen}
-              className="pointer-events-auto absolute bottom-5 left-1/2 z-[400] flex h-12 -translate-x-1/2 items-center gap-2 rounded-full border border-edge bg-bg/95 px-4 text-label font-bold text-ink shadow-md backdrop-blur-xs lg:hidden"
+              className="pointer-events-auto absolute bottom-5 left-1/2 z-[400] flex h-12 -translate-x-1/2 items-center gap-2 rounded-full border border-edge bg-bg/glass px-4 text-label font-bold text-ink shadow-md backdrop-blur-xs lg:hidden"
             >
               <SlidersHorizontal className="h-4 w-4 text-accent" aria-hidden="true" />
               {t.map.controls}

@@ -48,7 +48,7 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-[401] lg:hidden">
       <div className={`no-scrollbar flex gap-1.5 px-3 py-2.5 ${expanded ? 'max-h-[45dvh] flex-wrap overflow-y-auto' : 'overflow-x-auto'}`}>
-        <button type="button" onClick={onAll} aria-pressed={picked.length === 0} className={`${chip} px-4 text-label font-semibold ${picked.length === 0 ? 'border-accent bg-accent text-on-accent' : 'border-edge bg-bg/95 text-ink-2'}`}>
+        <button type="button" onClick={onAll} aria-pressed={picked.length === 0} className={`${chip} px-4 text-label font-semibold ${picked.length === 0 ? 'border-accent bg-accent text-on-accent' : 'border-edge bg-bg/glass text-ink-2'}`}>
           {t.map.allLines}
         </button>
         {/* Second, not last: at the end of a row that scrolls, "stop making me scroll" is only reachable by scrolling. */}
@@ -60,7 +60,7 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
           // after a colon, since a name's brackets are dropped before it is matched.
           aria-label={`${expanded ? t.map.collapseLines : t.map.expandLines}: ${listed.length}`}
           title={expanded ? t.map.collapseLines : t.map.expandLines}
-          className={`${chip} gap-1 border-edge bg-bg/95 px-3.5 text-label font-bold text-ink-2`}
+          className={`${chip} gap-1 border-edge bg-bg/glass px-3.5 text-label font-bold text-ink-2`}
         >
           <span className="tnum">{listed.length}</span>
           <ChevronDown className={`h-4 w-4 transition-transform motion-reduce:transition-none ${expanded ? 'rotate-180' : ''}`} aria-hidden="true" />
@@ -78,12 +78,12 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
               aria-pressed={isSelected}
               aria-label={`${t.lines.lineLabel(branch ? `${line.number} ${branch}` : line.number)}: ${line.name}`}
               title={line.name}
-              className={`pointer-events-auto flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 text-label font-black text-white shadow-sm ${isSelected ? 'ring-2 ring-ink ring-offset-2 ring-offset-bg' : ''}`}
+              className={`pointer-events-auto flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 text-label font-black text-on-line shadow-sm ${isSelected ? 'ring-2 ring-ink ring-offset-2 ring-offset-bg' : ''}`}
               style={{ backgroundColor: line.color }}
             >
               <span>{line.number}</span>
               {/* Whole: cut to a width, the branch lost its last letters as soon as the reader's spacing grew (1.4.12). */}
-              {branch && <span className="font-semibold opacity-90">{branch}</span>}
+              {branch && <span className="font-semibold opacity-branch">{branch}</span>}
             </button>
           );
         })}

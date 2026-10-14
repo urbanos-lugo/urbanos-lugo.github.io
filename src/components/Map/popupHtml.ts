@@ -7,7 +7,7 @@ import { escapeHtml } from '../../utils/html';
 
 /** A line's number on its colour, the badge printed on the poles: LineBadge's 'sm', as HTML. */
 export const badgeHtml = (color: string, number: string): string =>
-  `<span class="tnum flex shrink-0 items-center justify-center font-bold text-white h-6 min-w-6 rounded px-1.5 text-label" style="background-color:${escapeHtml(color)}">${escapeHtml(number)}</span>`;
+  `<span class="tnum flex shrink-0 items-center justify-center font-bold text-on-line h-6 min-w-6 rounded px-1.5 text-label" style="background-color:${escapeHtml(color)}">${escapeHtml(number)}</span>`;
 
 /** The button a popup row is made of, with room for a real click handler after insertion. */
 export const rowButtonClass = 'flex cursor-pointer items-center gap-2 text-left';

@@ -481,7 +481,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
       {/* What the operator says, only for somebody who arrived by scanning the pole: for them it is the thing they were reaching for, not a second opinion. A label and a number: their `towards` is a route description six words long. */}
       {operatorTimes && operatorTimes.departures.length > 0 && (
-        <section className="mt-4 rounded-card border border-edge bg-surface/60 py-3.5 px-cap-3.5">
+        <section className="mt-4 rounded-card border border-edge bg-surface/quiet py-3.5 px-cap-3.5">
           <h3 className="text-label font-bold uppercase tracking-wider text-ink-2">{t.arrivals.operatorSaysTitle}</h3>
           <ul className="mt-2 space-y-1.5">
             {operatorTimes.departures.map((departure, i) => (
@@ -515,7 +515,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                 <span className="min-w-[6rem] flex-1 break-words text-emph font-semibold">
                   {a.destination}
                 </span>
-                <span className={`ml-auto flex shrink-0 items-end gap-1.5 ${skipsHere(a.lineNumber) ? 'line-through opacity-60' : ''}`}>
+                <span className={`ml-auto flex shrink-0 items-end gap-1.5 ${skipsHere(a.lineNumber) ? 'line-through opacity-struck' : ''}`}>
                   <Minutes arrival={a} />
                   {minUnit(a)}
                 </span>
@@ -541,7 +541,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                   </span>
                   {g.headwayMinutes !== null && <span className="mt-0.5 block text-label text-ink-3">{t.arrivals.every(g.headwayMinutes)}</span>}
                 </span>
-                <span className={`ml-auto flex shrink-0 items-end gap-1.5 ${skipsHere(g.lineNumber) ? 'line-through opacity-60' : ''}`}>
+                <span className={`ml-auto flex shrink-0 items-end gap-1.5 ${skipsHere(g.lineNumber) ? 'line-through opacity-struck' : ''}`}>
                   <Minutes arrival={g.departures[0]} />
                   {minUnit(g.departures[0])}
                 </span>

@@ -83,7 +83,7 @@ export function MapControls(p: MapControlsProps) {
         ))}
       </div>
       {p.preset === 'stop' && p.aroundStop && (
-        <div className="mt-2.5 rounded-control border border-accent bg-accent/10 p-3">
+        <div className="mt-2.5 rounded-control border border-accent bg-accent/tint p-3">
           <p className="text-label leading-relaxed text-ink">{t.map.aroundStopActive(p.aroundStop.name, AROUND_STOP_RADIUS_M)}</p>
           <button onClick={() => p.onPreset('all')} className="mt-2 flex h-11 items-center rounded-control border border-edge bg-bg px-3 text-label font-semibold text-ink-2">
             {t.map.aroundStopClear}
@@ -135,7 +135,7 @@ export function MapControls(p: MapControlsProps) {
             onClick={p.locate.toggle}
             disabled={p.locate.isLocating}
             aria-pressed={p.locate.isFollowing}
-            className={`flex h-11 items-center justify-center gap-1.5 rounded-control px-3.5 text-label font-bold shadow-xs transition-colors disabled:opacity-50 ${
+            className={`flex h-11 items-center justify-center gap-1.5 rounded-control px-3.5 text-label font-bold shadow-xs transition-colors disabled:opacity-disabled ${
               p.locate.isFollowing ? 'bg-surface text-ink border border-accent' : 'bg-accent text-on-accent'
             }`}
           >

@@ -359,7 +359,7 @@
 
   --default-border-width: 1px;  /* the hairline */
   --border-width-strong: 2px;   /* a line's own edge on its tinted row, a rail, a marker's ring */
-  --border-width-dashed: 1.5px; /* the dash of ~ ESTIMADO */
+  --border-width-dash: 1.5px;   /* the dash of ~ ESTIMADO */
   --border-width-heavy: 3px;    /* the bar of a chosen option, the QR reader's frame */
   --ring-width-hair: 1px;
   --ring-width-strong: 2px;

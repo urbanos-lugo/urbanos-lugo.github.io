@@ -24,7 +24,7 @@ function SavedRow({ onOpen, onRemove, removeLabel, children }: { onOpen: () => v
   return (
     // The buttons go under the text when both do not fit: beside it at 200% text the stop's
     // zone spilled 54 px out of the row.
-    <div className="py-3.5 px-cap-3.5 rounded-control border border-edge hover:border-accent hover:bg-surface/40 transition-all flex flex-wrap items-center justify-between gap-3 group bg-bg shadow-xs">
+    <div className="py-3.5 px-cap-3.5 rounded-control border border-edge hover:border-accent hover:bg-surface/wash transition-all flex flex-wrap items-center justify-between gap-3 group bg-bg shadow-xs">
       <button type="button" onClick={onOpen} className="min-w-[min(7rem,100%)] flex-1 cursor-pointer text-left">
         {children}
       </button>

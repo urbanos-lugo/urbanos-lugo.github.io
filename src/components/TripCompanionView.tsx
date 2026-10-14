@@ -71,7 +71,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
       </h2>
 
       {/* The one thing that matters, first and biggest. While the alert stands the whole card turns. */}
-      <div className={`space-y-4 rounded-card border py-6 px-cap-6 shadow-sm ${phase === 'alighting' ? 'border-warn bg-warn/40' : 'border-edge bg-bg'}`}>
+      <div className={`space-y-4 rounded-card border py-6 px-cap-6 shadow-sm ${phase === 'alighting' ? 'border-warn bg-warn/wash' : 'border-edge bg-bg'}`}>
         {phase === 'alighting' && segment?.toStop && (
           <p role="alert" className="anim-rise rounded-control border border-warn bg-warn px-3 py-2.5 text-body font-semibold text-warn-ink">
             {t.arrivals.alarmFired(segment.toStop.name)}
@@ -151,7 +151,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
 
         {/* Asked, not guessed: the printed departure plus three minutes has gone by and the phone has not seen the bus move. */}
         {asking && segment?.line && (
-          <div role="group" aria-live="polite" className="anim-rise space-y-2 rounded-control border border-warn bg-warn/40 p-3">
+          <div role="group" aria-live="polite" className="anim-rise space-y-2 rounded-control border border-warn bg-warn/wash p-3">
             <p className="text-body font-semibold text-ink">{t.companion.caughtIt(segment.line.number, formatMinutes(times.departureMinutes))}</p>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" onClick={companion.boarded} className="flex min-h-11 items-center justify-center rounded-control bg-accent px-3 text-body font-semibold text-on-accent">
@@ -228,7 +228,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           the page's own gutter, which stops growing with the type where the phone has no room
           (px-cap-3.5): in plain rem it grew past it and the bar ran 11 px off the screen at 200 %.
           `trip-bar`: <main> leaves its height free below whatever takes the focus (App.tsx). */}
-      <div className="trip-bar anim-sheet-up sticky bottom-0 z-10 -mx-[min(0.875rem,4.375vw)] border-t border-line bg-bg/95 px-[min(0.875rem,4.375vw)] py-3 backdrop-blur-sm lg:-mx-6 lg:px-6">
+      <div className="trip-bar anim-sheet-up sticky bottom-0 z-10 -mx-[min(0.875rem,4.375vw)] border-t border-line bg-bg/glass px-[min(0.875rem,4.375vw)] py-3 backdrop-blur-sm lg:-mx-6 lg:px-6">
         <button type="button" onClick={companion.finish} className={`flex min-h-12 w-full items-center justify-center rounded-control px-4 text-body font-semibold ${phase === 'walking' ? 'bg-accent text-on-accent' : 'border border-edge bg-bg text-ink'}`}>
           {phase === 'walking' ? t.companion.arrivedDone : t.companion.finish}
         </button>

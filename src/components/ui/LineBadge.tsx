@@ -34,7 +34,7 @@ export function LineBadge({
   'aria-label'?: string;
   onClick?: () => void;
 }) {
-  const classes = `tnum flex shrink-0 items-center justify-center font-bold text-white ${SIZES[size]} ${className}`;
+  const classes = `tnum flex shrink-0 items-center justify-center font-bold text-on-line ${SIZES[size]} ${className}`;
   const style = { backgroundColor: color };
   return onClick ? (
     <button type="button" onClick={onClick} title={title} aria-label={aria['aria-label']} className={classes} style={style}>

@@ -251,7 +251,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {/* Columns of at least 6rem, so they follow the text: two on a phone at the default size,
                 one from 125% up. In two fixed columns at 200% the frequency's label ran 64 px
                 into the next one. */}
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-x-4 gap-y-3 rounded-control border border-line bg-surface/60 p-3 sm:grid-cols-3">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-x-4 gap-y-3 rounded-control border border-line bg-surface/quiet p-3 sm:grid-cols-3">
               <Fact icon={Clock} label={t.lines.frequency}>
                 <span className="font-sans font-semibold">{frequencyLabel(currentLine, lang)}</span>
               </Fact>
@@ -397,7 +397,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               // the two at 200% text, they pushed the right arrow 118 px off the screen.
               <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-control bg-surface border border-edge">
                 {/* Named: an arrow on its own was read out as "left arrow", which says where it points and not what it does. */}
-                <button onClick={() => setPickedRunIndex(Math.max(0, runIndex - 1))} disabled={runIndex === 0} aria-label={t.lines.previousRun} title={t.lines.previousRun} className="order-2 @min-[16rem]:order-none flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-50">
+                <button onClick={() => setPickedRunIndex(Math.max(0, runIndex - 1))} disabled={runIndex === 0} aria-label={t.lines.previousRun} title={t.lines.previousRun} className="order-2 @min-[16rem]:order-none flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
                   &larr;
                 </button>
                 <div className="order-1 basis-full text-center leading-tight @min-[16rem]:order-none @min-[16rem]:basis-0 @min-[16rem]:flex-1">
@@ -418,7 +418,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                     )}
                   </div>
                 </div>
-                <button onClick={() => setPickedRunIndex(Math.min(runs.length - 1, runIndex + 1))} disabled={runIndex >= runs.length - 1} aria-label={t.lines.nextRun} title={t.lines.nextRun} className="order-3 @min-[16rem]:order-none flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-50">
+                <button onClick={() => setPickedRunIndex(Math.min(runs.length - 1, runIndex + 1))} disabled={runIndex >= runs.length - 1} aria-label={t.lines.nextRun} title={t.lines.nextRun} className="order-3 @min-[16rem]:order-none flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
                   &rarr;
                 </button>
               </div>
@@ -466,7 +466,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                     />
                     {/* Stacked on a phone: beside the name, the time chip left it about 110 px, and
                         "Fonte dos Ranchos 8 (Cafetería Prados)" took four lines. */}
-                    <div className={`px-cap-3 py-2 rounded-control border transition-all flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2.5 ${busHere ? 'bg-surface/80 border-edge ring-1 ring-official/50 shadow-xs' : 'bg-bg border-line hover:border-edge hover:bg-surface/40 shadow-xs'}`}>
+                    <div className={`px-cap-3 py-2 rounded-control border transition-all flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2.5 ${busHere ? 'bg-surface/lifted border-edge ring-1 ring-official/half shadow-xs' : 'bg-bg border-line hover:border-edge hover:bg-surface/wash shadow-xs'}`}>
                       <div className="min-w-0 flex-1">
                         {/* The stop name is not shortened: it is the only thing on the row a reader has to match against a pole. */}
                         <div className="flex min-w-0 flex-wrap items-center gap-x-2">

@@ -12,7 +12,7 @@ interface ItineraryProps {
 }
 
 const NODE = { bus: 'bg-accent text-on-accent', wait: 'bg-warn text-warn-ink', walk: 'bg-ink text-bg' };
-const CARD = { bus: 'border-edge bg-surface/30', wait: 'border-warn bg-warn/40', walk: 'border-edge bg-surface/60' };
+const CARD = { bus: 'border-edge bg-surface/faint', wait: 'border-warn bg-warn/wash', walk: 'border-edge bg-surface/quiet' };
 const ICON = { bus: Bus, wait: Clock, walk: Footprints };
 
 /** The stop you get on or off at: the label and the time on one line, the name whole on the next, never truncated. */
@@ -107,7 +107,7 @@ function PlainStep({ seg }: { seg: TripSegment }) {
           <span className={`text-body font-black font-mono ${ink}`}>{seg.durationMinutes} min</span>
         </div>
       </div>
-      <p className={wait ? 'text-label text-warn-ink font-medium bg-bg/80 p-2.5 rounded-control border border-warn' : 'text-label text-ink-2 mt-1'}>{seg.instruction}</p>
+      <p className={wait ? 'text-label text-warn-ink font-medium bg-bg/lifted p-2.5 rounded-control border border-warn' : 'text-label text-ink-2 mt-1'}>{seg.instruction}</p>
     </div>
   );
 }

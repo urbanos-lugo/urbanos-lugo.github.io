@@ -48,7 +48,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
   /** A notice with a source was read off somebody else's site, in their words. */
   const quoted = source ? NOTICE_LANG : undefined;
   return (
-    <div className={`py-5 px-cap-5 rounded-card border transition-all ${warning ? 'bg-warn/60 border-warn' : 'bg-surface/60 border-edge'}`}>
+    <div className={`py-5 px-cap-5 rounded-card border transition-all ${warning ? 'bg-warn/quiet border-warn' : 'bg-surface/quiet border-edge'}`}>
       {source && <span className="text-label font-bold uppercase tracking-wider text-ink-3">{source}</span>}
       <div className="mb-2 mt-1 flex flex-wrap items-center justify-between gap-2">
         <span className={`text-label font-black uppercase tracking-wider px-2 py-0.5 rounded ${warning ? 'bg-warn text-warn-ink' : 'bg-surface text-accent'}`}>{when}</span>
@@ -141,7 +141,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
             }}
             disabled={isSyncing || cooldown > 0}
             className={`flex h-11 shrink-0 items-center gap-1.5 self-start rounded-control px-4 text-body font-semibold sm:self-auto ${
-              cooldown > 0 ? 'cursor-not-allowed border border-edge bg-surface text-ink-3' : 'bg-accent hover:bg-accent text-on-accent disabled:opacity-50'
+              cooldown > 0 ? 'cursor-not-allowed border border-edge bg-surface text-ink-3' : 'bg-accent hover:bg-accent text-on-accent disabled:opacity-disabled'
             }`}
           >
             {isSyncing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : cooldown > 0 ? <Clock className="w-3.5 h-3.5 text-ink-2" /> : <RefreshCw className="w-3.5 h-3.5" />}
@@ -157,7 +157,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
 
         {/* Where these came from when it was not from asking just now: the static build reads the last snapshot, and a stale incident read as current is the worse mistake. */}
         {liveAlerts.length > 0 && (snapshotAt || unreachable) && (
-          <p className={`rounded-card border px-4 py-3 text-label leading-relaxed ${stale ? 'border-warn bg-warn/60 text-warn-ink' : 'border-edge bg-surface text-ink-2'}`}>
+          <p className={`rounded-card border px-4 py-3 text-label leading-relaxed ${stale ? 'border-warn bg-warn/quiet text-warn-ink' : 'border-edge bg-surface text-ink-2'}`}>
             {unreachable && !snapshotAt ? t.fares.unknownStatusDesc : t.fares.snapshotNotice(formatInstant(snapshotAt ?? undefined, locale))}
           </p>
         )}
@@ -226,7 +226,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
             </h2>
             <p className="text-label text-ink-3 mt-0.5">{t.fares.newsSubtitle}</p>
           </div>
-          <ul className="divide-y divide-line rounded-card border border-edge bg-surface/60">
+          <ul className="divide-y divide-line rounded-card border border-edge bg-surface/quiet">
             {councilNews.map((item) => (
               <li key={item.id} className="p-4 sm:p-5">
                 <span className="text-label font-bold uppercase tracking-wider text-ink-3">{formatInstant(item.date, locale)}</span>

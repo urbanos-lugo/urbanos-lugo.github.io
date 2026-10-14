@@ -714,7 +714,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                     >
                       {/* One line: from the middle of the map it had half the width, and at 200% text
                           it broke into three and covered the route. */}
-                      <span className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-accent bg-bg/95 px-3 py-1.5 text-label font-semibold text-ink shadow-sm backdrop-blur-xs">
+                      <span className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-accent bg-bg/glass px-3 py-1.5 text-label font-semibold text-ink shadow-sm backdrop-blur-xs">
                         {t.planner.stepByStepTitle}
                         <ChevronDown className="h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2.5} aria-hidden="true" />
                       </span>

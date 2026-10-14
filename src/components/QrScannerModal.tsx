@@ -145,8 +145,8 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
         {isScanning && (
           <div className="relative rounded-control overflow-hidden bg-ink mb-3 aspect-video">
             <video ref={videoRef} playsInline muted className="w-full h-full object-cover" />
-            <div className="absolute inset-0 border-[3px] border-white/70 m-10 rounded-control pointer-events-none" />
-            <span className="absolute bottom-2 inset-x-0 text-center text-label font-bold text-white drop-shadow">{t.qr.scanning}</span>
+            <div className="absolute inset-0 border-[3px] border-on-camera/frame m-10 rounded-control pointer-events-none" />
+            <span className="absolute bottom-2 inset-x-0 text-center text-label font-bold text-on-camera drop-shadow-on-camera">{t.qr.scanning}</span>
           </div>
         )}
 
@@ -156,7 +156,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             isScanning ? stopCamera() : setIsScanning(true);
           }}
           disabled={!hasBarcodeDetector}
-          className="mb-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface px-4 py-2.5 text-body font-semibold text-ink-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mb-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface px-4 py-2.5 text-body font-semibold text-ink-2 disabled:cursor-not-allowed disabled:opacity-disabled"
         >
           {hasBarcodeDetector ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
           <span>{hasBarcodeDetector ? (isScanning ? t.qr.stopScan : t.qr.scanBtn) : t.qr.noCamera}</span>
