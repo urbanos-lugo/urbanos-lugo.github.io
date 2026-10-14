@@ -13,7 +13,7 @@ export function Provenance({ precision, extra, title }: { precision: Precision; 
   const text = extra ? `${label} ${extra}` : label;
   return precision === 'published' ? (
     <span title={title} className="inline-flex items-center gap-1.5 rounded-tag bg-official px-2 py-1 text-on-official">
-      <Check className="h-2.5 w-2.5 shrink-0" strokeWidth={3.4} aria-hidden="true" />
+      <Check className="h-2.5 w-2.5 shrink-0 stroke-chip" aria-hidden="true" />
       <span className="tnum text-label font-semibold tracking-[0.05em]">{text}</span>
     </span>
   ) : (

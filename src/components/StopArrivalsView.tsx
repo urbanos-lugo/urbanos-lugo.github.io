@@ -295,7 +295,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         aria-label={watches[a.lineId] !== undefined ? t.arrivals.watchOn : t.arrivals.watchCta(WATCH_LEAD_MINUTES)}
         className={`flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-control border px-3 text-label font-semibold ${watches[a.lineId] !== undefined ? 'border-warn bg-warn text-warn-ink' : 'border-edge text-ink-2'}`}
       >
-        <Bell className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+        <Bell className="h-4 w-4 shrink-0" aria-hidden="true" />
         {/* The words from sm up. On a 375 px phone the official chip and the full label were
             363 px in a 323 px row, so the button fell to a third line on every official row
             and on no estimated one; at 320 px on all of them. */}
@@ -309,7 +309,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   return (
     <div className="mx-auto w-full max-w-3xl px-cap-3.5 pb-8 pt-4">
       <button onClick={onBack} className="-ml-1 mb-1 flex h-11 items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden">
-        <ArrowLeft className="h-4.5 w-4.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+        <ArrowLeft className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
         {t.arrivals.back}
       </button>
 
@@ -341,8 +341,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           <IconButton
             icon={copiedLink ? Check : Share2}
             label={copiedLink ? t.arrivals.copied : t.arrivals.share}
-            strokeWidth={copiedLink ? 2.4 : 2}
-            iconClassName={copiedLink ? 'anim-tick-in text-official' : ''}
+            iconClassName={copiedLink ? 'anim-tick-in text-official stroke-bold' : ''}
             onClick={copyShareLink}
           />
           {/* The tick is the confirmation for the eye; this is the one for the ear. */}
@@ -411,7 +410,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
             {t.arrivals.nearbyLinesTitle}
             <span className="tnum rounded-control border border-edge px-1.5 py-0.5 text-ink-3">{nearbyLines.length}</span>
-            <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
+            <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
           </summary>
           <div className="px-3 pb-3">
             <p className="text-label text-ink-3">{t.arrivals.nearbyLinesHint}</p>
@@ -474,7 +473,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         <div role="alert" className="anim-rise mt-3 flex items-start justify-between gap-3 rounded-control bg-official p-3 text-label font-semibold text-on-official">
           <span>{firedMessage}</span>
           <button onClick={() => setFiredMessage(null)} aria-label={t.arrivals.dismiss} className="-m-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-control">
-            <X className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
+            <X className="h-4.5 w-4.5" aria-hidden="true" />
           </button>
         </div>
       )}
@@ -500,7 +499,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {/* Not a live region: the minute tick moved every row's count at once and announced fifteen bare numbers. */}
       {arrivals.length === 0 ? (
         <div className="mt-6 rounded-card border border-dashed border-edge px-cap-5 py-10 text-center">
-          <Clock className="mx-auto mb-3 h-7 w-7 text-ink-3" strokeWidth={1.6} aria-hidden="true" />
+          <Clock className="mx-auto mb-3 h-7 w-7 text-ink-3 stroke-light" aria-hidden="true" />
           <p className="text-body text-ink-2">{atTime ? t.arrivals.noneAtTime(atTime) : t.arrivals.noArrivals}</p>
           {nextService && <p className="mt-2 text-body font-semibold">{t.arrivals.nextServiceAt(nextService.lineNumber, `${nextService.precision === 'estimated' ? '~' : ''}${nextService.time}`, nextService.destination, dayWord(lang, nextService.daysAhead))}</p>}
         </div>
@@ -571,7 +570,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
           <Clock className="h-3.5 w-3.5 shrink-0 text-accent" aria-hidden="true" />
           {t.arrivals.atTimeSummary}
-          <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
+          <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
         </summary>
         <label className="flex flex-wrap items-center gap-2 px-3 pb-3 text-label font-semibold text-ink-2">
           <span className="shrink-0">{t.arrivals.atTimeLabel}</span>
@@ -591,7 +590,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
               {t.arrivals.polesNearby}
               <span className="tnum rounded-control border border-edge px-1.5 py-0.5 text-ink-3">{polesNearby.length}</span>
-              <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
+              <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
             </summary>
             <ul className="flex flex-col gap-1.5 px-3 pb-3">
               {polesNearby.map((pole) => (
@@ -614,7 +613,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       <details className="disclosure mt-4 border-t border-line pt-3">
         <summary className="flex min-h-11 cursor-pointer items-center text-label font-semibold text-ink-2">
           {t.arrivals.reportPosition}
-          <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
+          <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
         </summary>
         <p className="text-label leading-relaxed text-ink-3">{t.arrivals.positionChecked}</p>
         <p className="mt-1.5 text-label leading-relaxed text-ink-3">{t.arrivals.reportNotCouncil}</p>
@@ -629,7 +628,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         <details className="disclosure mt-4 border-t border-line pt-3">
           <summary className="flex min-h-11 cursor-pointer items-center text-label font-semibold text-ink-2">
             {t.arrivals.whyEstimatedTitle}
-            <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
+            <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
           </summary>
           <p className="pb-1 text-label leading-relaxed text-ink-3">{t.arrivals.whyEstimated(timingPoints.published, timingPoints.total)}</p>
         </details>

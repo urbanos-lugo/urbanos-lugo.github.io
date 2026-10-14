@@ -368,6 +368,13 @@
   --outline-offset-focus: 2px;
   --text-underline-offset-link: 2px;
 
+  /* Icon strokes. Lucide draws at 2 on its 24-unit grid; these are the exceptions, by role. */
+  --stroke-width-light: 1.6;  /* the large icon over an empty answer */
+  --stroke-width-filled: 1.8; /* the rim of a filled icon: a saved star */
+  --stroke-width-bold: 2.5;   /* a small mark that has to read: a chevron, an arrow, a tick */
+  --stroke-width-heavy: 3;    /* the tick on the chosen line in the map's panel */
+  --stroke-width-chip: 3.4;   /* the tick inside a provenance chip, 10 px across */
+
   /* Elevation, by what the thing does over what is under it. */
   --shadow-hair: 0 1px 2px 0 rgb(0 0 0 / 0.05);  /* the slightest lift: a pressed toggle, a node on a rail */
   --shadow-raised: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); /* a card, a chip on the map */

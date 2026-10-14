@@ -211,7 +211,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
                 <li key={stop.id} aria-current={isNext ? 'step' : undefined} className={`flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 ${passed ? 'text-ink-3' : 'text-ink'}`}>
                   {/* The arrow is where the GPS says you are, the one measured thing on this screen, so it is the one thing that pulses. */}
                   <span className={`flex h-4 w-4 shrink-0 items-center justify-center ${isNext ? 'live-dot' : ''}`} aria-hidden="true">
-                    {passed ? <Check className="anim-tick-in h-4 w-4 text-official" strokeWidth={2.6} /> : isNext ? <ArrowRight className="anim-drop h-4 w-4 text-accent" strokeWidth={2.6} /> : <span className="h-1.5 w-1.5 rounded-pill bg-ink-3" />}
+                    {passed ? <Check className="anim-tick-in h-4 w-4 text-official stroke-bold" /> : isNext ? <ArrowRight className="anim-drop h-4 w-4 text-accent stroke-bold" /> : <span className="h-1.5 w-1.5 rounded-pill bg-ink-3" />}
                   </span>
                   {/* The name keeps a floor and "baixas aquí" goes under it when both do not fit: beside it
                       at 200 % text the name had 100 px and its longest word ran out of the row. */}

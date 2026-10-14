@@ -329,7 +329,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
       onClick={() => planResult && onStartTrip(planResult, endpoints.origin ?? null, endpoints.destination ?? null)}
       className={`flex w-full items-center justify-center gap-2 rounded-control bg-accent px-4 font-semibold text-on-accent ${prominent ? 'anim-attention h-14 text-emph' : 'h-12 text-body'}`}
     >
-      <Bus className={prominent ? 'h-5 w-5 shrink-0' : 'h-4.5 w-4.5 shrink-0'} strokeWidth={2} aria-hidden="true" />
+      <Bus className={prominent ? 'h-5 w-5 shrink-0' : 'h-4.5 w-4.5 shrink-0'} aria-hidden="true" />
       {t.companion.start}
     </button>
   );
@@ -446,7 +446,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 ) : (
                   <>
                     <span>{t.planner.calculate}</span>
-                    <ArrowRight className="h-4.5 w-4.5" strokeWidth={2.5} aria-hidden="true" />
+                    <ArrowRight className="h-4.5 w-4.5 stroke-bold" aria-hidden="true" />
                   </>
                 )}
               </button>
@@ -620,7 +620,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                   {/* Past the last bus the answer is another day's: said beside the clock, where the eye goes. */}
                   {!!planResult.daysAhead && <span className="text-body font-semibold text-estimated">{dayWord(lang, planResult.daysAhead)}</span>}
                   <span className="tnum text-emph font-semibold">{shown.departure}</span>
-                  <ArrowRight className="h-4 w-4 shrink-0 self-center text-ink-3" strokeWidth={2} aria-hidden="true" />
+                  <ArrowRight className="h-4 w-4 shrink-0 self-center text-ink-3" aria-hidden="true" />
                   <span className="sr-only">{t.planner.arrivalLabel}</span>
                   <span className="tnum text-emph font-semibold">~{shown.arrival}</span>
                 </span>
@@ -639,7 +639,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               <details className="disclosure rounded-control border border-edge bg-surface">
                 <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 text-label font-semibold text-ink-2">
                   <span className="sr-only">{t.planner.tripInfoTitle}</span>
-                  <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden="true" />
+                  <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
                   <span className="flex flex-1 flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono">
                     {measuredWalk && (
                       <span className="flex flex-wrap items-baseline gap-x-1.5 text-ink">
@@ -716,7 +716,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           it broke into three and covered the route. */}
                       <span className="flex items-center gap-1.5 whitespace-nowrap rounded-pill border border-accent bg-bg/glass px-3 py-1.5 text-label font-semibold text-ink shadow-raised backdrop-blur-glass">
                         {t.planner.stepByStepTitle}
-                        <ChevronDown className="h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2.5} aria-hidden="true" />
+                        <ChevronDown className="h-3.5 w-3.5 shrink-0 text-accent stroke-bold" aria-hidden="true" />
                       </span>
                     </button>
                   </div>
@@ -734,7 +734,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
             </div>
           ) : (
             <div className="rounded-card border border-dashed border-edge px-cap-5 py-10 text-center">
-              <AlertCircle className="mx-auto mb-3 h-7 w-7 text-ink-3" strokeWidth={1.6} aria-hidden="true" />
+              <AlertCircle className="mx-auto mb-3 h-7 w-7 text-ink-3 stroke-light" aria-hidden="true" />
               <p className="text-body text-ink-2">{timeMode === 'arrive' ? t.planner.noArriveOption : t.planner.noRouteFound}</p>
             </div>
           )}

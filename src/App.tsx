@@ -191,7 +191,7 @@ export default function App() {
               <div>
             <div className="flex items-center gap-1 border-b border-line bg-surface pl-3.5 pr-1">
               <button onClick={() => setActiveTab('info')} className="flex min-w-0 flex-1 items-center gap-3 py-2 text-left">
-                <Moon className="h-4.5 w-4.5 shrink-0 text-ink-2" strokeWidth={2} aria-hidden="true" />
+                <Moon className="h-4.5 w-4.5 shrink-0 text-ink-2" aria-hidden="true" />
                 <span className="min-w-0 flex-1">
                   {/* Both lines wrap rather than cut: the time is the end of the sentence, and with the
                       day word in it "primeiro bus mañá ás ~06:50" was cut at "~0…"; the festivals
@@ -211,7 +211,7 @@ export default function App() {
                 <span className="sr-only">{t.nightBanner.seeNotices}</span>
               </button>
               <button onClick={() => setIsNightBannerDismissed(true)} aria-label={t.nightBanner.dismiss} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface">
-                <X className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
+                <X className="h-4.5 w-4.5" aria-hidden="true" />
               </button>
             </div>
               </div>

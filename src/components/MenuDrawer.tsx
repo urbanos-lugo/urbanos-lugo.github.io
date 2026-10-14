@@ -31,7 +31,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
         <div className="flex items-center justify-between border-b border-edge px-[18px] py-4">
           <span className="text-emph font-semibold tracking-[-0.012em]">{t.nav.appName}</span>
           <button onClick={onClose} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface" aria-label={t.menu.close}>
-            <X className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
+            <X className="h-4.5 w-4.5" aria-hidden="true" />
           </button>
         </div>
 
@@ -53,14 +53,14 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
               aria-label={badge > 0 ? `${label}: ${badge}` : undefined}
               className="flex min-h-14 items-center gap-4 rounded-card px-cap-3 py-2 text-left"
             >
-              <Icon className={`h-5 w-5 shrink-0 ${id === 'info' ? 'text-warn-ink' : 'text-ink-2'}`} strokeWidth={2} aria-hidden="true" />
+              <Icon className={`h-5 w-5 shrink-0 ${id === 'info' ? 'text-warn-ink' : 'text-ink-2'}`} aria-hidden="true" />
               <span className="min-w-0 flex-1 break-words text-emph font-semibold">{label}</span>
               {/* A space the row does not draw, between the words and the count: run together, the
                   text read "servizo1", which did not match the name "servizo (1)" (2.5.3). */}{' '}
               {badge > 0 && <span className="tnum shrink-0 rounded-control bg-warn px-2 py-0.5 text-label font-bold text-warn-ink">{badge}</span>}
               {/* Decoration, the whole row is the link: it goes where the drawer is narrow for its
                   text, and the first link's words had broken mid-word, "servi-zo". */}
-              <ChevronRight className="hidden h-4.5 w-4.5 shrink-0 text-ink-3 @min-[15rem]:block" strokeWidth={2} aria-hidden="true" />
+              <ChevronRight className="hidden h-4.5 w-4.5 shrink-0 text-ink-3 @min-[15rem]:block" aria-hidden="true" />
             </a>
           ))}
           <div className="px-3 py-2">

@@ -37,7 +37,7 @@ export function BottomNav({ activeTab, setActiveTab, tripActive = false }: Botto
             className={`flex h-[60px] flex-1 flex-col items-center justify-center gap-1 transition-colors ${on ? 'text-accent' : 'text-ink-3'}`}
           >
             <span className="relative">
-              <Icon className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+              <Icon className="h-5 w-5" aria-hidden="true" />
               {tripActive && id === 'plan' && (
                 <>
                   <span className="absolute -right-1.5 -top-1 h-2.5 w-2.5 rounded-pill border-2 border-bg bg-accent" aria-hidden="true" />

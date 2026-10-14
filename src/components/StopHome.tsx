@@ -26,7 +26,7 @@ const PER_STOP = 3;
 const Heading = ({ icon: Icon, tint, children, action }: { icon: LucideIcon; tint: string; children: ReactNode; action?: ReactNode }) => (
   <div className="mt-7 flex items-center gap-3">
     <h2 className="flex flex-1 items-center gap-2 text-emph font-semibold">
-      <Icon className={`h-4.5 w-4.5 shrink-0 ${tint}`} strokeWidth={2} aria-hidden="true" />
+      <Icon className={`h-4.5 w-4.5 shrink-0 ${tint}`} aria-hidden="true" />
       {children}
     </h2>
     {action}
@@ -116,7 +116,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
   return (
     <div className="mx-auto w-full max-w-3xl px-cap-3.5 pb-8 pt-4">
       <h2 className="flex items-center gap-2 text-title font-semibold tracking-[-0.012em]">
-        <Star className="h-5 w-5 shrink-0 text-warn-ink" strokeWidth={1.8} fill="currentColor" aria-hidden="true" />
+        <Star className="h-5 w-5 shrink-0 text-warn-ink stroke-filled" fill="currentColor" aria-hidden="true" />
         {t.stopHome.saved}
       </h2>
 
@@ -126,7 +126,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
           <p className="mt-1.5 text-body leading-relaxed text-ink-2">{t.stopHome.emptyBody}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             <button onClick={onOpenQrScanner} className="flex h-11 items-center gap-2 rounded-control bg-accent px-4 text-body font-semibold text-on-accent">
-              <QrCode className="h-4.5 w-4.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+              <QrCode className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
               {t.stopHome.scan}
             </button>
             {/* A link, not a field: the field is at the top of the screen, the hardest place for a thumb, and this puts the cursor there. */}
@@ -250,7 +250,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
       {nearby.length === 0 ? (
         <>
           <button onClick={locate} disabled={locating} className="mt-2.5 flex h-11 w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface text-body font-semibold text-ink-2 disabled:opacity-disabled">
-            <Compass className="h-4.5 w-4.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+            <Compass className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
             {locating ? t.stopHome.locating : t.stopHome.locate}
           </button>
           {locationError && (

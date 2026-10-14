@@ -214,7 +214,7 @@ export function MapControls(p: MapControlsProps) {
                       its end under a reader's text spacing and at 200 %. */}
                   <span className="min-w-0 break-words">{line.name}</span>
                   {/* The row is a switch, and a tick is what says so. */}
-                  {isSelected && <Check className="ml-auto h-4 w-4 shrink-0 text-accent" strokeWidth={3} aria-hidden="true" />}
+                  {isSelected && <Check className="ml-auto h-4 w-4 shrink-0 text-accent stroke-heavy" aria-hidden="true" />}
                 </button>
                 <button onClick={() => p.onOpenLine(line)} title={t.map.openLineInfo} aria-label={`${t.map.openLineInfo}: ${line.number}`} className="flex min-h-11 w-11 shrink-0 items-center justify-center rounded-r-control-inner">
                   <ChevronRight className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-ink-3'}`} aria-hidden="true" />

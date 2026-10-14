@@ -11,7 +11,7 @@ function Row({ icon: Icon, label, children }: { icon: LucideIcon; label: string;
   return (
     <div>
       <div className="mb-1.5 flex items-center gap-2 px-1 text-label text-ink-3">
-        <Icon className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+        <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
         {label}
       </div>
       <div role="group" aria-label={label} className="flex gap-1">

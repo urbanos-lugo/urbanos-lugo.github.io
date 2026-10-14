@@ -68,7 +68,7 @@ function BusStep({ seg, onSelectStop, onSelectLine }: { seg: TripSegment & { lin
       ) : (
         <details className="disclosure mt-1.5 border-l-2 border-line pl-3">
           <summary className="flex min-h-11 cursor-pointer items-center gap-1.5 text-label text-ink-2">
-            <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+            <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0" aria-hidden="true" />
             {t.planner.ride(count, seg.durationMinutes)}
           </summary>
           <ol className="pb-2 pl-[21px]" aria-label={t.planner.viaStops}>

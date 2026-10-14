@@ -13,7 +13,6 @@ export function IconButton({
   onClick,
   title,
   fill,
-  strokeWidth,
   className = '',
   iconClassName = '',
 }: {
@@ -24,7 +23,6 @@ export function IconButton({
   title?: string;
   /** Fill the icon (a starred star). */
   fill?: boolean;
-  strokeWidth?: number;
   className?: string;
   iconClassName?: string;
 }) {
@@ -36,7 +34,7 @@ export function IconButton({
       title={title}
       className={`flex h-11 w-11 items-center justify-center rounded-control border ${on ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${className}`}
     >
-      <Icon className={`h-4.5 w-4.5 ${iconClassName}`} strokeWidth={strokeWidth ?? (fill === undefined ? 2 : 1.8)} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />
+      <Icon className={`h-4.5 w-4.5 ${fill === undefined ? '' : 'stroke-filled'} ${iconClassName}`} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />
     </button>
   );
 }
@@ -74,7 +72,7 @@ export function Notice({ children, warn = false, role, icon: Icon, className = '
     <div role={role} className={`anim-rise rounded-control border p-3 text-label leading-relaxed ${warn ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${Icon ? 'flex gap-2' : ''} ${className}`}>
       {Icon ? (
         <>
-          <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+          <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <div className="min-w-0 flex-1">{children}</div>
         </>
       ) : (
@@ -94,9 +92,9 @@ export function NoticeDisclosure({ summary, children, seeFull, className = '' }:
   return (
     <details className={`disclosure rounded-control border border-warn bg-warn text-label leading-relaxed text-warn-ink ${className}`}>
       <summary className="flex min-h-11 cursor-pointer items-start gap-2 p-3">
-        <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+        <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         <span className="min-w-0 flex-1">{summary}</span>
-        <ChevronDown className="disclosure-chevron mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+        <ChevronDown className="disclosure-chevron mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
       </summary>
       <div className="px-3 pb-1 pl-8.5">
         {children}

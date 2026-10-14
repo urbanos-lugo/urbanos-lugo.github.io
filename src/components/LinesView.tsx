@@ -214,7 +214,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
 
         <div className={`anim-push-in space-y-4 lg:relative lg:animate-none lg:col-span-7 lg:block lg:h-full lg:overflow-y-auto lg:pb-4 ${showDetail ? '' : 'hidden'}`}>
           <button onClick={() => setShowDetail(false)} className="-ml-1 flex h-11 items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden">
-            <ArrowLeft className="h-4.5 w-4.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+            <ArrowLeft className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
             {t.lines.backToLines}
           </button>
 
@@ -292,7 +292,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               return (
                 <Notice warn className="">
                   <p className="flex gap-2 font-semibold">
-                    <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+                    <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                     <span>{t.lines.noticeToday}</span>
                   </p>
                   {until && <p className="mt-1 font-semibold">{t.arrivals.noticeRunsUntil(currentLine.number, until.time, until.to)}</p>}

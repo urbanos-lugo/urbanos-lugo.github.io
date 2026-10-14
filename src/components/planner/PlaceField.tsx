@@ -89,7 +89,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
       )}
       {trailing?.kind === 'clear' && (
         <button onClick={trailing.onClick} aria-label={t.search.clear} className="absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-ink-3">
-          <X className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
+          <X className="h-4.5 w-4.5" aria-hidden="true" />
         </button>
       )}
       {open && suggestions.length > 0 && (
