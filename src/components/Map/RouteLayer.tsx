@@ -8,6 +8,7 @@ import { BusDirection, BusLine, BusStop } from '../../types';
 import { stopById } from '../../data/transitData';
 import { metresBetween } from '../../utils/geo';
 import { POPUP_CLEAR_OF_CONTROLS, badgeHtml, popupBox, rowButtonClass } from './popupHtml';
+import { DRAW } from './palette';
 
 interface RouteLayerProps {
   map: L.Map | null;
@@ -137,10 +138,10 @@ function arrowsAlong(path: [number, number][], keepClear: { lat: number; lng: nu
 const arrowIcon = (color: string, weight: number, deg: number): L.DivIcon =>
   L.divIcon({
     className: 'route-arrow',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8],
+    iconSize: [DRAW.icon.arrow, DRAW.icon.arrow],
+    iconAnchor: [DRAW.icon.arrow / 2, DRAW.icon.arrow / 2],
     html:
-      `<svg width="16" height="16" viewBox="-8 -8 16 16" style="display:block;transform:rotate(${deg.toFixed(1)}deg)" aria-hidden="true">` +
+      `<svg width="${DRAW.icon.arrow}" height="${DRAW.icon.arrow}" viewBox="-8 -8 16 16" class="block" style="transform:rotate(${deg.toFixed(1)}deg)" aria-hidden="true">` +
       `<path d="M-4 -6 L3 0 L-4 6" fill="none" stroke="${escapeHtml(color)}" stroke-width="${weight}" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   });
 
@@ -204,7 +205,7 @@ export function RouteLayer({ map, lines, visibleLineIds, emphasisLineIds = [], s
     if (!map.getPane('routeArrows')) {
       // Between the overlay canvas (400) and the shadow pane (500); taps pass through to the stops.
       const pane = map.createPane('routeArrows');
-      pane.style.zIndex = '450';
+      pane.style.zIndex = String(DRAW.pane.arrows);
       pane.style.pointerEvents = 'none';
     }
     const arrows = L.layerGroup();
@@ -257,12 +258,12 @@ export function RouteLayer({ map, lines, visibleLineIds, emphasisLineIds = [], s
           const isReturn = dirIndex === 1;
           // Half a lane out from the kerb, then whole lanes; nothing where lanes are off.
           const path = offsetPath(verticesFor(`${line.id}/${dirIndex}`, dir.pathCoordinates, zoom), (laneOf(line) + 0.5) * (subject ? subjectLaneMetres : laneMetres));
-          const weight = muted ? 2 : subject ? 5 : 3.5;
+          const weight = muted ? DRAW.route.muted : subject ? DRAW.route.subject : DRAW.route.network;
           const polyline = L.polyline(path, {
             color: line.color,
             weight,
-            opacity: muted ? 0.35 : subject ? 0.95 : 0.7,
-            dashArray: isReturn ? '10 7' : undefined,
+            opacity: muted ? DRAW.route.mutedOpacity : subject ? DRAW.route.subjectOpacity : DRAW.route.networkOpacity,
+            dashArray: isReturn ? DRAW.route.returnDash : undefined,
             lineJoin: 'round',
             lineCap: 'round',
           });

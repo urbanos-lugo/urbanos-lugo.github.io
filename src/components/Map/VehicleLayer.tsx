@@ -4,6 +4,7 @@ import { translations, useLang, type Lang } from '../../i18n';
 import { escapeHtml } from '../../utils/html';
 import { ScheduledBus } from '../../types';
 import { POPUP_CLEAR_OF_CONTROLS, badgeHtml, popupBox, rowButtonClass } from './popupHtml';
+import { DRAW } from './palette';
 
 interface VehicleLayerProps {
   map: L.Map | null;
@@ -22,16 +23,16 @@ interface VehicleLayerProps {
 function busIcon(bus: ScheduledBus): L.DivIcon {
   const colour = escapeHtml(bus.lineColor);
   const number = escapeHtml(bus.lineNumber);
-  const fontSize = number.length > 2 ? 10 : 12.5;
+  const size = number.length > 2 ? 'text-map-bus-long' : 'text-map-bus';
   return L.divIcon({
     className: 'custom-bus-marker',
-    iconSize: [46, 46],
-    iconAnchor: [23, 23],
+    iconSize: [DRAW.icon.bus, DRAW.icon.bus],
+    iconAnchor: [DRAW.icon.bus / 2, DRAW.icon.bus / 2],
     html:
-      `<div class="cursor-pointer"><svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true" style="display:block; overflow:visible; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.35));">` +
-      `<g transform="rotate(${bus.bearing} 23 23)"><path d="M23 2.5 L30 14 L16 14 Z" fill="${colour}" stroke="var(--c-bg)" stroke-width="2.5" stroke-linejoin="round" paint-order="stroke"></path></g>` +
-      `<circle cx="23" cy="23" r="13" fill="${colour}" stroke="var(--c-bg)" stroke-width="2.5"></circle>` +
-      `<text x="23" y="23" text-anchor="middle" dominant-baseline="central" fill="#ffffff" font-family="var(--font-sans)" font-weight="700" font-size="${fontSize}" letter-spacing="-0.2">${number}</text></svg></div>`,
+      `<div class="cursor-pointer"><svg width="${DRAW.icon.bus}" height="${DRAW.icon.bus}" viewBox="0 0 46 46" aria-hidden="true" class="block overflow-visible drop-shadow-marker">` +
+      `<g transform="rotate(${bus.bearing} 23 23)"><path d="M23 2.5 L30 14 L16 14 Z" fill="${colour}" class="stroke-bg stroke-marker" stroke-linejoin="round" paint-order="stroke"></path></g>` +
+      `<circle cx="23" cy="23" r="13" fill="${colour}" class="stroke-bg stroke-marker"></circle>` +
+      `<text x="23" y="23" text-anchor="middle" dominant-baseline="central" class="fill-on-line font-sans font-bold ${size} tracking-map-bus">${number}</text></svg></div>`,
   });
 }
 
@@ -113,7 +114,7 @@ export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine
         // focus went to buses past the edge of the map or under the buttons that float on it
         // (2.4.11). Their popup says what the lines screen says -- the buses the timetable
         // has on the road and the stop each is reaching -- which the keyboard reaches there.
-        const marker = L.marker([bus.currentLat, bus.currentLng], { icon: busIcon(bus), zIndexOffset: 1000, keyboard: false }).addTo(map);
+        const marker = L.marker([bus.currentLat, bus.currentLng], { icon: busIcon(bus), zIndexOffset: DRAW.busesOver, keyboard: false }).addTo(map);
         marker.bindPopup(popupNode(bus, onOpenLineRef.current, lang), POPUP_CLEAR_OF_CONTROLS);
         name(marker, label);
         markersRef.current[bus.id] = marker;

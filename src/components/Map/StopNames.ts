@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import type { BusStop } from '../../types';
+import { DRAW } from './palette';
 
 /**
  * The stop names written beside the dots, on a canvas of their own. As permanent Leaflet
@@ -17,8 +18,7 @@ interface StopNamesOptions extends L.LayerOptions {
 }
 
 const PANE = 'stopNames';
-const GAP_PX = 5;
-const FONT_PX = 12;
+const { size: FONT_PX, weight: FONT_WEIGHT, gap: GAP_PX, halo: HALO_PX, edge: EDGE_PX } = DRAW.names;
 
 const StopNamesLayer = L.Layer.extend({
   initialize(this: StopNamesInstance, options: StopNamesOptions) {
@@ -30,11 +30,11 @@ const StopNamesLayer = L.Layer.extend({
     if (!map.getPane(PANE)) {
       // Over the overlay canvas (400) that draws the dots, under the markers (600).
       const pane = map.createPane(PANE);
-      pane.style.zIndex = '420';
+      pane.style.zIndex = String(DRAW.pane.names);
       pane.style.pointerEvents = 'none';
     }
     this._canvas = L.DomUtil.create('canvas', 'leaflet-zoom-hide', map.getPane(PANE));
-    this._font = `600 ${FONT_PX}px ${getComputedStyle(document.documentElement).getPropertyValue('--font-sans') || 'system-ui, sans-serif'}`;
+    this._font = `${FONT_WEIGHT} ${FONT_PX}px ${getComputedStyle(document.documentElement).getPropertyValue('--font-sans') || 'system-ui, sans-serif'}`;
     map.on('moveend resize', this._draw, this);
     map.on('zoomstart', this._hide, this);
     this._draw();
@@ -75,7 +75,7 @@ const StopNamesLayer = L.Layer.extend({
     ctx.font = this._font;
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = HALO_PX;
     ctx.strokeStyle = this.options.halo;
     ctx.fillStyle = this.options.ink;
     const gap = this.options.radius + GAP_PX;
@@ -85,7 +85,7 @@ const StopNamesLayer = L.Layer.extend({
       if (p.y < -FONT_PX || p.y > size.y + FONT_PX || p.x < -size.x || p.x > 2 * size.x) continue;
       const width = ctx.measureText(stop.name).width;
       // To the right of the dot, unless the name would run off the screen there.
-      const right = p.x + gap + width <= size.x - 4;
+      const right = p.x + gap + width <= size.x - EDGE_PX;
       ctx.textAlign = right ? 'left' : 'right';
       const x = right ? p.x + gap : p.x - gap;
       ctx.strokeText(stop.name, x, p.y);

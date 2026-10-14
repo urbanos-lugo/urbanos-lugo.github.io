@@ -4,7 +4,7 @@ import { escapeHtml } from '../../utils/html';
 import { BusStop } from '../../types';
 import { useIsDark } from '../../hooks/useIsDark';
 import { useLeafletMap } from '../../hooks/useLeafletMap';
-import { mapColors, stopDotStyle, userDotStyle } from './palette';
+import { DRAW, mapColors, stopDotStyle, userDotStyle } from './palette';
 
 export interface NearbyMiniMapProps {
   /** What the map is about: the reader as the browser reported it, or the pole itself — a different claim, drawn as a different thing. */
@@ -32,16 +32,16 @@ export function NearbyMiniMap({ centre, stops, onSelectStop, regionLabel }: Near
     const at: [number, number] = [centre.lat, centre.lng];
     const group = L.layerGroup().addTo(map);
     group.addLayer(
-      L.circleMarker(at, kind === 'user' ? userDotStyle(colors) : { ...stopDotStyle(colors, 8, true), radius: 8, fillOpacity: 0.95 }).bindTooltip(escapeHtml(label), { direction: 'top', offset: [0, -8] }),
+      L.circleMarker(at, kind === 'user' ? userDotStyle(colors) : { ...stopDotStyle(colors, DRAW.stopRadius.centre, true), radius: DRAW.stopRadius.centre, fillOpacity: DRAW.centreFill }).bindTooltip(escapeHtml(label), { direction: 'top', offset: [0, DRAW.tooltip.lift] }),
     );
     const bounds = L.latLngBounds([at]);
     for (const stop of stops) {
       bounds.extend([stop.lat, stop.lng]);
-      const marker = L.circleMarker([stop.lat, stop.lng], stopDotStyle(colors, 6)).bindTooltip(`${escapeHtml(stop.name)} · ~${Math.round(stop.walkMeters)} m`, { direction: 'top', offset: [0, -8] });
+      const marker = L.circleMarker([stop.lat, stop.lng], stopDotStyle(colors, DRAW.stopRadius.nearby)).bindTooltip(`${escapeHtml(stop.name)} · ~${Math.round(stop.walkMeters)} m`, { direction: 'top', offset: [0, DRAW.tooltip.lift] });
       marker.on('click', () => onSelectRef.current(stop));
       group.addLayer(marker);
     }
-    if (stops.length) map.fitBounds(bounds, { padding: [28, 28], maxZoom: 17 });
+    if (stops.length) map.fitBounds(bounds, { padding: [DRAW.fit.nearby, DRAW.fit.nearby], maxZoom: 17 });
     return () => {
       group.remove();
     };

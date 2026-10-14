@@ -221,6 +221,7 @@
 
   --color-on-line: var(--c-on-line);
   --color-on-camera: var(--c-on-camera);
+  --color-on-pale-pin: var(--c-on-pale-pin);
 
   /* How much of a colour shows through, as a modifier (bg-surface/quiet) or an opacity. The
      colour says what it is; this says how strongly. */
@@ -265,6 +266,12 @@
   --text-num--line-height: 1;
   --text-hero: 2.875rem;
   --text-hero--line-height: 0.92;
+  /* The map's markers are drawn in the map's own pixels, which do not follow the reader's
+     type size: a trip's pin, and a bus's number (two digits, and three). */
+  --text-map-pin: 12px;
+  --text-map-pin--line-height: 1;
+  --text-map-bus: 12.5px;
+  --text-map-bus-long: 10px;
 
   --leading-prose: 1.625;   /* label-sized prose that runs to several lines: notes, notices */
   --leading-name: 1.25;     /* a name or a figure that wraps, set tighter than its size's own leading */
@@ -273,6 +280,7 @@
   --tracking-caps: 0.05em;      /* small capitals over a block, and the provenance chips */
   --tracking-title: -0.012em;   /* a screen's title, the app's name */
   --tracking-display: -0.025em; /* the big figures, and the old dialogs' uppercase titles */
+  --tracking-map-bus: -0.2px;   /* a bus's number, inside its disc on the map */
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -375,6 +383,7 @@
   --stroke-width-bold: 2.5;   /* a small mark that has to read: a chevron, an arrow, a tick */
   --stroke-width-heavy: 3;    /* the tick on the chosen line in the map's panel */
   --stroke-width-chip: 3.4;   /* the tick inside a provenance chip, 10 px across */
+  --stroke-width-marker: 2.5; /* a bus marker's ring on the map, in the map's pixels */
 
   /* Elevation, by what the thing does over what is under it. */
   --shadow-hair: 0 1px 2px 0 rgb(0 0 0 / 0.05);  /* the slightest lift: a pressed toggle, a node on a rail */

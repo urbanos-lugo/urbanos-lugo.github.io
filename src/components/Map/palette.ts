@@ -1,9 +1,10 @@
 import type L from 'leaflet';
 
 /**
- * The map's colours, for both palettes. Leaflet resolves a colour once, when a layer is
- * created, so `var(--c-ink)` would freeze to whatever it meant at that moment; the map
- * has to choose in JavaScript, and the two versions of a colour sit on adjacent lines.
+ * The map's colours, for both palettes: index.css's --c-map-* tokens, read off <html> for
+ * the palette live there now. Leaflet resolves a colour once, when a layer is created, so
+ * `var(--c-ink)` in a layer's options would freeze to whatever it meant at that moment; the
+ * map asks again for each palette, and each answer is kept.
  *
  * The greys are the app's neutrals and the blues its official blue. The accent red stays
  * off the map: several route lines are red and a red marker would vanish on its own line.
@@ -26,51 +27,80 @@ export interface MapColors {
   destinationPin: string;
 }
 
-const LIGHT: MapColors = {
-  stopFill: '#4d4541',
-  stopStroke: '#ffffff',
-  stopSelected: '#0c72cb',
-  nameInk: '#1e1917',
-  nameHalo: '#fefdfd',
-  userFill: '#08569a',
-  userStroke: '#ffffff',
-  walkRouted: '#534b48',
-  walkStraight: '#817875',
-  originPin: '#014e8e',
-  destinationPin: '#047857',
+const TOKENS: Record<keyof MapColors, string> = {
+  stopFill: '--c-map-stop',
+  stopStroke: '--c-map-ring',
+  stopSelected: '--c-map-selected',
+  nameInk: '--c-map-name',
+  nameHalo: '--c-map-halo',
+  userFill: '--c-map-me',
+  userStroke: '--c-map-ring',
+  walkRouted: '--c-map-walk',
+  walkStraight: '--c-map-walk-guess',
+  originPin: '--c-map-origin',
+  destinationPin: '--c-map-destination',
 };
 
-const DARK: MapColors = {
-  stopFill: '#b9b3af',
-  stopStroke: '#191514',
-  stopSelected: '#57a8ff',
-  nameInk: '#eeeae9',
-  nameHalo: '#110d0d',
-  userFill: '#82bcfc',
-  userStroke: '#191514',
-  walkRouted: '#d0c9c7',
-  walkStraight: '#9e9694',
-  originPin: '#3c95f0',
-  destinationPin: '#34d399',
+const readings = new Map<boolean, MapColors>();
+
+export const mapColors = (isDark: boolean): MapColors => {
+  const kept = readings.get(isDark);
+  if (kept) return kept;
+  const root = document.documentElement;
+  const style = getComputedStyle(root);
+  const colors = Object.fromEntries(Object.entries(TOKENS).map(([role, token]) => [role, style.getPropertyValue(token).trim()])) as unknown as MapColors;
+  // Kept only when it was read under the palette asked for, with the stylesheet in.
+  if (root.classList.contains('dark') === isDark && colors.stopFill) readings.set(isDark, colors);
+  return colors;
 };
 
-export const mapColors = (isDark: boolean): MapColors => (isDark ? DARK : LIGHT);
+/**
+ * The map's sizes, in CSS pixels, and its strengths, 0 to 1: the half of the design's
+ * tokens that Leaflet takes as numbers, named for what they draw. index.css holds the rest,
+ * the map's HTML markers included.
+ */
+export const DRAW = {
+  /** A stop's dot: by zoom on the network map, the ride's calls, the small map's stops and its centre, and the one chosen. */
+  stopRadius: { overview: 4, z14: 5, z15: 6, z16: 7, nearby: 6, centre: 8, selected: 9 },
+  stopRing: 2,
+  selectedRing: 3,
+  /** The reader's position, and the circle of its accuracy around it. */
+  me: { radius: 8, ring: 3, fill: 0.95, accuracyRing: 1, accuracyStroke: 0.35, accuracyFill: 0.12 },
+  /** The point a small map is about, drawn as filled as the reader's own. */
+  centreFill: 0.95,
+  /** A line on the network map: faded behind the lines chosen, as the network, as a line chosen; the volta dashed. */
+  route: { muted: 2, network: 3.5, subject: 5, mutedOpacity: 0.35, networkOpacity: 0.7, subjectOpacity: 0.95, returnDash: '10 7' },
+  /** A planned trip: its bus legs, its walks (routed, or the straight stand-in), and everything not the leg being made. */
+  trip: { leg: 4, legNow: 6, legOpacity: 0.95, walk: 4, walkDash: '1 7', walkOpacity: 0.9, walkGuess: 3, walkGuessDash: '4 6', walkGuessOpacity: 0.8, faint: 0.25 },
+  /** The HTML markers' boxes: a route's arrow, a trip's A, B and boarding pins, a bus. */
+  icon: { arrow: 16, pin: 28, bus: 46 },
+  /** A hover label's lift off its dot (a small dot's less), and its opacity. */
+  tooltip: { lift: -8, liftSmall: -6, opacity: 0.95 },
+  /** Room a map leaves around what it frames: the network's selection, the small map, a trip (more at the top, under its chip), the reader followed. */
+  fit: { network: 40, nearby: 28, trip: 28, tripTop: 56, follow: 40 },
+  /** The stop names written beside the dots: size, weight, gap from the dot's ring, halo, and the screen edge they keep off. */
+  names: { size: 12, weight: 600, gap: 5, halo: 3, edge: 4 },
+  /** Panes over Leaflet's overlay canvas (400): the stop names, then the routes' arrows, under the markers (600). */
+  pane: { names: 420, arrows: 450 },
+  /** Buses over every other marker. */
+  busesOver: 1000,
+} as const;
 
 /** The Leaflet options for a stop dot, the same pair on every map so a stop looks like a stop wherever it is drawn. */
 export const stopDotStyle = (colors: MapColors, radius: number, selected = false): L.CircleMarkerOptions => ({
-  radius: selected ? 9 : radius,
+  radius: selected ? DRAW.stopRadius.selected : radius,
   color: colors.stopStroke,
-  weight: selected ? 3 : 2,
+  weight: selected ? DRAW.selectedRing : DRAW.stopRing,
   fillColor: selected ? colors.stopSelected : colors.stopFill,
   fillOpacity: 1,
 });
 
 /** The reader's own position. */
 export const userDotStyle = (colors: MapColors): L.CircleMarkerOptions => ({
-  radius: 8,
+  radius: DRAW.me.radius,
   fillColor: colors.userFill,
   color: colors.userStroke,
-  weight: 3,
+  weight: DRAW.me.ring,
   opacity: 1,
-  fillOpacity: 0.95,
+  fillOpacity: DRAW.me.fill,
 });

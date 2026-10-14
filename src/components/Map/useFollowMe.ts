@@ -4,7 +4,7 @@ import { getDistanceMeters } from '../../utils/geo';
 import { getNearbyStops, NEARBY_STOP_LIMIT_METRES } from '../../utils/places';
 import { subscribePosition } from '../../services/stopAlarm';
 import { useT } from '../../i18n';
-import { mapColors, userDotStyle } from './palette';
+import { DRAW, mapColors, userDotStyle } from './palette';
 import { POPUP_CLEAR_OF_CONTROLS } from './popupHtml';
 
 /** The map gave up on a first fix after eight seconds and said so; the shared watch waits twenty, for the ride. */
@@ -75,7 +75,7 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
           map.panTo([lat, lng], { animate: true });
         }
         if (accuracyRef.current) accuracyRef.current.setLatLng([lat, lng]).setRadius(accuracy);
-        else accuracyRef.current = L.circle([lat, lng], { radius: accuracy, color: colors.userStroke, fillColor: colors.userFill, weight: 1, opacity: 0.35, fillOpacity: 0.12, interactive: false }).addTo(map);
+        else accuracyRef.current = L.circle([lat, lng], { radius: accuracy, color: colors.userStroke, fillColor: colors.userFill, weight: DRAW.me.accuracyRing, opacity: DRAW.me.accuracyStroke, fillOpacity: DRAW.me.accuracyFill, interactive: false }).addTo(map);
         if (markerRef.current) markerRef.current.setLatLng([lat, lng]);
         else markerRef.current = L.circleMarker([lat, lng], userDotStyle(colors)).addTo(map);
         markerRef.current.bindPopup(t.map.yourPositionAccurate(Math.round(accuracy)), POPUP_CLEAR_OF_CONTROLS);

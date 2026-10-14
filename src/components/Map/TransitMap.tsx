@@ -11,7 +11,7 @@ import { useDialog } from '../../hooks/useDialog';
 import { useLeafletMap } from '../../hooks/useLeafletMap';
 import { useClock } from '../../hooks/useClock';
 import { useRouteGeometry } from '../../data/routeGeometry';
-import { mapColors } from './palette';
+import { DRAW, mapColors } from './palette';
 import { RouteLayer } from './RouteLayer';
 import { StopLayer } from './StopLayer';
 import { StopSheet } from './StopSheet';
@@ -40,7 +40,7 @@ const PRESET_CENTERS: Partial<Record<Preset, [number, number]>> = {
 const fitLines = (map: L.Map, ids: string[]) => {
   const bounds = L.latLngBounds([]);
   for (const id of ids) for (const direction of lineById(id)?.directions ?? []) for (const point of direction.pathCoordinates ?? []) bounds.extend(point);
-  if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+  if (bounds.isValid()) map.fitBounds(bounds, { padding: [DRAW.fit.network, DRAW.fit.network], maxZoom: 16 });
 };
 
 interface TransitMapProps {

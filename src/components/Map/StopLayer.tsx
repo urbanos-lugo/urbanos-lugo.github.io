@@ -5,7 +5,7 @@ import { escapeHtml } from '../../utils/html';
 import { BusStop } from '../../types';
 import { poleCode } from '../../data/transitData';
 import { useIsDark } from '../../hooks/useIsDark';
-import { mapColors, stopDotStyle } from './palette';
+import { DRAW, mapColors, stopDotStyle } from './palette';
 import { stopNamesLayer } from './StopNames';
 
 interface StopLayerProps {
@@ -24,10 +24,10 @@ interface StopLayerProps {
  * (a phone has no hover, so without that no stop ever told you its name).
  */
 const ZOOM_LADDER: { from: number; radius: number; label: boolean }[] = [
-  { from: 16, radius: 7, label: true },
-  { from: 15, radius: 6, label: false },
-  { from: 14, radius: 5, label: false },
-  { from: 0, radius: 4, label: false },
+  { from: 16, radius: DRAW.stopRadius.z16, label: true },
+  { from: 15, radius: DRAW.stopRadius.z15, label: false },
+  { from: 14, radius: DRAW.stopRadius.z14, label: false },
+  { from: 0, radius: DRAW.stopRadius.overview, label: false },
 ];
 const rungFor = (zoom: number) => ZOOM_LADDER.find((r) => zoom >= r.from) ?? ZOOM_LADDER[ZOOM_LADDER.length - 1];
 
@@ -93,7 +93,7 @@ export function StopLayer({ map, stops, visibleLineIds, selectedStop, showStops,
         const code = poleCode(stop);
         marker.bindTooltip(
           `<div class="font-sans text-label font-semibold text-ink">${code ? `<span class="mr-1 text-accent">${escapeHtml(code)}</span>` : ''}${escapeHtml(stop.name)}</div>`,
-          { direction: 'top', offset: [0, -8], opacity: 0.95, className: 'stop-hover-tooltip' },
+          { direction: 'top', offset: [0, DRAW.tooltip.lift], opacity: DRAW.tooltip.opacity, className: 'stop-hover-tooltip' },
         );
         // Claim the click: the route layer answers map clicks within twenty pixels of a
         // line, and Leaflet runs layer handlers before the map's own.

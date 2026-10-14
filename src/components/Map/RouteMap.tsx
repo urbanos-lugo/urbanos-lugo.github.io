@@ -8,7 +8,7 @@ import { useRouteGeometry } from '../../data/routeGeometry';
 import { WalkPaths, walkHopKey } from '../../services/walkingPath';
 import { useIsDark } from '../../hooks/useIsDark';
 import { useLeafletMap } from '../../hooks/useLeafletMap';
-import { mapColors, stopDotStyle, userDotStyle } from './palette';
+import { DRAW, mapColors, stopDotStyle, userDotStyle } from './palette';
 
 interface Place {
   lat: number;
@@ -29,8 +29,8 @@ interface RouteMapProps {
 }
 
 /** Room the fit leaves around the trip: more at the top, where the "Paso a paso" chip sits. */
-const FIT = { paddingTopLeft: [28, 56] as [number, number], paddingBottomRight: [28, 28] as [number, number], maxZoom: 16 };
-const FAINT = 0.25;
+const FIT = { paddingTopLeft: [DRAW.fit.trip, DRAW.fit.tripTop] as [number, number], paddingBottomRight: [DRAW.fit.trip, DRAW.fit.trip] as [number, number], maxZoom: 16 };
+const FAINT = DRAW.trip.faint;
 
 /** Rough relative luminance of a #rrggbb colour, enough to pick black or white ink. */
 function isLight(hex: string): boolean {
@@ -43,12 +43,12 @@ function isLight(hex: string): boolean {
 }
 
 function pinIcon(color: string, label: string): L.DivIcon {
-  const ink = isLight(color) ? '#191514' : '#ffffff';
+  const ink = isLight(color) ? 'border-on-pale-pin text-on-pale-pin' : 'border-on-line text-on-line';
   return L.divIcon({
     className: 'route-map-pin',
-    iconSize: [28, 28],
-    iconAnchor: [14, 14],
-    html: `<div style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${escapeHtml(color)};color:${ink};font:700 12px/1 var(--font-sans);box-shadow:0 1px 4px rgba(0,0,0,.4);border:2px solid ${ink};">${escapeHtml(label)}</div>`,
+    iconSize: [DRAW.icon.pin, DRAW.icon.pin],
+    iconAnchor: [DRAW.icon.pin / 2, DRAW.icon.pin / 2],
+    html: `<div class="flex size-full items-center justify-center rounded-pill border-strong font-sans text-map-pin font-bold shadow-pin ${ink}" style="background:${escapeHtml(color)}">${escapeHtml(label)}</div>`,
   });
 }
 
@@ -108,8 +108,8 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
     const walkLine = (a: [number, number], b: [number, number], emphasised: boolean): L.Polyline => {
       const detailed = walkPaths[walkHopKey(a, b)];
       return detailed
-        ? L.polyline(detailed.path, { color: colors.walkRouted, weight: 4, dashArray: '1 7', opacity: emphasised ? 0.9 : FAINT }).bindTooltip(escapeHtml(t.planner.walkLeg(detailed.meters, detailed.minutes)))
-        : L.polyline([a, b], { color: colors.walkStraight, weight: 3, dashArray: '4 6', opacity: emphasised ? 0.8 : FAINT });
+        ? L.polyline(detailed.path, { color: colors.walkRouted, weight: DRAW.trip.walk, dashArray: DRAW.trip.walkDash, opacity: emphasised ? DRAW.trip.walkOpacity : FAINT }).bindTooltip(escapeHtml(t.planner.walkLeg(detailed.meters, detailed.minutes)))
+        : L.polyline([a, b], { color: colors.walkStraight, weight: DRAW.trip.walkGuess, dashArray: DRAW.trip.walkGuessDash, opacity: emphasised ? DRAW.trip.walkGuessOpacity : FAINT });
     };
     const pin = (at: [number, number], color: string, label: string, tooltip: string, emphasised: boolean) =>
       group.addLayer(L.marker(at, { icon: pinIcon(color, label), opacity: emphasised ? 1 : FAINT }).bindTooltip(escapeHtml(tooltip)));
@@ -147,7 +147,7 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
       }
 
       group.addLayer(
-        L.polyline(slice, { color: segment.line.color, weight: emphasised ? 6 : 4, opacity: emphasised ? 0.95 : FAINT, lineJoin: 'round' }).bindTooltip(
+        L.polyline(slice, { color: segment.line.color, weight: emphasised ? DRAW.trip.legNow : DRAW.trip.leg, opacity: emphasised ? DRAW.trip.legOpacity : FAINT, lineJoin: 'round' }).bindTooltip(
           escapeHtml(t.planner.lineWithStops(segment.line.number, segment.stopsCount ?? 0)),
         ),
       );
@@ -156,7 +156,7 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
       // Where the ride calls, as the neutral stop dot every map uses: a dot in the line's colour on a line of that colour is a bump, not a stop.
       for (let i = from + 1; i < to && emphasised; i++) {
         const stop = stopById(direction.stops[i]);
-        if (stop) group.addLayer(L.circleMarker([stop.lat, stop.lng], stopDotStyle(colors, 4)).bindTooltip(escapeHtml(stop.name), { direction: 'top', offset: [0, -6] }));
+        if (stop) group.addLayer(L.circleMarker([stop.lat, stop.lng], stopDotStyle(colors, DRAW.stopRadius.overview)).bindTooltip(escapeHtml(stop.name), { direction: 'top', offset: [0, DRAW.tooltip.liftSmall] }));
       }
 
       if (emphasised) extend(slice);
@@ -196,7 +196,7 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
     const at: [number, number] = [position.lat, position.lng];
     if (positionRef.current) positionRef.current.setLatLng(at);
     else positionRef.current = L.circleMarker(at, { ...userDotStyle(colors), interactive: false }).addTo(map);
-    map.panInside(at, { padding: [40, 40] });
+    map.panInside(at, { padding: [DRAW.fit.follow, DRAW.fit.follow] });
   }, [map, position?.lat, position?.lng, colors]);
 
   return <div ref={containerRef} className={className} />;
