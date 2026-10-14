@@ -195,7 +195,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                           <span className="shrink-0">&bull;</span>
                           <span>{daysLabel(line, lang)}</span>
                           {running > 0 && (
-                            <span title={t.lines.enRouteHint} className="flex shrink-0 items-center gap-0.5 text-ink-2 font-bold text-label bg-surface px-1.5 py-0.2 rounded-tag border border-edge">
+                            <span title={t.lines.enRouteHint} className="flex shrink-0 items-center gap-0.5 text-ink-2 font-bold text-label bg-surface px-1.5 rounded-tag border border-edge">
                               <Bus className="w-2.5 h-2.5 text-ink-3" aria-hidden="true" />
                               <span aria-hidden="true">{running}</span>
                               <span className="sr-only">{t.lines.enRoute(running)}</span>
