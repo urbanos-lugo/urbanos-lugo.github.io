@@ -542,9 +542,10 @@
   }
 
   /* Native <details>: the chevron turns and the body fades in; where the browser can
-     interpolate `auto`, the height opens too. Where it cannot, the first two alone. */
-  .disclosure summary .disclosure-chevron { transition: transform var(--transition-duration-move) var(--ease-enter); }
-  .disclosure[open] summary .disclosure-chevron { transform: rotate(180deg); }
+     interpolate `auto`, the height opens too. Where it cannot, the first two alone. The
+     same chevron turns on a button that unfolds a list, said by its aria-expanded. */
+  .disclosure-chevron { transition: transform var(--transition-duration-move) var(--ease-enter); }
+  .disclosure[open] summary .disclosure-chevron, [aria-expanded="true"] > .disclosure-chevron { transform: rotate(180deg); }
   .disclosure[open] > :not(summary) { animation: fade-full var(--transition-duration-mark) var(--ease-fade); }
   @supports (interpolate-size: allow-keywords) {
     .disclosure { interpolate-size: allow-keywords; }

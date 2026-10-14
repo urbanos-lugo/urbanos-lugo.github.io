@@ -63,7 +63,7 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
           className={`${chip} gap-1 border-edge bg-bg/glass px-3.5 text-label font-bold text-ink-2`}
         >
           <span className="tnum">{listed.length}</span>
-          <ChevronDown className={`h-4 w-4 transition-transform motion-reduce:transition-none ${expanded ? 'rotate-180' : ''}`} aria-hidden="true" />
+          <ChevronDown className="disclosure-chevron h-4 w-4" aria-hidden="true" />
         </button>
         {/* The number is the chip; the name goes to the accessible name, after the number the chip
             shows: named by the route alone, "click 7" said to voice control found nothing (2.5.3). */}

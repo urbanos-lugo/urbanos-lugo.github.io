@@ -115,7 +115,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
         {options.length > VISIBLE_OPTIONS && openAt < VISIBLE_OPTIONS && (
           <button type="button" onClick={() => setShowAll(!showAll)} aria-expanded={expanded} className="flex min-h-11 w-full items-center justify-center gap-1.5 border-t border-t-line text-label font-semibold text-ink-3">
             {expanded ? t.planner.fewerOptions : t.planner.moreOptions(options.length - VISIBLE_OPTIONS)}
-            <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} strokeWidth={2.5} aria-hidden="true" />
+            <ChevronDown className="disclosure-chevron h-3.5 w-3.5 shrink-0" strokeWidth={2.5} aria-hidden="true" />
           </button>
         )}
       </div>
