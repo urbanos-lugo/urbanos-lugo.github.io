@@ -24,7 +24,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
   if (!open) return null;
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.menu.open} className="fixed inset-0 z-[2000]">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.menu.open} className="fixed inset-0 z-dialog">
       {/* For the finger, not the Tab key: the X beside the title is the same action. */}
       <button className="anim-fade-full absolute inset-0 bg-scrim" onClick={onClose} aria-label={t.menu.close} tabIndex={-1} />
       <div className="@container anim-slide-in absolute inset-y-0 right-0 flex w-[306px] max-w-[85vw] flex-col border-l border-edge bg-bg shadow-overlay">

@@ -20,7 +20,7 @@ export function BottomNav({ activeTab, setActiveTab, tripActive = false }: Botto
   // -1 on the two screens the bar does not list (notices, fares): the mark hides.
   const current = items.findIndex((item) => item.id === activeTab);
   return (
-    <nav className="relative sticky bottom-0 z-[1200] flex border-t border-line bg-bg pb-1.5 lg:hidden" aria-label={t.nav.main}>
+    <nav className="relative sticky bottom-0 z-nav flex border-t border-line bg-bg pb-1.5 lg:hidden" aria-label={t.nav.main}>
       {/* The mark slides from the tab you left to the one you chose, which is the whole of what a tab change looks like; `aria-current` says which tab is on. */}
       <span
         aria-hidden="true"

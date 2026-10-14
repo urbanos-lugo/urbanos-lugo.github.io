@@ -46,7 +46,7 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
 
   // One above the buses notice, which follows this in the page and has to stay beneath it when it opens.
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-[401] lg:hidden">
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-map-chips lg:hidden">
       <div className={`no-scrollbar flex gap-1.5 px-3 py-2.5 ${expanded ? 'max-h-[45dvh] flex-wrap overflow-y-auto' : 'overflow-x-auto'}`}>
         <button type="button" onClick={onAll} aria-pressed={picked.length === 0} className={`${chip} px-4 text-label font-semibold ${picked.length === 0 ? 'border-accent bg-accent text-on-accent' : 'border-edge bg-bg/glass text-ink-2'}`}>
           {t.map.allLines}

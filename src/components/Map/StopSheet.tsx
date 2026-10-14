@@ -50,7 +50,7 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
   };
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={stop.name} className="anim-sheet-up absolute inset-x-0 bottom-0 z-[520] max-h-[70%] overflow-y-auto rounded-t-sheet border-t border-edge bg-bg shadow-overlay">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={stop.name} className="anim-sheet-up absolute inset-x-0 bottom-0 z-map-sheet max-h-[70%] overflow-y-auto rounded-t-sheet border-t border-edge bg-bg shadow-overlay">
       <div className="flex items-start justify-between gap-2 px-3.5 pt-3">
         <div className="min-w-0">
           <h2 className="break-words text-body font-bold text-ink">{stop.name}</h2>

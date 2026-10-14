@@ -196,7 +196,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
     <div className="h-full sm:h-auto max-w-7xl mx-auto px-0 py-0 sm:px-6 sm:py-5 lg:px-8">
       <div className="h-full sm:h-auto grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* The scrim: a button, because closing is an action and this is the target most people reach for first. */}
-        {sheetOpen && <button type="button" aria-label={t.map.closeControls} onClick={closeSheet} className="anim-fade-full fixed inset-0 z-[500] bg-scrim lg:hidden" />}
+        {sheetOpen && <button type="button" aria-label={t.map.closeControls} onClick={closeSheet} className="anim-fade-full fixed inset-0 z-map-overlay bg-scrim lg:hidden" />}
 
         <MapControls
           sheetRef={sheetRef}
@@ -276,7 +276,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                 said it is opened by nobody who is only looking. Under the line chips on a phone,
                 and beneath them when those open; one tap takes the buses off again. */}
             {layers.buses && (
-              <div className="pointer-events-none absolute inset-x-0 top-16 z-[400] flex justify-center px-3 lg:top-3">
+              <div className="pointer-events-none absolute inset-x-0 top-16 z-map-float flex justify-center px-3 lg:top-3">
                 <p className="pointer-events-auto flex items-center gap-1 rounded-pill border-[1.5px] border-dashed border-estimated-line bg-bg/glass pl-3.5 text-estimated shadow-raised backdrop-blur-glass">
                   <span className="text-label font-semibold">~ {t.map.busesEstimatedNotice}</span>
                   <button type="button" onClick={() => setLayers((l) => ({ ...l, buses: false }))} aria-label={t.map.hideBuses} title={t.map.hideBuses} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-pill text-ink-2">
@@ -294,7 +294,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
               aria-pressed={follow.isFollowing}
               aria-label={locateLabel}
               title={locateLabel}
-              className={`pointer-events-auto absolute bottom-5 left-3 z-[400] flex h-12 w-12 items-center justify-center rounded-pill border shadow-float backdrop-blur-glass disabled:opacity-disabled lg:hidden ${
+              className={`pointer-events-auto absolute bottom-5 left-3 z-map-float flex h-12 w-12 items-center justify-center rounded-pill border shadow-float backdrop-blur-glass disabled:opacity-disabled lg:hidden ${
                 follow.isFollowing ? 'border-accent bg-bg/glass text-accent' : 'border-edge bg-bg/glass text-ink-2'
               }`}
             >
@@ -305,7 +305,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
               type="button"
               onClick={() => setSheetOpen(true)}
               aria-expanded={sheetOpen}
-              className="pointer-events-auto absolute bottom-5 left-1/2 z-[400] flex h-12 -translate-x-1/2 items-center gap-2 rounded-pill border border-edge bg-bg/glass px-4 text-label font-bold text-ink shadow-float backdrop-blur-glass lg:hidden"
+              className="pointer-events-auto absolute bottom-5 left-1/2 z-map-float flex h-12 -translate-x-1/2 items-center gap-2 rounded-pill border border-edge bg-bg/glass px-4 text-label font-bold text-ink shadow-float backdrop-blur-glass lg:hidden"
             >
               <SlidersHorizontal className="h-4 w-4 text-accent" aria-hidden="true" />
               {t.map.controls}

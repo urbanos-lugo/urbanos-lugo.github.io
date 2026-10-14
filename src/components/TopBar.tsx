@@ -161,7 +161,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
       </span>
 
       {open && q.length > 0 && (
-        <div className="anim-drop absolute inset-x-3.5 top-full z-[1300] mt-1 max-h-[60vh] overflow-y-auto rounded-card border border-edge bg-bg shadow-float">
+        <div className="anim-drop absolute inset-x-3.5 top-full z-results mt-1 max-h-[60vh] overflow-y-auto rounded-card border border-edge bg-bg shadow-float">
           {settled && stops.length === 0 && lines.length === 0 && places.length === 0 && screens.length === 0 && <p className="px-4 py-4 text-body text-ink-3">{t.search.none}</p>}
 
           {stops.length > 0 && <Heading>{t.search.stops}</Heading>}

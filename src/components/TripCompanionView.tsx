@@ -228,7 +228,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           the page's own gutter, which stops growing with the type where the phone has no room
           (px-cap-3.5): in plain rem it grew past it and the bar ran 11 px off the screen at 200 %.
           `trip-bar`: <main> leaves its height free below whatever takes the focus (App.tsx). */}
-      <div className="trip-bar anim-sheet-up sticky bottom-0 z-10 -mx-[min(0.875rem,4.375vw)] border-t border-line bg-bg/glass px-[min(0.875rem,4.375vw)] py-3 backdrop-blur-bar lg:-mx-6 lg:px-6">
+      <div className="trip-bar anim-sheet-up sticky bottom-0 z-raised -mx-[min(0.875rem,4.375vw)] border-t border-line bg-bg/glass px-[min(0.875rem,4.375vw)] py-3 backdrop-blur-bar lg:-mx-6 lg:px-6">
         <button type="button" onClick={companion.finish} className={`flex min-h-12 w-full items-center justify-center rounded-control px-4 text-body font-semibold ${phase === 'walking' ? 'bg-accent text-on-accent' : 'border border-edge bg-bg text-ink'}`}>
           {phase === 'walking' ? t.companion.arrivedDone : t.companion.finish}
         </button>

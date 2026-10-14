@@ -93,7 +93,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
         </button>
       )}
       {open && suggestions.length > 0 && (
-        <div className="anim-drop absolute left-0 right-0 top-full mt-1 bg-bg border border-edge rounded-control shadow-float z-30 divide-y divide-line max-h-56 overflow-y-auto">
+        <div className="anim-drop absolute left-0 right-0 top-full mt-1 bg-bg border border-edge rounded-control shadow-float z-dropdown divide-y divide-line max-h-56 overflow-y-auto">
           {suggestions.map((sug) => (
             <button key={sug.id} type="button" onClick={() => onPick(sug.name)} className="w-full p-2.5 text-label hover:bg-surface cursor-pointer flex items-center justify-between gap-2 transition-colors text-left">
               {/* The name whole, on two lines when it needs them: cut, two poles of one street were

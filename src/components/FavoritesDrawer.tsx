@@ -65,7 +65,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
   };
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.favourites.title} className="fixed inset-0 z-[2000] overflow-hidden">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.favourites.title} className="fixed inset-0 z-dialog overflow-hidden">
       {/* For the finger, not the Tab key: the X beside the title is the same action. */}
       <button className="anim-fade-full absolute inset-0 bg-scrim" onClick={onClose} aria-label={t.favourites.close} tabIndex={-1} />
       {/* The strip of page to the left stops growing with the type, and the panel may be

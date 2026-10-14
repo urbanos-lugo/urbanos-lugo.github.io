@@ -710,7 +710,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                     <button
                       type="button"
                       onClick={() => stepsRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })}
-                      className="absolute left-1/2 top-0 z-[500] flex h-11 -translate-x-1/2 items-center px-2"
+                      className="absolute left-1/2 top-0 z-map-float flex h-11 -translate-x-1/2 items-center px-2"
                     >
                       {/* One line: from the middle of the map it had half the width, and at 200% text
                           it broke into three and covered the route. */}

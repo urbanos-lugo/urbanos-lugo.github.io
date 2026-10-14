@@ -117,7 +117,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
     .slice(0, 5);
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.qr.title} className="anim-fade-full fixed inset-0 z-[2000] overflow-y-auto bg-scrim flex items-center justify-center py-4 px-cap-4">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.qr.title} className="anim-fade-full fixed inset-0 z-dialog overflow-y-auto bg-scrim flex items-center justify-center py-4 px-cap-4">
       <div className="anim-scale-in bg-bg rounded-card max-w-lg w-full py-6 px-cap-6 shadow-overlay border border-edge relative">
         <button
           onClick={() => {
