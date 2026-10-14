@@ -26,7 +26,7 @@ function StopRow({ label, time, estimated = false, stop, onSelect }: { label: st
           {time}
         </span>
       </div>
-      <button onClick={() => stop && onSelect(stop)} title={stop?.name} className="flex min-h-11 w-full items-center text-left text-body font-semibold underline underline-offset-2">
+      <button onClick={() => stop && onSelect(stop)} title={stop?.name} className="flex min-h-11 w-full items-center text-left text-body font-semibold underline underline-offset-link">
         {stop?.name}
       </button>
     </div>
@@ -64,9 +64,9 @@ function BusStep({ seg, onSelectStop, onSelectLine }: { seg: TripSegment & { lin
       </div>
       {/* Collapsed by default: the question is normally "how long", and one tap answers "is my stop on this?". */}
       {between.length === 0 ? (
-        <p className="mt-1.5 border-l-2 border-line py-1.5 pl-3 text-label text-ink-3">{t.planner.ride(count, seg.durationMinutes)}</p>
+        <p className="mt-1.5 border-l-strong border-line py-1.5 pl-3 text-label text-ink-3">{t.planner.ride(count, seg.durationMinutes)}</p>
       ) : (
-        <details className="disclosure mt-1.5 border-l-2 border-line pl-3">
+        <details className="disclosure mt-1.5 border-l-strong border-line pl-3">
           <summary className="flex min-h-11 cursor-pointer items-center gap-1.5 text-label text-ink-2">
             <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0" aria-hidden="true" />
             {t.planner.ride(count, seg.durationMinutes)}
@@ -120,7 +120,7 @@ export function Itinerary({ segments, onSelectStop, onSelectLine }: ItineraryPro
         const Icon = ICON[seg.type];
         return (
           <div key={idx} className="relative">
-            <div className={`absolute -left-6 top-1.5 w-5 h-5 rounded-pill border-2 border-bg shadow-hair flex items-center justify-center ${NODE[seg.type]}`}>
+            <div className={`absolute -left-6 top-1.5 w-5 h-5 rounded-pill border-strong border-bg shadow-hair flex items-center justify-center ${NODE[seg.type]}`}>
               <Icon className="w-3 h-3" />
             </div>
             <div className={`py-4 px-cap-4 rounded-card border transition-all ${CARD[seg.type]}`}>

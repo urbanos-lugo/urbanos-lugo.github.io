@@ -412,7 +412,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                   <div className="text-label text-accent font-semibold">
                     {t.lines.runOf(runIndex + 1, runs.length)}
                     {runIndex !== currentRunIndex && (
-                      <button onClick={() => setPickedRunIndex(null)} className="ml-1.5 underline underline-offset-2 font-bold">
+                      <button onClick={() => setPickedRunIndex(null)} className="ml-1.5 underline underline-offset-link font-bold">
                         {t.lines.backToNow}
                       </button>
                     )}
@@ -457,16 +457,16 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                     // the timetable puts here, which a screen reader then never heard (1.3.1), and
                     // "click Orixe" found nothing (2.5.3). The one word the eye gets from a tilde
                     // is written out after the time.
-                    className="relative group cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent rounded-control"
+                    className="relative group cursor-pointer focus:outline-hidden focus-visible:ring-strong focus-visible:ring-accent rounded-control"
                   >
                     <div
-                      className={`absolute -left-6 top-2.5 w-5 h-5 rounded-pill border-2 border-bg shadow-hair flex items-center justify-center transition-transform group-hover:scale-125 ${
-                        busHere ? 'bg-estimated ring-2 ring-estimated' : isFirst || isLast ? 'bg-accent ring-2 ring-accent' : 'bg-ink-3 group-hover:bg-ink-2'
+                      className={`absolute -left-6 top-2.5 w-5 h-5 rounded-pill border-strong border-bg shadow-hair flex items-center justify-center transition-transform group-hover:scale-125 ${
+                        busHere ? 'bg-estimated ring-strong ring-estimated' : isFirst || isLast ? 'bg-accent ring-strong ring-accent' : 'bg-ink-3 group-hover:bg-ink-2'
                       }`}
                     />
                     {/* Stacked on a phone: beside the name, the time chip left it about 110 px, and
                         "Fonte dos Ranchos 8 (Cafetería Prados)" took four lines. */}
-                    <div className={`px-cap-3 py-2 rounded-control border transition-all flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2.5 ${busHere ? 'bg-surface/lifted border-edge ring-1 ring-official/half shadow-hair' : 'bg-bg border-line hover:border-edge hover:bg-surface/wash shadow-hair'}`}>
+                    <div className={`px-cap-3 py-2 rounded-control border transition-all flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2.5 ${busHere ? 'bg-surface/lifted border-edge ring-hair ring-official/half shadow-hair' : 'bg-bg border-line hover:border-edge hover:bg-surface/wash shadow-hair'}`}>
                       <div className="min-w-0 flex-1">
                         {/* The stop name is not shortened: it is the only thing on the row a reader has to match against a pole. */}
                         <div className="flex min-w-0 flex-wrap items-center gap-x-2">

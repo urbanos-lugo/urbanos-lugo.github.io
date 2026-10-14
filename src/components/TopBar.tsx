@@ -110,7 +110,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
             the type inside a 46 px bar, and at 200% the QR button was pushed half out of it.
             The field's focus ring is drawn on this box, the shape the eye takes for the field:
             the input inside had its outline taken off and nothing in its place. */}
-        <div className="flex h-[46px] min-w-0 flex-1 items-center gap-2.5 overflow-hidden rounded-control border border-edge bg-surface pl-3 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-accent">
+        <div className="flex h-[46px] min-w-0 flex-1 items-center gap-2.5 overflow-hidden rounded-control border border-edge bg-surface pl-3 has-[input:focus-visible]:outline-focus has-[input:focus-visible]:outline-offset-focus has-[input:focus-visible]:outline-accent">
           <Search className="h-4.5 w-4.5 shrink-0 text-ink-3" aria-hidden="true" />
           <input
             id="site-search"

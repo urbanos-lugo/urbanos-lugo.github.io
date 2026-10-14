@@ -145,7 +145,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
         {isScanning && (
           <div className="relative rounded-control overflow-hidden bg-ink mb-3 aspect-video">
             <video ref={videoRef} playsInline muted className="w-full h-full object-cover" />
-            <div className="absolute inset-0 border-[3px] border-on-camera/frame m-10 rounded-control pointer-events-none" />
+            <div className="absolute inset-0 border-heavy border-on-camera/frame m-10 rounded-control pointer-events-none" />
             <span className="absolute bottom-2 inset-x-0 text-center text-label font-bold text-on-camera drop-shadow-on-camera">{t.qr.scanning}</span>
           </div>
         )}
@@ -184,7 +184,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             aria-label={t.qr.inputLabel}
             aria-invalid={errorMsg ? true : undefined}
             aria-describedby={errorMsg ? 'qr-manual-error' : undefined}
-            className="min-h-11 w-full rounded-control border border-edge bg-surface px-3.5 py-2.5 text-body font-semibold text-ink placeholder:text-ink-3 focus:bg-bg focus:outline-hidden focus:ring-2 focus:ring-accent"
+            className="min-h-11 w-full rounded-control border border-edge bg-surface px-3.5 py-2.5 text-body font-semibold text-ink placeholder:text-ink-3 focus:bg-bg focus:outline-hidden focus:ring-strong focus:ring-accent"
           />
           {errorMsg && (
             <p id="qr-manual-error" role="alert" className="text-label font-bold text-warn-ink px-1">

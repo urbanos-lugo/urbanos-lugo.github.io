@@ -76,7 +76,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
           <span className="mt-2 border-t border-line pt-2 text-ink-2">{t.menu.unofficial}</span>
           <span>{t.menu.privacy}</span>
           {/* On its own line, so the 44 px applies to it. */}
-          <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex min-h-11 items-center self-start underline decoration-dotted underline-offset-2">
+          <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex min-h-11 items-center self-start underline decoration-dotted underline-offset-link">
             {t.menu.sourceCode}
           </a>
         </div>

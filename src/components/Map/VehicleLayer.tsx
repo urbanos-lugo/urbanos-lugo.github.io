@@ -42,7 +42,7 @@ function popupNode(bus: ScheduledBus, onOpenLine: (lineId: string) => void, lang
   const node = document.createElement('div');
   node.innerHTML = popupBox(
     `<button type="button" data-open-line="1" class="${rowButtonClass} mb-1.5">${badgeHtml(bus.lineColor, bus.lineNumber)}` +
-      `<span class="text-label font-semibold text-ink underline underline-offset-2">${escapeHtml(bus.destination)}</span></button>` +
+      `<span class="text-label font-semibold text-ink underline underline-offset-link">${escapeHtml(bus.destination)}</span></button>` +
       `<div class="text-label text-ink-2">${escapeHtml(t.map.nextStop)}: <b>${escapeHtml(bus.nextStopName)}</b></div>` +
       `<div class="text-label text-ink-3">${escapeHtml(t.map.occupancyLabel)}: ${escapeHtml(occupancy)}</div>` +
       `<div class="mt-1.5 text-label text-estimated">${t.map.estimatedPosition}</div>`,

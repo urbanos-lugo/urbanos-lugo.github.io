@@ -19,7 +19,7 @@ function formatInstant(value: string | undefined, locale: string): string {
   return Number.isNaN(at.getTime()) ? value : at.toLocaleString(locale);
 }
 
-const external = 'inline-flex min-h-11 items-center text-label font-bold text-accent underline underline-offset-2';
+const external = 'inline-flex min-h-11 items-center text-label font-bold text-accent underline underline-offset-link';
 
 /**
  * The lines a notice names, every one, or "all" from ten up. Past three the rest folded into a
@@ -131,7 +131,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
               {t.fares.alertsTitle}
             </h2>
             <p className="text-label text-ink-3 mt-0.5">{t.fares.alertsSubtitle}</p>
-            <p className="text-label text-ink-3 mt-1 border-l-2 border-edge pl-2">{t.fares.notAffiliated}</p>
+            <p className="text-label text-ink-3 mt-1 border-l-strong border-edge pl-2">{t.fares.notAffiliated}</p>
           </div>
           <button
             id="sync-alerts-btn"
@@ -189,7 +189,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
                   <span>
                     {t.fares.source}{' '}
                     {/* One line of text is a 70x16 box; padding pulled back by its own margin gives the thumb 44 px without moving the line. */}
-                    <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="inline-block py-3.5 -my-3.5 font-semibold text-accent underline underline-offset-2">
+                    <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="inline-block py-3.5 -my-3.5 font-semibold text-accent underline underline-offset-link">
                       buslugo.com
                     </a>
                   </span>

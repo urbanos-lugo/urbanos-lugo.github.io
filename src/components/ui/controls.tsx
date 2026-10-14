@@ -99,7 +99,7 @@ export function NoticeDisclosure({ summary, children, seeFull, className = '' }:
       <div className="px-3 pb-1 pl-8.5">
         {children}
         {seeFull && (
-          <button onClick={seeFull.onOpen} className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2">
+          <button onClick={seeFull.onOpen} className="inline-flex min-h-11 items-center font-semibold underline underline-offset-link">
             {seeFull.label}
           </button>
         )}

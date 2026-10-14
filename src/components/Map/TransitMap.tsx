@@ -277,7 +277,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                 and beneath them when those open; one tap takes the buses off again. */}
             {layers.buses && (
               <div className="pointer-events-none absolute inset-x-0 top-16 z-map-float flex justify-center px-3 lg:top-3">
-                <p className="pointer-events-auto flex items-center gap-1 rounded-pill border-[1.5px] border-dashed border-estimated-line bg-bg/glass pl-3.5 text-estimated shadow-raised backdrop-blur-glass">
+                <p className="pointer-events-auto flex items-center gap-1 rounded-pill border-dash border-dashed border-estimated-line bg-bg/glass pl-3.5 text-estimated shadow-raised backdrop-blur-glass">
                   <span className="text-label font-semibold">~ {t.map.busesEstimatedNotice}</span>
                   <button type="button" onClick={() => setLayers((l) => ({ ...l, buses: false }))} aria-label={t.map.hideBuses} title={t.map.hideBuses} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-pill text-ink-2">
                     <X className="h-4 w-4" aria-hidden="true" />

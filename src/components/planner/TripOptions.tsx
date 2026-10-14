@@ -62,7 +62,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
         key={tripKey(option)}
         onClick={() => onChoose(idx)}
         aria-pressed={idx === chosen}
-        className={`grid min-h-11 w-full grid-cols-[auto_1fr] items-center gap-x-2.5 gap-y-1 border-l-[3px] py-1.5 pl-2 pr-1 text-left @min-[18rem]:grid-cols-[auto_1fr_auto] transition-colors ${idx > 0 ? 'border-t border-t-line' : ''} ${
+        className={`grid min-h-11 w-full grid-cols-[auto_1fr] items-center gap-x-2.5 gap-y-1 border-l-heavy py-1.5 pl-2 pr-1 text-left @min-[18rem]:grid-cols-[auto_1fr_auto] transition-colors ${idx > 0 ? 'border-t border-t-line' : ''} ${
           idx === chosen ? 'border-l-ink bg-surface text-ink' : 'border-l-transparent text-ink'
         }`}
       >

@@ -11,7 +11,7 @@ const PORTALS = [
 ];
 
 const card = 'rounded-card border border-edge bg-bg py-5 px-cap-5 shadow-raised';
-const link = 'inline-flex min-h-11 items-center font-bold text-label text-accent underline underline-offset-2';
+const link = 'inline-flex min-h-11 items-center font-bold text-label text-accent underline underline-offset-link';
 
 const Title = ({ icon: Icon, children, small = false }: { icon: LucideIcon; children: ReactNode; small?: boolean }) => (
   <h2 className={`font-bold text-ink uppercase tracking-caps flex items-center gap-2 ${small ? 'text-body' : 'text-emph'}`}>
@@ -47,7 +47,7 @@ export function FaresView() {
           <Title icon={CreditCard}>{t.fares.faresTitle}</Title>
           <p className="text-label text-ink-3 mt-0.5">{t.fares.faresSubtitle}</p>
           {/* Right under the line that names the operator and calls the prices official. */}
-          <p className="text-label text-ink-3 mt-1 border-l-2 border-edge pl-2">{t.fares.notAffiliated}</p>
+          <p className="text-label text-ink-3 mt-1 border-l-strong border-edge pl-2">{t.fares.notAffiliated}</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {FARE_CARDS.map((fare) => {
