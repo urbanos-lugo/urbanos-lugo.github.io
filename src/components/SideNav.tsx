@@ -11,7 +11,7 @@ interface SideNavProps extends SettingsProps {
   tripActive?: boolean;
 }
 
-const row = (on: boolean) => `flex h-11 items-center gap-3 rounded-control px-3 text-left text-body ${on ? 'bg-ink font-semibold text-bg' : 'font-medium text-ink-2'}`;
+const row = (on: boolean) => `flex h-tap items-center gap-3 rounded-control px-3 text-left text-body ${on ? 'bg-ink font-semibold text-bg' : 'font-medium text-ink-2'}`;
 
 /**
  * The desktop shell's left rail: the same four destinations as the phone's bottom bar,
@@ -23,7 +23,7 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
   const lang = useLang();
   return (
     // A landmark, so a screen reader moving by landmark does not meet a rail with holes in it.
-    <aside aria-label={t.nav.appName} className="hidden w-[236px] shrink-0 flex-col border-r border-line bg-bg lg:flex">
+    <aside aria-label={t.nav.appName} className="hidden w-rail shrink-0 flex-col border-r border-line bg-bg lg:flex">
       <div className="px-5 pb-4 pt-5">
         <span className="text-emph font-semibold tracking-title">{t.nav.appName}</span>
       </div>

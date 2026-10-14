@@ -118,14 +118,14 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
 
   return (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.qr.title} className="anim-fade-full fixed inset-0 z-dialog overflow-y-auto bg-scrim flex items-center justify-center py-4 px-cap-4">
-      <div className="anim-scale-in bg-bg rounded-card max-w-lg w-full py-6 px-cap-6 shadow-overlay border border-edge relative">
+      <div className="anim-scale-in bg-bg rounded-card max-w-dialog w-full py-6 px-cap-6 shadow-overlay border border-edge relative">
         <button
           onClick={() => {
             stopCamera();
             onClose();
           }}
           aria-label={t.qr.close}
-          className="absolute top-3.5 right-3.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface"
+          className="absolute top-3.5 right-3.5 flex h-tap w-tap shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface"
         >
           <X className="h-4.5 w-4.5" aria-hidden="true" />
         </button>
@@ -136,7 +136,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
           <div className="w-12 h-12 shrink-0 rounded-control bg-accent text-on-accent flex items-center justify-center">
             <QrCode className="w-6 h-6" />
           </div>
-          <div className="min-w-[min(8rem,100%)] flex-1">
+          <div className="min-w-floor-title flex-1">
             <h2 className="break-words font-bold text-emph text-ink uppercase tracking-display">{t.qr.title}</h2>
             <p className="text-label text-ink-3">{t.qr.subtitle}</p>
           </div>
@@ -156,7 +156,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             isScanning ? stopCamera() : setIsScanning(true);
           }}
           disabled={!hasBarcodeDetector}
-          className="mb-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface px-4 py-2.5 text-body font-semibold text-ink-2 disabled:cursor-not-allowed disabled:opacity-disabled"
+          className="mb-3 flex min-h-tap w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface px-4 py-2.5 text-body font-semibold text-ink-2 disabled:cursor-not-allowed disabled:opacity-disabled"
         >
           {hasBarcodeDetector ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
           <span>{hasBarcodeDetector ? (isScanning ? t.qr.stopScan : t.qr.scanBtn) : t.qr.noCamera}</span>
@@ -184,14 +184,14 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             aria-label={t.qr.inputLabel}
             aria-invalid={errorMsg ? true : undefined}
             aria-describedby={errorMsg ? 'qr-manual-error' : undefined}
-            className="min-h-11 w-full rounded-control border border-edge bg-surface px-3.5 py-2.5 text-body font-semibold text-ink placeholder:text-ink-3 focus:bg-bg focus:outline-hidden focus:ring-strong focus:ring-accent"
+            className="min-h-tap w-full rounded-control border border-edge bg-surface px-3.5 py-2.5 text-body font-semibold text-ink placeholder:text-ink-3 focus:bg-bg focus:outline-hidden focus:ring-strong focus:ring-accent"
           />
           {errorMsg && (
             <p id="qr-manual-error" role="alert" className="text-label font-bold text-warn-ink px-1">
               {errorMsg}
             </p>
           )}
-          <button onClick={() => lookup()} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-accent px-4 py-2.5 text-body font-semibold text-on-accent">
+          <button onClick={() => lookup()} className="flex min-h-tap w-full items-center justify-center gap-2 rounded-control bg-accent px-4 py-2.5 text-body font-semibold text-on-accent">
             <span>{t.qr.searchBtn}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
@@ -207,7 +207,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
                   setInputCode(stop.code);
                   lookup(stop.code);
                 }}
-                className="group flex min-h-11 w-full items-center justify-between gap-2 rounded-control border border-edge bg-surface p-2.5 text-left text-label transition-colors hover:bg-surface"
+                className="group flex min-h-tap w-full items-center justify-between gap-2 rounded-control border border-edge bg-surface p-2.5 text-left text-label transition-colors hover:bg-surface"
               >
                 <span className="min-w-0 break-words font-semibold text-ink group-hover:text-accent">{stop.name}</span>
                 <span className="font-mono text-accent font-bold shrink-0">{stop.code}</span>

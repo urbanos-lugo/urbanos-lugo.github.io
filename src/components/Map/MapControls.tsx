@@ -74,7 +74,7 @@ export function MapControls(p: MapControlsProps) {
             key={preset}
             onClick={() => p.onPreset(preset)}
             aria-pressed={p.preset === preset}
-            className={`flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-control px-2.5 py-1.5 text-center text-label font-semibold ${
+            className={`flex min-h-tap shrink-0 items-center justify-center whitespace-nowrap rounded-control px-2.5 py-1.5 text-center text-label font-semibold ${
               p.preset === preset ? 'bg-accent text-on-accent shadow-hair' : 'border border-edge bg-surface text-ink-2'
             }`}
           >
@@ -85,7 +85,7 @@ export function MapControls(p: MapControlsProps) {
       {p.preset === 'stop' && p.aroundStop && (
         <div className="mt-2.5 rounded-control border border-accent bg-accent/tint p-3">
           <p className="text-label leading-prose text-ink">{t.map.aroundStopActive(p.aroundStop.name, AROUND_STOP_RADIUS_M)}</p>
-          <button onClick={() => p.onPreset('all')} className="mt-2 flex h-11 items-center rounded-control border border-edge bg-bg px-3 text-label font-semibold text-ink-2">
+          <button onClick={() => p.onPreset('all')} className="mt-2 flex h-tap items-center rounded-control border border-edge bg-bg px-3 text-label font-semibold text-ink-2">
             {t.map.aroundStopClear}
           </button>
         </div>
@@ -99,14 +99,14 @@ export function MapControls(p: MapControlsProps) {
       role={p.sheetOpen ? 'dialog' : undefined}
       aria-modal={p.sheetOpen ? true : undefined}
       aria-label={p.sheetOpen ? t.map.controls : undefined}
-      className={`order-2 flex flex-col gap-3.5 lg:order-none lg:col-span-4 fixed inset-x-0 bottom-0 z-sheet max-h-[78dvh] overflow-y-auto rounded-t-sheet border-t border-edge bg-surface p-3.5 shadow-overlay transition-transform duration-move motion-reduce:transition-none lg:static lg:z-auto lg:max-h-none lg:overflow-visible lg:visible lg:translate-y-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none ${
+      className={`order-2 flex flex-col gap-3.5 lg:order-none lg:col-span-4 fixed inset-x-0 bottom-0 z-sheet max-h-sheet-max overflow-y-auto rounded-t-sheet border-t border-edge bg-surface p-3.5 shadow-overlay transition-transform duration-move motion-reduce:transition-none lg:static lg:z-auto lg:max-h-none lg:overflow-visible lg:visible lg:translate-y-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none ${
         p.sheetOpen ? 'translate-y-0' : 'invisible translate-y-full'
       }`}
     >
       {/* The handle: which way the sheet goes, and its own way out. Gone at `lg`. */}
       <div className="order-first -mt-1 flex items-center justify-between gap-2 lg:hidden">
         <span className="text-label font-bold uppercase tracking-caps text-ink-3">{t.map.controls}</span>
-        <button type="button" onClick={p.onCloseSheet} aria-label={t.map.closeControls} className="flex h-11 w-11 items-center justify-center rounded-pill text-ink-2">
+        <button type="button" onClick={p.onCloseSheet} aria-label={t.map.closeControls} className="flex h-tap w-tap items-center justify-center rounded-pill text-ink-2">
           <ChevronDown className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
@@ -135,14 +135,14 @@ export function MapControls(p: MapControlsProps) {
             onClick={p.locate.toggle}
             disabled={p.locate.isLocating}
             aria-pressed={p.locate.isFollowing}
-            className={`flex h-11 items-center justify-center gap-1.5 rounded-control px-3.5 text-label font-bold shadow-hair transition-colors disabled:opacity-disabled ${
+            className={`flex h-tap items-center justify-center gap-1.5 rounded-control px-3.5 text-label font-bold shadow-hair transition-colors disabled:opacity-disabled ${
               p.locate.isFollowing ? 'bg-surface text-ink border border-accent' : 'bg-accent text-on-accent'
             }`}
           >
             <LocateFixed className="w-3.5 h-3.5" />
             <span>{locateLabel}</span>
           </button>
-          <button id="btn-map-center" onClick={p.onCenterLugo} className="flex h-11 items-center justify-center gap-1.5 rounded-control px-3.5 bg-surface text-label font-bold text-ink-2 border border-edge transition-colors">
+          <button id="btn-map-center" onClick={p.onCenterLugo} className="flex h-tap items-center justify-center gap-1.5 rounded-control px-3.5 bg-surface text-label font-bold text-ink-2 border border-edge transition-colors">
             {t.map.centerLugo}
           </button>
         </div>
@@ -158,7 +158,7 @@ export function MapControls(p: MapControlsProps) {
       {p.preset === 'nearby' && p.nearbyLines.length > 0 && (
         <div className={card}>
           <span className={heading}>{t.map.nearbyTitle(NEARBY_RADIUS_M)}</span>
-          <div className="space-y-1 max-h-[150px] overflow-y-auto pr-1">
+          <div className="space-y-1 max-h-list-nearby-max overflow-y-auto pr-1">
             {p.nearbyLines.map(({ line, nearestStop, walkMeters }) => (
               <button key={line.id} onClick={() => p.onSelectLine(line)} className="w-full p-2 rounded-control text-left flex items-center gap-2 text-label bg-surface border border-line hover:bg-surface transition-colors">
                 <LineBadge number={line.number} color={line.color} size="sm" />
@@ -178,7 +178,7 @@ export function MapControls(p: MapControlsProps) {
               key={id}
               onClick={() => p.onToggleLayer(id)}
               aria-pressed={p.layers[id]}
-              className={`h-11 rounded-inset font-semibold flex items-center justify-center gap-1 transition-all ${p.layers[id] ? 'bg-bg text-ink shadow-hair' : 'text-ink-3'}`}
+              className={`h-tap rounded-inset font-semibold flex items-center justify-center gap-1 transition-all ${p.layers[id] ? 'bg-bg text-ink shadow-hair' : 'text-ink-3'}`}
             >
               <Icon className={`w-3 h-3 ${tint}`} />
               <span>{label}</span>
@@ -196,18 +196,18 @@ export function MapControls(p: MapControlsProps) {
           <button
             onClick={() => p.onPreset('all')}
             aria-pressed={p.pickedLineIds.length === 0}
-            className={`flex h-11 min-w-11 items-center justify-center rounded-control px-3 text-label font-semibold ${p.pickedLineIds.length === 0 ? 'bg-surface text-accent' : 'text-ink-3 hover:text-ink'}`}
+            className={`flex h-tap min-w-tap items-center justify-center rounded-control px-3 text-label font-semibold ${p.pickedLineIds.length === 0 ? 'bg-surface text-accent' : 'text-ink-3 hover:text-ink'}`}
           >
             {t.map.allLines}
           </button>
         </div>
         {/* Drawing the route and reading the timetable are two different errands, so two buttons. */}
-        <div className="space-y-1 max-h-[175px] overflow-y-auto pr-1">
+        <div className="space-y-1 max-h-list-lines-max overflow-y-auto pr-1">
           {p.listedLines.map((line) => {
             const isSelected = p.pickedLineIds.includes(line.id);
             return (
               <div key={line.id} className={`flex items-stretch gap-1 rounded-control text-label transition-all border bg-surface ${isSelected ? 'border-accent font-bold shadow-hair' : 'border-line text-ink-2'}`}>
-                <button onClick={() => p.onSelectLine(line)} aria-pressed={isSelected} className="flex min-h-11 min-w-0 flex-1 items-center gap-2 p-2.5 text-left">
+                <button onClick={() => p.onSelectLine(line)} aria-pressed={isSelected} className="flex min-h-tap min-w-0 flex-1 items-center gap-2 p-2.5 text-left">
                   <LineBadge number={line.number} color={line.color} size="sm" />
                   {/* Whole: cut, it kept the origin and lost where the line goes, "Opuesto Piscina
                       Pedreiras - Rúa Mercad..." in the desktop column; held to two lines it still lost
@@ -216,7 +216,7 @@ export function MapControls(p: MapControlsProps) {
                   {/* The row is a switch, and a tick is what says so. */}
                   {isSelected && <Check className="ml-auto h-4 w-4 shrink-0 text-accent stroke-heavy" aria-hidden="true" />}
                 </button>
-                <button onClick={() => p.onOpenLine(line)} title={t.map.openLineInfo} aria-label={`${t.map.openLineInfo}: ${line.number}`} className="flex min-h-11 w-11 shrink-0 items-center justify-center rounded-r-control-inner">
+                <button onClick={() => p.onOpenLine(line)} title={t.map.openLineInfo} aria-label={`${t.map.openLineInfo}: ${line.number}`} className="flex min-h-tap w-tap shrink-0 items-center justify-center rounded-r-control-inner">
                   <ChevronRight className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-ink-3'}`} aria-hidden="true" />
                 </button>
               </div>

@@ -22,6 +22,6 @@ export const POPUP_CLEAR_OF_CONTROLS = { autoPanPaddingTopLeft: [12, 124] as [nu
 
 /** A popup's outer box; `wide` for the rows that carry two buttons. */
 export const popupBox = (inner: string, wide = false): string => {
-  const popupWidth = wide ? 'min-w-[210px]' : 'min-w-[200px]';
+  const popupWidth = wide ? 'min-w-popup-wide' : 'min-w-popup';
   return `<div class="${popupWidth} p-0.5 font-sans text-ink">${inner}</div>`;
 };

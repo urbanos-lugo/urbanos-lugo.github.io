@@ -13,7 +13,7 @@ interface LineChipsProps {
   onAll: () => void;
 }
 
-const chip = 'pointer-events-auto flex h-11 shrink-0 items-center rounded-pill border shadow-raised backdrop-blur-glass';
+const chip = 'pointer-events-auto flex h-tap shrink-0 items-center rounded-pill border shadow-raised backdrop-blur-glass';
 
 /** The numbers more than one line answers to (four are numbered 11), so only those chips carry a branch name. */
 const sharedNumbers = (() => {
@@ -47,7 +47,7 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
   // One above the buses notice, which follows this in the page and has to stay beneath it when it opens.
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-map-chips lg:hidden">
-      <div className={`no-scrollbar flex gap-1.5 px-3 py-2.5 ${expanded ? 'max-h-[45dvh] flex-wrap overflow-y-auto' : 'overflow-x-auto'}`}>
+      <div className={`no-scrollbar flex gap-1.5 px-3 py-2.5 ${expanded ? 'max-h-chips-max flex-wrap overflow-y-auto' : 'overflow-x-auto'}`}>
         <button type="button" onClick={onAll} aria-pressed={picked.length === 0} className={`${chip} px-4 text-label font-semibold ${picked.length === 0 ? 'border-accent bg-accent text-on-accent' : 'border-edge bg-bg/glass text-ink-2'}`}>
           {t.map.allLines}
         </button>
@@ -78,7 +78,7 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
               aria-pressed={isSelected}
               aria-label={`${t.lines.lineLabel(branch ? `${line.number} ${branch}` : line.number)}: ${line.name}`}
               title={line.name}
-              className={`pointer-events-auto flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-pill px-3.5 text-label font-black text-on-line shadow-raised ${isSelected ? 'ring-strong ring-ink ring-offset-gap ring-offset-bg' : ''}`}
+              className={`pointer-events-auto flex h-tap min-w-tap shrink-0 items-center justify-center gap-1.5 rounded-pill px-3.5 text-label font-black text-on-line shadow-raised ${isSelected ? 'ring-strong ring-ink ring-offset-gap ring-offset-bg' : ''}`}
               style={{ backgroundColor: line.color }}
             >
               <span>{line.number}</span>

@@ -26,7 +26,7 @@ function StopRow({ label, time, estimated = false, stop, onSelect }: { label: st
           {time}
         </span>
       </div>
-      <button onClick={() => stop && onSelect(stop)} title={stop?.name} className="flex min-h-11 w-full items-center text-left text-body font-semibold underline underline-offset-link">
+      <button onClick={() => stop && onSelect(stop)} title={stop?.name} className="flex min-h-tap w-full items-center text-left text-body font-semibold underline underline-offset-link">
         {stop?.name}
       </button>
     </div>
@@ -47,7 +47,7 @@ function BusStep({ seg, onSelectStop, onSelectLine }: { seg: TripSegment & { lin
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
         <LineBadge number={seg.line.number} color={seg.line.color} title={seg.line.name} onClick={() => onSelectLine(seg.line)} />
         {/* Where this bus is going, not what the line is called: the name is its two termini and did not fit. */}
-        <span className="min-w-[min(6rem,100%)] flex-1 break-words text-body font-semibold" title={seg.line.name}>
+        <span className="min-w-floor-name flex-1 break-words text-body font-semibold" title={seg.line.name}>
           <span className="sr-only">{t.service.towards('')}</span>
           <span aria-hidden="true" className="text-ink-3">
             →{' '}
@@ -67,7 +67,7 @@ function BusStep({ seg, onSelectStop, onSelectLine }: { seg: TripSegment & { lin
         <p className="mt-1.5 border-l-strong border-line py-1.5 pl-3 text-label text-ink-3">{t.planner.ride(count, seg.durationMinutes)}</p>
       ) : (
         <details className="disclosure mt-1.5 border-l-strong border-line pl-3">
-          <summary className="flex min-h-11 cursor-pointer items-center gap-1.5 text-label text-ink-2">
+          <summary className="flex min-h-tap cursor-pointer items-center gap-1.5 text-label text-ink-2">
             <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0" aria-hidden="true" />
             {t.planner.ride(count, seg.durationMinutes)}
           </summary>

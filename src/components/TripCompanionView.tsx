@@ -15,7 +15,7 @@ import { currentLeg, legTimes, shouldAskIfMissed, tripPhase, tripProgress } from
 const RouteMap = lazy(() => import('./Map/RouteMap').then((m) => ({ default: m.RouteMap })));
 
 /** As tall as the answer above it: 37vh is 300 on a 375x812, held so a short phone and a tall desktop both get a map. */
-const MAP_HEIGHT = 'h-[37vh] min-h-[280px] max-h-[420px] lg:min-h-[360px]';
+const MAP_HEIGHT = 'h-map-ride min-h-map-ride-min max-h-map-ride-max lg:min-h-map-ride-min-lg';
 const TICK_MS = 15_000;
 const label = 'text-label font-bold uppercase tracking-caps text-ink-2';
 const headline = 'mt-1 break-words text-title font-bold leading-name text-ink';
@@ -65,7 +65,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
   const nextStop = riding ? progress?.stops.find((s) => !s.passed) : undefined;
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4 px-cap-3.5 pt-4 lg:px-6">
+    <div className="mx-auto w-full max-w-column space-y-4 px-cap-3.5 pt-4 lg:px-6">
       <h2 ref={headingRef} tabIndex={-1} className="sr-only">
         {t.companion.title}
       </h2>
@@ -154,10 +154,10 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           <div role="group" aria-live="polite" className="anim-rise space-y-2 rounded-control border border-warn bg-warn/wash p-3">
             <p className="text-body font-semibold text-ink">{t.companion.caughtIt(segment.line.number, formatMinutes(times.departureMinutes))}</p>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={companion.boarded} className="flex min-h-11 items-center justify-center rounded-control bg-accent px-3 text-body font-semibold text-on-accent">
+              <button type="button" onClick={companion.boarded} className="flex min-h-tap items-center justify-center rounded-control bg-accent px-3 text-body font-semibold text-on-accent">
                 {t.companion.yesOnIt}
               </button>
-              <button type="button" onClick={companion.missed} className="flex min-h-11 items-center justify-center rounded-control border border-edge bg-bg px-3 text-body font-semibold text-ink">
+              <button type="button" onClick={companion.missed} className="flex min-h-tap items-center justify-center rounded-control border border-edge bg-bg px-3 text-body font-semibold text-ink">
                 {t.companion.noMissedIt}
               </button>
             </div>
@@ -188,7 +188,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           </p>
           {/* A locked phone stops getting positions; the switch keeps the screen on. Off by default because it costs battery; absent where the browser has no such thing. */}
           {companion.keepAwake && (
-            <label className="flex min-h-11 cursor-pointer items-center gap-3">
+            <label className="flex min-h-tap cursor-pointer items-center gap-3">
               <input type="checkbox" className="h-5 w-5 shrink-0 accent-accent" checked={companion.keepAwake.on} onChange={(e) => companion.keepAwake?.set(e.target.checked)} />
               <span className="text-body">
                 {t.companion.keepAwake}
@@ -208,14 +208,14 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
               const passed = riding && stop.passed;
               const isNext = stop.id === nextStop?.id;
               return (
-                <li key={stop.id} aria-current={isNext ? 'step' : undefined} className={`flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 ${passed ? 'text-ink-3' : 'text-ink'}`}>
+                <li key={stop.id} aria-current={isNext ? 'step' : undefined} className={`flex min-h-tap flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 ${passed ? 'text-ink-3' : 'text-ink'}`}>
                   {/* The arrow is where the GPS says you are, the one measured thing on this screen, so it is the one thing that pulses. */}
                   <span className={`flex h-4 w-4 shrink-0 items-center justify-center ${isNext ? 'live-dot' : ''}`} aria-hidden="true">
                     {passed ? <Check className="anim-tick-in h-4 w-4 text-official stroke-bold" /> : isNext ? <ArrowRight className="anim-drop h-4 w-4 text-accent stroke-bold" /> : <span className="h-1.5 w-1.5 rounded-pill bg-ink-3" />}
                   </span>
                   {/* The name keeps a floor and "baixas aquí" goes under it when both do not fit: beside it
                       at 200 % text the name had 100 px and its longest word ran out of the row. */}
-                  <span className={`min-w-[min(6rem,100%)] flex-1 break-words text-body ${passed ? 'line-through' : 'font-semibold'}`}>{stop.name}</span>
+                  <span className={`min-w-floor-name flex-1 break-words text-body ${passed ? 'line-through' : 'font-semibold'}`}>{stop.name}</span>
                   <span className="ml-auto shrink-0 text-label font-semibold text-ink-2">{stop.isAlighting ? t.companion.alightHere : passed ? t.companion.passed : isNext ? t.companion.next : ''}</span>
                 </li>
               );
@@ -228,7 +228,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           the page's own gutter, which stops growing with the type where the phone has no room
           (px-cap-3.5): in plain rem it grew past it and the bar ran 11 px off the screen at 200 %.
           `trip-bar`: <main> leaves its height free below whatever takes the focus (App.tsx). */}
-      <div className="trip-bar anim-sheet-up sticky bottom-0 z-raised -mx-[min(0.875rem,4.375vw)] border-t border-line bg-bg/glass px-[min(0.875rem,4.375vw)] py-3 backdrop-blur-bar lg:-mx-6 lg:px-6">
+      <div className="trip-bar anim-sheet-up sticky bottom-0 z-raised -mx-cap-3.5 border-t border-line bg-bg/glass px-cap-3.5 py-3 backdrop-blur-bar lg:-mx-6 lg:px-6">
         <button type="button" onClick={companion.finish} className={`flex min-h-12 w-full items-center justify-center rounded-control px-4 text-body font-semibold ${phase === 'walking' ? 'bg-accent text-on-accent' : 'border border-edge bg-bg text-ink'}`}>
           {phase === 'walking' ? t.companion.arrivedDone : t.companion.finish}
         </button>

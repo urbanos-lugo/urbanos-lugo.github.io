@@ -10,7 +10,7 @@ import type { NearbyMiniMapProps } from './NearbyMiniMap';
 const NearbyMiniMap = lazy(() => import('./NearbyMiniMap').then((m) => ({ default: m.NearbyMiniMap })));
 
 /** The map's own height, so nothing moves when it arrives. */
-const Placeholder = () => <div className="h-[240px] w-full bg-surface" />;
+const Placeholder = () => <div className="h-map-card w-full bg-surface" />;
 
 export function LazyNearbyMiniMap(props: NearbyMiniMapProps) {
   const holder = useRef<HTMLDivElement>(null);

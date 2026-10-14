@@ -62,7 +62,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
         key={tripKey(option)}
         onClick={() => onChoose(idx)}
         aria-pressed={idx === chosen}
-        className={`grid min-h-11 w-full grid-cols-[auto_1fr] items-center gap-x-2.5 gap-y-1 border-l-heavy py-1.5 pl-2 pr-1 text-left @min-[18rem]:grid-cols-[auto_1fr_auto] transition-colors ${idx > 0 ? 'border-t border-t-line' : ''} ${
+        className={`grid min-h-tap w-full grid-cols-option items-center gap-x-2.5 gap-y-1 border-l-heavy py-1.5 pl-2 pr-1 text-left @min-option-row:grid-cols-option-wide transition-colors ${idx > 0 ? 'border-t border-t-line' : ''} ${
           idx === chosen ? 'border-l-ink bg-surface text-ink' : 'border-l-transparent text-ink'
         }`}
       >
@@ -81,7 +81,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
             ))
           )}
         </span>
-        <span className="col-span-2 row-start-2 min-w-0 @min-[18rem]:col-span-1 @min-[18rem]:row-start-auto">
+        <span className="col-span-2 row-start-2 min-w-0 @min-option-row:col-span-1 @min-option-row:row-start-auto">
           <span className="tnum block font-mono text-label font-semibold text-ink">
             {/* Not today: the day goes before the clock, or "07:00" reads as this morning's. */}
             {!!option.daysAhead && <span className="mr-1.5 font-sans text-estimated">{dayWord(lang, option.daysAhead)}</span>}
@@ -92,7 +92,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
           {!shown.reachable && <span className="block text-label font-semibold text-warn-ink">{t.planner.unreachableWalk}</span>}
           {busLegs.length > 1 && <span className="sr-only">{t.planner.transfersShort(busLegs.length - 1)}</span>}
         </span>
-        <span className={`tnum shrink-0 justify-self-end whitespace-nowrap font-mono text-body @min-[18rem]:justify-self-auto ${idx === chosen ? 'font-black' : 'font-bold text-ink-2'}`}>{shown.durationMinutes} min</span>
+        <span className={`tnum shrink-0 justify-self-end whitespace-nowrap font-mono text-body @min-option-row:justify-self-auto ${idx === chosen ? 'font-black' : 'font-bold text-ink-2'}`}>{shown.durationMinutes} min</span>
       </button>
     );
   };
@@ -113,7 +113,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
           </div>
         )}
         {options.length > VISIBLE_OPTIONS && openAt < VISIBLE_OPTIONS && (
-          <button type="button" onClick={() => setShowAll(!showAll)} aria-expanded={expanded} className="flex min-h-11 w-full items-center justify-center gap-1.5 border-t border-t-line text-label font-semibold text-ink-3">
+          <button type="button" onClick={() => setShowAll(!showAll)} aria-expanded={expanded} className="flex min-h-tap w-full items-center justify-center gap-1.5 border-t border-t-line text-label font-semibold text-ink-3">
             {expanded ? t.planner.fewerOptions : t.planner.moreOptions(options.length - VISIBLE_OPTIONS)}
             <ChevronDown className="disclosure-chevron h-3.5 w-3.5 shrink-0 stroke-bold" aria-hidden="true" />
           </button>

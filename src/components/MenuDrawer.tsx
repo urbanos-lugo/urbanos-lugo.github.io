@@ -27,10 +27,10 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.menu.open} className="fixed inset-0 z-dialog">
       {/* For the finger, not the Tab key: the X beside the title is the same action. */}
       <button className="anim-fade-full absolute inset-0 bg-scrim" onClick={onClose} aria-label={t.menu.close} tabIndex={-1} />
-      <div className="@container anim-slide-in absolute inset-y-0 right-0 flex w-[306px] max-w-[85vw] flex-col border-l border-edge bg-bg shadow-overlay">
+      <div className="@container anim-slide-in absolute inset-y-0 right-0 flex w-menu max-w-menu-max flex-col border-l border-edge bg-bg shadow-overlay">
         <div className="flex items-center justify-between border-b border-edge px-cap-4.5 py-4">
           <span className="text-emph font-semibold tracking-title">{t.nav.appName}</span>
-          <button onClick={onClose} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface" aria-label={t.menu.close}>
+          <button onClick={onClose} className="flex h-tap w-tap shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface" aria-label={t.menu.close}>
             <X className="h-4.5 w-4.5" aria-hidden="true" />
           </button>
         </div>
@@ -60,7 +60,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
               {badge > 0 && <span className="tnum shrink-0 rounded-control bg-warn px-2 py-0.5 text-label font-bold text-warn-ink">{badge}</span>}
               {/* Decoration, the whole row is the link: it goes where the drawer is narrow for its
                   text, and the first link's words had broken mid-word, "servi-zo". */}
-              <ChevronRight className="hidden h-4.5 w-4.5 shrink-0 text-ink-3 @min-[15rem]:block" aria-hidden="true" />
+              <ChevronRight className="hidden h-4.5 w-4.5 shrink-0 text-ink-3 @min-chevron:block" aria-hidden="true" />
             </a>
           ))}
           <div className="px-3 py-2">
@@ -76,7 +76,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
           <span className="mt-2 border-t border-line pt-2 text-ink-2">{t.menu.unofficial}</span>
           <span>{t.menu.privacy}</span>
           {/* On its own line, so the 44 px applies to it. */}
-          <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex min-h-11 items-center self-start underline decoration-dotted underline-offset-link">
+          <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex min-h-tap items-center self-start underline decoration-dotted underline-offset-link">
             {t.menu.sourceCode}
           </a>
         </div>

@@ -336,7 +336,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
   const folded = asked && !formOpen;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-cap-3.5 py-4 lg:px-6">
+    <div className="mx-auto w-full max-w-page px-cap-3.5 py-4 lg:px-6">
       {/* The form stays put while the itinerary scrolls beside it from lg up; below, the two take turns. */}
       <div className="lg:grid lg:grid-cols-12 lg:gap-6">
         <div ref={formRef} className="space-y-4 lg:col-span-5 lg:sticky lg:top-4 lg:self-start">
@@ -350,14 +350,14 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 ask('toggleForm');
               }}
               aria-expanded={formOpen}
-              className="flex min-h-11 w-full scroll-mt-[1rem] flex-wrap items-center gap-x-2 text-left lg:hidden"
+              className="flex min-h-tap w-full scroll-mt-4 flex-wrap items-center gap-x-2 text-left lg:hidden"
             >
               <Navigation className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
               {/* A floor under the route, in rem: when the text is set large there is no room for
                   both, and the link goes to the next line instead of the route shrinking to nothing.
                   Whole: held to two lines, the destination lost its end at 200 % and under a
                   reader's text spacing. */}
-              <span className="min-w-[min(8rem,100%)] flex-1 break-words text-label font-semibold text-ink">
+              <span className="min-w-floor-title flex-1 break-words text-label font-semibold text-ink">
                 {placeLabel(originQuery)} → {placeLabel(destQuery)}
               </span>
               <span className="shrink-0 text-label font-semibold text-accent underline underline-offset-link">{formOpen ? t.planner.backToAnswer : t.planner.editTrip}</span>
@@ -404,7 +404,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 <button
                   id="btn-swap-stops"
                   onClick={swap}
-                  className="absolute left-1 top-1/2 flex h-11 w-11 -translate-x-1 -translate-y-1/2 items-center justify-center rounded-pill text-ink-2 before:absolute before:h-9 before:w-9 before:rounded-pill before:border before:border-edge before:bg-bg before:shadow-hair"
+                  className="absolute left-1 top-1/2 flex h-tap w-tap -translate-x-1 -translate-y-1/2 items-center justify-center rounded-pill text-ink-2 before:absolute before:h-9 before:w-9 before:rounded-pill before:border before:border-edge before:bg-bg before:shadow-hair"
                   aria-label={t.planner.swap}
                   title={t.planner.swap}
                 >
@@ -428,7 +428,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                   <label className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-label font-semibold text-ink-2">
                     <Clock className="w-3.5 h-3.5 text-accent shrink-0" />
                     <span className="shrink-0">{timeMode === 'arrive' ? t.planner.arriveByLabel : t.planner.departAtLabel}</span>
-                    <input type="time" value={timeValue} onChange={(e) => setTimeValue(e.target.value)} className="h-11 rounded-control border border-edge bg-bg px-2 font-mono text-body text-ink" />
+                    <input type="time" value={timeValue} onChange={(e) => setTimeValue(e.target.value)} className="h-tap rounded-control border border-edge bg-bg px-2 font-mono text-body text-ink" />
                   </label>
                 )}
               </div>
@@ -467,7 +467,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           clearRecentRoutes();
                         }
                       }}
-                      className="inline-flex h-11 min-w-11 items-center justify-end text-label font-semibold text-accent underline underline-offset-link"
+                      className="inline-flex h-tap min-w-tap items-center justify-end text-label font-semibold text-accent underline underline-offset-link"
                     >
                       {cleared.length ? t.planner.undoClear : t.stopHome.clearRecent}
                     </button>
@@ -488,7 +488,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           if (route.from === 'my_location' || route.to === 'my_location') withGps((coords) => calculate(route.from, route.to, coords));
                           else calculate(route.from, route.to);
                         }}
-                        className={`flex min-h-11 w-full items-center gap-2 py-1.5 text-left ${idx > 0 ? 'border-t border-t-line' : ''}`}
+                        className={`flex min-h-tap w-full items-center gap-2 py-1.5 text-left ${idx > 0 ? 'border-t border-t-line' : ''}`}
                       >
                         <Navigation className="h-3.5 w-3.5 shrink-0 text-ink-3" aria-hidden="true" />
                         <span className="min-w-0 flex-1 break-words text-label font-semibold text-ink">
@@ -520,7 +520,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           calculate(originQuery, qp.query);
                         }}
                         aria-pressed={chosen}
-                        className={`inline-flex h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-pill px-3.5 text-label font-semibold transition-colors ${
+                        className={`inline-flex h-tap shrink-0 snap-start items-center whitespace-nowrap rounded-pill px-3.5 text-label font-semibold transition-colors ${
                           chosen ? 'bg-accent text-on-accent' : 'bg-surface text-ink-2'
                         }`}
                       >
@@ -637,7 +637,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
 
               {/* The small print, folded: worth reading once, not on the way to the thing that was asked for. */}
               <details className="disclosure rounded-control border border-edge bg-surface">
-                <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 text-label font-semibold text-ink-2">
+                <summary className="flex min-h-tap cursor-pointer items-center justify-between gap-3 px-3 text-label font-semibold text-ink-2">
                   <span className="sr-only">{t.planner.tripInfoTitle}</span>
                   <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
                   <span className="flex flex-1 flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono">
@@ -697,20 +697,20 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                   <SectionLabel icon={MapPin} className="">
                     {t.planner.routeMap}
                   </SectionLabel>
-                  <button onClick={() => setShowMap((v) => !v)} className="text-label font-semibold text-accent h-11 inline-flex items-center underline underline-offset-link">
+                  <button onClick={() => setShowMap((v) => !v)} className="text-label font-semibold text-accent h-tap inline-flex items-center underline underline-offset-link">
                     {showMap ? t.planner.hideMap : t.planner.showMap}
                   </button>
                 </div>
                 <div className={`fold ${showMap ? '' : 'fold-closed'}`}>
                   <div className="relative">
-                    <Suspense fallback={<div className="w-full h-[240px] sm:h-[280px] rounded-card bg-surface animate-waiting" />}>
-                      <RouteMap plan={planResult} origin={endpoints.origin} destination={endpoints.destination} walkPaths={walkPaths} className="w-full h-[240px] sm:h-[280px] rounded-card overflow-hidden border border-edge z-0" />
+                    <Suspense fallback={<div className="w-full h-map-card sm:h-map-card-sm rounded-card bg-surface animate-waiting" />}>
+                      <RouteMap plan={planResult} origin={endpoints.origin} destination={endpoints.destination} walkPaths={walkPaths} className="w-full h-map-card sm:h-map-card-sm rounded-card overflow-hidden border border-edge z-0" />
                     </Suspense>
                     {/* The map ends at the fold on a phone, so the chip that says the trip is written out further down sits on it. */}
                     <button
                       type="button"
                       onClick={() => stepsRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })}
-                      className="absolute left-1/2 top-0 z-map-float flex h-11 -translate-x-1/2 items-center px-2"
+                      className="absolute left-1/2 top-0 z-map-float flex h-tap -translate-x-1/2 items-center px-2"
                     >
                       {/* One line: from the middle of the map it had half the width, and at 200% text
                           it broke into three and covered the route. */}

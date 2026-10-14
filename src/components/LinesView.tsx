@@ -106,7 +106,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
   const duration = scheduledDuration(currentLine, directionIdx, BUS_STOPS);
 
   return (
-    <div className="mx-auto h-full w-full max-w-7xl px-cap-3.5 py-4 lg:px-6 lg:pb-0">
+    <div className="mx-auto h-full w-full max-w-page px-cap-3.5 py-4 lg:px-6 lg:pb-0">
       {/* From lg up each pane scrolls on its own, so each is positioned: otherwise the absolute
           boxes inside (screen-reader text, timeline dots) take <main> as containing block,
           escape the pane's clip, and <main> scrolls a second time into an empty page. */}
@@ -127,7 +127,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                   key={category}
                   onClick={() => setCategoryFilter(category)}
                   aria-pressed={categoryFilter === category}
-                  className={`flex h-11 items-center whitespace-nowrap rounded-control border px-3.5 text-label font-semibold ${categoryFilter === category ? 'bg-ink border-ink text-bg' : 'border-edge text-ink-2'}`}
+                  className={`flex h-tap items-center whitespace-nowrap rounded-control border px-3.5 text-label font-semibold ${categoryFilter === category ? 'bg-ink border-ink text-bg' : 'border-edge text-ink-2'}`}
                 >
                   {t.lines.categories[category as keyof typeof t.lines.categories] || category}
                 </button>
@@ -142,7 +142,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.lines.searchLines}
               aria-label={t.lines.searchLines}
-              className="h-11 w-full rounded-control border border-edge bg-surface px-3.5 text-body text-ink placeholder:text-ink-3"
+              className="h-tap w-full rounded-control border border-edge bg-surface px-3.5 text-body text-ink placeholder:text-ink-3"
             />
 
             {/* No scroll box of its own: on a phone the page scrolls, on a desktop the column
@@ -171,7 +171,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                         with the type at 200% it was cut to its first letter, "R…". */}
                     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1.5">
                       <LineBadge number={line.number} color={line.color} size="md" className="shadow-hair" />
-                      <div className="min-w-[6rem] flex-1">
+                      <div className="min-w-floor-name flex-1">
                         {/* Keep the end of the name, not the beginning: nine distinct openings across twenty-four lines, seventeen distinct endings. */}
                         <div className="font-bold text-body text-ink leading-name flex items-baseline gap-1.5 min-w-0" title={line.name}>
                           {/* Only while the row is a whole screen wide: in the desktop's list column both
@@ -213,7 +213,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
         </div>
 
         <div className={`anim-push-in space-y-4 lg:relative lg:animate-none lg:col-span-7 lg:block lg:h-full lg:overflow-y-auto lg:pb-4 ${showDetail ? '' : 'hidden'}`}>
-          <button onClick={() => setShowDetail(false)} className="-ml-1 flex h-11 items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden">
+          <button onClick={() => setShowDetail(false)} className="-ml-1 flex h-tap items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden">
             <ArrowLeft className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
             {t.lines.backToLines}
           </button>
@@ -223,7 +223,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               {/* Wrapping: at 200% text the chips and the name ran 144 px past the card. */}
               <div className="flex flex-wrap items-center gap-4">
                 <LineBadge number={currentLine.number} color={currentLine.color} size="xl" className="shadow-raised" />
-                <div className="min-w-[min(10rem,100%)] flex-1">
+                <div className="min-w-floor-heading flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-label font-bold px-2 py-0.5 rounded-tag bg-surface text-ink-2 uppercase tracking-caps">{t.lines.lineLabel(currentLine.number)}</span>
                     {currentLine.category === 'hospital' && <span className="text-label font-bold px-2 py-0.5 rounded-tag bg-warn text-warn-ink">{t.lines.categories.hospital}</span>}
@@ -240,7 +240,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
                 {onToggleFavoriteLine && <SaveStar key={currentLine.id} on={isSaved} label={isSaved ? t.lines.unsaveLine : t.lines.saveLine} onToggle={() => onToggleFavoriteLine(currentLine.id)} />}
                 {/* min-h rather than h: at a narrow column the label wraps to two lines. */}
-                <button id="btn-view-line-map" onClick={() => onViewLineOnMap(currentLine)} className="flex min-h-11 items-center gap-1.5 rounded-control bg-accent px-4 py-2 text-body font-semibold text-on-accent">
+                <button id="btn-view-line-map" onClick={() => onViewLineOnMap(currentLine)} className="flex min-h-tap items-center gap-1.5 rounded-control bg-accent px-4 py-2 text-body font-semibold text-on-accent">
                   <MapPin className="w-4 h-4" />
                   <span>{t.lines.viewOnMap}</span>
                 </button>
@@ -251,7 +251,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {/* Columns of at least 6rem, so they follow the text: two on a phone at the default size,
                 one from 125% up. In two fixed columns at 200% the frequency's label ran 64 px
                 into the next one. */}
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-x-4 gap-y-3 rounded-control border border-line bg-surface/quiet p-3 sm:grid-cols-3">
+            <div className="grid grid-cols-facts gap-x-4 gap-y-3 rounded-control border border-line bg-surface/quiet p-3 sm:grid-cols-3">
               <Fact icon={Clock} label={t.lines.frequency}>
                 <span className="font-sans font-semibold">{frequencyLabel(currentLine, lang)}</span>
               </Fact>
@@ -361,7 +361,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                   aria-label={guessed ? `${t.lines.viewRunAt(time)}, ${t.lines.estimatedSr}` : t.lines.viewRunAt(time)}
                   // The run on show is the one filled in: said as well as drawn.
                   aria-pressed={idx === runIndex}
-                  className={`tnum flex h-11 items-center justify-center rounded-control border px-2.5 text-label font-semibold ${idx === runIndex ? 'border-ink bg-ink text-bg' : 'border-edge text-ink-2'}`}
+                  className={`tnum flex h-tap items-center justify-center rounded-control border px-2.5 text-label font-semibold ${idx === runIndex ? 'border-ink bg-ink text-bg' : 'border-edge text-ink-2'}`}
                 >
                   {guessed && <span>~</span>}
                   {time}
@@ -397,10 +397,10 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               // the two at 200% text, they pushed the right arrow 118 px off the screen.
               <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-control bg-surface border border-edge">
                 {/* Named: an arrow on its own was read out as "left arrow", which says where it points and not what it does. */}
-                <button onClick={() => setPickedRunIndex(Math.max(0, runIndex - 1))} disabled={runIndex === 0} aria-label={t.lines.previousRun} title={t.lines.previousRun} className="order-2 @min-[16rem]:order-none flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
+                <button onClick={() => setPickedRunIndex(Math.max(0, runIndex - 1))} disabled={runIndex === 0} aria-label={t.lines.previousRun} title={t.lines.previousRun} className="order-2 @min-stepper:order-none flex h-tap w-tap shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
                   &larr;
                 </button>
-                <div className="order-1 basis-full text-center leading-name @min-[16rem]:order-none @min-[16rem]:basis-0 @min-[16rem]:flex-1">
+                <div className="order-1 basis-full text-center leading-name @min-stepper:order-none @min-stepper:basis-0 @min-stepper:flex-1">
                   <div className="text-label font-bold text-accent uppercase tracking-caps">{t.lines.showingRun}</div>
                   <div className="text-body font-black text-accent font-mono">
                     {derived(shownRun, 0) && '~'}
@@ -418,7 +418,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                     )}
                   </div>
                 </div>
-                <button onClick={() => setPickedRunIndex(Math.min(runs.length - 1, runIndex + 1))} disabled={runIndex >= runs.length - 1} aria-label={t.lines.nextRun} title={t.lines.nextRun} className="order-3 @min-[16rem]:order-none flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
+                <button onClick={() => setPickedRunIndex(Math.min(runs.length - 1, runIndex + 1))} disabled={runIndex >= runs.length - 1} aria-label={t.lines.nextRun} title={t.lines.nextRun} className="order-3 @min-stepper:order-none flex h-tap w-tap shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
                   &rarr;
                 </button>
               </div>

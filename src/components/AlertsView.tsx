@@ -19,7 +19,7 @@ function formatInstant(value: string | undefined, locale: string): string {
   return Number.isNaN(at.getTime()) ? value : at.toLocaleString(locale);
 }
 
-const external = 'inline-flex min-h-11 items-center text-label font-bold text-accent underline underline-offset-link';
+const external = 'inline-flex min-h-tap items-center text-label font-bold text-accent underline underline-offset-link';
 
 /**
  * The lines a notice names, every one, or "all" from ten up. Past three the rest folded into a
@@ -112,7 +112,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
       : [t.fares.normalStatusTitle, t.fares.normalStatusDesc];
 
   return (
-    <div className="max-w-7xl mx-auto px-cap-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <div className="max-w-page mx-auto px-cap-4 sm:px-6 lg:px-8 py-6 space-y-8">
       {(hour >= 22 || hour < 6) && (
         <div className="p-4 rounded-card bg-surface border border-edge shadow-raised flex items-start gap-3">
           <Clock className="w-5 h-5 text-ink-2 shrink-0 mt-0.5" />
@@ -140,7 +140,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
               refresh(true);
             }}
             disabled={isSyncing || cooldown > 0}
-            className={`flex h-11 shrink-0 items-center gap-1.5 self-start rounded-control px-4 text-body font-semibold sm:self-auto ${
+            className={`flex h-tap shrink-0 items-center gap-1.5 self-start rounded-control px-4 text-body font-semibold sm:self-auto ${
               cooldown > 0 ? 'cursor-not-allowed border border-edge bg-surface text-ink-3' : 'bg-accent hover:bg-accent text-on-accent disabled:opacity-disabled'
             }`}
           >
@@ -177,7 +177,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
               <div className={`shrink-0 rounded-control p-2 mt-0.5 ${unreachable ? 'bg-surface text-ink-2 border border-edge' : 'bg-official text-on-official'}`}>
                 {unreachable ? <HelpCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
               </div>
-              <div className="min-w-[min(11rem,100%)] flex-1">
+              <div className="min-w-floor-status flex-1">
                 <h3 className={`break-words text-body font-bold ${unreachable || stale ? 'text-ink' : 'text-official'}`}>{statusTitle}</h3>
                 <p className="text-label text-ink-2 mt-0.5 leading-prose">{statusDesc}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-label text-official font-medium">
@@ -196,7 +196,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
                 </div>
               </div>
             </div>
-            <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="flex h-11 shrink-0 items-center justify-center rounded-control border border-edge px-4 text-body font-semibold text-accent">
+            <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="flex h-tap shrink-0 items-center justify-center rounded-control border border-edge px-4 text-body font-semibold text-accent">
               {t.fares.checkOnBuslugo} &rarr;
             </a>
           </div>

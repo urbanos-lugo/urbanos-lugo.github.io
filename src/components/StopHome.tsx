@@ -114,7 +114,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
     });
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-cap-3.5 pb-8 pt-4">
+    <div className="mx-auto w-full max-w-column px-cap-3.5 pb-8 pt-4">
       <h2 className="flex items-center gap-2 text-title font-semibold tracking-title">
         <Star className="h-5 w-5 shrink-0 text-warn-ink stroke-filled" fill="currentColor" aria-hidden="true" />
         {t.stopHome.saved}
@@ -125,12 +125,12 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
           <p className="text-body font-semibold">{t.stopHome.emptyTitle}</p>
           <p className="mt-1.5 text-body leading-prose text-ink-2">{t.stopHome.emptyBody}</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <button onClick={onOpenQrScanner} className="flex h-11 items-center gap-2 rounded-control bg-accent px-4 text-body font-semibold text-on-accent">
+            <button onClick={onOpenQrScanner} className="flex h-tap items-center gap-2 rounded-control bg-accent px-4 text-body font-semibold text-on-accent">
               <QrCode className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
               {t.stopHome.scan}
             </button>
             {/* A link, not a field: the field is at the top of the screen, the hardest place for a thumb, and this puts the cursor there. */}
-            <button onClick={() => document.getElementById('site-search')?.focus()} className="flex h-11 items-center px-1 text-body font-medium text-ink-2 underline underline-offset-link">
+            <button onClick={() => document.getElementById('site-search')?.focus()} className="flex h-tap items-center px-1 text-body font-medium text-ink-2 underline underline-offset-link">
               {t.stopHome.orSearchAbove}
             </button>
           </div>
@@ -198,7 +198,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                     still lost its end at 320 px, at 200 % and under a reader's text spacing. */}
                 <button onClick={() => onSelectLine(line)} style={{ '--line': line.color } as CSSProperties} className="tint tint-edge tint-strong flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border px-cap-2.5 py-2 text-left">
                   <LineBadge number={line.number} color={line.color} />
-                  <span className="min-w-[min(6rem,100%)] flex-1">
+                  <span className="min-w-floor-name flex-1">
                     <span className="block break-words text-body font-semibold">{line.name}</span>
                     <span className="block text-label text-ink-2">{stop ? t.stopHome.savedLinesAt(stop.name) : t.stopHome.savedLinesNoStop}</span>
                   </span>
@@ -224,7 +224,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
             icon={History}
             tint="text-ink-2"
             action={
-              <button onClick={onClearRecent} className="inline-flex h-11 min-w-11 items-center justify-end text-label font-semibold text-accent underline underline-offset-link">
+              <button onClick={onClearRecent} className="inline-flex h-tap min-w-tap items-center justify-end text-label font-semibold text-accent underline underline-offset-link">
                 {t.stopHome.clearRecent}
               </button>
             }
@@ -249,7 +249,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
       )}
       {nearby.length === 0 ? (
         <>
-          <button onClick={locate} disabled={locating} className="mt-2.5 flex h-11 w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface text-body font-semibold text-ink-2 disabled:opacity-disabled">
+          <button onClick={locate} disabled={locating} className="mt-2.5 flex h-tap w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface text-body font-semibold text-ink-2 disabled:opacity-disabled">
             <Compass className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
             {locating ? t.stopHome.locating : t.stopHome.locate}
           </button>

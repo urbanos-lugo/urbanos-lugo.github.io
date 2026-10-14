@@ -11,7 +11,7 @@ const PORTALS = [
 ];
 
 const card = 'rounded-card border border-edge bg-bg py-5 px-cap-5 shadow-raised';
-const link = 'inline-flex min-h-11 items-center font-bold text-label text-accent underline underline-offset-link';
+const link = 'inline-flex min-h-tap items-center font-bold text-label text-accent underline underline-offset-link';
 
 const Title = ({ icon: Icon, children, small = false }: { icon: LucideIcon; children: ReactNode; small?: boolean }) => (
   <h2 className={`font-bold text-ink uppercase tracking-caps flex items-center gap-2 ${small ? 'text-body' : 'text-emph'}`}>
@@ -41,7 +41,7 @@ export function FaresView() {
   const copy = (value: string | ((minutes: number) => string), minutes = 0) => (typeof value === 'function' ? value(minutes) : value);
 
   return (
-    <div className="max-w-7xl mx-auto px-cap-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <div className="max-w-page mx-auto px-cap-4 sm:px-6 lg:px-8 py-6 space-y-8">
       <div className="space-y-4">
         <div>
           <Title icon={CreditCard}>{t.fares.faresTitle}</Title>

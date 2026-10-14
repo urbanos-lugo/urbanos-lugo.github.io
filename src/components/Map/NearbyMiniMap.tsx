@@ -47,5 +47,5 @@ export function NearbyMiniMap({ centre, stops, onSelectStop, regionLabel }: Near
     };
   }, [map, centre.lat, centre.lng, label, kind, stops, colors]);
 
-  return <div ref={containerRef} className="h-[240px] w-full" />;
+  return <div ref={containerRef} className="h-map-card w-full" />;
 }

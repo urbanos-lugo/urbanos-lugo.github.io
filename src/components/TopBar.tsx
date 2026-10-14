@@ -110,7 +110,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
             the type inside a 46 px bar, and at 200% the QR button was pushed half out of it.
             The field's focus ring is drawn on this box, the shape the eye takes for the field:
             the input inside had its outline taken off and nothing in its place. */}
-        <div className="flex h-[46px] min-w-0 flex-1 items-center gap-2.5 overflow-hidden rounded-control border border-edge bg-surface pl-3 has-[input:focus-visible]:outline-focus has-[input:focus-visible]:outline-offset-focus has-[input:focus-visible]:outline-accent">
+        <div className="flex h-bar-field min-w-0 flex-1 items-center gap-2.5 overflow-hidden rounded-control border border-edge bg-surface pl-3 has-[input:focus-visible]:outline-focus has-[input:focus-visible]:outline-offset-focus has-[input:focus-visible]:outline-accent">
           <Search className="h-4.5 w-4.5 shrink-0 text-ink-3" aria-hidden="true" />
           <input
             id="site-search"
@@ -127,21 +127,21 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
             className="h-full min-w-0 flex-1 bg-transparent text-body text-ink outline-hidden placeholder:text-ink-3"
           />
           {q.length > 0 && (
-            <button onClick={choose(() => {})} className="flex h-[44px] w-[44px] shrink-0 items-center justify-center text-ink-3" aria-label={t.search.clear}>
+            <button onClick={choose(() => {})} className="flex h-tap-bar w-tap-bar shrink-0 items-center justify-center text-ink-3" aria-label={t.search.clear}>
               <X className="h-4.5 w-4.5" aria-hidden="true" />
             </button>
           )}
-          <button onClick={onOpenFavorites} className="ml-auto flex h-[44px] w-[44px] shrink-0 items-center justify-center border-l border-line text-ink-2" aria-label={t.favourites.title} title={t.favourites.title}>
+          <button onClick={onOpenFavorites} className="ml-auto flex h-tap-bar w-tap-bar shrink-0 items-center justify-center border-l border-line text-ink-2" aria-label={t.favourites.title} title={t.favourites.title}>
             <Star className={`h-4.5 w-4.5 stroke-filled ${savedCount > 0 ? 'text-warn-ink' : ''}`} fill={savedCount > 0 ? 'currentColor' : 'none'} aria-hidden="true" />
           </button>
-          <button onClick={onOpenQrScanner} className="flex h-[44px] w-[44px] shrink-0 items-center justify-center border-l border-line text-ink-2" aria-label={t.search.qr} title={t.search.qr}>
+          <button onClick={onOpenQrScanner} className="flex h-tap-bar w-tap-bar shrink-0 items-center justify-center border-l border-line text-ink-2" aria-label={t.search.qr} title={t.search.qr}>
             <QrCode className="h-4.5 w-4.5" aria-hidden="true" />
           </button>
         </div>
         {/* The same badge as the drawer row: the count was only inside the drawer, so on a phone it existed for whoever opened the menu. */}
         <button
           onClick={onOpenMenu}
-          className="relative flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-control border border-edge bg-surface text-ink-2 lg:hidden"
+          className="relative flex h-bar-field w-bar-field shrink-0 items-center justify-center rounded-control border border-edge bg-surface text-ink-2 lg:hidden"
           aria-label={alertCount > 0 ? `${t.menu.open}. ${t.menu.alerts}: ${alertCount}` : t.menu.open}
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
@@ -161,7 +161,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
       </span>
 
       {open && q.length > 0 && (
-        <div className="anim-drop absolute inset-x-3.5 top-full z-results mt-1 max-h-[60vh] overflow-y-auto rounded-card border border-edge bg-bg shadow-float">
+        <div className="anim-drop absolute inset-x-3.5 top-full z-results mt-1 max-h-results-max overflow-y-auto rounded-card border border-edge bg-bg shadow-float">
           {settled && stops.length === 0 && lines.length === 0 && places.length === 0 && screens.length === 0 && <p className="px-4 py-4 text-body text-ink-3">{t.search.none}</p>}
 
           {stops.length > 0 && <Heading>{t.search.stops}</Heading>}
@@ -170,7 +170,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
               <MapPin className="h-4.5 w-4.5 shrink-0 text-ink-3" aria-hidden="true" />
               {/* The name keeps 6rem and the pole code goes under it when both do not fit: at 200%
                   text the names spilled up to 130 px out of their box, over the code. */}
-              <span className="min-w-[min(6rem,100%)] flex-1">
+              <span className="min-w-floor-name flex-1">
                 <span className="block break-words text-emph font-semibold">{stop.name}</span>
                 <span className="block text-label text-ink-3">
                   {stop.zone} · {t.common.lines(stop.lines.length)}

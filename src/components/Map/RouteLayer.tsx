@@ -161,10 +161,10 @@ function linesHerePopup(hits: { line: BusLine; dir: BusDirection }[], lang: Lang
     const row = document.createElement('div');
     row.className = 'flex items-stretch gap-1';
     row.innerHTML =
-      `<button type="button" data-draw="1" title="${escapeHtml(t.map.drawRoute)}" class="${rowButtonClass} min-h-11 flex-1 px-2">` +
+      `<button type="button" data-draw="1" title="${escapeHtml(t.map.drawRoute)}" class="${rowButtonClass} min-h-tap flex-1 px-2">` +
       `${badgeHtml(line.color, line.number)}<span class="text-label text-ink-2">${escapeHtml(where)}</span></button>` +
       `<button type="button" data-open="1" title="${escapeHtml(t.map.openLineInfo)}" aria-label="${escapeHtml(t.map.openLineInfo)}: ${escapeHtml(line.number)}" ` +
-      `class="min-h-11 w-11 cursor-pointer text-body text-accent">&rarr;</button>`;
+      `class="min-h-tap w-tap cursor-pointer text-body text-accent">&rarr;</button>`;
     row.querySelector('button[data-draw]')?.addEventListener('click', () => onSelect(line));
     row.querySelector('button[data-open]')?.addEventListener('click', () => onOpen(line));
     rows.appendChild(row);

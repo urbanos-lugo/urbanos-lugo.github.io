@@ -34,7 +34,7 @@ export function BottomNav({ activeTab, setActiveTab, tripActive = false }: Botto
             key={id}
             {...tabLink(id, setActiveTab, lang)}
             aria-current={on ? 'page' : undefined}
-            className={`flex h-[60px] flex-1 flex-col items-center justify-center gap-1 transition-colors ${on ? 'text-accent' : 'text-ink-3'}`}
+            className={`flex h-tab flex-1 flex-col items-center justify-center gap-1 transition-colors ${on ? 'text-accent' : 'text-ink-3'}`}
           >
             <span className="relative">
               <Icon className="h-5 w-5" aria-hidden="true" />

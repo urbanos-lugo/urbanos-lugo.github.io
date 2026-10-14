@@ -293,7 +293,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         title={t.arrivals.watchHint(WATCH_LEAD_MINUTES)}
         aria-pressed={watches[a.lineId] !== undefined}
         aria-label={watches[a.lineId] !== undefined ? t.arrivals.watchOn : t.arrivals.watchCta(WATCH_LEAD_MINUTES)}
-        className={`flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-control border px-3 text-label font-semibold ${watches[a.lineId] !== undefined ? 'border-warn bg-warn text-warn-ink' : 'border-edge text-ink-2'}`}
+        className={`flex h-tap min-w-tap items-center justify-center gap-1.5 rounded-control border px-3 text-label font-semibold ${watches[a.lineId] !== undefined ? 'border-warn bg-warn text-warn-ink' : 'border-edge text-ink-2'}`}
       >
         <Bell className="h-4 w-4 shrink-0" aria-hidden="true" />
         {/* The words from sm up. On a 375 px phone the official chip and the full label were
@@ -307,8 +307,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const minUnit = (a: StopArrival) => a.etaMinutes > 0 && <span className="shrink-0 self-end pb-1 text-label text-ink-2">{t.common.min}</span>;
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-cap-3.5 pb-8 pt-4">
-      <button onClick={onBack} className="-ml-1 mb-1 flex h-11 items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden">
+    <div className="mx-auto w-full max-w-column px-cap-3.5 pb-8 pt-4">
+      <button onClick={onBack} className="-ml-1 mb-1 flex h-tap items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden">
         <ArrowLeft className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
         {t.arrivals.back}
       </button>
@@ -407,7 +407,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {/* Folded, directly under the toggle: at a stop with fourteen lines the list runs past the fold. */}
       {nearbyLines.length > 0 && (
         <details className="disclosure mt-3 rounded-control border border-edge bg-surface">
-          <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
+          <summary className="flex min-h-tap cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
             {t.arrivals.nearbyLinesTitle}
             <span className="tnum rounded-control border border-edge px-1.5 py-0.5 text-ink-3">{nearbyLines.length}</span>
             <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
@@ -418,7 +418,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               {nearbyLines.map(({ line, nearestStop, walkMeters }) => (
                 <li key={line.id} style={tint(line.color)} className="tint tint-edge flex flex-wrap items-center gap-x-3 gap-y-1 rounded-control border px-cap-2.5 py-2">
                   {lineButton(line.id, line.number, line.color)}
-                  <span className="min-w-[min(6rem,100%)] flex-1">
+                  <span className="min-w-floor-name flex-1">
                     <span className="block break-words text-body font-semibold">
                       {nearestStop.name}
                     </span>
@@ -435,7 +435,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {atTime && (
         <div className="anim-rise mt-3 flex flex-wrap items-center justify-between gap-2 rounded-control border border-edge bg-surface py-1.5 pl-3 pr-1.5 text-label font-semibold text-ink-2">
           <span>{t.arrivals.showingAt(atTime)}</span>
-          <button onClick={() => setAtTime('')} className="h-11 rounded-control border border-edge px-3 text-label font-semibold text-ink-2">
+          <button onClick={() => setAtTime('')} className="h-tap rounded-control border border-edge px-3 text-label font-semibold text-ink-2">
             {t.arrivals.backToNow}
           </button>
         </div>
@@ -472,7 +472,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {firedMessage && (
         <div role="alert" className="anim-rise mt-3 flex items-start justify-between gap-3 rounded-control bg-official p-3 text-label font-semibold text-on-official">
           <span>{firedMessage}</span>
-          <button onClick={() => setFiredMessage(null)} aria-label={t.arrivals.dismiss} className="-m-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-control">
+          <button onClick={() => setFiredMessage(null)} aria-label={t.arrivals.dismiss} className="-m-2 flex h-tap w-tap shrink-0 items-center justify-center rounded-control">
             <X className="h-4.5 w-4.5" aria-hidden="true" />
           </button>
         </div>
@@ -511,7 +511,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                   not fit: with the type at 200% the name was squeezed to one letter a line. */}
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 {lineButton(a.lineId, a.lineNumber, a.lineColor)}
-                <span className="min-w-[6rem] flex-1 break-words text-emph font-semibold">
+                <span className="min-w-floor-name flex-1 break-words text-emph font-semibold">
                   {a.destination}
                 </span>
                 <span className={`ml-auto flex shrink-0 items-end gap-1.5 ${skipsHere(a.lineNumber) ? 'line-through opacity-struck' : ''}`}>
@@ -534,7 +534,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             <li key={g.key} className="tint tint-edge overflow-hidden rounded-card border" style={tint(g.lineColor)}>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3">
                 {lineButton(g.lineId, g.lineNumber, g.lineColor)}
-                <span className="min-w-[6rem] flex-1">
+                <span className="min-w-floor-name flex-1">
                   <span className="block break-words text-emph font-semibold">
                     {g.destination}
                   </span>
@@ -567,14 +567,14 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
       {/* Under the answer, not over it: the night-before question, folded like the other tools. */}
       <details className="disclosure mt-3 rounded-control border border-edge bg-surface">
-        <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
+        <summary className="flex min-h-tap cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
           <Clock className="h-3.5 w-3.5 shrink-0 text-accent" aria-hidden="true" />
           {t.arrivals.atTimeSummary}
           <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
         </summary>
         <label className="flex flex-wrap items-center gap-2 px-3 pb-3 text-label font-semibold text-ink-2">
           <span className="shrink-0">{t.arrivals.atTimeLabel}</span>
-          <input type="time" value={atTime} onChange={(e) => setAtTime(e.target.value)} className="h-11 rounded-control border border-edge bg-bg px-2 font-mono text-body text-ink" />
+          <input type="time" value={atTime} onChange={(e) => setAtTime(e.target.value)} className="h-tap rounded-control border border-edge bg-bg px-2 font-mono text-body text-ink" />
         </label>
       </details>
       {Object.keys(watches).length > 0 && <Notice>{t.arrivals.watchForeground}</Notice>}
@@ -587,7 +587,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             otherwise reached only by knowing its name (WCAG 2.1.1). Folded like the lines nearby. */}
         {polesNearby.length > 0 && (
           <details className="disclosure mt-2 rounded-control border border-edge bg-surface">
-            <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
+            <summary className="flex min-h-tap cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
               {t.arrivals.polesNearby}
               <span className="tnum rounded-control border border-edge px-1.5 py-0.5 text-ink-3">{polesNearby.length}</span>
               <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
@@ -595,8 +595,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             <ul className="flex flex-col gap-1.5 px-3 pb-3">
               {polesNearby.map((pole) => (
                 <li key={pole.id}>
-                  <button onClick={() => onSelectStop(pole)} className="flex min-h-11 w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-edge bg-bg px-3 py-2 text-left">
-                    <span className="min-w-[min(6rem,100%)] flex-1 break-words text-body font-semibold">{pole.name}</span>
+                  <button onClick={() => onSelectStop(pole)} className="flex min-h-tap w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-edge bg-bg px-3 py-2 text-left">
+                    <span className="min-w-floor-name flex-1 break-words text-body font-semibold">{pole.name}</span>
                     {poleCode(pole) && <span className="tnum shrink-0 rounded-tag bg-surface px-2 py-1 text-label text-ink-2">{poleCode(pole)}</span>}
                     <span className="tnum shrink-0 text-label text-ink-2">~{pole.walkMeters} m</span>
                   </button>
@@ -611,13 +611,13 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       </section>
 
       <details className="disclosure mt-4 border-t border-line pt-3">
-        <summary className="flex min-h-11 cursor-pointer items-center text-label font-semibold text-ink-2">
+        <summary className="flex min-h-tap cursor-pointer items-center text-label font-semibold text-ink-2">
           {t.arrivals.reportPosition}
           <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
         </summary>
         <p className="text-label leading-prose text-ink-3">{t.arrivals.positionChecked}</p>
         <p className="mt-1.5 text-label leading-prose text-ink-3">{t.arrivals.reportNotCouncil}</p>
-        <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center text-label font-semibold text-accent underline underline-offset-link">
+        <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-tap items-center text-label font-semibold text-accent underline underline-offset-link">
           {t.arrivals.reportCta}
         </a>
       </details>
@@ -626,7 +626,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
       {nonePublished ? (
         <details className="disclosure mt-4 border-t border-line pt-3">
-          <summary className="flex min-h-11 cursor-pointer items-center text-label font-semibold text-ink-2">
+          <summary className="flex min-h-tap cursor-pointer items-center text-label font-semibold text-ink-2">
             {t.arrivals.whyEstimatedTitle}
             <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
           </summary>

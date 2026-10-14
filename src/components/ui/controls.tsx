@@ -32,7 +32,7 @@ export function IconButton({
       aria-pressed={on}
       aria-label={label}
       title={title}
-      className={`flex h-11 w-11 items-center justify-center rounded-control border ${on ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${className}`}
+      className={`flex h-tap w-tap items-center justify-center rounded-control border ${on ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${className}`}
     >
       <Icon className={`h-4.5 w-4.5 ${fill === undefined ? '' : 'stroke-filled'} ${iconClassName}`} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />
     </button>
@@ -91,7 +91,7 @@ export function Notice({ children, warn = false, role, icon: Icon, className = '
 export function NoticeDisclosure({ summary, children, seeFull, className = '' }: { summary: ReactNode; children: ReactNode; seeFull?: { label: string; onOpen: () => void }; className?: string }) {
   return (
     <details className={`disclosure rounded-control border border-warn bg-warn text-label leading-prose text-warn-ink ${className}`}>
-      <summary className="flex min-h-11 cursor-pointer items-start gap-2 p-3">
+      <summary className="flex min-h-tap cursor-pointer items-start gap-2 p-3">
         <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         <span className="min-w-0 flex-1">{summary}</span>
         <ChevronDown className="disclosure-chevron mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
@@ -99,7 +99,7 @@ export function NoticeDisclosure({ summary, children, seeFull, className = '' }:
       <div className="px-3 pb-1 pl-8.5">
         {children}
         {seeFull && (
-          <button onClick={seeFull.onOpen} className="inline-flex min-h-11 items-center font-semibold underline underline-offset-link">
+          <button onClick={seeFull.onOpen} className="inline-flex min-h-tap items-center font-semibold underline underline-offset-link">
             {seeFull.label}
           </button>
         )}
