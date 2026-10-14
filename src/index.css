@@ -427,6 +427,7 @@
   --transition-delay-attention: 300ms; /* the ring around «Vou nesta» waits this long */
   --transition-delay-stagger: 150ms;   /* between the dots of «Calculando» */
   --default-transition-duration: 150ms; /* a control's colour on hover or selection */
+  --transition-duration-instant: 0.01ms; /* under reduced motion: over at once, and still ending for what waits on the end */
 
   --ease-enter: cubic-bezier(0.2, 0.7, 0.2, 1); /* something arriving and settling */
   --ease-sheet: cubic-bezier(0.2, 0.8, 0.2, 1); /* a sheet rising from the bottom */
@@ -876,9 +877,9 @@
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
-      animation-duration: 0.01ms !important;
+      animation-duration: var(--transition-duration-instant) !important;
       animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
+      transition-duration: var(--transition-duration-instant) !important;
       scroll-behavior: auto !important;
     }
   }
