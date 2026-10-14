@@ -917,9 +917,12 @@ const savedBoard = `const card = document.querySelector('main ul li button');
 const planned = `const o = document.getElementById('input-origin-query'), d = document.getElementById('input-dest-query');
   if (!o || !d) return 'no planner fields';
   fill(o, 'Praza Maior'); await pause(500); await steady(() => o.parentElement.textContent);
-  let opt = [...o.parentElement.querySelectorAll('button')].find((b) => /Praza Maior/i.test(b.textContent)); if (opt) { opt.click(); await pause(300); }
+  // The stop by its name, not the first suggestion: the places arrive after the stops, and
+  // whether "Hospital Lucus Augusti" or "HULA (Ent. Principal)" came first depended on load.
+  const pick = (field, name, loose) => [...field.parentElement.querySelectorAll('button')].find((b) => b.textContent.includes(name)) || [...field.parentElement.querySelectorAll('button')].find((b) => loose.test(b.textContent));
+  let opt = pick(o, 'Praza Maior / Concello', /Praza Maior/i); if (opt) { opt.click(); await pause(300); }
   fill(d, 'HULA'); await pause(500); await steady(() => d.parentElement.textContent);
-  opt = [...d.parentElement.querySelectorAll('button')].find((b) => /HULA/i.test(b.textContent)); if (opt) { opt.click(); await pause(300); }
+  opt = pick(d, 'HULA (Ent. Principal)', /HULA/i); if (opt) { opt.click(); await pause(300); }
   // Picking a suggestion plans the trip and folds the form, "Calcular ruta" with it: pressed
   // only when it is still there to press.
   const go = seeText(T.calculate); if (go) press(go);

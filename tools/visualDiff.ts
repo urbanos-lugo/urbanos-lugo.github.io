@@ -58,10 +58,10 @@ const STILL = `async function (quietMs) {
     // happened to be focused a moment before, and under load that varied between two runs of one
     // build. audit:browser judges the focus; these photographs judge everything else.
     // And the one label that counts real seconds, the notices' "wait (Ns)" after a check: the
-    // button is photographed, its count is not.
+    // button is photographed without it, since its width followed the count.
     s.textContent = '*, *::before, *::after { caret-color: transparent !important; }'
       + ' *:focus, *:focus-visible, *:has(:focus-visible) { outline-color: transparent !important; --tw-ring-shadow: 0 0 #0000 !important; }'
-      + ' #sync-alerts-btn > span { visibility: hidden !important; }';
+      + ' #sync-alerts-btn > span { display: none !important; }';
     document.head.append(s);
   }
   // The buses on the map are left out: they redraw every three seconds whether or not they moved.
