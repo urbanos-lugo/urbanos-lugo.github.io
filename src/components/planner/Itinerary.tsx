@@ -71,7 +71,7 @@ function BusStep({ seg, onSelectStop, onSelectLine }: { seg: TripSegment & { lin
             <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0" aria-hidden="true" />
             {t.planner.ride(count, seg.durationMinutes)}
           </summary>
-          <ol className="pb-2 pl-[21px]" aria-label={t.planner.viaStops}>
+          <ol className="pb-2 pl-5.5" aria-label={t.planner.viaStops}>
             {between.map((id) => (
               <li key={id} className="break-words py-1 text-label text-ink-3">
                 {stopName(id)}
