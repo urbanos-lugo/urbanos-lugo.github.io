@@ -573,6 +573,11 @@
     .disclosure[open]::details-content { block-size: auto; }
   }
 
+  /* Small capitals naming the block, the value or the group they lead: a section label, a
+     run-in at the head of a sentence, a caption. The colour, the box and the margin are the
+     caller's (SectionLabel gives the common ones). */
+  .caps-label { font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--tracking-caps); }
+
   /* The ~ ESTIMADO chip: the HORARIO OFICIAL chip's box (px-2 py-1) with its dashed edge
      taken out of the padding, so the two stand the same size side by side. */
   .chip-estimated { padding: calc(var(--spacing) - var(--border-width-dash)) calc(var(--spacing) * 2 - var(--border-width-dash)); }

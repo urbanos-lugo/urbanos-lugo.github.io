@@ -94,7 +94,7 @@ function PlainStep({ seg }: { seg: TripSegment }) {
   return (
     <div>
       <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
-        <span className={`text-label font-bold flex items-center gap-1.5 ${wait ? 'uppercase tracking-caps text-warn-ink' : 'text-ink'}`}>
+        <span className={`flex items-center gap-1.5 ${wait ? 'caps-label text-warn-ink' : 'text-label font-bold text-ink'}`}>
           <Icon className={`w-3.5 h-3.5 ${wait ? 'text-warn-ink' : 'text-ink-2'}`} />
           {wait ? t.planner.scheduledWait : seg.walkMeters ? t.planner.walkMetres(seg.walkMeters) : t.planner.walkConnection}
         </span>

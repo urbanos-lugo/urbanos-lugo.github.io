@@ -17,7 +17,7 @@ const RouteMap = lazy(() => import('./Map/RouteMap').then((m) => ({ default: m.R
 /** As tall as the answer above it: 37vh is 300 on a 375x812, held so a short phone and a tall desktop both get a map. */
 const MAP_HEIGHT = 'h-map-ride min-h-map-ride-min max-h-map-ride-max lg:min-h-map-ride-min-lg';
 const TICK_MS = 15_000;
-const label = 'text-label font-bold uppercase tracking-caps text-ink-2';
+const label = 'caps-label text-ink-2';
 const headline = 'mt-1 break-words text-title font-bold leading-name text-ink';
 
 /**
@@ -142,7 +142,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
             </div>
             {nextStop && !nextStop.isAlighting && (
               <p className="mt-3">
-                <span className="block text-label font-bold uppercase tracking-caps text-ink-3">{t.map.nextStop}</span>
+                <SectionLabel quiet>{t.map.nextStop}</SectionLabel>
                 <span className="block text-body font-semibold text-ink">{nextStop.name}</span>
               </p>
             )}
@@ -166,7 +166,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
       </div>
 
       <div>
-        <SectionLabel icon={MapPin}>{t.planner.routeMap}</SectionLabel>
+        <SectionLabel icon={MapPin} className="mb-2">{t.planner.routeMap}</SectionLabel>
         <Suspense fallback={<div className={`${MAP_HEIGHT} w-full animate-waiting rounded-card bg-surface`} />}>
           <RouteMap
             plan={trip.plan}
@@ -202,7 +202,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
       {/* The stops still to come, ticked against the GPS, never against the clock. */}
       {progress && progress.stops.length > 0 && phase !== 'walking' && (
         <div>
-          <SectionLabel icon={Bus}>{t.planner.viaStops}</SectionLabel>
+          <SectionLabel icon={Bus} className="mb-2">{t.planner.viaStops}</SectionLabel>
           <ol className="divide-y divide-line rounded-card border border-edge bg-bg">
             {progress.stops.map((stop) => {
               const passed = riding && stop.passed;

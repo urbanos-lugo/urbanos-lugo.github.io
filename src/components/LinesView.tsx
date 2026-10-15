@@ -401,7 +401,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                   &larr;
                 </button>
                 <div className="order-1 basis-full text-center leading-name @min-stepper:order-none @min-stepper:basis-0 @min-stepper:flex-1">
-                  <div className="text-label font-bold text-accent uppercase tracking-caps">{t.lines.showingRun}</div>
+                  <div className="caps-label text-accent">{t.lines.showingRun}</div>
                   <div className="text-body font-black text-accent font-mono">
                     {derived(shownRun, 0) && '~'}
                     {formatMinutes(shownRun.minutesByStopIndex[0])}

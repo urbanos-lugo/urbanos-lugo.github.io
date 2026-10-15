@@ -5,6 +5,7 @@ import type { RoutePlanResult } from '../../types';
 import { LONG_WAIT_MIN } from '../../utils/planner';
 import { dayWord } from '../../utils/serviceLabels';
 import { LineBadge } from '../ui/LineBadge';
+import { SectionLabel } from '../ui/SectionLabel';
 import { withMeasuredWalk, type WalkCorrection } from './walkCorrection';
 
 /** How many alternatives stand on the screen before you ask for the rest: the answer and the one somebody would weigh. */
@@ -99,7 +100,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
 
   return (
     <div>
-      <span className="text-label font-bold text-ink-2 uppercase tracking-caps block mb-2">{t.planner.optionsTitle}</span>
+      <SectionLabel className="mb-2">{t.planner.optionsTitle}</SectionLabel>
       {/* A container, so a row can tell when it is narrow for its text: below 18rem the clocks go
           under the lines and the duration. Between the two at 200% text the clocks ran 88 px out
           of their column and "Co paseo medido xa non chegas a este bus" was printed over the

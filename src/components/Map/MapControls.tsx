@@ -4,6 +4,7 @@ import { useT } from '../../i18n';
 import { BusLine, BusStop } from '../../types';
 import type { NearbyLine } from '../../utils/places';
 import { LineBadge } from '../ui/LineBadge';
+import { SectionLabel } from '../ui/SectionLabel';
 
 export type Preset = 'all' | 'nearby' | 'stop' | 'hula' | 'campus' | 'ceao';
 export type Layer = 'stops' | 'buses' | 'routes';
@@ -14,7 +15,6 @@ export const AROUND_STOP_RADIUS_M = 400;
 export const NEARBY_RADIUS_M = 750;
 
 const card = 'bg-bg rounded-card p-3.5 shadow-raised border border-edge';
-const heading = 'text-label font-bold text-ink-3 uppercase tracking-caps block mb-2';
 
 export interface MapControlsProps {
   sheetRef: RefObject<HTMLDivElement | null>;
@@ -66,7 +66,7 @@ export function MapControls(p: MapControlsProps) {
   // focus went down past locate and centre and back up to these (1.3.2, 2.4.3).
   const quickFilters = (shown: string) => (
     <div className={`${card} ${shown}`}>
-      <span className={heading}>{t.map.quickFilters}</span>
+      <SectionLabel quiet className="mb-2">{t.map.quickFilters}</SectionLabel>
       {/* A scrolling row on a phone, where five stacked buttons took 150 px of a sheet; wrapped in the sidebar, where a sideways scroll hides four of five. */}
       <div className="no-scrollbar flex gap-1.5 overflow-x-auto lg:flex-wrap lg:overflow-x-visible">
         {presets.map(([preset, label]) => (
@@ -105,7 +105,7 @@ export function MapControls(p: MapControlsProps) {
     >
       {/* The handle: which way the sheet goes, and its own way out. Gone at `lg`. */}
       <div className="order-first -mt-1 flex items-center justify-between gap-2 lg:hidden">
-        <span className="text-label font-bold uppercase tracking-caps text-ink-3">{t.map.controls}</span>
+        <SectionLabel quiet>{t.map.controls}</SectionLabel>
         <button type="button" onClick={p.onCloseSheet} aria-label={t.map.closeControls} className="flex h-tap w-tap items-center justify-center rounded-pill text-ink-2">
           <ChevronDown className="h-5 w-5" aria-hidden="true" />
         </button>
@@ -157,7 +157,7 @@ export function MapControls(p: MapControlsProps) {
 
       {p.preset === 'nearby' && p.nearbyLines.length > 0 && (
         <div className={card}>
-          <span className={heading}>{t.map.nearbyTitle(NEARBY_RADIUS_M)}</span>
+          <SectionLabel quiet className="mb-2">{t.map.nearbyTitle(NEARBY_RADIUS_M)}</SectionLabel>
           <div className="space-y-1 max-h-list-nearby-max overflow-y-auto pr-1">
             {p.nearbyLines.map(({ line, nearestStop, walkMeters }) => (
               <button key={line.id} onClick={() => p.onSelectLine(line)} className="w-full p-2 rounded-control text-left flex items-center gap-2 text-label bg-surface border border-line hover:bg-surface transition-colors">
@@ -171,7 +171,7 @@ export function MapControls(p: MapControlsProps) {
       )}
 
       <div className={card}>
-        <span className={heading}>{t.map.layers}</span>
+        <SectionLabel quiet className="mb-2">{t.map.layers}</SectionLabel>
         <div className="grid grid-cols-3 gap-1 bg-surface p-1 rounded-control text-label">
           {layerButtons.map(({ id, Icon, tint, label }) => (
             <button
@@ -189,7 +189,7 @@ export function MapControls(p: MapControlsProps) {
 
       <div className={card}>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-label font-bold text-ink-3 uppercase tracking-caps">
+          <span className="caps-label text-ink-3">
             {t.map.linesList}
             {p.pickedLineIds.length > 0 && <span className="ml-1.5 text-accent">· {t.map.linesPicked(p.pickedLineIds.length)}</span>}
           </span>

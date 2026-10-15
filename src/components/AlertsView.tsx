@@ -6,6 +6,7 @@ import { isSnapshotStale } from '../utils/snapshotAge';
 import { NOTICE_LANG } from '../utils/operatorNotices';
 import type { ServiceAlerts } from '../hooks/useServiceAlerts';
 import { NOTICE_META, NOTICES_REVIEWED_ON } from '../data/structuralNotices';
+import { SectionLabel } from './ui/SectionLabel';
 
 interface AlertsViewProps {
   /** Fetched once in App, so this screen and the navigation badge cannot disagree. */
@@ -49,7 +50,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
   const quoted = source ? NOTICE_LANG : undefined;
   return (
     <div className={`py-5 px-cap-5 rounded-card border transition-all ${warning ? 'bg-warn/quiet border-warn' : 'bg-surface/quiet border-edge'}`}>
-      {source && <span className="text-label font-bold uppercase tracking-caps text-ink-3">{source}</span>}
+      {source && <span className="caps-label text-ink-3">{source}</span>}
       <div className="mb-2 mt-1 flex flex-wrap items-center justify-between gap-2">
         <span className={`text-label font-black uppercase tracking-caps px-2 py-0.5 rounded-tag ${warning ? 'bg-warn text-warn-ink' : 'bg-surface text-accent'}`}>{when}</span>
         {/* Under the date when both do not fit, rather than a third of the row: "Todas as liñas"
@@ -203,7 +204,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
         )}
 
         <div className="pt-2">
-          <h3 className="text-label font-bold text-ink-2 uppercase tracking-caps">{t.fares.structuralTitle}</h3>
+          <SectionLabel as="h3">{t.fares.structuralTitle}</SectionLabel>
           <p className="mt-1 text-label leading-prose text-ink-3">{t.fares.structuralSource}</p>
           {/* They are reviewed monthly; two months means a review was missed, and the reader is told. */}
           {monthsSinceReview >= 2 && <p className="mt-1 text-label font-semibold leading-prose text-warn-ink">{t.fares.structuralStale(monthsSinceReview)}</p>}
@@ -229,7 +230,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
           <ul className="divide-y divide-line rounded-card border border-edge bg-surface/quiet">
             {councilNews.map((item) => (
               <li key={item.id} className="p-4 sm:p-5">
-                <span className="text-label font-bold uppercase tracking-caps text-ink-3">{formatInstant(item.date, locale)}</span>
+                <span className="caps-label text-ink-3">{formatInstant(item.date, locale)}</span>
                 <h3 lang={NOTICE_LANG} className="mt-1 font-bold text-ink text-body">
                   {item.title}
                 </h3>

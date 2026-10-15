@@ -2,6 +2,7 @@ import { CreditCard, Info, Phone, Globe, HelpCircle, type LucideIcon } from 'luc
 import type { ReactNode } from 'react';
 import { useT } from '../i18n';
 import { FARE_CARDS } from '../data/transitData';
+import { SectionLabel } from './ui/SectionLabel';
 
 /** Where somebody can check any of this: the operator's own site, and an independent reader of the same timetables. */
 const PORTALS = [
@@ -22,7 +23,7 @@ const Title = ({ icon: Icon, children, small = false }: { icon: LucideIcon; chil
 
 const Bullets = ({ title, lines, hollow = false }: { title: string; lines: string[]; hollow?: boolean }) => (
   <div>
-    <h3 className="text-label font-bold uppercase tracking-caps text-ink-2">{title}</h3>
+    <SectionLabel as="h3">{title}</SectionLabel>
     <ul className="mt-2 space-y-1.5 text-label leading-prose text-ink">
       {lines.map((line) => (
         <li key={line} className="flex gap-2">

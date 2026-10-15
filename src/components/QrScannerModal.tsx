@@ -7,6 +7,7 @@ import { BusStop } from '../types';
 import { BUS_STOPS } from '../data/transitData';
 import { findStop } from '../utils/places';
 import { Notice } from './ui/controls';
+import { SectionLabel } from './ui/SectionLabel';
 
 interface QrScannerModalProps {
   isOpen: boolean;
@@ -198,7 +199,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
         </div>
 
         <div className="mt-5 pt-4 border-t border-line">
-          <span className="text-label font-bold text-ink-2 uppercase tracking-caps block mb-2">{t.qr.popularDemos}</span>
+          <SectionLabel className="mb-2">{t.qr.popularDemos}</SectionLabel>
           <div className="space-y-1.5">
             {demos.map((stop) => (
               <button

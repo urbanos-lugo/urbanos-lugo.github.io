@@ -457,7 +457,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               {(recentRoutes.length > 0 || cleared.length > 0) && (
                 <div>
                   <div className="mb-2 flex items-baseline justify-between gap-3">
-                    <span className="text-label font-bold uppercase tracking-caps text-ink-2">{t.planner.recentRoutes}</span>
+                    <SectionLabel>{t.planner.recentRoutes}</SectionLabel>
                     <button
                       type="button"
                       onClick={() => {
@@ -506,7 +506,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 </div>
               )}
               <div>
-                <span className="text-label font-bold text-ink-2 uppercase tracking-caps block mb-2">{t.planner.quickDestinations}</span>
+                <SectionLabel className="mb-2">{t.planner.quickDestinations}</SectionLabel>
                 {/* A rail on a phone, wrapping from sm: the right shape for a shortcut, where you see the one you wanted or you type. */}
                 <div className="-mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
                   {QUICK_DESTINATIONS.map((qp) => {
@@ -656,19 +656,19 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 <div className="px-3 pb-3">
                   {measuredWalk && (
                     <div className="mt-1 flex items-center justify-between gap-3 text-label text-ink">
-                      <span className="text-label font-bold uppercase tracking-caps text-ink-2">{t.planner.measuredWalkTitle}</span>
+                      <SectionLabel>{t.planner.measuredWalkTitle}</SectionLabel>
                       <span className="font-mono font-black">
                         {measuredWalk.minutes} min · {formatKm(measuredWalk.meters)} km
                       </span>
                     </div>
                   )}
                   <p className="mt-2 text-label leading-prose text-ink-2">
-                    <span className="font-bold uppercase tracking-caps text-ink-2">{t.planner.timeProvenanceTitle}</span> {measuredWalk ? t.planner.timeProvenanceMeasured : t.planner.timeProvenance}
+                    <span className="caps-label text-ink-2">{t.planner.timeProvenanceTitle}</span> {measuredWalk ? t.planner.timeProvenanceMeasured : t.planner.timeProvenance}
                   </p>
                   {planResult.fare && planResult.fare.busLegs > 0 && (
                     <div className="mt-3 border-t border-line pt-2 text-label text-ink">
                       {/* Both fares, neither struck through: the ordinary one applies to everyone without a card. */}
-                      <span className="mb-1 block text-label font-bold uppercase tracking-caps text-ink-2">{t.planner.fareTitle}</span>
+                      <SectionLabel className="mb-1">{t.planner.fareTitle}</SectionLabel>
                       <div className="flex items-baseline justify-between gap-3">
                         <span className="text-label text-ink">{t.planner.fareSingle}</span>
                         <span className="tnum text-body font-black text-ink">{planResult.fare.singleTicketEuros.toFixed(2).replace('.', ',')} €</span>
@@ -694,7 +694,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               {/* Reading a list of streets is much harder than seeing the shape of the trip. */}
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-x-2 mb-2">
-                  <SectionLabel icon={MapPin} className="">
+                  <SectionLabel icon={MapPin}>
                     {t.planner.routeMap}
                   </SectionLabel>
                   <button onClick={() => setShowMap((v) => !v)} className="text-label font-semibold text-accent h-tap inline-flex items-center underline underline-offset-link">
@@ -724,7 +724,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               </div>
 
               <div ref={stepsRef} className="scroll-mt-3">
-                <span className="text-label font-bold text-ink-2 uppercase tracking-caps block mb-2">{t.planner.stepByStepTitle}</span>
+                <SectionLabel className="mb-2">{t.planner.stepByStepTitle}</SectionLabel>
                 <Itinerary segments={planResult.segments} onSelectStop={onSelectStop} onSelectLine={onSelectLine} />
               </div>
 

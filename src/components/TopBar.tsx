@@ -41,7 +41,7 @@ function searchAll(q: string) {
   };
 }
 
-const Heading = ({ children }: { children: string }) => <div className="tnum px-4 pb-1.5 pt-3 text-label font-medium tracking-caps text-ink-3">{children.toUpperCase()}</div>;
+const Heading = ({ children }: { children: string }) => <div className="caps-label px-4 pb-1.5 pt-3 text-ink-3">{children}</div>;
 const Row = ({ onClick, children }: { onClick: () => void; children: ReactNode }) => (
   <button onClick={onClick} className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 border-t border-line-soft px-cap-4 py-3 text-left">
     {children}
