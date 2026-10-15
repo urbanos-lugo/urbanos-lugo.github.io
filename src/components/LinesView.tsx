@@ -9,7 +9,7 @@ import { getScheduledBuses } from '../utils/vehicles';
 import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDuration, type ScheduledRun } from '../utils/schedule';
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
-import { Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { ChoiceChip, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { LineBadge } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
 
@@ -121,16 +121,11 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               <p className="text-label text-ink-3 mt-0.5">{t.lines.subtitle}</p>
             </div>
 
-            <div className="flex gap-1.5 overflow-x-auto pb-2 no-scrollbar">
+            <div className="chip-rail pb-2">
               {['all', ...CATEGORIES].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setCategoryFilter(category)}
-                  aria-pressed={categoryFilter === category}
-                  className={`flex h-tap items-center whitespace-nowrap rounded-control border px-3.5 text-label font-semibold ${categoryFilter === category ? 'bg-ink border-ink text-bg' : 'border-edge text-ink-2'}`}
-                >
+                <ChoiceChip key={category} on={categoryFilter === category} onClick={() => setCategoryFilter(category)}>
                   {t.lines.categories[category as keyof typeof t.lines.categories] || category}
-                </button>
+                </ChoiceChip>
               ))}
             </div>
 
@@ -353,18 +348,19 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {/* All of them: two rows of 30 in a box that scrolled on its own hid the rest from a thumb. */}
             <div className="flex flex-wrap gap-1.5">
               {departures.map(({ time, derived: guessed }, idx) => (
-                <button
+                // The run on show is the one filled in: said as well as drawn.
+                <ChoiceChip
                   key={idx}
+                  on={idx === runIndex}
                   onClick={() => setPickedRunIndex(idx)}
                   title={t.lines.viewRunAt(time)}
                   aria-label={guessed ? `${t.lines.viewRunAt(time)}, ${t.lines.estimatedSr}` : t.lines.viewRunAt(time)}
-                  // The run on show is the one filled in: said as well as drawn.
-                  aria-pressed={idx === runIndex}
-                  className={`tnum flex h-tap items-center justify-center rounded-control border px-2.5 text-label font-semibold ${idx === runIndex ? 'border-ink bg-ink text-bg' : 'border-edge text-ink-2'}`}
+                  dense
+                  className="tnum"
                 >
                   {guessed && <span>~</span>}
                   {time}
-                </button>
+                </ChoiceChip>
               ))}
             </div>
             {departures.some((d) => d.derived) && <p className="mt-2 text-label leading-prose text-ink-3">{t.lines.derivedDepartures}</p>}

@@ -13,7 +13,7 @@ import { useWalkPaths } from '../hooks/useWalkPaths';
 import { useClock } from '../hooks/useClock';
 import { boardingIsNow, type TripPlace } from '../utils/tripProgress';
 import { SectionLabel } from './ui/SectionLabel';
-import { Disclosure, Notice, NoticeDisclosure, Segmented } from './ui/controls';
+import { ChoiceChip, Disclosure, Notice, NoticeDisclosure, Segmented } from './ui/controls';
 import { PlaceField, suggestionsFor, type Suggestion } from './planner/PlaceField';
 import { TripOptions } from './planner/TripOptions';
 import { Itinerary } from './planner/Itinerary';
@@ -508,24 +508,23 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               <div>
                 <SectionLabel className="mb-2">{t.planner.quickDestinations}</SectionLabel>
                 {/* A rail on a phone, wrapping from sm: the right shape for a shortcut, where you see the one you wanted or you type. */}
-                <div className="-mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+                <div className="chip-rail -mx-1 snap-x px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
                   {QUICK_DESTINATIONS.map((qp) => {
                     // The chosen one is filled in, and said: the fill alone told a screen reader nothing.
                     const chosen = destQuery.includes(qp.label) || destQuery === qp.query;
                     return (
-                      <button
+                      <ChoiceChip
                         key={qp.query}
+                        on={chosen}
                         onClick={() => {
                           setDestQuery(qp.query);
                           calculate(originQuery, qp.query);
                         }}
-                        aria-pressed={chosen}
-                        className={`inline-flex h-tap shrink-0 snap-start items-center whitespace-nowrap rounded-pill px-3.5 text-label font-semibold transition-colors ${
-                          chosen ? 'bg-accent text-on-accent' : 'bg-surface text-ink-2'
-                        }`}
+                        tone="pill"
+                        className="snap-start"
                       >
                         {qp.label}
-                      </button>
+                      </ChoiceChip>
                     );
                   })}
                 </div>

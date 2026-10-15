@@ -5,7 +5,7 @@ import { BusLine, BusStop } from '../../types';
 import type { NearbyLine } from '../../utils/places';
 import { LineBadge } from '../ui/LineBadge';
 import { SectionLabel } from '../ui/SectionLabel';
-import { CloseButton } from '../ui/controls';
+import { ChoiceChip, CloseButton } from '../ui/controls';
 
 export type Preset = 'all' | 'nearby' | 'stop' | 'hula' | 'campus' | 'ceao';
 export type Layer = 'stops' | 'buses' | 'routes';
@@ -69,18 +69,11 @@ export function MapControls(p: MapControlsProps) {
     <div className={`${card} ${shown}`}>
       <SectionLabel quiet className="mb-2">{t.map.quickFilters}</SectionLabel>
       {/* A scrolling row on a phone, where five stacked buttons took 150 px of a sheet; wrapped in the sidebar, where a sideways scroll hides four of five. */}
-      <div className="no-scrollbar flex gap-1.5 overflow-x-auto lg:flex-wrap lg:overflow-x-visible">
+      <div className="chip-rail lg:flex-wrap lg:overflow-x-visible">
         {presets.map(([preset, label]) => (
-          <button
-            key={preset}
-            onClick={() => p.onPreset(preset)}
-            aria-pressed={p.preset === preset}
-            className={`flex min-h-tap shrink-0 items-center justify-center whitespace-nowrap rounded-control px-2.5 py-1.5 text-center text-label font-semibold ${
-              p.preset === preset ? 'bg-accent text-on-accent shadow-hair' : 'border border-edge bg-surface text-ink-2'
-            }`}
-          >
+          <ChoiceChip key={preset} on={p.preset === preset} onClick={() => p.onPreset(preset)} tone="accent" dense>
             {label}
-          </button>
+          </ChoiceChip>
         ))}
       </div>
       {p.preset === 'stop' && p.aroundStop && (

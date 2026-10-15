@@ -76,6 +76,50 @@ export function CloseButton({
 }
 
 /**
+ * One of a row of choices, the one picked filled and said with aria-pressed: a 44 px floor,
+ * label-size semibold, never wrapping. Three looks are in use, and kept until one is chosen:
+ * ink (the lines' categories and runs), accent with an outline and a lift (the map's
+ * presets), accent as a flat pill (the planner's shortcuts). dense is the run times' narrow
+ * padding and the map presets', where five have to fit a sidebar.
+ */
+export function ChoiceChip({
+  on,
+  onClick,
+  tone = 'ink',
+  dense = false,
+  children,
+  className = '',
+  ...aria
+}: {
+  on: boolean;
+  onClick: () => void;
+  tone?: 'ink' | 'accent' | 'pill';
+  dense?: boolean;
+  children: ReactNode;
+  className?: string;
+  'aria-label'?: string;
+  title?: string;
+}) {
+  const look = {
+    ink: on ? 'border border-ink bg-ink text-bg' : 'border border-edge text-ink-2',
+    accent: on ? 'border border-accent bg-accent text-on-accent shadow-hair' : 'border border-edge bg-surface text-ink-2',
+    pill: on ? 'rounded-pill bg-accent text-on-accent' : 'rounded-pill bg-surface text-ink-2',
+  }[tone];
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={on}
+      aria-label={aria['aria-label']}
+      title={aria.title}
+      className={`flex min-h-tap shrink-0 items-center justify-center whitespace-nowrap text-label font-semibold ${tone === 'pill' ? '' : 'rounded-control'} ${dense ? 'px-2.5' : 'px-3.5'} ${look} ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/**
  * The star that saves a stop or a line: one button, one pop. The pop plays on activation
  * only, never on opening something already saved, so the parent keys it by what it saves.
  * The icon moves, never the button: the target stays where the thumb is.
