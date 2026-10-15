@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { QrCode, X, ArrowRight, Camera, CameraOff } from 'lucide-react';
+import { QrCode, ArrowRight, Camera, CameraOff } from 'lucide-react';
 import { MAX_QUERY_LENGTH } from '../utils/searchUtils';
 import { useDialog } from '../hooks/useDialog';
 import { useT } from '../i18n';
 import { BusStop } from '../types';
 import { BUS_STOPS } from '../data/transitData';
 import { findStop } from '../utils/places';
-import { Notice } from './ui/controls';
+import { CloseButton, Notice } from './ui/controls';
 import { SectionLabel } from './ui/SectionLabel';
 
 interface QrScannerModalProps {
@@ -120,16 +120,14 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
   return (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.qr.title} className="anim-fade-full fixed inset-0 z-dialog overflow-y-auto bg-scrim flex items-center justify-center py-4 px-cap-4">
       <div className="anim-scale-in bg-bg rounded-card max-w-dialog w-full py-6 px-cap-6 shadow-overlay border border-edge relative">
-        <button
+        <CloseButton
+          label={t.qr.close}
           onClick={() => {
             stopCamera();
             onClose();
           }}
-          aria-label={t.qr.close}
-          className="absolute top-3.5 right-3.5 flex h-tap w-tap shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface"
-        >
-          <X className="h-4.5 w-4.5" aria-hidden="true" />
-        </button>
+          className="absolute top-3.5 right-3.5"
+        />
 
         {/* Clear of the close button over the corner, and wrapping: at 200% text the heading ran
             68 px past the card, under the button. */}

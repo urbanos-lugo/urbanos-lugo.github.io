@@ -5,6 +5,7 @@ import { BusLine, BusStop } from '../../types';
 import type { NearbyLine } from '../../utils/places';
 import { LineBadge } from '../ui/LineBadge';
 import { SectionLabel } from '../ui/SectionLabel';
+import { CloseButton } from '../ui/controls';
 
 export type Preset = 'all' | 'nearby' | 'stop' | 'hula' | 'campus' | 'ceao';
 export type Layer = 'stops' | 'buses' | 'routes';
@@ -106,9 +107,7 @@ export function MapControls(p: MapControlsProps) {
       {/* The handle: which way the sheet goes, and its own way out. Gone at `lg`. */}
       <div className="order-first -mt-1 flex items-center justify-between gap-2 lg:hidden">
         <SectionLabel quiet>{t.map.controls}</SectionLabel>
-        <button type="button" onClick={p.onCloseSheet} aria-label={t.map.closeControls} className="flex h-tap w-tap items-center justify-center rounded-pill text-ink-2">
-          <ChevronDown className="h-5 w-5" aria-hidden="true" />
-        </button>
+        <CloseButton label={t.map.closeControls} onClick={p.onCloseSheet} icon={ChevronDown} />
       </div>
       {quickFilters('lg:hidden')}
 

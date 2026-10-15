@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
-import { LocateFixed, SlidersHorizontal, X } from 'lucide-react';
+import { LocateFixed, SlidersHorizontal } from 'lucide-react';
+import { CloseButton } from '../ui/controls';
 import { useT } from '../../i18n';
 import { BusStop, BusLine } from '../../types';
 import { BUS_STOPS, BUS_LINES, LUGO_CENTER, lineById, poleCode } from '../../data/transitData';
@@ -279,9 +280,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
               <div className="pointer-events-none absolute inset-x-0 top-16 z-map-float flex justify-center px-3 lg:top-3">
                 <p className="pointer-events-auto flex items-center gap-1 rounded-pill border-dash border-dashed border-estimated-line bg-bg/glass pl-3.5 text-estimated shadow-raised backdrop-blur-glass">
                   <span className="text-label font-semibold">~ {t.map.busesEstimatedNotice}</span>
-                  <button type="button" onClick={() => setLayers((l) => ({ ...l, buses: false }))} aria-label={t.map.hideBuses} title={t.map.hideBuses} className="flex h-tap w-tap shrink-0 items-center justify-center rounded-pill text-ink-2">
-                    <X className="h-4 w-4" aria-hidden="true" />
-                  </button>
+                  <CloseButton label={t.map.hideBuses} title={t.map.hideBuses} onClick={() => setLayers((l) => ({ ...l, buses: false }))} round />
                 </p>
               </div>
             )}

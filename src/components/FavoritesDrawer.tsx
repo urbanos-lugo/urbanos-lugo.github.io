@@ -1,12 +1,12 @@
 import { useState, type ReactNode } from 'react';
-import { Star, X, MapPin, Trash2, ArrowRight, Route, Clock, type LucideIcon } from 'lucide-react';
+import { Star, MapPin, Trash2, ArrowRight, Route, Clock, type LucideIcon } from 'lucide-react';
 import { useDialog } from '../hooks/useDialog';
 import { useLang, useT } from '../i18n';
 import { daysLabel, frequencyLabel } from '../utils/serviceLabels';
 import { BusStop, BusLine } from '../types';
 import { BUS_STOPS, BUS_LINES, linesByNumber, poleCode } from '../data/transitData';
 import { LineBadge } from './ui/LineBadge';
-import { Segmented } from './ui/controls';
+import { CloseButton, Segmented } from './ui/controls';
 
 interface FavoritesDrawerProps {
   isOpen: boolean;
@@ -86,9 +86,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
                   <p className="text-label text-ink-3">{t.favourites.subtitle}</p>
                 </div>
               </div>
-              <button onClick={onClose} aria-label={t.favourites.close} className="flex h-tap w-tap shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface">
-                <X className="h-4.5 w-4.5" aria-hidden="true" />
-              </button>
+              <CloseButton label={t.favourites.close} onClick={onClose} />
             </div>
             {/* The tabs' icons go with the star, for the same reason: the word before the picture. */}
             <Segmented

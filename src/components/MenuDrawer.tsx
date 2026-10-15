@@ -1,4 +1,5 @@
-import { ChevronRight, X } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { CloseButton } from './ui/controls';
 import { useDialog } from '../hooks/useDialog';
 import { tabLink } from '../hooks/useTabRoute';
 import { useLang, useT } from '../i18n';
@@ -30,9 +31,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
       <div className="@container anim-slide-in absolute inset-y-0 right-0 flex w-menu max-w-menu-max flex-col border-l border-edge bg-bg shadow-overlay">
         <div className="flex items-center justify-between border-b border-edge px-cap-4.5 py-4">
           <span className="text-emph font-semibold tracking-title">{t.nav.appName}</span>
-          <button onClick={onClose} className="flex h-tap w-tap shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface" aria-label={t.menu.close}>
-            <X className="h-4.5 w-4.5" aria-hidden="true" />
-          </button>
+          <CloseButton label={t.menu.close} onClick={onClose} />
         </div>
 
         <div className="flex flex-col gap-0.5 px-2.5 py-3">

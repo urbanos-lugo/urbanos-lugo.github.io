@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { CloseButton } from '../ui/controls';
 import { BusStop, BusLine, StopArrival } from '../../types';
 import { lineById, poleCode } from '../../data/transitData';
 import { getArrivalsForStop, rowKeys } from '../../utils/arrivals';
@@ -63,9 +64,7 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
             {stop.zone}
           </p>
         </div>
-        <button type="button" onClick={onClose} aria-label={t.map.closeStop} className="-mr-1 flex h-tap w-tap shrink-0 items-center justify-center rounded-pill text-ink-2">
-          <ChevronDown className="h-5 w-5" aria-hidden="true" />
-        </button>
+        <CloseButton label={t.map.closeStop} onClick={onClose} icon={ChevronDown} className="-mr-1" />
       </div>
 
       <div className="mt-2 border-t border-line">

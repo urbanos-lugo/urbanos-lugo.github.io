@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
-import { Moon, X } from 'lucide-react';
+import { Moon } from 'lucide-react';
+import { CloseButton } from './components/ui/controls';
 import { StopArrivalsView } from './components/StopArrivalsView';
 import { StopHome } from './components/StopHome';
 import { LinesView } from './components/LinesView';
@@ -210,9 +211,7 @@ export default function App() {
                 </span>
                 <span className="sr-only">{t.nightBanner.seeNotices}</span>
               </button>
-              <button onClick={() => setIsNightBannerDismissed(true)} aria-label={t.nightBanner.dismiss} className="flex h-tap w-tap shrink-0 items-center justify-center rounded-control text-ink-2 transition-colors hover:bg-surface">
-                <X className="h-4.5 w-4.5" aria-hidden="true" />
-              </button>
+              <CloseButton label={t.nightBanner.dismiss} onClick={() => setIsNightBannerDismissed(true)} />
             </div>
               </div>
             </div>

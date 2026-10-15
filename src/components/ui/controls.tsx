@@ -1,4 +1,4 @@
-import { ChevronDown, Star, TriangleAlert, type LucideIcon } from 'lucide-react';
+import { ChevronDown, Star, TriangleAlert, X, type LucideIcon } from 'lucide-react';
 import { useState, type CSSProperties, type ReactNode } from 'react';
 
 /**
@@ -35,6 +35,42 @@ export function IconButton({
       className={`flex h-tap w-tap items-center justify-center rounded-control border ${on ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${className}`}
     >
       <Icon className={`h-4.5 w-4.5 ${fill === undefined ? '' : 'stroke-filled'} ${iconClassName}`} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />
+    </button>
+  );
+}
+
+/**
+ * The way out of a surface: close a drawer, a dialog or a sheet, dismiss a banner. A quiet
+ * 44 px square with the X (a sheet's chevron shows which way it goes, a size up: its path is
+ * half the X's height). On a tinted banner it takes the banner's ink and no hover wash; as the
+ * round end of a pill chip it is round. className places it, nothing else.
+ */
+export function CloseButton({
+  label,
+  onClick,
+  icon: Icon = X,
+  title,
+  onTint = false,
+  round = false,
+  className = '',
+}: {
+  label: string;
+  onClick: () => void;
+  icon?: LucideIcon;
+  title?: string;
+  onTint?: boolean;
+  round?: boolean;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={title}
+      className={`flex h-tap w-tap shrink-0 items-center justify-center ${round ? 'rounded-pill' : 'rounded-control'} ${onTint ? '' : 'text-ink-2 transition-colors hover:bg-surface'} ${className}`}
+    >
+      <Icon className={Icon === X ? 'h-4.5 w-4.5' : 'h-5 w-5'} aria-hidden="true" />
     </button>
   );
 }

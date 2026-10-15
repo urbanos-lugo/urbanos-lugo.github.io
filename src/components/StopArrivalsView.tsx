@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, type CSSProperties } from 'react';
-import { ArrowLeft, Bell, Check, ChevronDown, Clock, Map as MapIcon, Share2, X } from 'lucide-react';
+import { ArrowLeft, Bell, Check, Clock, Map as MapIcon, Share2 } from 'lucide-react';
 import { BusStop, BusLine, ServiceAlert, StopArrival } from '../types';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
 import { changesNow, closedAt, pastTimetable, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
@@ -14,7 +14,7 @@ import { clockDriftFromTimetable, deviceTimeZone } from '../utils/clock';
 import { useOperatorTimes } from '../hooks/useOperatorTimes';
 import { Provenance } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
-import { Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionLabel } from './ui/SectionLabel';
 import { watchForStop, ringAlarm, notify, requestNotificationPermission, ALARM_RADIUS_M, AlarmHandle } from '../services/stopAlarm';
 
@@ -468,9 +468,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {firedMessage && (
         <div role="alert" className="anim-rise mt-3 flex items-start justify-between gap-3 rounded-control bg-official p-3 text-label font-semibold text-on-official">
           <span>{firedMessage}</span>
-          <button onClick={() => setFiredMessage(null)} aria-label={t.arrivals.dismiss} className="-m-2 flex h-tap w-tap shrink-0 items-center justify-center rounded-control">
-            <X className="h-4.5 w-4.5" aria-hidden="true" />
-          </button>
+          <CloseButton label={t.arrivals.dismiss} onClick={() => setFiredMessage(null)} onTint className="-m-2" />
         </div>
       )}
 
