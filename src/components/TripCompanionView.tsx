@@ -65,7 +65,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
   const nextStop = riding ? progress?.stops.find((s) => !s.passed) : undefined;
 
   return (
-    <div className="mx-auto w-full max-w-column space-y-4 px-cap-3.5 pt-4 lg:px-6">
+    <div className="page-column page-gutter space-y-4 pt-4">
       <h2 ref={headingRef} tabIndex={-1} className="sr-only">
         {t.companion.title}
       </h2>
@@ -228,7 +228,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           the page's own gutter, which stops growing with the type where the phone has no room
           (px-cap-3.5): in plain rem it grew past it and the bar ran 11 px off the screen at 200 %.
           `trip-bar`: <main> leaves its height free below whatever takes the focus (App.tsx). */}
-      <div className="trip-bar anim-sheet-up sticky bottom-0 z-raised -mx-cap-3.5 border-t border-line bg-bg/glass px-cap-3.5 py-3 backdrop-blur-bar lg:-mx-6 lg:px-6">
+      <div className="trip-bar anim-sheet-up sticky bottom-0 z-raised page-bleed border-t border-line bg-bg/glass py-3 backdrop-blur-bar">
         <button type="button" onClick={companion.finish} className={`btn btn-lg w-full ${phase === 'walking' ? 'btn-primary' : 'btn-secondary bg-bg'}`}>
           {phase === 'walking' ? t.companion.arrivedDone : t.companion.finish}
         </button>

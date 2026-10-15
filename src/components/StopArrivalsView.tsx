@@ -308,7 +308,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const minUnit = (a: StopArrival) => a.etaMinutes > 0 && <span className="shrink-0 self-end pb-1 text-label text-ink-2">{t.common.min}</span>;
 
   return (
-    <div className="mx-auto w-full max-w-column px-cap-3.5 pb-8 pt-4">
+    <div className="page-column px-cap-3.5 pb-8 pt-4">
       <button onClick={onBack} className="-ml-1 mb-1 flex h-tap items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden">
         <ArrowLeft className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
         {t.arrivals.back}

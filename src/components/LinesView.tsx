@@ -106,7 +106,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
   const duration = scheduledDuration(currentLine, directionIdx, BUS_STOPS);
 
   return (
-    <div className="mx-auto h-full w-full max-w-page px-cap-3.5 py-4 lg:px-6 lg:pb-0">
+    <div className="page page-gutter h-full py-4 lg:pb-0">
       {/* From lg up each pane scrolls on its own, so each is positioned: otherwise the absolute
           boxes inside (screen-reader text, timeline dots) take <main> as containing block,
           escape the pane's clip, and <main> scrolls a second time into an empty page. */}

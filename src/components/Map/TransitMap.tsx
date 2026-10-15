@@ -193,7 +193,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
 
   return (
     // No page padding on a phone: the map is the screen there, edge to edge.
-    <div className="h-full sm:h-auto max-w-page mx-auto px-0 py-0 sm:px-6 sm:py-5 lg:px-8">
+    <div className="page map-gutter h-full sm:h-auto">
       <div className="h-full sm:h-auto grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* The scrim: a button, because closing is an action and this is the target most people reach for first. */}
         {sheetOpen && <button type="button" aria-label={t.map.closeControls} onClick={closeSheet} className="anim-fade-full fixed inset-0 z-map-overlay bg-scrim lg:hidden" />}

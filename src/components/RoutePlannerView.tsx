@@ -336,7 +336,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
   const folded = asked && !formOpen;
 
   return (
-    <div className="mx-auto w-full max-w-page px-cap-3.5 py-4 lg:px-6">
+    <div className="page page-gutter py-4">
       {/* The form stays put while the itinerary scrolls beside it from lg up; below, the two take turns. */}
       <div className="lg:grid lg:grid-cols-12 lg:gap-6">
         <div ref={formRef} className="space-y-4 lg:col-span-5 lg:sticky lg:top-4 lg:self-start">

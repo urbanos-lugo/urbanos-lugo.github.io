@@ -233,7 +233,7 @@ export default function App() {
 
               {/* Below lg the two panes take turns; from lg up the saved stops stay beside the board, each pane positioned for the reason LinesView gives. */}
               {activeTab === 'stops' && (
-                <div className="mx-auto h-full w-full max-w-page lg:grid lg:grid-cols-12 lg:gap-6 lg:px-6 lg:pt-4">
+                <div className="page h-full lg:grid lg:grid-cols-12 lg:gap-6 lg:px-6 lg:pt-4">
                   <div className={`lg:relative lg:col-span-5 lg:block lg:h-full lg:overflow-y-auto ${showStopBoard ? 'hidden' : ''}`}>
                     <StopHome favoriteStopIds={favoriteStopIds} favoriteLineIds={favoriteLineIds} onSelectLine={openLine} recentStopIds={recentStopIds} onClearRecent={clearRecentStops} onSelectStop={selectStop} onOpenQrScanner={() => setIsQrModalOpen(true)} />
                   </div>
@@ -268,7 +268,7 @@ export default function App() {
                 <div className={activeTab === 'map' ? 'contents' : 'hidden'}>
                   <Suspense
                     fallback={
-                      <div className="max-w-page mx-auto px-cap-4 py-10">
+                      <div className="page map-gutter">
                         <div className="flex h-map-desktop animate-waiting items-center justify-center rounded-card bg-surface text-body font-medium text-ink-3">{t.map.loadingMap}</div>
                       </div>
                     }

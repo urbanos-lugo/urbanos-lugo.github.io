@@ -41,7 +41,7 @@ export function FaresView() {
   const copy = (value: string | ((minutes: number) => string), minutes = 0) => (typeof value === 'function' ? value(minutes) : value);
 
   return (
-    <div className="max-w-page mx-auto px-cap-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <div className="page page-gutter py-6 space-y-8">
       <div className="space-y-4">
         <div>
           <Title icon={CreditCard}>{t.fares.faresTitle}</Title>

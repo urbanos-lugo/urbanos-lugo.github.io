@@ -578,6 +578,18 @@
      caller's (SectionLabel gives the common ones). */
   .caps-label { font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--tracking-caps); }
 
+  /* A screen's column: the page width for the workspaces (planner, lines, the stops tab,
+     notices, fares, the map), the reading width for one column (a stop, the stops home, the
+     ride, the error). Its height and its vertical padding are each screen's. */
+  .page, .page-column { margin-inline: auto; width: 100%; max-width: var(--container-page); }
+  .page-column { max-width: var(--container-column); }
+  /* The side gutter: 14 px capped at what it measures on a 320 px phone, 24 px from lg. The
+     ride's bar reaches through it to the screen's edge with .page-bleed, by exactly as much.
+     The map is full-bleed on a phone and framed from sm. */
+  .page-gutter { padding-inline: min(calc(var(--spacing) * 3.5), calc(var(--cap-step) * 3.5)); @variant lg { padding-inline: calc(var(--spacing) * 6); } }
+  .page-bleed { margin-inline: calc(-1 * min(calc(var(--spacing) * 3.5), calc(var(--cap-step) * 3.5))); padding-inline: min(calc(var(--spacing) * 3.5), calc(var(--cap-step) * 3.5)); @variant lg { margin-inline: calc(-1 * calc(var(--spacing) * 6)); padding-inline: calc(var(--spacing) * 6); } }
+  .map-gutter { @variant sm { padding: calc(var(--spacing) * 5) calc(var(--spacing) * 6); } @variant lg { padding-inline: calc(var(--spacing) * 8); } }
+
   /* A card on a screen's column or in the map's panel: the card corner, the hairline edge, the
      ground, raised. No padding, so a card can be the padded item inside a bare .fold wrapper,
      and each column keeps its own; a state's tone is the caller's utility. */

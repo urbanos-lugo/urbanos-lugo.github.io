@@ -112,7 +112,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
       : [t.fares.normalStatusTitle, t.fares.normalStatusDesc];
 
   return (
-    <div className="max-w-page mx-auto px-cap-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <div className="page page-gutter py-6 space-y-8">
       {(hour >= 22 || hour < 6) && (
         <div className="p-4 rounded-card bg-surface border border-edge shadow-raised flex items-start gap-3">
           <Clock className="w-5 h-5 text-ink-2 shrink-0 mt-0.5" />
