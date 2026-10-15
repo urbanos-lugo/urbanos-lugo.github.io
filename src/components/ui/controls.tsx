@@ -109,6 +109,41 @@ export function NoticeDisclosure({ summary, children, seeFull, className = '' }:
 }
 
 /**
+ * A fold inside a screen: native <details> with a 44 px summary row and the body the caller
+ * passes, a direct child so .disclosure fades it in. Boxed where it stands in the flow; under
+ * a rule where it is a footer section of the board. The chevron leads where the row's right
+ * side carries figures (the planner's walk and fare). `count` is how many things it folds.
+ */
+export function Disclosure({
+  summary,
+  count,
+  children,
+  frame = 'box',
+  chevronFirst = false,
+  className = '',
+}: {
+  summary: ReactNode;
+  count?: number;
+  children: ReactNode;
+  frame?: 'box' | 'rule';
+  chevronFirst?: boolean;
+  className?: string;
+}) {
+  const chevron = <ChevronDown className={`disclosure-chevron h-4 w-4 shrink-0 text-ink-3 ${chevronFirst ? '' : 'ml-auto'}`} aria-hidden="true" />;
+  return (
+    <details className={`disclosure ${frame === 'box' ? 'rounded-control border border-edge bg-surface' : 'border-t border-line pt-3'} ${className}`}>
+      <summary className={`flex min-h-tap cursor-pointer items-center gap-2 text-label font-semibold text-ink-2 ${frame === 'box' ? 'px-3' : ''}`}>
+        {chevronFirst && chevron}
+        {summary}
+        {count !== undefined && <span className="tnum rounded-control border border-edge px-1.5 py-0.5 text-ink-3">{count}</span>}
+        {!chevronFirst && chevron}
+      </summary>
+      {children}
+    </details>
+  );
+}
+
+/**
  * "Which of these views": one bordered track, a thumb that slides to the pressed option
  * (`.seg-thumb`, 200 ms), so the control reads as one object and the slide says where you
  * came from. Each button carries `aria-pressed`; the thumb is decoration.

@@ -13,7 +13,7 @@ import { useWalkPaths } from '../hooks/useWalkPaths';
 import { useClock } from '../hooks/useClock';
 import { boardingIsNow, type TripPlace } from '../utils/tripProgress';
 import { SectionLabel } from './ui/SectionLabel';
-import { Notice, NoticeDisclosure, Segmented } from './ui/controls';
+import { Disclosure, Notice, NoticeDisclosure, Segmented } from './ui/controls';
 import { PlaceField, suggestionsFor, type Suggestion } from './planner/PlaceField';
 import { TripOptions } from './planner/TripOptions';
 import { Itinerary } from './planner/Itinerary';
@@ -636,23 +636,26 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               {canStart && !boardingSoon && startTripButton(false)}
 
               {/* The small print, folded: worth reading once, not on the way to the thing that was asked for. */}
-              <details className="disclosure rounded-control border border-edge bg-surface">
-                <summary className="flex min-h-tap cursor-pointer items-center justify-between gap-3 px-3 text-label font-semibold text-ink-2">
-                  <span className="sr-only">{t.planner.tripInfoTitle}</span>
-                  <ChevronDown className="disclosure-chevron h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
-                  <span className="flex flex-1 flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono">
-                    {measuredWalk && (
-                      <span className="flex flex-wrap items-baseline gap-x-1.5 text-ink">
-                        <span className="sr-only">{t.planner.measuredWalkTitle}: </span>
-                        <Footprints className="h-3.5 w-3.5 shrink-0 self-center text-ink-3" aria-hidden="true" />
-                        <span className="whitespace-nowrap">{measuredWalk.minutes} min ·</span>
-                        <span className="whitespace-nowrap">{formatKm(measuredWalk.meters)} km</span>
-                      </span>
-                    )}
-                    {/* The ordinary fare, not the card one: a visitor pays 0,64 €. */}
-                    {planResult.fare && planResult.fare.busLegs > 0 && <span className="whitespace-nowrap font-black text-ink">{planResult.fare.singleTicketEuros.toFixed(2).replace('.', ',')} €</span>}
-                  </span>
-                </summary>
+              <Disclosure
+                chevronFirst
+                summary={
+                  <>
+                    <span className="sr-only">{t.planner.tripInfoTitle}</span>
+                    <span className="flex flex-1 flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono">
+                      {measuredWalk && (
+                        <span className="flex flex-wrap items-baseline gap-x-1.5 text-ink">
+                          <span className="sr-only">{t.planner.measuredWalkTitle}: </span>
+                          <Footprints className="h-3.5 w-3.5 shrink-0 self-center text-ink-3" aria-hidden="true" />
+                          <span className="whitespace-nowrap">{measuredWalk.minutes} min ·</span>
+                          <span className="whitespace-nowrap">{formatKm(measuredWalk.meters)} km</span>
+                        </span>
+                      )}
+                      {/* The ordinary fare, not the card one: a visitor pays 0,64 €. */}
+                      {planResult.fare && planResult.fare.busLegs > 0 && <span className="whitespace-nowrap font-black text-ink">{planResult.fare.singleTicketEuros.toFixed(2).replace('.', ',')} €</span>}
+                    </span>
+                  </>
+                }
+              >
                 <div className="px-3 pb-3">
                   {measuredWalk && (
                     <div className="mt-1 flex items-center justify-between gap-3 text-label text-ink">
@@ -687,7 +690,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                     </div>
                   )}
                 </div>
-              </details>
+              </Disclosure>
 
               {planOptions.length > 1 && <TripOptions options={ranked} chosen={chosen} onChoose={setChosenOption} correctionFor={correction} resetKey={questions} />}
 

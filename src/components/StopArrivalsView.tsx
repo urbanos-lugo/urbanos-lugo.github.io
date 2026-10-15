@@ -14,7 +14,7 @@ import { clockDriftFromTimetable, deviceTimeZone } from '../utils/clock';
 import { useOperatorTimes } from '../hooks/useOperatorTimes';
 import { Provenance } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
-import { IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionLabel } from './ui/SectionLabel';
 import { watchForStop, ringAlarm, notify, requestNotificationPermission, ALARM_RADIUS_M, AlarmHandle } from '../services/stopAlarm';
 
@@ -407,12 +407,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
       {/* Folded, directly under the toggle: at a stop with fourteen lines the list runs past the fold. */}
       {nearbyLines.length > 0 && (
-        <details className="disclosure mt-3 rounded-control border border-edge bg-surface">
-          <summary className="flex min-h-tap cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
-            {t.arrivals.nearbyLinesTitle}
-            <span className="tnum rounded-control border border-edge px-1.5 py-0.5 text-ink-3">{nearbyLines.length}</span>
-            <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
-          </summary>
+        <Disclosure className="mt-3" summary={t.arrivals.nearbyLinesTitle} count={nearbyLines.length}>
           <div className="px-3 pb-3">
             <p className="text-label text-ink-3">{t.arrivals.nearbyLinesHint}</p>
             <ul className="mt-2.5 flex flex-col gap-1.5">
@@ -429,7 +424,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               ))}
             </ul>
           </div>
-        </details>
+        </Disclosure>
       )}
 
       {/* Every row below is a scheduled passing for an hour the reader chose, and the countdown counts from that hour; this is where it is undone. */}
@@ -567,17 +562,20 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {view === 'next' && beyondCount > 0 && <p className="mt-3 text-label text-ink-3">{t.arrivals.beyond(beyondCount)}</p>}
 
       {/* Under the answer, not over it: the night-before question, folded like the other tools. */}
-      <details className="disclosure mt-3 rounded-control border border-edge bg-surface">
-        <summary className="flex min-h-tap cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
-          <Clock className="h-3.5 w-3.5 shrink-0 text-accent" aria-hidden="true" />
-          {t.arrivals.atTimeSummary}
-          <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
-        </summary>
+      <Disclosure
+        className="mt-3"
+        summary={
+          <>
+            <Clock className="h-3.5 w-3.5 shrink-0 text-accent" aria-hidden="true" />
+            {t.arrivals.atTimeSummary}
+          </>
+        }
+      >
         <label className="flex flex-wrap items-center gap-2 px-3 pb-3 text-label font-semibold text-ink-2">
           <span className="shrink-0">{t.arrivals.atTimeLabel}</span>
           <input type="time" value={atTime} onChange={(e) => setAtTime(e.target.value)} className="h-tap rounded-control border border-edge bg-bg px-2 font-mono text-body text-ink" />
         </label>
-      </details>
+      </Disclosure>
       {Object.keys(watches).length > 0 && <Notice>{t.arrivals.watchForeground}</Notice>}
 
       {/* Drawn above the question it serves: the other poles nearby are how you tell which one is yours. */}
@@ -587,12 +585,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             pointer can tap and a keyboard cannot reach, and the pole across the road was
             otherwise reached only by knowing its name (WCAG 2.1.1). Folded like the lines nearby. */}
         {polesNearby.length > 0 && (
-          <details className="disclosure mt-2 rounded-control border border-edge bg-surface">
-            <summary className="flex min-h-tap cursor-pointer items-center gap-2 px-3 text-label font-semibold text-ink-2">
-              {t.arrivals.polesNearby}
-              <span className="tnum rounded-control border border-edge px-1.5 py-0.5 text-ink-3">{polesNearby.length}</span>
-              <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
-            </summary>
+          <Disclosure className="mt-2" summary={t.arrivals.polesNearby} count={polesNearby.length}>
             <ul className="flex flex-col gap-1.5 px-3 pb-3">
               {polesNearby.map((pole) => (
                 <li key={pole.id}>
@@ -604,35 +597,27 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                 </li>
               ))}
             </ul>
-          </details>
+          </Disclosure>
         )}
         <div className="mt-2 overflow-hidden rounded-control border border-edge">
           <LazyNearbyMiniMap centre={{ lat: selectedStop.lat, lng: selectedStop.lng, label: selectedStop.name, kind: 'stop' }} stops={polesNearby} onSelectStop={onSelectStop} regionLabel={t.arrivals.stopMapRegion} />
         </div>
       </section>
 
-      <details className="disclosure mt-4 border-t border-line pt-3">
-        <summary className="flex min-h-tap cursor-pointer items-center text-label font-semibold text-ink-2">
-          {t.arrivals.reportPosition}
-          <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
-        </summary>
+      <Disclosure frame="rule" className="mt-4" summary={t.arrivals.reportPosition}>
         <p className="text-label leading-prose text-ink-3">{t.arrivals.positionChecked}</p>
         <p className="mt-1.5 text-label leading-prose text-ink-3">{t.arrivals.reportNotCouncil}</p>
         <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="link mt-2">
           {t.arrivals.reportCta}
         </a>
-      </details>
+      </Disclosure>
 
       {anyOverdue && <p className="mt-4 border-t border-line pt-3.5 text-label leading-prose text-ink-3">{t.common.overdueNote}</p>}
 
       {nonePublished ? (
-        <details className="disclosure mt-4 border-t border-line pt-3">
-          <summary className="flex min-h-tap cursor-pointer items-center text-label font-semibold text-ink-2">
-            {t.arrivals.whyEstimatedTitle}
-            <ChevronDown className="disclosure-chevron ml-auto h-4 w-4 shrink-0 text-ink-3" aria-hidden="true" />
-          </summary>
+        <Disclosure frame="rule" className="mt-4" summary={t.arrivals.whyEstimatedTitle}>
           <p className="pb-1 text-label leading-prose text-ink-3">{t.arrivals.whyEstimated(timingPoints.published, timingPoints.total)}</p>
-        </details>
+        </Disclosure>
       ) : (
         arrivals.length > 0 && <p className="mt-4 border-t border-line pt-3.5 text-label leading-prose text-ink-3">{t.arrivals.precisionNote}</p>
       )}
