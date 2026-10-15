@@ -372,7 +372,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
           >
             {/* A bare wrapper: the row can only shrink to its item's padding and border, so the card itself as the item left a 30 px stub when folded. */}
             <div>
-          <div className="bg-bg rounded-card py-3.5 px-cap-3.5 sm:p-6 shadow-raised border border-edge">
+          <div className="card py-3.5 px-cap-3.5 sm:p-6">
             <h2 className="sr-only">{t.planner.title}</h2>
             <div className="relative">
               <div className="relative rounded-card border border-edge bg-surface">
@@ -539,7 +539,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
         <div ref={answerRef} tabIndex={-1} className={`anim-rise space-y-4 lg:animate-none lg:col-span-7 lg:block ${folded ? '' : 'hidden'}`}>
           {planResult && shown ? (
             /* The column owns the rhythm; the blocks say nothing about spacing. */
-            <div className="space-y-4 bg-bg rounded-card py-4 px-cap-4 sm:p-6 shadow-raised border border-edge">
+            <div className="card space-y-4 py-4 px-cap-4 sm:p-6">
               {!planResult.isServiceActive && planResult.serviceNotice && (
                 <Notice warn icon={AlertCircle} className="">
                   <div className="font-bold uppercase tracking-caps">{t.planner.serviceNoticeTitle}</div>

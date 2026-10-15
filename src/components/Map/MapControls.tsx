@@ -14,7 +14,7 @@ export const AROUND_STOP_RADIUS_M = 400;
 /** How far someone will walk to a different line. */
 export const NEARBY_RADIUS_M = 750;
 
-const card = 'bg-bg rounded-card p-3.5 shadow-raised border border-edge';
+const card = 'card p-3.5';
 
 export interface MapControlsProps {
   sheetRef: RefObject<HTMLDivElement | null>;
@@ -112,7 +112,7 @@ export function MapControls(p: MapControlsProps) {
       </div>
       {quickFilters('lg:hidden')}
 
-      <div className={`${card} p-4`}>
+      <div className="card p-4">
         <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-line">
           <div>
             <h2 className="font-bold text-ink text-body uppercase tracking-caps flex items-center gap-2">

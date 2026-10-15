@@ -112,7 +112,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
           escape the pane's clip, and <main> scrolls a second time into an empty page. */}
       <div className="lg:grid lg:h-full lg:grid-cols-12 lg:gap-6">
         <div className={`space-y-4 lg:relative lg:col-span-5 lg:block lg:h-full lg:overflow-y-auto lg:pb-4 ${showDetail ? 'hidden' : ''}`}>
-          <div className="space-y-4 bg-bg rounded-card border border-edge py-4 px-cap-4 shadow-raised lg:p-5">
+          <div className="card space-y-4 py-4 px-cap-4 lg:p-5">
             <div>
               <h2 className="font-bold text-ink text-body uppercase tracking-caps flex items-center gap-2">
                 <Route className="w-4 h-4 text-accent" />
@@ -218,7 +218,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {t.lines.backToLines}
           </button>
 
-          <div className="space-y-4 bg-bg rounded-card py-6 px-cap-6 shadow-raised border border-edge">
+          <div className="card space-y-4 py-6 px-cap-6">
             <div className="flex flex-col justify-between gap-4 border-b border-line pb-5 2xl:flex-row 2xl:items-center">
               {/* Wrapping: at 200% text the chips and the name ran 144 px past the card. */}
               <div className="flex flex-wrap items-center gap-4">
@@ -345,7 +345,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             )}
           </div>
 
-          <div className="bg-bg rounded-card py-5 px-cap-5 shadow-raised border border-edge">
+          <div className="card py-5 px-cap-5">
             <h3 className="font-bold text-ink text-body uppercase tracking-caps mb-2 flex items-center gap-2">
               <Clock className="w-4 h-4 text-accent" />
               {t.lines.scheduleTable} &mdash; {direction.origin} ({departures.length})
@@ -370,7 +370,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {departures.some((d) => d.derived) && <p className="mt-2 text-label leading-prose text-ink-3">{t.lines.derivedDepartures}</p>}
           </div>
 
-          <div className="@container space-y-4 bg-bg rounded-card py-6 px-cap-6 shadow-raised border border-edge">
+          <div className="card @container space-y-4 py-6 px-cap-6">
             <div className="flex flex-col gap-3">
               <div>
                 <h3 className="font-bold text-ink text-body uppercase tracking-caps flex items-center gap-2">

@@ -11,7 +11,7 @@ const PORTALS = [
   { href: 'https://tpgalicia.github.io/urban/lugo', label: 'TP Galicia (GitHub)' },
 ];
 
-const card = 'rounded-card border border-edge bg-bg py-5 px-cap-5 shadow-raised';
+const card = 'card py-5 px-cap-5';
 
 const Title = ({ icon: Icon, children, small = false }: { icon: LucideIcon; children: ReactNode; small?: boolean }) => (
   <h2 className={`font-bold text-ink uppercase tracking-caps flex items-center gap-2 ${small ? 'text-body' : 'text-emph'}`}>

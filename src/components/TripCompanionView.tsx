@@ -71,7 +71,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
       </h2>
 
       {/* The one thing that matters, first and biggest. While the alert stands the whole card turns. */}
-      <div className={`space-y-4 rounded-card border py-6 px-cap-6 shadow-raised ${phase === 'alighting' ? 'border-warn bg-warn/wash' : 'border-edge bg-bg'}`}>
+      <div className={`card space-y-4 py-6 px-cap-6 ${phase === 'alighting' ? 'border-warn bg-warn/wash' : ''}`}>
         {phase === 'alighting' && segment?.toStop && (
           <p role="alert" className="anim-rise rounded-control border border-warn bg-warn px-3 py-2.5 text-body font-semibold text-warn-ink">
             {t.arrivals.alarmFired(segment.toStop.name)}

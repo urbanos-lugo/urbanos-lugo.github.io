@@ -578,6 +578,11 @@
      caller's (SectionLabel gives the common ones). */
   .caps-label { font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--tracking-caps); }
 
+  /* A card on a screen's column or in the map's panel: the card corner, the hairline edge, the
+     ground, raised. No padding, so a card can be the padded item inside a bare .fold wrapper,
+     and each column keeps its own; a state's tone is the caller's utility. */
+  .card { border-radius: var(--radius-card); border: var(--default-border-width) solid var(--c-border); background-color: var(--c-bg); box-shadow: var(--shadow-raised); }
+
   /* A labelled action. Primary is the accent fill; secondary a bordered fill a step off its
      ground (the caller makes it bg-bg where it sits on a tint or on glass); outbound an <a> to
      the operator's site. A floor rather than a height, so a label that wraps grows the button
