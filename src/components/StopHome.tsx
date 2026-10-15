@@ -224,7 +224,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
             icon={History}
             tint="text-ink-2"
             action={
-              <button onClick={onClearRecent} className="inline-flex h-tap min-w-tap items-center justify-end text-label font-semibold text-accent underline underline-offset-link">
+              <button onClick={onClearRecent} className="link min-w-tap justify-end">
                 {t.stopHome.clearRecent}
               </button>
             }

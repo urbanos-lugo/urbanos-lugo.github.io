@@ -360,7 +360,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               <span className="min-w-floor-title flex-1 break-words text-label font-semibold text-ink">
                 {placeLabel(originQuery)} → {placeLabel(destQuery)}
               </span>
-              <span className="shrink-0 text-label font-semibold text-accent underline underline-offset-link">{formOpen ? t.planner.backToAnswer : t.planner.editTrip}</span>
+              <span className="link-text shrink-0">{formOpen ? t.planner.backToAnswer : t.planner.editTrip}</span>
             </button>
           )}
 
@@ -467,7 +467,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           clearRecentRoutes();
                         }
                       }}
-                      className="inline-flex h-tap min-w-tap items-center justify-end text-label font-semibold text-accent underline underline-offset-link"
+                      className="link min-w-tap justify-end"
                     >
                       {cleared.length ? t.planner.undoClear : t.stopHome.clearRecent}
                     </button>
@@ -697,7 +697,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                   <SectionLabel icon={MapPin}>
                     {t.planner.routeMap}
                   </SectionLabel>
-                  <button onClick={() => setShowMap((v) => !v)} className="text-label font-semibold text-accent h-tap inline-flex items-center underline underline-offset-link">
+                  <button onClick={() => setShowMap((v) => !v)} className="link">
                     {showMap ? t.planner.hideMap : t.planner.showMap}
                   </button>
                 </div>

@@ -12,7 +12,6 @@ const PORTALS = [
 ];
 
 const card = 'rounded-card border border-edge bg-bg py-5 px-cap-5 shadow-raised';
-const link = 'inline-flex min-h-tap items-center font-bold text-label text-accent underline underline-offset-link';
 
 const Title = ({ icon: Icon, children, small = false }: { icon: LucideIcon; children: ReactNode; small?: boolean }) => (
   <h2 className={`font-bold text-ink uppercase tracking-caps flex items-center gap-2 ${small ? 'text-body' : 'text-emph'}`}>
@@ -64,7 +63,7 @@ export function FaresView() {
                   <p className="text-label font-bold text-ink-2 mt-1">{copy(words.subtitle, minutes)}</p>
                   <p className="text-label text-ink-3 mt-2 leading-prose">{copy(words.details, minutes)}</p>
                 </div>
-                <a href={fare.sourceUrl} target="_blank" rel="noopener noreferrer" className={`${link} mt-3 self-start`}>
+                <a href={fare.sourceUrl} target="_blank" rel="noopener noreferrer" className="link mt-3 self-start">
                   {fare.source}
                 </a>
               </div>
@@ -81,7 +80,7 @@ export function FaresView() {
           <Bullets title={t.rules.mustTitle} lines={t.rules.must} />
           <Bullets title={t.rules.mustNotTitle} lines={t.rules.mustNot} hollow />
         </div>
-        <a href="https://buslugo.com/normativa/" target="_blank" rel="noopener noreferrer" className={`${link} mt-4`}>
+        <a href="https://buslugo.com/normativa/" target="_blank" rel="noopener noreferrer" className="link mt-4">
           {t.rules.sourceLink}
         </a>
       </div>
@@ -121,7 +120,7 @@ export function FaresView() {
                 <ul className="mt-1 space-y-0.5">
                   {PORTALS.map((portal) => (
                     <li key={portal.href}>
-                      <a href={portal.href} target="_blank" rel="noopener noreferrer" className={link}>
+                      <a href={portal.href} target="_blank" rel="noopener noreferrer" className="link">
                         {portal.label}
                       </a>
                     </li>

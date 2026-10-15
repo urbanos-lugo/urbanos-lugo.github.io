@@ -20,7 +20,6 @@ function formatInstant(value: string | undefined, locale: string): string {
   return Number.isNaN(at.getTime()) ? value : at.toLocaleString(locale);
 }
 
-const external = 'inline-flex min-h-tap items-center text-label font-bold text-accent underline underline-offset-link';
 
 /**
  * The lines a notice names, every one, or "all" from ten up. Past three the rest folded into a
@@ -81,7 +80,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
         </div>
       ))}
       {alert.link && (
-        <a href={alert.link} target="_blank" rel="noopener noreferrer" className={`${external} mt-1`}>
+        <a href={alert.link} target="_blank" rel="noopener noreferrer" className="link mt-1">
           {t.fares.readInFull}
         </a>
       )}
@@ -189,7 +188,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
                   <span>
                     {t.fares.source}{' '}
                     {/* One line of text is a 70x16 box; padding pulled back by its own margin gives the thumb 44 px without moving the line. */}
-                    <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="inline-block py-3.5 -my-3.5 font-semibold text-accent underline underline-offset-link">
+                    <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="link-text inline-block py-3.5 -my-3.5">
                       buslugo.com
                     </a>
                   </span>
@@ -239,7 +238,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
                   </p>
                 )}
                 {item.link && (
-                  <a href={item.link} target="_blank" rel="noopener noreferrer" className={`${external} mt-1`}>
+                  <a href={item.link} target="_blank" rel="noopener noreferrer" className="link mt-1">
                     {t.fares.readInFull}
                   </a>
                 )}

@@ -592,6 +592,12 @@
   .btn-lg { min-height: calc(var(--spacing) * 12); }
   .btn-dense { gap: calc(var(--spacing) * 1.5); padding-inline: calc(var(--spacing) * 3); font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-bold); }
 
+  /* A text link: label-size accent, semibold, underlined 2 px under its text. .link brings
+     its own 44 px target; .link-text is the same words where a row or a padded box around them
+     is the target. A tone other than the accent is the caller's utility. */
+  .link-text, .link { font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-semibold); color: var(--c-accent); text-decoration-line: underline; text-underline-offset: var(--text-underline-offset-link); }
+  .link { display: inline-flex; min-height: var(--spacing-tap); align-items: center; }
+
   /* The ~ ESTIMADO chip: the HORARIO OFICIAL chip's box (px-2 py-1) with its dashed edge
      taken out of the padding, so the two stand the same size side by side. */
   .chip-estimated { padding: calc(var(--spacing) - var(--border-width-dash)) calc(var(--spacing) * 2 - var(--border-width-dash)); }
