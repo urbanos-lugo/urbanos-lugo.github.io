@@ -273,7 +273,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   );
   const provenance = (a: StopArrival) => <Provenance precision={a.precision} extra={a.etaTime} title={a.precision === 'published' ? t.arrivals.publishedHint : t.arrivals.estimatedHint} />;
   // The timetable still has these buses here; the operator's notice says they will not stop. Both are said, the time struck through.
-  const notHereChip = <span className="rounded-tag border border-warn bg-warn px-1.5 py-0.5 text-label font-semibold text-warn-ink">{t.arrivals.noticeNotHere}</span>;
+  const notHereChip = <span className="tag px-1.5 font-semibold border border-warn bg-warn text-warn-ink">{t.arrivals.noticeNotHere}</span>;
   // The line is in the name, not only on the badge: fourteen in a row read as "7, button".
   const lineButton = (id: string, number: string, color: string) => (
     <LineBadge

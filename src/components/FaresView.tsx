@@ -56,7 +56,7 @@ export function FaresView() {
             return (
               <div key={fare.id} className={`${card} flex flex-col justify-between`}>
                 <div>
-                  <span className="text-label font-bold text-accent bg-surface border border-edge px-2 py-0.5 rounded-tag uppercase tracking-caps">{words.badge}</span>
+                  <span className="tag border border-edge bg-surface text-accent uppercase tracking-caps">{words.badge}</span>
                   <h3 className="font-bold text-body text-ink mt-2.5">{words.title}</h3>
                   {/* No invented number when the operator publishes none. */}
                   <div className="text-title font-black text-ink mt-1 font-mono">{fare.price || <span className="text-body text-ink-3">{t.fares.priceNotPublished}</span>}</div>

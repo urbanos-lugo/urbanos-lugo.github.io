@@ -623,6 +623,14 @@
   /* The ~ ESTIMADO chip: the HORARIO OFICIAL chip's box (px-2 py-1) with its dashed edge
      taken out of the padding, so the two stand the same size side by side. */
   .chip-estimated { padding: calc(var(--spacing) - var(--border-width-dash)) calc(var(--spacing) * 2 - var(--border-width-dash)); }
+
+  /* A word tag: a short label on a small rounded tile, such as a line's name over its page, a
+     category, origin and destination beside a stop, a fare's badge, a notice's date, a bus that
+     will not stop here. No display of its own, so an inline tag in a block adds nothing to the
+     line box. The tone (fill and ink), capitals over a block, an edge, the tighter px-1.5 of the
+     tags set beside a name, and another weight are the caller's utilities. Times and line
+     numbers are not tags: they are the time chips and LineBadge. */
+  .tag { border-radius: var(--radius-tag); padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 2); font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-bold); }
 }
 
 /* Side padding that grows with the type only while the screen has room: never past what the

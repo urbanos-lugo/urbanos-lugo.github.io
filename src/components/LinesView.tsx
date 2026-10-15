@@ -220,10 +220,10 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 <LineBadge number={currentLine.number} color={currentLine.color} size="xl" className="shadow-raised" />
                 <div className="min-w-floor-heading flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-label font-bold px-2 py-0.5 rounded-tag bg-surface text-ink-2 uppercase tracking-caps">{t.lines.lineLabel(currentLine.number)}</span>
-                    {currentLine.category === 'hospital' && <span className="text-label font-bold px-2 py-0.5 rounded-tag bg-warn text-warn-ink">{t.lines.categories.hospital}</span>}
+                    <span className="tag bg-surface text-ink-2 uppercase tracking-caps">{t.lines.lineLabel(currentLine.number)}</span>
+                    {currentLine.category === 'hospital' && <span className="tag bg-warn text-warn-ink">{t.lines.categories.hospital}</span>}
                     {busesOnLine.length > 0 && (
-                      <span title={t.lines.enRouteHint} className="text-label font-bold px-2 py-0.5 rounded-tag bg-surface text-ink-2 flex items-center gap-1 border border-edge">
+                      <span title={t.lines.enRouteHint} className="tag flex items-center gap-1 border border-edge bg-surface text-ink-2">
                         <Bus className="w-3 h-3 text-ink-3" />
                         {t.lines.enRoute(busesOnLine.length)}
                       </span>
@@ -466,8 +466,8 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                         {/* The stop name is not shortened: it is the only thing on the row a reader has to match against a pole. */}
                         <div className="flex min-w-0 flex-wrap items-center gap-x-2">
                           <span className="min-w-0 break-words font-bold text-body text-ink transition-colors group-hover:text-accent">{stop.name}</span>
-                          {isFirst && <span className="shrink-0 rounded-tag bg-surface px-1.5 py-0.5 text-label font-bold text-accent">{t.lines.origin}</span>}
-                          {isLast && <span className="shrink-0 rounded-tag bg-ink px-1.5 py-0.5 text-label font-bold text-bg">{t.lines.destination}</span>}
+                          {isFirst && <span className="tag shrink-0 px-1.5 bg-surface text-accent">{t.lines.origin}</span>}
+                          {isLast && <span className="tag shrink-0 px-1.5 bg-ink text-bg">{t.lines.destination}</span>}
                         </div>
                         <div className="mt-0.5 break-words text-label text-ink-3">
                           {stop.zone}
