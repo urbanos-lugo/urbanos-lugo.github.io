@@ -141,9 +141,8 @@ export function AlertsView({ alerts }: AlertsViewProps) {
               refresh(true);
             }}
             disabled={isSyncing || cooldown > 0}
-            className={`flex h-tap shrink-0 items-center gap-1.5 self-start rounded-control px-4 text-body font-semibold sm:self-auto ${
-              cooldown > 0 ? 'cursor-not-allowed border border-edge bg-surface text-ink-3' : 'bg-accent hover:bg-accent text-on-accent disabled:opacity-disabled'
-            }`}
+            // In the cooldown the button is disabled but its countdown must stay legible: full strength, in ink-3.
+            className={`btn shrink-0 self-start sm:self-auto ${cooldown > 0 ? 'btn-secondary text-ink-3 disabled:opacity-100' : 'btn-primary'}`}
           >
             {isSyncing ? <RefreshCw className="w-3.5 h-3.5 animate-syncing" /> : cooldown > 0 ? <Clock className="w-3.5 h-3.5 text-ink-2" /> : <RefreshCw className="w-3.5 h-3.5" />}
             <span>{isSyncing ? t.fares.refreshing : cooldown > 0 ? t.fares.cooldownText(cooldown) : t.fares.refreshBtn}</span>
@@ -197,7 +196,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
                 </div>
               </div>
             </div>
-            <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="flex h-tap shrink-0 items-center justify-center rounded-control border border-edge px-4 text-body font-semibold text-accent">
+            <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="btn btn-outbound shrink-0">
               {t.fares.checkOnBuslugo} &rarr;
             </a>
           </div>

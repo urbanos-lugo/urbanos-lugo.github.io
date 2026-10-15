@@ -436,7 +436,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {atTime && (
         <div className="anim-rise mt-3 flex flex-wrap items-center justify-between gap-2 rounded-control border border-edge bg-surface py-1.5 pl-3 pr-1.5 text-label font-semibold text-ink-2">
           <span>{t.arrivals.showingAt(atTime)}</span>
-          <button onClick={() => setAtTime('')} className="h-tap rounded-control border border-edge px-3 text-label font-semibold text-ink-2">
+          <button onClick={() => setAtTime('')} className="btn btn-secondary btn-dense">
             {t.arrivals.backToNow}
           </button>
         </div>

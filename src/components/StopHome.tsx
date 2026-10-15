@@ -125,7 +125,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
           <p className="text-body font-semibold">{t.stopHome.emptyTitle}</p>
           <p className="mt-1.5 text-body leading-prose text-ink-2">{t.stopHome.emptyBody}</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <button onClick={onOpenQrScanner} className="flex h-tap items-center gap-2 rounded-control bg-accent px-4 text-body font-semibold text-on-accent">
+            <button onClick={onOpenQrScanner} className="btn btn-primary">
               <QrCode className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
               {t.stopHome.scan}
             </button>
@@ -249,7 +249,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
       )}
       {nearby.length === 0 ? (
         <>
-          <button onClick={locate} disabled={locating} className="mt-2.5 flex h-tap w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface text-body font-semibold text-ink-2 disabled:opacity-disabled">
+          <button onClick={locate} disabled={locating} className="btn btn-secondary mt-2.5 w-full">
             <Compass className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
             {locating ? t.stopHome.locating : t.stopHome.locate}
           </button>

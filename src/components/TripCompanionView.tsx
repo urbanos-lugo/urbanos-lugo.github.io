@@ -154,10 +154,10 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           <div role="group" aria-live="polite" className="anim-rise space-y-2 rounded-control border border-warn bg-warn/wash p-3">
             <p className="text-body font-semibold text-ink">{t.companion.caughtIt(segment.line.number, formatMinutes(times.departureMinutes))}</p>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={companion.boarded} className="flex min-h-tap items-center justify-center rounded-control bg-accent px-3 text-body font-semibold text-on-accent">
+              <button type="button" onClick={companion.boarded} className="btn btn-primary">
                 {t.companion.yesOnIt}
               </button>
-              <button type="button" onClick={companion.missed} className="flex min-h-tap items-center justify-center rounded-control border border-edge bg-bg px-3 text-body font-semibold text-ink">
+              <button type="button" onClick={companion.missed} className="btn btn-secondary bg-bg">
                 {t.companion.noMissedIt}
               </button>
             </div>
@@ -229,7 +229,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           (px-cap-3.5): in plain rem it grew past it and the bar ran 11 px off the screen at 200 %.
           `trip-bar`: <main> leaves its height free below whatever takes the focus (App.tsx). */}
       <div className="trip-bar anim-sheet-up sticky bottom-0 z-raised -mx-cap-3.5 border-t border-line bg-bg/glass px-cap-3.5 py-3 backdrop-blur-bar lg:-mx-6 lg:px-6">
-        <button type="button" onClick={companion.finish} className={`flex min-h-12 w-full items-center justify-center rounded-control px-4 text-body font-semibold ${phase === 'walking' ? 'bg-accent text-on-accent' : 'border border-edge bg-bg text-ink'}`}>
+        <button type="button" onClick={companion.finish} className={`btn btn-lg w-full ${phase === 'walking' ? 'btn-primary' : 'btn-secondary bg-bg'}`}>
           {phase === 'walking' ? t.companion.arrivedDone : t.companion.finish}
         </button>
       </div>

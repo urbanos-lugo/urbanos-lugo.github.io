@@ -85,7 +85,7 @@ export function MapControls(p: MapControlsProps) {
       {p.preset === 'stop' && p.aroundStop && (
         <div className="mt-2.5 rounded-control border border-accent bg-accent/tint p-3">
           <p className="text-label leading-prose text-ink">{t.map.aroundStopActive(p.aroundStop.name, AROUND_STOP_RADIUS_M)}</p>
-          <button onClick={() => p.onPreset('all')} className="mt-2 flex h-tap items-center rounded-control border border-edge bg-bg px-3 text-label font-semibold text-ink-2">
+          <button onClick={() => p.onPreset('all')} className="btn btn-secondary btn-dense mt-2 bg-bg">
             {t.map.aroundStopClear}
           </button>
         </div>
@@ -135,14 +135,12 @@ export function MapControls(p: MapControlsProps) {
             onClick={p.locate.toggle}
             disabled={p.locate.isLocating}
             aria-pressed={p.locate.isFollowing}
-            className={`flex h-tap items-center justify-center gap-1.5 rounded-control px-3.5 text-label font-bold shadow-hair transition-colors disabled:opacity-disabled ${
-              p.locate.isFollowing ? 'bg-surface text-ink border border-accent' : 'bg-accent text-on-accent'
-            }`}
+            className={`btn btn-dense shadow-hair transition-colors ${p.locate.isFollowing ? 'btn-secondary border-accent text-ink' : 'btn-primary'}`}
           >
             <LocateFixed className="w-3.5 h-3.5" />
             <span>{locateLabel}</span>
           </button>
-          <button id="btn-map-center" onClick={p.onCenterLugo} className="flex h-tap items-center justify-center gap-1.5 rounded-control px-3.5 bg-surface text-label font-bold text-ink-2 border border-edge transition-colors">
+          <button id="btn-map-center" onClick={p.onCenterLugo} className="btn btn-secondary btn-dense">
             {t.map.centerLugo}
           </button>
         </div>

@@ -327,7 +327,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     <button
       type="button"
       onClick={() => planResult && onStartTrip(planResult, endpoints.origin ?? null, endpoints.destination ?? null)}
-      className={`flex w-full items-center justify-center gap-2 rounded-control bg-accent px-4 font-semibold text-on-accent ${prominent ? 'anim-attention h-14 text-emph' : 'h-12 text-body'}`}
+      className={`btn btn-primary w-full ${prominent ? 'anim-attention min-h-14 text-emph' : 'btn-lg'}`}
     >
       <Bus className={prominent ? 'h-5 w-5 shrink-0' : 'h-4.5 w-4.5 shrink-0'} aria-hidden="true" />
       {t.companion.start}
@@ -433,7 +433,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 )}
               </div>
 
-              <button onClick={() => calculate()} aria-busy={calculating} className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-control bg-accent px-4 text-body font-semibold text-on-accent transition-colors">
+              <button onClick={() => calculate()} aria-busy={calculating} className="btn btn-primary btn-lg mt-2 w-full">
                 {calculating ? (
                   <span>
                     {t.planner.calculating}

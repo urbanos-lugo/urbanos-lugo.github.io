@@ -157,7 +157,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             isScanning ? stopCamera() : setIsScanning(true);
           }}
           disabled={!hasBarcodeDetector}
-          className="mb-3 flex min-h-tap w-full items-center justify-center gap-2 rounded-control border border-edge bg-surface px-4 py-2.5 text-body font-semibold text-ink-2 disabled:cursor-not-allowed disabled:opacity-disabled"
+          className="btn btn-secondary mb-3 w-full"
         >
           {hasBarcodeDetector ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
           <span>{hasBarcodeDetector ? (isScanning ? t.qr.stopScan : t.qr.scanBtn) : t.qr.noCamera}</span>
@@ -192,7 +192,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
               {errorMsg}
             </p>
           )}
-          <button onClick={() => lookup()} className="flex min-h-tap w-full items-center justify-center gap-2 rounded-control bg-accent px-4 py-2.5 text-body font-semibold text-on-accent">
+          <button onClick={() => lookup()} className="btn btn-primary w-full">
             <span>{t.qr.searchBtn}</span>
             <ArrowRight className="w-4 h-4" />
           </button>

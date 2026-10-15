@@ -100,11 +100,11 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
 
       {/* No row of every line serving the stop: it was the one part whose height nobody could predict, and every departure above carries its badge. */}
       <div className="flex flex-col gap-1.5 border-t border-line p-3.5 pb-sheet-foot">
-        <button type="button" onClick={() => onOpenFullBoard(stop)} className="flex min-h-tap w-full items-center justify-center gap-1.5 rounded-control bg-accent px-3 text-label font-bold text-on-accent">
+        <button type="button" onClick={() => onOpenFullBoard(stop)} className="btn btn-primary btn-dense w-full">
           {t.map.viewStopDepartures}
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </button>
-        <button type="button" onClick={() => onShowLinesHere(stop)} className="flex min-h-tap w-full items-center justify-center rounded-control border border-edge bg-surface px-3 text-label font-bold text-ink-2">
+        <button type="button" onClick={() => onShowLinesHere(stop)} className="btn btn-secondary btn-dense w-full">
           {t.map.onlyLinesHere}
         </button>
       </div>

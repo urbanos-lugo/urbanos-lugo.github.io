@@ -36,10 +36,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, { failed: boole
         <h2 className="text-title font-semibold tracking-title">{t.error.title}</h2>
         <p className="mt-2 text-body leading-prose text-ink-2">{t.error.body}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <button onClick={() => window.location.reload()} className="flex h-tap items-center rounded-control bg-accent px-4 text-body font-semibold text-on-accent">
+          <button onClick={() => window.location.reload()} className="btn btn-primary">
             {t.error.reload}
           </button>
-          <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="flex h-tap items-center rounded-control border border-edge px-4 text-body font-semibold text-accent">
+          <a href="https://buslugo.com" target="_blank" rel="noopener noreferrer" className="btn btn-outbound">
             {t.error.official}
           </a>
         </div>
