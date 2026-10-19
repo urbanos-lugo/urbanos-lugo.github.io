@@ -7,6 +7,7 @@ import { BusLine, BusStop } from '../types';
 import { useT } from '../i18n';
 import { LineBadge } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
+import { CountBadge } from './ui/CountBadge';
 import { asideSections, navSections, type Tab } from './navSections';
 
 interface TopBarProps {
@@ -146,11 +147,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
           aria-label={alertCount > 0 ? `${t.menu.open}. ${t.menu.alerts}: ${alertCount}` : t.menu.open}
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
-          {alertCount > 0 && (
-            <span className="anim-badge-in tnum absolute -right-1.5 -top-1.5 min-w-5 rounded-control bg-warn px-1 text-center text-label font-bold leading-count text-warn-ink" aria-hidden="true">
-              {alertCount}
-            </span>
-          )}
+          <CountBadge n={alertCount} overlay />
         </button>
       </div>
 

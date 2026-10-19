@@ -2,6 +2,7 @@ import { asideSections, navSections, type Tab } from './navSections';
 import { tabLink } from '../hooks/useTabRoute';
 import { useLang, useT } from '../i18n';
 import { Settings, type SettingsProps } from './ui/Settings';
+import { CountBadge } from './ui/CountBadge';
 
 interface SideNavProps extends SettingsProps {
   activeTab: Tab;
@@ -52,7 +53,7 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
             <Icon className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
             <span className="flex-1">{label}</span>
             {/* As in the menu: a space between the words and the count, so the text matches the name. */}{' '}
-            {badge > 0 && <span className="tnum rounded-control bg-warn px-2 py-0.5 text-label font-bold text-warn-ink">{badge}</span>}
+            <CountBadge n={badge} />
           </a>
         ))}
       </div>
