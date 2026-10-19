@@ -143,14 +143,41 @@ export function SaveStar({ on, onToggle, label, className }: { on: boolean; onTo
   );
 }
 
+const NOTICE_SIZE = {
+  normal: 'anim-rise p-3 text-label leading-prose',
+  inline: 'w-full items-center px-2.5 py-1.5 text-label font-bold',
+  alarm: 'anim-rise px-3 py-2.5 text-body font-semibold',
+} as const;
+
 /**
  * A quiet bordered paragraph under the header: a status, a hint, a warning when `warn`.
- * With an `icon`, it leads the text, which keeps its own column beside it.
+ * With an `icon`, it leads the text, which keeps its own column beside it. `inline` is the
+ * one-line status inside the planner's figures (its row already animates); `alarm` the ride's
+ * fired alarm, at body size. The space above it is the caller's.
  */
-export function Notice({ children, warn = false, role, icon: Icon, className = 'mt-3' }: { children: ReactNode; warn?: boolean; role?: 'alert' | 'status'; icon?: LucideIcon; className?: string }) {
+export function Notice({
+  children,
+  warn = false,
+  role,
+  icon: Icon,
+  size = 'normal',
+  className = '',
+}: {
+  children: ReactNode;
+  warn?: boolean;
+  role?: 'alert' | 'status';
+  icon?: LucideIcon;
+  size?: keyof typeof NOTICE_SIZE;
+  className?: string;
+}) {
   return (
-    <div role={role} className={`anim-rise rounded-control border p-3 text-label leading-prose ${warn ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${Icon ? 'flex gap-2' : ''} ${className}`}>
-      {Icon ? (
+    <div role={role} className={`rounded-control border ${NOTICE_SIZE[size]} ${warn ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${Icon ? 'flex gap-2' : ''} ${className}`}>
+      {Icon && size === 'inline' ? (
+        <>
+          <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          {children}
+        </>
+      ) : Icon ? (
         <>
           <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <div className="min-w-0 flex-1">{children}</div>

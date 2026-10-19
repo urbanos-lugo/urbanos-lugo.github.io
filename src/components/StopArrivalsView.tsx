@@ -440,7 +440,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       )}
 
       {(alarmOn || alarmError) && (
-        <Notice role={alarmFired ? 'alert' : undefined}>
+        <Notice role={alarmFired ? 'alert' : undefined} className="mt-3">
           {alarmError ? (
             alarmError
           ) : alarmFired ? (
@@ -456,13 +456,13 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       )}
 
       {copyFailedUrl && (
-        <Notice>
+        <Notice className="mt-3">
           {t.arrivals.copyFailed} <span className="tnum block break-all pt-1 text-ink select-all">{copyFailedUrl}</span>
         </Notice>
       )}
 
       {clockDrift !== 0 && (
-        <Notice warn role="alert">
+        <Notice warn role="alert" className="mt-3">
           {t.arrivals.clockDrift((clockDrift > 0 ? t.arrivals.clockAhead : t.arrivals.clockBehind)(formatDriftHours(Math.abs(clockDrift))), deviceTimeZone())}
         </Notice>
       )}
@@ -575,7 +575,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           <input type="time" value={atTime} onChange={(e) => setAtTime(e.target.value)} className="h-tap rounded-control border border-edge bg-bg px-2 font-mono text-body text-ink" />
         </label>
       </Disclosure>
-      {Object.keys(watches).length > 0 && <Notice>{t.arrivals.watchForeground}</Notice>}
+      {Object.keys(watches).length > 0 && <Notice className="mt-3">{t.arrivals.watchForeground}</Notice>}
 
       {/* Drawn above the question it serves: the other poles nearby are how you tell which one is yours. */}
       <section className="mt-4 border-t border-line pt-3">

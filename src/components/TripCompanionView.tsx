@@ -3,6 +3,7 @@ import { ArrowRight, Bus, Check, Footprints, MapPin } from 'lucide-react';
 import { Provenance } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
 import { SectionLabel } from './ui/SectionLabel';
+import { Notice } from './ui/controls';
 import { useT } from '../i18n';
 import { TripCompanion, useTripPosition } from '../hooks/useTripCompanion';
 import { ALARM_RADIUS_M } from '../services/stopAlarm';
@@ -73,9 +74,9 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
       {/* The one thing that matters, first and biggest. While the alert stands the whole card turns. */}
       <div className={`card space-y-4 py-6 px-cap-6 ${phase === 'alighting' ? 'border-warn bg-warn/wash' : ''}`}>
         {phase === 'alighting' && segment?.toStop && (
-          <p role="alert" className="anim-rise rounded-control border border-warn bg-warn px-3 py-2.5 text-body font-semibold text-warn-ink">
+          <Notice warn size="alarm" role="alert">
             {t.arrivals.alarmFired(segment.toStop.name)}
-          </p>
+          </Notice>
         )}
 
         {phase === 'walking' ? (

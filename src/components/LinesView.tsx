@@ -283,7 +283,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               const until = mine && runsUntil(mine, now);
               if (!today || (!mine && !today.general.length)) return null;
               return (
-                <Notice warn className="">
+                <Notice warn>
                   <p className="flex gap-2 font-semibold">
                     <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                     <span>{t.lines.noticeToday}</span>
@@ -333,7 +333,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             )}
 
             {direction.geometrySource && direction.geometrySource !== 'osm' && (
-              <Notice icon={TriangleAlert} className="">
+              <Notice icon={TriangleAlert}>
                 <span className="font-semibold text-ink">{t.lines.approximatePathTitle}.</span> {t.lines.approximatePath}
               </Notice>
             )}

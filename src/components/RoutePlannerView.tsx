@@ -541,7 +541,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
             /* The column owns the rhythm; the blocks say nothing about spacing. */
             <div className="card space-y-4 py-4 px-cap-4 sm:p-6">
               {!planResult.isServiceActive && planResult.serviceNotice && (
-                <Notice warn icon={AlertCircle} className="">
+                <Notice warn icon={AlertCircle}>
                   <div className="font-bold uppercase tracking-caps">{t.planner.serviceNoticeTitle}</div>
                   <div className="mt-0.5">{planResult.serviceNotice}</div>
                 </Notice>
@@ -626,10 +626,9 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 </span>
                 {/* These times are for a bus the measured walk no longer reaches, and the replan found nothing better. */}
                 {!shown.reachable && (
-                  <span className="flex w-full items-center gap-2 rounded-control border border-warn bg-warn px-2.5 py-1.5 text-label font-bold text-warn-ink">
-                    <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <Notice warn size="inline" icon={AlertCircle}>
                     {t.planner.unreachableWalk}
-                  </span>
+                  </Notice>
                 )}
               </div>
 
@@ -731,7 +730,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 <Itinerary segments={planResult.segments} onSelectStop={onSelectStop} onSelectLine={onSelectLine} />
               </div>
 
-              <Notice warn icon={AlertCircle} className="">
+              <Notice warn icon={AlertCircle}>
                 {t.planner.transferFreeNotice}
               </Notice>
             </div>
