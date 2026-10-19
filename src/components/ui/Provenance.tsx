@@ -7,6 +7,19 @@ import type { Precision } from '../../types';
  * operator prints, dashed for one derived from it. Colour never carries it alone.
  * `extra` is the text after the label (the board puts the clock there).
  */
+/**
+ * The ~ before a time this app worked out rather than read off the timetable, muted beside the
+ * figure. `inherit` takes the figure's own colour where a muted tilde would fall below contrast
+ * (the pressed run chip) or the figure is one colour throughout (the run on show).
+ */
+export function Approx({ on, inherit = false, title }: { on: boolean; inherit?: boolean; title?: string }) {
+  return on ? (
+    <span className={inherit ? undefined : 'text-ink-3'} title={title}>
+      ~
+    </span>
+  ) : null;
+}
+
 export function Provenance({ precision, extra, title }: { precision: Precision; extra?: string; title?: string }) {
   const t = useT();
   const label = precision === 'published' ? t.common.officialBadge : t.common.estimatedBadge;

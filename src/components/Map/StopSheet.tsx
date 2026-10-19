@@ -8,7 +8,7 @@ import { useT } from '../../i18n';
 import { useDialog } from '../../hooks/useDialog';
 import { useClock } from '../../hooks/useClock';
 import { LineBadge } from '../ui/LineBadge';
-import { Provenance } from '../ui/Provenance';
+import { Approx, Provenance } from '../ui/Provenance';
 
 interface StopSheetProps {
   stop: BusStop;
@@ -44,7 +44,7 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
     if (a.etaMinutes === 0) return <span className="font-bold text-ink">{t.common.arrivingNow}</span>;
     return (
       <span className="tnum font-bold text-ink">
-        {a.precision === 'estimated' && <span className="text-ink-3">~</span>}
+        <Approx on={a.precision === 'estimated'} />
         {a.etaMinutes} min
       </span>
     );

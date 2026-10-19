@@ -3,7 +3,7 @@ import { useT } from '../../i18n';
 import type { BusLine, BusStop, TripSegment } from '../../types';
 import { stopName } from '../../data/transitData';
 import { LineBadge } from '../ui/LineBadge';
-import { Provenance } from '../ui/Provenance';
+import { Approx, Provenance } from '../ui/Provenance';
 
 interface ItineraryProps {
   segments: TripSegment[];
@@ -22,7 +22,7 @@ function StopRow({ label, time, estimated = false, stop, onSelect }: { label: st
       <div className="flex flex-wrap items-baseline justify-between gap-x-2">
         <span className="text-label text-ink-3">{label}</span>
         <span className="tnum shrink-0 text-body font-semibold">
-          {estimated && <span className="text-ink-3">~</span>}
+          <Approx on={estimated} />
           {time}
         </span>
       </div>

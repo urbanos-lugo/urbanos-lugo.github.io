@@ -11,6 +11,7 @@ import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabel
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
 import { ChoiceChip, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionTitle } from './ui/SectionTitle';
+import { Approx } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
 
@@ -257,8 +258,8 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               <Fact icon={Bus} label={t.lines.serviceHoursToday}>
                 {runs.length ? (
                   <>
-                    {derived(runs[0], 0) && '~'}
-                    {formatMinutes(runs[0].minutesByStopIndex[0])}–{derived(runs[runs.length - 1], 0) && '~'}
+                    <Approx on={derived(runs[0], 0)} />
+                    {formatMinutes(runs[0].minutesByStopIndex[0])}–<Approx on={derived(runs[runs.length - 1], 0)} />
                     {formatMinutes(runs[runs.length - 1].minutesByStopIndex[0])}
                   </>
                 ) : (
@@ -356,7 +357,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                   dense
                   className="tnum"
                 >
-                  {guessed && <span>~</span>}
+                  <Approx on={guessed} inherit />
                   {time}
                 </ChoiceChip>
               ))}
@@ -401,7 +402,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 <div className="order-1 basis-full text-center leading-name @min-stepper:order-none @min-stepper:basis-0 @min-stepper:flex-1">
                   <div className="caps-label text-accent">{t.lines.showingRun}</div>
                   <div className="text-body font-black text-accent font-mono">
-                    {derived(shownRun, 0) && '~'}
+                    <Approx on={derived(shownRun, 0)} inherit />
                     {formatMinutes(shownRun.minutesByStopIndex[0])}
                     <span className="text-accent font-bold text-label ml-1.5" title={t.lines.estimatedHint}>
                       &rarr; ~{formatMinutes(shownRun.minutesByStopIndex[shownRun.minutesByStopIndex.length - 1])}
@@ -497,21 +498,17 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                               <span className="text-ink-3 font-semibold">{t.lines.noService}</span>
                             ) : relativeMinutes !== null && relativeMinutes < 0 ? (
                               <span className="text-ink-3">
-                                {derived(shownRun, idx) && '~'}
+                                <Approx on={derived(shownRun, idx)} />
                                 {formatMinutes(passingMinutes)} &middot; {t.lines.passed}
                               </span>
                             ) : relativeMinutes === 0 ? (
                               <span className="text-official font-bold">
-                                {derived(shownRun, idx) && <span className="text-ink-3">~</span>}
+                                <Approx on={derived(shownRun, idx)} />
                                 {t.lines.nowAt}
                               </span>
                             ) : (
                               <span>
-                                {derived(shownRun, idx) && (
-                                  <span className="text-ink-3" title={t.lines.estimatedHint}>
-                                    ~
-                                  </span>
-                                )}
+                                <Approx on={derived(shownRun, idx)} title={t.lines.estimatedHint} />
                                 {relativeMinutes} min ({formatMinutes(passingMinutes)})
                               </span>
                             )}

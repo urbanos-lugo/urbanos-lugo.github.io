@@ -10,6 +10,7 @@ import { useClock } from '../hooks/useClock';
 import { LazyNearbyMiniMap } from './Map/LazyNearbyMiniMap';
 import { LineBadge } from './ui/LineBadge';
 import { EmptyState } from './ui/EmptyState';
+import { Approx } from './ui/Provenance';
 
 interface StopHomeProps {
   favoriteStopIds: string[];
@@ -153,7 +154,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                       <LineBadge number={next.lineNumber} color={lineById(next.lineId)?.color ?? ''} size="row" />
                       <span className="tnum font-semibold">
                         {next.daysAhead > 0 && <span className="mr-1 font-sans text-estimated">{dayWord(lang, next.daysAhead)}</span>}
-                        {next.precision === 'estimated' && <span className="text-ink-3">~</span>}
+                        <Approx on={next.precision === 'estimated'} />
                         {next.time}
                       </span>
                     </span>
@@ -170,7 +171,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                             t.common.arrivingNow
                           ) : (
                             <>
-                              {a.precision === 'estimated' && <span className="text-ink-3">~</span>}
+                              <Approx on={a.precision === 'estimated'} />
                               {a.etaMinutes}
                               <span className="ml-0.5 text-label font-normal text-ink-3">{t.common.min}</span>
                             </>
@@ -206,7 +207,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                   {next && (
                     <span className="tnum ml-auto shrink-0 text-right">
                       <span className="block text-emph font-bold">
-                        {next.precision !== 'published' && <span className="text-ink-3">~</span>}
+                        <Approx on={next.precision !== 'published'} />
                         {next.etaMinutes}
                       </span>
                       <span className="block text-label text-ink-2">{t.common.min}</span>

@@ -12,7 +12,7 @@ import { LOCALE, useLang, useT } from '../i18n';
 import { newIssueUrl } from '../project';
 import { clockDriftFromTimetable, deviceTimeZone } from '../utils/clock';
 import { useOperatorTimes } from '../hooks/useOperatorTimes';
-import { Provenance } from './ui/Provenance';
+import { Approx, Provenance } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
 import { CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
@@ -267,7 +267,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         <span className="text-emph">{t.common.arrivingNow}</span>
       ) : (
         <>
-          {arrival.precision === 'estimated' && <span className="text-ink-3">~</span>}
+          <Approx on={arrival.precision === 'estimated'} />
           {arrival.etaMinutes}
         </>
       )}
@@ -546,7 +546,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                 {skipsHere(g.lineNumber) && notHereChip}
                 {g.departures.slice(1).map((d) => (
                   <span key={d.etaTime} className="tnum text-body text-ink-2">
-                    {d.precision === 'estimated' && <span className="text-ink-3">~</span>}
+                    <Approx on={d.precision === 'estimated'} />
                     {d.etaTime}
                   </span>
                 ))}
