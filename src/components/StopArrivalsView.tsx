@@ -14,6 +14,7 @@ import { clockDriftFromTimetable, deviceTimeZone } from '../utils/clock';
 import { useOperatorTimes } from '../hooks/useOperatorTimes';
 import { Provenance } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
+import { PoleCode } from './ui/PoleCode';
 import { CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionLabel } from './ui/SectionLabel';
 import { watchForStop, ringAlarm, notify, requestNotificationPermission, ALARM_RADIUS_M, AlarmHandle } from '../services/stopAlarm';
@@ -318,7 +319,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         <div className="min-w-0">
           <h2 className="text-title font-semibold tracking-title">{selectedStop.name}</h2>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            {poleCode(selectedStop) && <span className="tnum rounded-tag bg-surface px-2 py-1 text-label text-ink-2">{poleCode(selectedStop)}</span>}
+            <PoleCode code={poleCode(selectedStop)} />
             <span className="text-label text-ink-3">
               {selectedStop.zone} · {t.common.lines(selectedStop.lines.length)}
               {selectedStop.shelter === true ? ` · ${t.arrivals.shelter}` : ''}
@@ -589,7 +590,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                 <li key={pole.id}>
                   <button onClick={() => onSelectStop(pole)} className="flex min-h-tap w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-edge bg-bg px-3 py-2 text-left">
                     <span className="min-w-floor-name flex-1 break-words text-body font-semibold">{pole.name}</span>
-                    {poleCode(pole) && <span className="tnum shrink-0 rounded-tag bg-surface px-2 py-1 text-label text-ink-2">{poleCode(pole)}</span>}
+                    <PoleCode code={poleCode(pole)} />
                     <span className="tnum shrink-0 text-label text-ink-2">~{pole.walkMeters} m</span>
                   </button>
                 </li>

@@ -2,6 +2,7 @@ import { LocateFixed, MapPin, X } from 'lucide-react';
 import { useT } from '../../i18n';
 import { MAX_QUERY_LENGTH } from '../../utils/searchUtils';
 import { rankLandmarks, rankStops } from '../../utils/places';
+import { PoleCode } from '../ui/PoleCode';
 
 /** One row of the origin/destination autocomplete: a real stop, or a named place. */
 export interface Suggestion {
@@ -104,7 +105,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
                   {sug.name}
                 </span>
               </div>
-              {sug.code && <span className="tnum shrink-0 rounded-tag bg-surface px-2 py-1 text-label text-ink-2">{sug.code}</span>}
+              <PoleCode code={sug.code} />
             </button>
           ))}
         </div>

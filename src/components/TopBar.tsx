@@ -6,6 +6,7 @@ import { getNearestStopToCoords, rankLandmarks, rankStops } from '../utils/place
 import { BusLine, BusStop } from '../types';
 import { useT } from '../i18n';
 import { LineBadge } from './ui/LineBadge';
+import { PoleCode } from './ui/PoleCode';
 import { asideSections, navSections, type Tab } from './navSections';
 
 interface TopBarProps {
@@ -176,7 +177,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
                   {stop.zone} · {t.common.lines(stop.lines.length)}
                 </span>
               </span>
-              {poleCode(stop) && <span className="tnum ml-auto shrink-0 rounded-tag bg-surface px-2 py-1 text-label text-ink-2">{poleCode(stop)}</span>}
+              <PoleCode code={poleCode(stop)} className="ml-auto" />
             </Row>
           ))}
 
