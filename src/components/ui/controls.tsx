@@ -251,7 +251,7 @@ export function Disclosure({
 }) {
   const chevron = <ChevronDown className={`disclosure-chevron h-4 w-4 shrink-0 text-ink-3 ${chevronFirst ? '' : 'ml-auto'}`} aria-hidden="true" />;
   return (
-    <details className={`disclosure ${frame === 'box' ? 'rounded-control border border-edge bg-surface' : 'border-t border-line pt-3'} ${className}`}>
+    <details className={`disclosure ${frame === 'box' ? 'rounded-control border border-edge bg-surface' : 'rule-above'} ${className}`}>
       <summary className={`flex min-h-tap cursor-pointer items-center gap-2 text-label font-semibold text-ink-2 ${frame === 'box' ? 'px-3' : ''}`}>
         {chevronFirst && chevron}
         {summary}

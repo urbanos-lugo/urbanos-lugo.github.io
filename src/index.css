@@ -601,6 +601,11 @@
      sets its own padding and gap, and its chosen row's accent edge, as utilities. */
   .line-row { display: flex; flex-wrap: wrap; align-items: center; column-gap: calc(var(--spacing) * 3); row-gap: var(--spacing); border-radius: var(--radius-control); border-width: var(--default-border-width); border-style: solid; padding: calc(var(--spacing) * 2) min(calc(var(--spacing) * 2.5), calc(var(--cap-step) * 2.5)); }
 
+  /* A block set off from what is above it by a hairline rule: the board's foot (its map, its
+     notes, the folds under a rule), a notice's quoted passage, the ride card's last figures.
+     The space above the rule is the caller's. */
+  .rule-above { border-top: var(--default-border-width) solid var(--c-line); padding-top: calc(var(--spacing) * 3); }
+
   /* A card on a screen's column or in the map's panel: the card corner, the hairline edge, the
      ground, raised. No padding, so a card can be the padded item inside a bare .fold wrapper,
      and each column keeps its own; a state's tone is the caller's utility. */

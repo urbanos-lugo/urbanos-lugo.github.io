@@ -574,7 +574,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {Object.keys(watches).length > 0 && <Notice className="mt-3">{t.arrivals.watchForeground}</Notice>}
 
       {/* Drawn above the question it serves: the other poles nearby are how you tell which one is yours. */}
-      <section className="mt-4 border-t border-line pt-3">
+      <section className="rule-above mt-4">
         <h2 className="text-label font-semibold text-ink-2">{t.arrivals.stopMapTitle}</h2>
         {/* The other poles on the map, as a list: on the map they are dots on a canvas, which a
             pointer can tap and a keyboard cannot reach, and the pole across the road was
@@ -607,14 +607,14 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         </a>
       </Disclosure>
 
-      {anyOverdue && <p className="mt-4 border-t border-line pt-3.5 text-label leading-prose text-ink-3">{t.common.overdueNote}</p>}
+      {anyOverdue && <p className="rule-above mt-4 pt-3.5 text-label leading-prose text-ink-3">{t.common.overdueNote}</p>}
 
       {nonePublished ? (
         <Disclosure frame="rule" className="mt-4" summary={t.arrivals.whyEstimatedTitle}>
           <p className="pb-1 text-label leading-prose text-ink-3">{t.arrivals.whyEstimated(timingPoints.published, timingPoints.total)}</p>
         </Disclosure>
       ) : (
-        arrivals.length > 0 && <p className="mt-4 border-t border-line pt-3.5 text-label leading-prose text-ink-3">{t.arrivals.precisionNote}</p>
+        arrivals.length > 0 && <p className="rule-above mt-4 pt-3.5 text-label leading-prose text-ink-3">{t.arrivals.precisionNote}</p>
       )}
     </div>
   );

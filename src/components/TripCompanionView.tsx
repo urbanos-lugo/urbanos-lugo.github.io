@@ -121,7 +121,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
           <div>
             <span className={label}>{t.planner.alight}</span>
             <p className={headline}>{segment?.toStop?.name}</p>
-            <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-t border-line pt-3">
+            <div className="rule-above mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
               <span className="flex items-baseline gap-2">
                 <span className="tnum text-num font-bold tracking-display text-ink">{progress?.stopsRemaining ?? '—'}</span>
                 <span className="text-body text-ink-3">{t.companion.stops(progress?.stopsRemaining ?? 0)}</span>

@@ -71,7 +71,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
       )}
       {/* A notice the operator wrote out line by line, read off its home page: each part in its words, its heading naming the line. */}
       {alert.sections?.map((section, i) => (
-        <div key={i} lang={quoted} className="mt-3 border-t border-line pt-3">
+        <div key={i} lang={quoted} className="rule-above mt-3">
           <h4 className="break-words text-label font-semibold text-ink">{section.heading}</h4>
           {section.paragraphs.map((paragraph, j) => (
             <p key={j} className="mt-1 text-label leading-prose text-ink-2">
