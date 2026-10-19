@@ -149,7 +149,7 @@ export function MapControls(p: MapControlsProps) {
           <SectionLabel quiet className="mb-2">{t.map.nearbyTitle(NEARBY_RADIUS_M)}</SectionLabel>
           <div className="space-y-1 max-h-list-nearby-max overflow-y-auto pr-1">
             {p.nearbyLines.map(({ line, nearestStop, walkMeters }) => (
-              <button key={line.id} onClick={() => p.onSelectLine(line)} className="w-full p-2 rounded-control text-left flex items-center gap-2 text-label bg-surface border border-line hover:bg-surface transition-colors">
+              <button key={line.id} onClick={() => p.onSelectLine(line)} className="row-button p-2">
                 <LineBadge number={line.number} color={line.color} size="sm" />
                 <span className="min-w-0 flex-1 break-words text-ink-2">{nearestStop.name}</span>
                 <span className="tnum shrink-0 font-semibold text-ink-3">{t.common.walkDistance(walkMeters)}</span>

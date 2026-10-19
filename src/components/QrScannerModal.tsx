@@ -206,7 +206,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
                   setInputCode(stop.code);
                   lookup(stop.code);
                 }}
-                className="group flex min-h-tap w-full items-center justify-between gap-2 rounded-control border border-edge bg-surface p-2.5 text-left text-label transition-colors hover:bg-surface"
+                className="row-button group"
               >
                 <span className="min-w-0 break-words font-semibold text-ink group-hover:text-accent">{stop.name}</span>
                 <span className="font-mono text-accent font-bold shrink-0">{stop.code}</span>

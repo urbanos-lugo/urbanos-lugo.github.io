@@ -612,6 +612,10 @@
      Tabular figures in the mono face at the number size, tightened like a display line. */
   .figure { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-num); line-height: var(--text-num--line-height); font-weight: var(--font-weight-bold); letter-spacing: var(--tracking-display); }
 
+  /* A whole row that is one button, in a list inside a panel: the map's nearby lines, the QR
+     reader's demo stops. A 44 px floor, the surface fill and the control's edge and corner. */
+  .row-button { display: flex; width: 100%; min-height: var(--spacing-tap); align-items: center; justify-content: space-between; gap: calc(var(--spacing) * 2); padding: calc(var(--spacing) * 2.5); border: var(--default-border-width) solid var(--c-border); border-radius: var(--radius-control); background-color: var(--c-surface); text-align: left; font-size: var(--text-label); line-height: var(--text-label--line-height); }
+
   /* A card on a screen's column or in the map's panel: the card corner, the hairline edge, the
      ground, raised. No padding, so a card can be the padded item inside a bare .fold wrapper,
      and each column keeps its own; a state's tone is the caller's utility. */
