@@ -3160,6 +3160,15 @@ solto novo. Nunha rama propia, `design-tokens`, sen publicar.
   copias de volta.
 - README (o vocabulario visual, `visual:shoot` e `visual:compare`, a árbore), CLAUDE.md,
   DECIDIDO e NOTAS (Pendente 8).
+- Despois da revisión, o 20 de outubro: `cdp.ts` rexeita o que agarda cando o navegador se
+  perde a medio camiño, e un comando a un socket pechado falla ao momento (probado contra un
+  navegador: antes os dous seguían agardando 3 s despois; agora fallan). A comprobación de
+  valores soltos ten tamén os nomes das cores que le o mapa contra `index.css`, e a garda da
+  súa caché; outra ten `.edge-estimated` despois de `.map-glass`. A rede de CI da auditoría
+  queda fóra da condición que decide se o ficheiro corre como auditoría: lanzada doutro xeito
+  con `CI=1` saía con 0 sen dicir nada, e agora con 1. E a táboa de tamaños do README,
+  medida de novo nas dúas builds (KiB, gzip 9, brotli 11): folla de estilos 60,0 → 62,7 KB,
+  anaco de entrada 629,4 → 617,4 KB.
 
 ### Erros nosos durante esta rolda
 
@@ -3182,6 +3191,9 @@ solto novo. Nunha rama propia, `design-tokens`, sen publicar.
 - A primeira tanda desa proba morreu a medio camiño, e o guión que a lanzaba devolvía o código
   de `tail` e non o da ferramenta; viuse ao contar os cadros.
 - Ao escribir a volta quedou fóra unha fusión (o «~» das saídas dunha liña); a proba mostrouna.
+- Ao separar a auditoría para que a importasen as fotos, a súa rede de CI quedou dentro da
+  condición nova; e a táboa de tamaños do README, sen medir, aínda que CLAUDE.md pide as
+  cifras no mesmo cambio. Os dous viñeron da revisión doutra sesión.
 
 ### Mirado e deixado
 
