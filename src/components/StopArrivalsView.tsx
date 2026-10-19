@@ -17,6 +17,7 @@ import { LineBadge } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
 import { CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionLabel } from './ui/SectionLabel';
+import { EmptyState } from './ui/EmptyState';
 import { watchForStop, ringAlarm, notify, requestNotificationPermission, ALARM_RADIUS_M, AlarmHandle } from '../services/stopAlarm';
 
 interface StopArrivalsViewProps {
@@ -493,11 +494,10 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
       {/* Not a live region: the minute tick moved every row's count at once and announced fifteen bare numbers. */}
       {arrivals.length === 0 ? (
-        <div className="mt-6 rounded-card border border-dashed border-edge px-cap-5 py-10 text-center">
-          <Clock className="mx-auto mb-3 h-7 w-7 text-ink-3 stroke-light" aria-hidden="true" />
+        <EmptyState icon={Clock} className="mt-6">
           <p className="text-body text-ink-2">{atTime ? t.arrivals.noneAtTime(atTime) : t.arrivals.noArrivals}</p>
           {nextService && <p className="mt-2 text-body font-semibold">{t.arrivals.nextServiceAt(nextService.lineNumber, `${nextService.precision === 'estimated' ? '~' : ''}${nextService.time}`, nextService.destination, dayWord(lang, nextService.daysAhead))}</p>}
-        </div>
+        </EmptyState>
       ) : view === 'next' ? (
         <ul className="anim-fade mt-1">
           {soon.map((a, idx) => (

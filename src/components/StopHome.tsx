@@ -9,6 +9,7 @@ import { useLang, useT } from '../i18n';
 import { useClock } from '../hooks/useClock';
 import { LazyNearbyMiniMap } from './Map/LazyNearbyMiniMap';
 import { LineBadge } from './ui/LineBadge';
+import { EmptyState } from './ui/EmptyState';
 
 interface StopHomeProps {
   favoriteStopIds: string[];
@@ -121,7 +122,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
       </h2>
 
       {saved.length === 0 ? (
-        <div className="mt-4 rounded-card border border-dashed border-edge py-5 px-cap-5">
+        <EmptyState className="mt-4">
           <p className="text-body font-semibold">{t.stopHome.emptyTitle}</p>
           <p className="mt-1.5 text-body leading-prose text-ink-2">{t.stopHome.emptyBody}</p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -134,7 +135,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
               {t.stopHome.orSearchAbove}
             </button>
           </div>
-        </div>
+        </EmptyState>
       ) : (
         <ul className="mt-3 flex flex-col gap-2">
           {saved.map(({ stop, arrivals, next }) => (

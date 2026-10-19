@@ -13,6 +13,7 @@ import { useWalkPaths } from '../hooks/useWalkPaths';
 import { useClock } from '../hooks/useClock';
 import { boardingIsNow, type TripPlace } from '../utils/tripProgress';
 import { SectionLabel } from './ui/SectionLabel';
+import { EmptyState } from './ui/EmptyState';
 import { ChoiceChip, Disclosure, Notice, NoticeDisclosure, Segmented } from './ui/controls';
 import { PlaceField, suggestionsFor, type Suggestion } from './planner/PlaceField';
 import { TripOptions } from './planner/TripOptions';
@@ -735,10 +736,9 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               </Notice>
             </div>
           ) : (
-            <div className="rounded-card border border-dashed border-edge px-cap-5 py-10 text-center">
-              <AlertCircle className="mx-auto mb-3 h-7 w-7 text-ink-3 stroke-light" aria-hidden="true" />
+            <EmptyState icon={AlertCircle}>
               <p className="text-body text-ink-2">{timeMode === 'arrive' ? t.planner.noArriveOption : t.planner.noRouteFound}</p>
-            </div>
+            </EmptyState>
           )}
         </div>
       </div>

@@ -7,6 +7,7 @@ import { BusStop, BusLine } from '../types';
 import { BUS_STOPS, BUS_LINES, linesByNumber, poleCode } from '../data/transitData';
 import { LineBadge } from './ui/LineBadge';
 import { CloseButton, Segmented } from './ui/controls';
+import { EmptyState } from './ui/EmptyState';
 
 interface FavoritesDrawerProps {
   isOpen: boolean;
@@ -42,12 +43,11 @@ function SavedRow({ onOpen, onRemove, removeLabel, children }: { onOpen: () => v
   );
 }
 
-const Empty = ({ icon: Icon, title, hint }: { icon: LucideIcon; title: string; hint: string }) => (
-  <div className="text-center py-12 px-4">
-    <Icon className="w-12 h-12 text-ink-3 mx-auto mb-3" />
+const Empty = ({ icon, title, hint }: { icon: LucideIcon; title: string; hint: string }) => (
+  <EmptyState icon={icon}>
     <h3 className="text-body font-bold text-ink-2">{title}</h3>
     <p className="text-label text-ink-3 mt-1">{hint}</p>
-  </div>
+  </EmptyState>
 );
 
 export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLineIds, onSelectStop, onSelectLine, onRemoveFavoriteStop, onRemoveFavoriteLine }: FavoritesDrawerProps) {
