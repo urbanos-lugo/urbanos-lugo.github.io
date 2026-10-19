@@ -673,6 +673,10 @@
      taken out of the padding, so the two stand the same size side by side. */
   .chip-estimated { padding: calc(var(--spacing) - var(--border-width-dash)) calc(var(--spacing) * 2 - var(--border-width-dash)); }
 
+  /* What a derived time is drawn in: the ~ ESTIMADO dash and its ink, on the chip and on the
+     map's notice that the buses are estimated. After .map-glass, whose plain edge it replaces. */
+  .edge-estimated { @apply border-dash border-dashed border-estimated-line text-estimated; }
+
   /* A word tag: a short label on a small rounded tile, such as a line's name over its page, a
      category, origin and destination beside a stop, a fare's badge, a notice's date, a bus that
      will not stop here. No display of its own, so an inline tag in a block adds nothing to the

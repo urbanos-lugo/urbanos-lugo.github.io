@@ -36,7 +36,7 @@ export function Provenance({ precision, extra, title }: { precision: Precision; 
       <span className="tnum text-label font-semibold tracking-caps">{text}</span>
     </span>
   ) : (
-    <span title={title} className="inline-flex items-center gap-1.5 chip-estimated rounded-tag border-dash border-dashed border-estimated-line text-estimated">
+    <span title={title} className="inline-flex items-center gap-1.5 chip-estimated edge-estimated rounded-tag">
       <span className="tnum text-label font-semibold tracking-caps">{text}</span>
     </span>
   );
