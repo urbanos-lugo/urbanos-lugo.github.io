@@ -47,3 +47,12 @@ overrides:
   # GHSA-q2hr-2g5m-vwhr and the two before it; each pinned inside the major its parent asks for.
   brace-expansion@2: '>=2.1.7 <3'
   brace-expansion@5: '>=5.0.12 <6'
+
+# One line in the bridge between Leaflet and the MapLibre renderer, in both of its builds. It
+# answers a resize, and the end of a zoom, in the next animation frame and reads its map there;
+# a map taken down within that frame had already cleared it, and the page threw an uncaught
+# TypeError (Ruta's "no route" state on a desktop, two weekly audits in eight). The frame asks
+# first now. 0.1.4 is the latest release; pnpm test runs that frame from the installed files,
+# so a version that arrives without the guard fails there. Drop this once upstream asks too.
+patchedDependencies:
+  '@maplibre/maplibre-gl-leaflet@0.1.4': patches/@maplibre__maplibre-gl-leaflet@0.1.4.patch

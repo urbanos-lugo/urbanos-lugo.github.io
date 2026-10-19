@@ -10,13 +10,16 @@ overrides:
   brace-expansion@2: '>=2.1.7 <3'
   brace-expansion@5: '>=5.0.12 <6'
 
+patchedDependencies:
+  '@maplibre/maplibre-gl-leaflet@0.1.4': 4e2f28f16d917d074c6266e08377bf543d1b82a4860276076c1f6ce89070ade7
+
 importers:
 
   .:
     dependencies:
       '@maplibre/maplibre-gl-leaflet':
         specifier: ^0.1.4
-        version: 0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.14.0)
+        version: 0.1.4(patch_hash=4e2f28f16d917d074c6266e08377bf543d1b82a4860276076c1f6ce89070ade7)(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.14.0)
       express:
         specifier: ^5.3.0
         version: 5.3.0
@@ -3540,7 +3543,7 @@ snapshots:
     dependencies:
       kdbush: 4.1.0
 
-  '@maplibre/maplibre-gl-leaflet@0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.14.0)':
+  '@maplibre/maplibre-gl-leaflet@0.1.4(patch_hash=4e2f28f16d917d074c6266e08377bf543d1b82a4860276076c1f6ce89070ade7)(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.14.0)':
     dependencies:
       '@types/leaflet': 1.9.22
       leaflet: 1.9.4

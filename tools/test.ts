@@ -1137,6 +1137,28 @@ ok('a lost WebGL context ends in a raster map, not a blank one', () => {
   assert(/setPrefix\(false\)/.test(raster), 'the raster fallback prints the "Leaflet" prefix that the vector path drops');
 });
 
+ok('the renderer’s bridge does nothing in a frame that comes after its map is gone', () => {
+  // An uncaught "Cannot read properties of null (reading 'getZoom')" in Ruta's "no route"
+  // state on a desktop, in two of eight weekly audits in October 2026. The bridge answers a
+  // resize, and the end of a zoom, in the next animation frame and reads this._map there; a
+  // map taken down within that frame had already cleared it. patches/ makes the frame ask
+  // first. Both of the bridge's builds are run here against a stand-in Leaflet, whose frame
+  // runs at once.
+  const dir = 'node_modules/@maplibre/maplibre-gl-leaflet';
+  for (const file of ['dist/leaflet-maplibre-gl.mjs', 'leaflet-maplibre-gl.js']) {
+    let layer: Record<string, (this: object, e?: object) => void> | undefined;
+    const L = { Layer: { extend: (proto: typeof layer) => ((layer = proto), function () {}) }, Util: { requestAnimFrame: (fn: () => void, context: object) => fn.call(context) } };
+    const source = read(`${dir}/${file}`);
+    if (file.endsWith('.mjs')) new Function('LeafletModule', 'maplibregl', source.replace(/^import .*$/gm, '').replace(/^export .*$/gm, ''))(L, {});
+    else new Function('exports', 'module', 'require', source)({}, {}, (id: string) => (id === 'leaflet' ? L : {}));
+    assert(layer?._transitionEnd, `${file}: the bridge no longer has the frame this check runs`);
+    assert.doesNotThrow(() => layer!._transitionEnd.call({ _map: null, _glMap: null }, {}), `${file}: the frame after a resize reads a map that is gone`);
+    // And with the map still there, the frame still reaches it.
+    const reached = new Error('reached');
+    assert.throws(() => layer!._transitionEnd.call({ _map: { getZoom: () => { throw reached; } }, _glMap: {} }, {}), (e) => e === reached, `${file}: the frame no longer puts the renderer back in step with a map that is there`);
+  }
+});
+
 ok('the out-of-service banner still fits on two lines', () => {
   // The banner was a 162 px panel on a 375 px phone; it is two truncating lines now, and a
   // longer translation is cut off rather than wrapped. Measured at 375 px the column takes

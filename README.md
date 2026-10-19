@@ -798,6 +798,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 ├── design/                         artboards do redeseño (.dc.html), canvas.json, e as notas: o que se decidiu
 │                                   (DECIDIDO.md), o rexistro de probas, a auditoría SEO e as notas de fontes
 ├── docs/diagrams/                  fontes dos diagramas deste README + as imaxes
+├── patches/                        unha liña arranxada na ponte de MapLibre (pnpm patch)
 ├── server.ts
 ├── CONTRIBUTING.md                 o pouco que hai que saber para que un cambio entre á primeira
 ├── DATA.md                         procedencia e condicións dos datos
@@ -1234,6 +1235,13 @@ outros dous chegan dentro de workbox-build e só len os nosos propios ficheiros 
 compilar, e levan tope superior a propósito: sen el `fast-uri` resolvía a unha versión
 maior por diante da que pide o seu pai, que é xusto como un arranxo de seguridade se
 converte nunha caída.
+
+E parchea unha liña de `@maplibre/maplibre-gl-leaflet`, a ponte entre Leaflet e o
+renderizador (`patches/`): responde a un cambio de tamaño no seguinte fotograma e lía alí
+o seu mapa, que se o mapa se desmontara entrementres xa non existía, e a páxina lanzaba un
+erro sen capturar (en Ruta sen ruta, no escritorio, en dúas de oito auditorías semanais).
+`pnpm test` executa ese fotograma desde os ficheiros instalados, así que unha versión nova
+que chegue sen a comprobación falla alí.
 
 O servidor normaliza todo o que chega pola query string (`?q[]=a` facía caer o endpoint
 cun volcado de pila), devolve JSON en caso de erro en lugar da páxina de erro de Express,
@@ -1703,7 +1711,7 @@ Agrupa os postes duplicados, resolve os identificadores oficiais, asigna zonas e
 pnpm test
 ```
 
-257 comprobacións con asercións sobre o que xa estivo mal algunha vez: unicidade de
+258 comprobacións con asercións sobre o que xa estivo mal algunha vez: unicidade de
 códigos, coherencia entre `stop.lines` e os itinerarios, xeometría que segue as rúas,
 tramos non máis curtos ca a liña recta, ventás de servizo nocturnas, monotonía das horas
 de paso, flota baleira fóra de servizo, puntos de interese preto da rede, traxectos

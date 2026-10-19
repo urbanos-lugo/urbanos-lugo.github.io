@@ -3061,3 +3061,37 @@ service worker) e arranxar o atopado.
 ### Queda
 
 - Que as estatísticas de rastreo deixen de ter 404 en `/favicon.ico`.
+
+## Rolda 40: un erro sen capturar na ponte do mapa, intermitente — 20 de outubro de 2026
+
+Pedido: arranxar un erro que apareceu ao revisar a rama da rolda 37, pasando `audit:browser`
+tamén a `develop`.
+
+### Medido
+
+- `audit:browser` sobre `develop` (023a53a), nesta máquina: un achado, consola, «TypeError:
+  Cannot read properties of null (reading 'getZoom')», en escritorio gl · ruta/sen ruta ·
+  claro. En CI esa mesma corrida dera 0; nas oito últimas de `measure.yml`, dúas o tiñan, no
+  mesmo estado e coa mesma mensaxe. Alí só informa; en CI é unha porta e podería tombar
+  calquera push.
+- A orixe: `@maplibre/maplibre-gl-leaflet` 0.1.4, a última publicada. Responde a un cambio de
+  tamaño (`_resize`) e ao final dun zoom (`_transitionEnd`) no seguinte fotograma, e alí le
+  `this._map.getZoom()` sen preguntar; Leaflet pon `_map` a null ao quitar a capa, así que un
+  mapa desmontado dentro dese fotograma rompe. As chamadas diferidas do propio Leaflet
+  preguntan antes, e o código da app só le `getZoom` en mapas que non poden ser null: esta é
+  a única ruta que dá esa mensaxe.
+
+### Feito
+
+- Un parche de pnpm (`patches/`, declarado en `pnpm-workspace.yaml`): unha liña, `if
+  (!this._map) return;`, ao comezo dese fotograma, nas dúas builds da ponte (a ESM que usa
+  Vite e a UMD).
+- Un check que executa ese fotograma desde os ficheiros instalados, contra un Leaflet de
+  mentira: sen o parche falla coa mesma mensaxe ca o navegador; e cun fotograma que non
+  fixese nada nunca tamén falla, porque co mapa presente ten que chegar a el.
+- README (a ponte e o parche, `patches/` na árbore), NOTICE (a ponte vai cun arranxo dunha
+  liña) e 258 comprobacións.
+
+### Queda
+
+- Quitar o parche cando a ponte publique unha versión que pregunte por si mesma.
