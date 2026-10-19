@@ -242,7 +242,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {/* Columns of at least 6rem, so they follow the text: two on a phone at the default size,
                 one from 125% up. In two fixed columns at 200% the frequency's label ran 64 px
                 into the next one. */}
-            <div className="grid grid-cols-facts gap-x-4 gap-y-3 rounded-control border border-line bg-surface/quiet p-3 sm:grid-cols-3">
+            <div className="inset-panel grid grid-cols-facts gap-x-4 gap-y-3 bg-surface/quiet sm:grid-cols-3">
               <Fact icon={Clock} label={t.lines.frequency}>
                 <span className="font-sans font-semibold">{frequencyLabel(currentLine, lang)}</span>
               </Fact>
@@ -391,7 +391,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {shownRun ? (
               // Narrower than 16rem, the times go on top and the arrows under them: squeezed between
               // the two at 200% text, they pushed the right arrow 118 px off the screen.
-              <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-control bg-surface border border-edge">
+              <div className="inset-panel flex flex-wrap items-center justify-between gap-3 border-edge p-2.5">
                 {/* Named: an arrow on its own was read out as "left arrow", which says where it points and not what it does. */}
                 <button onClick={() => setPickedRunIndex(Math.max(0, runIndex - 1))} disabled={runIndex === 0} aria-label={t.lines.previousRun} title={t.lines.previousRun} className="order-2 @min-stepper:order-none flex h-tap w-tap shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
                   &larr;
@@ -419,7 +419,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 </button>
               </div>
             ) : (
-              <div className="p-2.5 rounded-control bg-surface border border-edge text-label font-semibold text-ink-2">
+              <div className="inset-panel border-edge p-2.5 text-label font-semibold text-ink-2">
                 {t.lines.noRunsToday}
                 {/* A weekday-only line on a holiday Monday: without the reason, "does not run today" reads as a mistake. */}
                 {isHoliday(new Date()) && <span className="block mt-1 font-normal">{t.lines.holidayToday}</span>}

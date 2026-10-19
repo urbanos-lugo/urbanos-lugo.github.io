@@ -88,7 +88,7 @@ export function FaresView() {
           </SectionTitle>
           <div className="space-y-3">
             {t.faresContent.faqs.map((faq, i) => (
-              <div key={i} className="p-3 bg-surface rounded-control border border-line">
+              <div key={i} className="inset-panel">
                 <div className="text-label font-bold text-ink">{faq.q}</div>
                 <div className="text-label text-ink-2 mt-1">{faq.a}</div>
               </div>
@@ -101,7 +101,7 @@ export function FaresView() {
             {t.fares.contactTitle}
           </SectionTitle>
           <div className="space-y-3 text-label text-ink-2">
-            <div className="flex items-start gap-3 p-3 bg-surface rounded-control border border-line">
+            <div className="inset-panel flex items-start gap-3">
               <Phone className="w-4 h-4 text-accent shrink-0 mt-0.5" />
               <div>
                 <div className="font-bold text-ink">{t.fares.phones}</div>
@@ -109,7 +109,7 @@ export function FaresView() {
                 <div>Monbus Lugo: 982 24 16 00</div>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-3 bg-surface rounded-control border border-line">
+            <div className="inset-panel flex items-start gap-3">
               <Globe className="w-4 h-4 text-accent shrink-0 mt-0.5" />
               <div className="min-w-0">
                 <div className="font-bold text-ink">{t.fares.portals}</div>

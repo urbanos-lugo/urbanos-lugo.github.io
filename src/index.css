@@ -638,6 +638,12 @@
      and each column keeps its own; a state's tone is the caller's utility. */
   .card { border-radius: var(--radius-card); border: var(--default-border-width) solid var(--c-border); background-color: var(--c-bg); box-shadow: var(--shadow-raised); }
 
+  /* A quieter tile inside a card, holding a block of it: the fares' questions and contacts, a
+     line's facts and its run stepper. The control corner, the lighter hairline, the surface
+     fill. The facts take the quieter fill; the stepper keeps the control edge of the arrows it
+     holds and hugs them a step closer, until those are chosen one way or the other. */
+  .inset-panel { @apply rounded-control border border-line bg-surface p-3; }
+
   /* A labelled action. Primary is the accent fill; secondary a bordered fill a step off its
      ground (the caller makes it bg-bg where it sits on a tint or on glass); outbound an <a> to
      the operator's site. A floor rather than a height, so a label that wraps grows the button
