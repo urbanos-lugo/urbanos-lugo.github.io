@@ -80,6 +80,13 @@ class Connection {
       this.socket.addEventListener('error', () => reject(new Error('CDP socket failed')), { once: true });
     });
     this.socket.addEventListener('message', (event: MessageEvent) => this.dispatch(String(event.data)));
+    // A browser that dies mid-run closes the socket: what was waiting on it fails now, so the run
+    // reports the state it broke on. Unanswered, every await hung and Node quit with code 13,
+    // naming nothing and writing nothing.
+    this.socket.addEventListener('close', () => {
+      for (const waiting of this.pending.values()) waiting.reject(new Error('CDP socket closed'));
+      this.pending.clear();
+    });
   }
 
   private dispatch(raw: string): void {
@@ -95,6 +102,8 @@ class Connection {
   }
 
   send(method: string, params: Params, sessionId?: string): Promise<Params> {
+    // A closed socket drops what it is sent without a word, so the answer would never come.
+    if (this.socket.readyState !== WebSocket.OPEN) return Promise.reject(new Error('CDP socket closed'));
     const id = this.nextId++;
     return new Promise((resolve, reject) => {
       this.pending.set(id, { resolve, reject });
