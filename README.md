@@ -663,7 +663,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   │   ├── StopSheet.tsx       a parada aberta onde a tocaches, co seu taboleiro
 │   │   │   ├── StopNames.ts        os nomes das paradas, nun canvas propio
 │   │   │   ├── basemap.ts          o mapa de fondo, debaixo de todo o demais
-│   │   │   ├── palette.ts          as cores do mapa, nun sitio, para as dúas paletas
+│   │   │   ├── palette.ts          as cores do mapa, lidas dos tokens de index.css, e DRAW, os seus tamaños
 │   │   │   └── popupHtml.ts        os anacos de HTML dos popups de Leaflet, escapados
 │   │   ├── planner/
 │   │   │   ├── PlaceField.tsx      o campo de orixe ou destino, coas suxestións
@@ -671,10 +671,24 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   │   ├── Itinerary.tsx       paso a paso
 │   │   │   └── walkCorrection.ts   a aritmética da camiñada medida fronte á estimada
 │   │   ├── ui/
-│   │   │   ├── LineBadge.tsx       a insignia dunha liña, a mesma en todas partes
-│   │   │   ├── Provenance.tsx      de onde vén unha hora: sólido publicado, descontinuo derivado
+│   │   │   ├── LineBadge.tsx       a insignia dunha liña, a mesma en todas partes, tamén nos popups
+│   │   │   ├── Provenance.tsx      de onde vén unha hora: sólido publicado, descontinuo derivado;
+│   │   │   │                       o «~» dunha hora calculada; e que esta app non é a do operador
+│   │   │   ├── controls.tsx        os controis: botón de icona, de pechar e de volver, estrela,
+│   │   │   │                       fichas de escolla, avisos, pregables, campo de hora, veo e
+│   │   │   │                       control segmentado
+│   │   │   ├── Drawer.tsx          o panel que entra pola dereita: menú e favoritos
+│   │   │   ├── DialogTitle.tsx     o título dun diálogo, coa súa tesela
+│   │   │   ├── Pane.tsx            un lado dunha pantalla de dous paneis
 │   │   │   ├── SectionLabel.tsx    as versaletas sobre un bloque
-│   │   │   ├── controls.tsx        botón de icona, aviso e control segmentado
+│   │   │   ├── SectionTitle.tsx    o título dunha sección ou dunha tarxeta
+│   │   │   ├── NameStack.tsx       un nome e, debaixo, a liña que di cal ou onde
+│   │   │   ├── PoleCode.tsx        o código impreso no poste
+│   │   │   ├── CountBadge.tsx      a conta de avisos
+│   │   │   ├── Figure.tsx          o número grande dunha pantalla, coa súa unidade
+│   │   │   ├── EmptyState.tsx      o que se amosa onde iría unha lista ou unha resposta
+│   │   │   ├── OnTripMark.tsx      o punto da viaxe en curso, na barra e no rail
+│   │   │   ├── Wordmark.tsx        o nome da app á cabeza da navegación
 │   │   │   └── Settings.tsx        tema e idioma, os mesmos no menú e no rail
 │   │   ├── TopBar.tsx              buscador único + escáner QR
 │   │   ├── BottomNav.tsx           navegación en móbil
@@ -736,7 +750,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   ├── html.ts                 quitar as etiquetas ao HTML alleo, e escapalo para Leaflet
 │   │   └── storage.ts              localStorage e sessionStorage, protexidos, nun sitio
 │   ├── fonts/                      as dúas caras variables + OFL.txt
-│   ├── index.css                   os tokens de cor e tipo, e o pouco CSS que Tailwind non escribe
+│   ├── index.css                   o vocabulario visual enteiro, por papel, e as clases dos patróns que se repiten
 │   ├── fonts.css                   XERADO por tools/importFonts.ts
 │   ├── i18n/                       gl.ts · es.ts · en.ts; index.ts dá o idioma por contexto (useT)
 │   ├── security/
@@ -785,6 +799,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   ├── stress*.ts                  carga e disparates: parsers, motor, HTTP, rede morta ou
 │   │                               lenta no navegador, planificador e invariantes
 │   ├── auditBrowser.ts             WCAG 2.2 A e AA estado por estado: axe-core, sondas propias e Tab
+│   ├── visualDiff.ts               fotografa eses estados en dúas builds e compara píxel a píxel
 │   ├── fullAudit.ts                informe de calidade de datos
 │   ├── lib.ts                      o que cada ferramenta levaba repetido: raíz, JSON, estatísticas
 │   ├── checkPolicy.ts              política do repositorio: fixacións, disparadores, documentos
@@ -1171,6 +1186,39 @@ cambiada. Só un despregue de código cambia nomes agora.
 `strict` está activado, con `@types/react` e `@types/react-dom` instalados. Sen eles todo
 JSX era `any` e ningunha prop se comprobaba; ao poñelos, dos 1.581 erros que saíron baixo
 `--strict` quedaron 19, e eses eran reais.
+
+### Un só vocabulario visual
+
+Cada cor, tamaño, espazo, canto, bordo, sombra, capa, duración e curva que debuxa a
+interface ten nome, e o nome di para que serve, non canto vale: `tap` é o chan de 44 px,
+`glass` o fondo translúcido dun control sobre o mapa, `move` os 200 ms dun cambio de sitio.
+Están en `src/index.css`, 185 no bloque `@theme` e 32 cores de paleta con valor claro e
+escuro; o mapa colle deles as cores e, da táboa `DRAW` de `palette.ts`, os números que
+Leaflet quere. As escalas propias de Tailwind están borradas (`--*: initial`): unha clase
+escrita contra un valor por defecto non xera nada en vez de traer de volta un valor que
+ninguén escolleu.
+
+Antes de outubro de 2026 había 256 valores sen nome: 96 clases, 57 valores crus nas
+regras do propio `index.css`, 44 números nas capas dos mapas, 24 cores en cadeas, 18
+atributos `style` e 6 atributos SVG no HTML dos popups, unha clase que non xeraba nada e un
+tamaño que nada usaba; e iso contando as escalas de Tailwind como se fosen tokens. Agora
+son 0, e unha comprobación de `pnpm test` compila cada clase do código contra o tema sen
+resolver e falla en canto unha non le un `var(--…)`, e tamén nun estilo en liña, nun
+número dunha capa, nunha cor escrita nunha cadea ou nun token que xa non usa ninguén.
+
+O que se repite é un compoñente ou unha clase: 48 elementos estaban escritos a man en
+entre dous e vinte sitios cada un, e cada un ten agora o seu (`.btn`, `.card`, `.tag`,
+`CloseButton`, `Drawer`, `NameStack`…). Outra comprobación garda 42 sinaturas que só leva
+unha copia feita a man, e catro máis dentro dun mesmo ficheiro, e di que usar no seu lugar.
+
+Onde dúas copias diferían por descoido xuntáronse, e cada fusión que move un píxel está
+listada na rolda 37 do rexistro de probas; onde a diferenza podía ser querida quedou como
+variante, á espera de que alguén escolla (NOTAS, Pendente 8). A proba son as fotos de cada
+estado, 2.122 cadros por tanda (`visual:shoot`, abaixo en «Verificación»): sobre o código
+final, coas fusións listadas postas de volta como debuxaban antes, o que queda fronte á build
+de antes é o ruído que dan dúas fotos da mesma build e tres diferenzas de subpíxel ou ao
+200 % de texto, tamén listadas. Esa mesma proba atopou tres campos co texto un píxel máis
+arriba, sen que ningún commit o dixese, e arranxouse.
 
 ### Seguridade
 
@@ -1836,7 +1884,16 @@ pnpm build && PORT=3002 pnpm start   # noutra terminal
 pnpm run measure:browser             # start | board | second | map | typing | planner | session | ride
 pnpm run audit:browser               # light | dark
 pnpm run stress:network              # a API morta, con erro, lenta; e sen rede
+BASE=http://localhost:3002 pnpm run visual:shoot antes/   # cada estado, fotografado
+pnpm run visual:compare antes/ despois/ diferenzas/       # cada píxel que se moveu entre dúas builds
 ```
+
+`visual:shoot` fotografa os estados de `audit:browser`, alcanzados igual, co reloxo parado:
+nos dous temas, ao chegar e de arriba a abaixo do que rola, nun teléfono e nun escritorio
+en galego, castelán e inglés, e outra vez nun teléfono de 320 px e co texto ao 200 %.
+`visual:compare` compara dúas tandas cadro a cadro e escribe unha folla con cada píxel que
+cambiou; unha tanda pode compararse con varias da build de antes, porque unha conta atrás en
+segundos non dá dúas fotos iguais. Fotografar dúas veces a mesma build ten que saír limpo.
 
 O que `pnpm test` non pode ver: un Chromium real, dirixido por `tools/cdp.ts`, acelerado
 6× e con rede «Slow 4G», contra o sitio construído. `measure:browser` mide o que custa

@@ -408,6 +408,24 @@ descrición. Catro regras, e o que quedou fóra:
   305–308. Subir o orzamento para que caiba sería medir o executor e non a app. Quédase en
   24.04 ata saber a causa (NOTAS, Pendente 7).
 
+## Un só vocabulario visual — 19 de outubro de 2026
+
+- **Cada valor visual é un token con nome de papel**, en `src/index.css`, e as escalas
+  propias de Tailwind bórranse (`--*: initial`). Un valor novo entra como token, co seu
+  porqué ao lado, ou non entra: `pnpm test` falla nunha clase, un estilo en liña, unha cor
+  nunha cadea ou un número dunha capa do mapa que non nomee un. Medido na árbore de antes:
+  256 valores sen nome; despois, 0 (rolda 37).
+- **O que se repite é un compoñente ou unha clase**, e `pnpm test` garda a sinatura de cada
+  copia feita a man (42, e catro dentro dun mesmo ficheiro).
+- **Xúntase só o descoido claro.** Unha diferenza sen razón escrita e dun paso de escala
+  xuntouse, e cada píxel que moveu está na rolda 37; unha que podía ser querida quedou como
+  variante ata que o dono escolla (NOTAS, Pendente 8). As fotos de cada estado, nos dous
+  temas, tres idiomas, teléfono e escritorio, comparadas cadro a cadro, son a proba.
+- **Os pesos, os puntos de corte e os pasos de espazo levan nome de escala**, non de papel:
+  cada paso serve a varios papeis, e os papeis están nas clases que os usan (`.btn`,
+  `.caps-label`, `.figure`…). Un nome de papel por cada uso repetiría o mesmo valor baixo
+  varios nomes. *Discutible: está argumentado na rolda 37, e é do dono.*
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).

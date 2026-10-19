@@ -2996,6 +2996,212 @@ miúdo.
 
 - A seguinte revisión, antes do 17 de novembro de 2026.
 
+## Rolda 37: un só vocabulario visual — do 13 ao 19 de outubro de 2026
+
+Pedido: que cada cor, tamaño, espazo, canto, bordo, sombra, capa, duración e curva saia dun
+token con nome, sen ningún valor solto en compoñentes, estilos en liña ou cadeas de HTML;
+que cada patrón que se repite sexa un compoñente ou unha clase, usado onde apareza; tokens
+polo seu papel e só os que fan falta, xuntando só o que difire por descoido e listando cada
+fusión; fotos de cada pantalla e estado antes e despois, comparadas soas, e cada píxel que
+cambie, un fallo arranxado ou unha fusión listada; e un check que falle en calquera valor
+solto novo. Nunha rama propia, `design-tokens`, sen publicar.
+
+### Medido
+
+- **256 valores sen nome** na árbore de partida: 96 clases, 57 valores crus nas regras do
+  propio `index.css`, 44 números nas capas dos mapas, 24 cores en cadeas, 18 atributos
+  `style` e 6 atributos SVG no HTML dos popups, unha clase que non xeraba nada (`py-0.2`) e
+  un tamaño que nada usaba (`--text-hero`, 46 px, desde o primeiro commit); e iso contando
+  como tokens as escalas por defecto de Tailwind, que levan nome de valor.
+- **48 elementos escritos a man** en entre dous e vinte sitios cada un. Cada candidato
+  mirouse contra o código: 47 eran o mesmo elemento; o segmentado da configuración non.
+- **Regras mortas**: `.tint-strong.tint-edge` daba 2 px de bordo ás filas de liña fortes, pero
+  vive en `@layer base` e perde contra a utilidade `border`: medido na build, cada fila ten
+  1 px. O `background_color` do manifesto, `#0d0e11`, era o fondo escuro da paleta
+  azulada que a app deixou; a páxina abre en `#110d0d`.
+- **As fotos.** `tools/visualDiff.ts` fotografa os 322 estados de `audit:browser`,
+  alcanzados igual, cos mesmos datos de proba e o reloxo parado: 2.122 cadros por tanda,
+  entre 18 e 27 minutos. Dúas tandas da mesma build diferían en 163 cadros de 2.154 ao principio (a
+  folla do mapa e un desprazamento collidos a medio camiño, un pin engadido despois da foto,
+  unha camiñada medida tarde, unha conta atrás en segundos) e, xa con movemento reducido e
+  agardando a quietude, en 187 de 2.136 (o enrutador peonil chegaba despois da xanela
+  tranquila). Agora o arnés agarda polo módulo do enrutador e oculta a conta atrás; o ruído
+  que queda absórbeo comparar con dúas tandas da build de antes.
+- **A comparación, por tramos.** Contra a build de partida cambian 2.088 cadros de 2.122, a
+  suma de todas as fusións, e así non se pode ver se algún píxel cambiou sen estar na lista.
+  Por iso fotografáronse tamén dous puntos intermedios (o final das fusións visibles e o
+  final dos tokens) e, sobre o código final, unha build con cada fusión listada posta de
+  volta como debuxaba antes, mantendo os tokens, as clases e os compoñentes novos.
+  Comparada co primeiro punto intermedio, todo o que sobra é algo que ningún commit di.
+  Arranxado o de `.field` (abaixo), quedan 230 cadros de 2.122: tres estados con fusións de
+  subpíxel ou ao 200 % que agora están na lista (a distancia a pé, os nomes das paradas no
+  mapa, os cantos da configuración ao 200 %), e o resto en estados que tamén difiren entre
+  dúas fotos da mesma build, co mesmo tamaño (o planificador, a outra hora dunha parada, o
+  punto da viaxe, a conta atrás, motas de menos de 32 niveis no escritorio). Para separalo
+  volveuse fotografar o primeiro punto nos estados que sobraban: 50 cadros máis casaron.
+- **O que esa proba atopou**: `.field` daba ao buscador de liñas e aos dous campos de hora
+  só o chan de 44 px, onde tiñan a altura fixa de `h-tap`, e Chrome subía o texto un píxel;
+  o commit dicía que non cambiaba nada. E tres diferenzas de subpíxel ou ao 200 %, listadas abaixo.
+- **O primeiro tramo** (as fusións visibles feitas antes dos tokens) non se pode probar así,
+  porque poñer de volta as súas fusións é a build de partida. Revisouse commit a commit
+  contra a súa mensaxe: catro dicían menos do que facían (o peso e o ancho mínimo das
+  insignias pequenas, a entreliña dos popups, o peso da conta de paradas do mapa, o texto do
+  aviso pregado do planificador 6 px á esquerda) e quedan na lista.
+
+### Feito
+
+- `index.css` nomea o vocabulario enteiro polo seu papel: 185 nomes no bloque `@theme`
+  (transparencias, entreliñas e tracking, a unidade de espazo e os tamaños con papel,
+  anchos e consultas de contedor, cantos, bordos e aneis, catro elevacións polo que fai a
+  cousa, os desenfoques, unha escada de capas ancorada ás de Leaflet, seis duracións por
+  tipo de xesto, as curvas e os bucles) e 32 cores de paleta, claras e escuras. As regras do
+  propio `index.css` toman deles os valores. As escalas de Tailwind bórranse
+  (`--*: initial`): a única clase que aínda dependía dunha, `aspect-video`, é `aspect-camera`.
+- O mapa le as súas cores dos tokens `--c-map-*`, e cada tamaño e intensidade que debuxa é
+  unha entrada da táboa `DRAW` de `palette.ts`; os marcadores HTML perden os px, os hex e as
+  fontes en liña.
+- 47 patróns son un compoñente ou unha clase: `.caps-label` e `SectionLabel`, `.btn`,
+  `.link`, `.card`, `.page` e `.page-column`, `Disclosure`, `CloseButton`, `ChoiceChip` e
+  `.chip-rail`, `.tag`, `PoleCode`, `SectionTitle`, `EmptyState`, `Notice` e
+  `NoticeDisclosure`, `Approx`, `BackButton`, `CountBadge`, `.line-row`, `.rule-above`, o
+  tamaño `text-note`, `.figure` e `Figure`, `t.common.walkDistance`, `NameStack`,
+  `.row-button`, `.field`, `TimeField`, `.field-error`, `.map-glass`, `Scrim`, `Drawer`,
+  `DialogTitle`, `.inset-panel`, `IconButton` (tamén nas frechas das saídas e no menú),
+  `RunningBuses`, o marco do minimapa, `.map-placeholder`, `Pane`, `NotAffiliated`,
+  `NoticeBody`, `.edge-estimated`, `lineBadgeClass` nos popups, `.screen-title`,
+  `Wordmark`, o nome das filas da navegación, `OnTripMark` e dúas constantes dun ficheiro.
+- **As fusións que moven píxeles**, cada unha un descoido sen razón escrita:
+  - Insignias de liña: nove xeometrías pasan a seis tamaños. As dúas de 26 px da portada e a
+    cadrada de 28 dos favoritos son `row` (28 px, 4 px de canto, negriña e non negra); a
+    semibold de 38 px do buscador, `md` (36, negriña); as pequenas das alternativas e das
+    filas dos favoritos son `inline`: 2 px de recheo, negriña e non negra, e 24 px de ancho
+    como mínimo; a de 36 feita a man da lista de liñas e a de 56 da cabeceira da liña,
+    negriña e mono como as demais.
+  - Popups e etiquetas do mapa: o texto de 13 px pasa a 12; a insignia é a `sm`; o tracking
+    de 0,04em é o 0,05em das versaletas; a frecha de 16 px, 15; a entreliña é a da etiqueta,
+    1,35, onde era a de Leaflet (1,3 nun popup, 1,5 nunha etiqueta) ou 1,4; a etiqueta da
+    parada perde o seu recheo propio e o código queda a 4 px do nome, non a 5.
+  - Os avisos falan coa tinta de aviso, e o ámbar queda só para a hora calculada: as iconas
+    de aviso do planificador, a recusa da cámara no QR, o título e a frase de revisión de
+    Avisos, a fila de avisos do menú, o reloxo dunha espera no itinerario, a icona de liñas
+    dos favoritos.
+  - Cantos: os 6 px de `rounded-md` (23 sitios) pasan aos 10 do control ou aos 4 dunha
+    etiqueta; os botóns de capa do mapa, 7 dentro da pista; o botón «abrir liña», 9 á dereita;
+    as fichas de saída, de 7 a 10.
+  - Un control desactivado, 50 % (había 40, 45, 50 e 60).
+  - Versaletas a 0,05em en catro sitios que tiñan 0,1 ou 0,025em; o peso 800, negriña; os
+    subtítulos dos favoritos, o QR e o panel do mapa, e a conta de paradas deste, en peso
+    normal; o nome da app no menú co tracking do rail.
+  - O aviso pregado do planificador e da liña é o do taboleiro (12 px de recheo, 8 de oco, o
+    triángulo de 14, a entreliña de 1,625, o recheo de aviso enteiro; o texto de dentro do
+    do planificador vai 6 px máis á esquerda, baixo o título); as caixas de aviso do
+    planificador, a nota do trazado aproximado e a do QR son `Notice`.
+  - Un botón de pechar: a tinta `ink-2` e o X de 18 px nos favoritos, no QR e no banner da
+    noite; a alarma do taboleiro e o campo do planificador debuxan o X, non un ✕ no texto, e
+    o da alarma é un botón de 44 px.
+  - Os botóns do QR son os da app; o «ver todas as liñas» do mapa e o campo de hora do
+    planificador soben a 44 px.
+  - Oito subliñados, 2 px baixo o texto; «borrar as recentes», un só aspecto.
+  - A resposta baleira do planificador é a tarxeta descontinua do taboleiro.
+  - Os puntos do itinerario e das paradas dunha liña, anelados co fondo e non en branco; o
+    glifo do nodo a pé, na cor do fondo.
+  - Transparencias: o panel de datos da liña ao 60 %; a letra pequena do planificador, fondo
+    enteiro; a ficha sobre o mapa da ruta, 95 % e 4 px de desenfoque.
+  - O título «Horario» ao tamaño do corpo; a icona do título do panel do mapa a 8 px; a lista
+    de liñas coa sombra das tarxetas.
+  - O menú leva a sombra e o bordo dos paneis, na capa dos diálogos; o veo do mapa entra
+    esvaecendo como os outros.
+  - O código do poste: sen o peso medio na cabeceira, sen o «#» nin a negriña nas
+    suxestións, mono na folla do mapa.
+  - O «~» dunha liña gardada e das saídas primeira e última dunha liña, apagado.
+  - A ficha «non para aquí», canto de etiqueta.
+  - Os resumos do taboleiro, chan de 44 px e non altura fixa (o mesmo a tamaño normal).
+  - O chevron das opcións e o das fichas de liña viran en 200 ms na curva de entrada (eran
+    200 na curva por defecto e 150).
+  - Trazos: 2,4 e 2,6 pasan a 2,5.
+  - O chip ~ ESTIMADO, a mesma caixa ca o de HORARIO OFICIAL (6,5 × 2,5 px de recheo).
+  - As paradas dun tramo, 22 px de sangría en rem baixo as palabras que as despregan (eran 21).
+  - O chan de 6rem dos nomes do taboleiro e da lista de liñas, o `min(6rem, 100%)` dos demais.
+  - O fondo da pantalla de arranque da app instalada, `#110d0d`.
+  - Botóns: a altura de 44 como chan; 8 px de oco á beira dunha icona (co texto ao 200 %,
+    eses 2 px levan «Ver percorrido no mapa» de dúas liñas a tres); 8 px arriba e abaixo
+    nos do QR e nos dous da folla dunha parada no mapa (só se nota se a etiqueta envolve); 16
+    de lado nas dúas respostas da viaxe; 12 e non 14 no «localizarme» e no «centrar» do
+    mapa; a etiqueta secundaria en `ink-2`; «quitar filtro» e «volver a agora» en negriña,
+    centrados.
+  - As ligazóns propias de Avisos e Tarifas, seminegra como as demais.
+  - As marxes laterais de Avisos e Tarifas, as das outras pantallas (14 e 24 px).
+  - O chevron da letra pequena do planificador a 8 px das cifras, non a 12.
+  - Os pechadores das follas do mapa colleron o canto e o lavado dos outros; o X do aviso
+    dos autobuses, 18 px.
+  - O filtro do mapa xa non medra 2 px ao escollelo; os destinos rápidos non esvaecen o
+    recheo nin amosan barra de desprazamento.
+  - O subtítulo do panel do mapa, 2 px máis abaixo, como os outros seis.
+  - Os favoritos baleiros, a tarxeta descontinua coa icona de 28 px (uns 38 px máis baixa).
+  - A liña de frecuencia do grupo do taboleiro, 2 px máis arriba.
+  - As filas de liñas próximas do mapa, 44 px (eran 42) e bordo de control.
+  - O campo do taboleiro «a outra hora», 4 px máis arriba cando envolve.
+  - Os erros do QR, seminegra e sen sangría.
+  - O título das novas do Concello rompe as palabras longas como o dos avisos.
+  - Os nomes das paradas no mapa toman a tinta e o halo do resto da app (o seu oklch) en vez
+    da súa aproximación en hex: as cores enteiras son as mesmas, e os píxeles do bordo das
+    letras difiren nunha unidade dunha canle.
+  - A distancia a pé é un só texto, «~150 m», onde React deixaba tres: unha cifra cae un
+    subpíxel noutro sitio, e nada se move.
+  - Os tres botóns do tema e do idioma, na configuración, levan o canto dos botóns do control
+    segmentado (`rounded-inset`), como xa parecía a tamaño normal: co texto ao 200 % é de 17 px
+    coma o deles, onde era un 7 px fixo.
+- `.field` volve ter a altura de 44 px ademais do chan, e o campo do QR, que se mide co seu
+  recheo, `h-auto`; un check gárdao.
+- Os comentarios de Leaflet, Provenance e LineBadge din o que fan de verdade.
+- 15 comprobacións novas (258 → 273), e moitas existentes len agora o compoñente en vez da
+  copia, sen relaxar nada: cada unha probouse fallando co seu fallo posto de volta. A de
+  valores soltos, contra dez valores soltos de volta, un de cada vez; a dos patróns, coas
+  copias de volta.
+- README (o vocabulario visual, `visual:shoot` e `visual:compare`, a árbore), CLAUDE.md,
+  DECIDIDO e NOTAS (Pendente 8).
+
+### Erros nosos durante esta rolda
+
+- Escribir guións e expresións regulares nun heredoc: o shell comeu as barras invertidas,
+  dúas veces. Escríbense nun ficheiro.
+- `git checkout -- ficheiro` para probar un check tirou cambios propios sen gardar, dúas
+  veces. Agora cópiase o ficheiro antes e devólvese despois.
+- Uns commits fixéronse coa suite en vermello, encadeados con `;`; corrixíronse con
+  `--amend`, e agora o commit só vai se a suite pasa.
+- Un check quedara cego no commit dos cantos (buscaba `rounded-full`, que xa non dicía
+  ninguén); viuse no dos bordos e arranxouse.
+- Deuse por «cero píxeles» un botón do mapa antes de mirar o pai, e era a todo o ancho.
+- Unha sabotaxe que non sabotaxaba (`open={true}` aínda casaba co patrón): o check si
+  mordía, co fallo de verdade.
+- Ao engadir `Approx` e `lineTint` quedaron os comentarios de `Provenance` e de `LineBadge`
+  enriba doutra función.
+- Varios commits dicían «non cambia ningún píxel» comparando clases, sen fotografar: o de
+  `.field` estaba mal, e só o atopou a proba das fusións postas de volta. E catro mensaxes do
+  primeiro tramo contaban menos do que facían.
+- A primeira tanda desa proba morreu a medio camiño, e o guión que a lanzaba devolvía o código
+  de `tail` e non o da ferramenta; viuse ao contar os cadros.
+- Ao escribir a volta quedou fóra unha fusión (o «~» das saídas dunha liña); a proba mostrouna.
+
+### Mirado e deixado
+
+- **Os pesos, os puntos de corte e os pasos de espazo** levan nome de escala (`semibold`,
+  `lg`, `p-3` = tres unidades de 4 px), non de papel. Cada paso serve a varios papeis e os
+  papeis están nas clases que os usan; un nome por uso repetiría o mesmo valor baixo varios
+  nomes, que é o que o pedido quería evitar. Discutible, e do dono (DECIDIDO).
+- **As diferenzas que podían ser queridas** quedaron como variantes, sen mover un píxel:
+  NOTAS, Pendente 8.
+- O segmentado da configuración non é un patrón; a folla da parada e a dos controis do mapa
+  non son caixóns; o fondo do diálogo do QR é o seu propio pano, non un veo; o marco do mapa
+  da ruta é doutro compoñente e doutro canto.
+- O estilo do mapa base trae a súa paleta de OpenFreeMap, retocada en `buildMapStyle.ts` coas
+  medidas de DECIDIDO, e fica fóra dos tokens.
+
+### Queda
+
+- As variantes de NOTAS, Pendente 8.
+- Levar a rama a `develop` e publicala, cousa do dono.
+
 ## Rolda 38: Ubuntu 26.04 no executor, probado e deixado — 14 e 15 de outubro de 2026
 
 Pedido: pasar os traballos de GitHub a Ubuntu 26.04, a imaxe que `ubuntu-latest` toma
