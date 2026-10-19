@@ -1,8 +1,8 @@
 import { ChevronRight } from 'lucide-react';
-import { CloseButton, Scrim } from './ui/controls';
+import { CloseButton } from './ui/controls';
 import { CountBadge } from './ui/CountBadge';
 import { NameStack } from './ui/NameStack';
-import { useDialog } from '../hooks/useDialog';
+import { Drawer } from './ui/Drawer';
 import { tabLink } from '../hooks/useTabRoute';
 import { useLang, useT } from '../i18n';
 import { asideSections, type Tab } from './navSections';
@@ -23,64 +23,59 @@ interface MenuDrawerProps extends SettingsProps {
 export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }: MenuDrawerProps) {
   const t = useT();
   const lang = useLang();
-  const dialogRef = useDialog(open, onClose);
-  if (!open) return null;
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.menu.open} className="fixed inset-0 z-dialog">
-      <Scrim label={t.menu.close} onClose={onClose} className="absolute" />
-      <div className="@container anim-slide-in absolute inset-y-0 right-0 flex w-menu max-w-menu-max flex-col border-l border-edge bg-bg shadow-overlay">
-        <div className="flex items-center justify-between border-b border-edge px-cap-4.5 py-4">
-          <span className="text-emph font-semibold tracking-title">{t.nav.appName}</span>
-          <CloseButton label={t.menu.close} onClick={onClose} />
-        </div>
+    <Drawer open={open} onClose={onClose} label={t.menu.open} closeLabel={t.menu.close}>
+      <div className="flex items-center justify-between border-b border-edge px-cap-4.5 py-4">
+        <span className="text-emph font-semibold tracking-title">{t.nav.appName}</span>
+        <CloseButton label={t.menu.close} onClick={onClose} />
+      </div>
 
-        <div className="flex flex-col gap-0.5 px-2.5 py-3">
-          {asideSections(t, alertCount).map(({ id, Icon, label, badge }) => (
-            // The count is part of the name, with a pause: read from the markup it came out as "Avisos do servizo1".
-            // After a colon, not in brackets: a name's brackets are dropped by checkers before it is
-            // matched with what the control shows, and the count it shows was then not in its name.
-            <a
-              key={id}
-              {...tabLink(
-                id,
-                (tab) => {
-                  onOpenTab(tab);
-                  onClose();
-                },
-                lang,
-              )}
-              aria-label={badge > 0 ? `${label}: ${badge}` : undefined}
-              className="flex min-h-14 items-center gap-4 rounded-card px-cap-3 py-2 text-left"
-            >
-              <Icon className={`h-5 w-5 shrink-0 ${id === 'info' ? 'text-warn-ink' : 'text-ink-2'}`} aria-hidden="true" />
-              <NameStack name={label} size="emph" />
-              {/* A space the row does not draw, between the words and the count: run together, the
-                  text read "servizo1", which did not match the name "servizo (1)" (2.5.3). */}{' '}
-              <CountBadge n={badge} />
-              {/* Decoration, the whole row is the link: it goes where the drawer is narrow for its
-                  text, and the first link's words had broken mid-word, "servi-zo". */}
-              <ChevronRight className="hidden h-4.5 w-4.5 shrink-0 text-ink-3 @min-chevron:block" aria-hidden="true" />
-            </a>
-          ))}
-          <div className="px-3 py-2">
-            <Settings {...settings} />
-          </div>
-        </div>
-
-        {/* Who made this, and what it does with you: the person holding the phone was the only one not being told. */}
-        <div className="mt-auto flex flex-col gap-1 border-t border-line p-5 text-label text-ink-3">
-          <span>{t.menu.sourceTimetables}</span>
-          <span>{t.menu.sourceGeometry}</span>
-          <span>{t.menu.sourceNoGps}</span>
-          <span className="mt-2 border-t border-line pt-2 text-ink-2">{t.menu.unofficial}</span>
-          <span>{t.menu.privacy}</span>
-          {/* On its own line, so the 44 px applies to it. */}
-          <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex min-h-tap items-center self-start underline decoration-dotted underline-offset-link">
-            {t.menu.sourceCode}
+      <div className="flex flex-col gap-0.5 px-2.5 py-3">
+        {asideSections(t, alertCount).map(({ id, Icon, label, badge }) => (
+          // The count is part of the name, with a pause: read from the markup it came out as "Avisos do servizo1".
+          // After a colon, not in brackets: a name's brackets are dropped by checkers before it is
+          // matched with what the control shows, and the count it shows was then not in its name.
+          <a
+            key={id}
+            {...tabLink(
+              id,
+              (tab) => {
+                onOpenTab(tab);
+                onClose();
+              },
+              lang,
+            )}
+            aria-label={badge > 0 ? `${label}: ${badge}` : undefined}
+            className="flex min-h-14 items-center gap-4 rounded-card px-cap-3 py-2 text-left"
+          >
+            <Icon className={`h-5 w-5 shrink-0 ${id === 'info' ? 'text-warn-ink' : 'text-ink-2'}`} aria-hidden="true" />
+            <NameStack name={label} size="emph" />
+            {/* A space the row does not draw, between the words and the count: run together, the
+                text read "servizo1", which did not match the name "servizo (1)" (2.5.3). */}{' '}
+            <CountBadge n={badge} />
+            {/* Decoration, the whole row is the link: it goes where the drawer is narrow for its
+                text, and the first link's words had broken mid-word, "servi-zo". */}
+            <ChevronRight className="hidden h-4.5 w-4.5 shrink-0 text-ink-3 @min-chevron:block" aria-hidden="true" />
           </a>
+        ))}
+        <div className="px-3 py-2">
+          <Settings {...settings} />
         </div>
       </div>
-    </div>
+
+      {/* Who made this, and what it does with you: the person holding the phone was the only one not being told. */}
+      <div className="mt-auto flex flex-col gap-1 border-t border-line p-5 text-label text-ink-3">
+        <span>{t.menu.sourceTimetables}</span>
+        <span>{t.menu.sourceGeometry}</span>
+        <span>{t.menu.sourceNoGps}</span>
+        <span className="mt-2 border-t border-line pt-2 text-ink-2">{t.menu.unofficial}</span>
+        <span>{t.menu.privacy}</span>
+        {/* On its own line, so the 44 px applies to it. */}
+        <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex min-h-tap items-center self-start underline decoration-dotted underline-offset-link">
+          {t.menu.sourceCode}
+        </a>
+      </div>
+    </Drawer>
   );
 }

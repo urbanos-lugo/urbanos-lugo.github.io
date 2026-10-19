@@ -1,12 +1,12 @@
 import { useState, type ReactNode } from 'react';
 import { Star, MapPin, Trash2, ArrowRight, Route, Clock, type LucideIcon } from 'lucide-react';
-import { useDialog } from '../hooks/useDialog';
 import { useLang, useT } from '../i18n';
 import { daysLabel, frequencyLabel } from '../utils/serviceLabels';
 import { BusStop, BusLine } from '../types';
 import { BUS_STOPS, BUS_LINES, linesByNumber, poleCode } from '../data/transitData';
 import { LineBadge } from './ui/LineBadge';
-import { CloseButton, Scrim, Segmented } from './ui/controls';
+import { CloseButton, Segmented } from './ui/controls';
+import { Drawer } from './ui/Drawer';
 import { EmptyState } from './ui/EmptyState';
 
 interface FavoritesDrawerProps {
@@ -54,7 +54,6 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
   const t = useT();
   const lang = useLang();
   const [tab, setTab] = useState<'stops' | 'lines'>('stops');
-  const dialogRef = useDialog(isOpen, onClose);
   if (!isOpen) return null;
 
   const favoriteStops = BUS_STOPS.filter((s) => favoriteStopIds.includes(s.id));
@@ -65,111 +64,103 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
   };
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.favourites.title} className="fixed inset-0 z-dialog overflow-hidden">
-      <Scrim label={t.favourites.close} onClose={onClose} className="absolute" />
-      {/* The strip of page to the left stops growing with the type, and the panel may be
-          narrower than its content wants: at 200% text it was 80 px wider than the screen
-          and hid its own close button. */}
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-cap-10">
-        <div className="anim-slide-in w-screen min-w-0 max-w-drawer bg-bg shadow-overlay flex flex-col border-l border-edge">
-          <div className="@container py-5 px-cap-5 border-b border-edge bg-surface">
-            <div className="flex items-center justify-between gap-3 mb-4">
-              <div className="flex min-w-0 items-center gap-2.5">
-                {/* The star is the title's decoration: where the heading has less than 14rem it goes,
-                    rather than the heading breaking as "FAVORI-TOS". */}
-                <div className="hidden w-9 h-9 shrink-0 rounded-control bg-warn items-center justify-center @min-icons:flex">
-                  <Star className="w-5 h-5 fill-current text-warn-ink" />
-                </div>
-                <div className="min-w-0">
-                  <h2 className="break-words font-bold text-ink text-body uppercase tracking-display">{t.favourites.title}</h2>
-                  <p className="text-label text-ink-3">{t.favourites.subtitle}</p>
-                </div>
-              </div>
-              <CloseButton label={t.favourites.close} onClick={onClose} />
+    <Drawer open={isOpen} onClose={onClose} label={t.favourites.title} closeLabel={t.favourites.close} wide>
+      <div className="@container py-5 px-cap-5 border-b border-edge bg-surface">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex min-w-0 items-center gap-2.5">
+            {/* The star is the title's decoration: where the heading has less than 14rem it goes,
+                rather than the heading breaking as "FAVORI-TOS". */}
+            <div className="hidden w-9 h-9 shrink-0 rounded-control bg-warn items-center justify-center @min-icons:flex">
+              <Star className="w-5 h-5 fill-current text-warn-ink" />
             </div>
-            {/* The tabs' icons go with the star, for the same reason: the word before the picture. */}
-            <Segmented
-              value={tab}
-              onChange={setTab}
-              options={[
-                {
-                  id: 'stops',
-                  label: (
-                    <span className="flex items-center justify-center gap-1.5">
-                      <MapPin className="hidden w-3.5 h-3.5 shrink-0 text-accent @min-icons:block" />
-                      {t.favourites.tabStops} ({favoriteStops.length})
-                    </span>
-                  ),
-                },
-                {
-                  id: 'lines',
-                  label: (
-                    <span className="flex items-center justify-center gap-1.5">
-                      <Route className="hidden w-3.5 h-3.5 shrink-0 @min-icons:block" />
-                      {t.favourites.tabLines} ({favoriteLines.length})
-                    </span>
-                  ),
-                },
-              ]}
-            />
+            <div className="min-w-0">
+              <h2 className="break-words font-bold text-ink text-body uppercase tracking-display">{t.favourites.title}</h2>
+              <p className="text-label text-ink-3">{t.favourites.subtitle}</p>
+            </div>
           </div>
-
-          <div className="flex-1 overflow-y-auto py-5 px-cap-5 space-y-2.5">
-            {tab === 'stops' &&
-              (favoriteStops.length === 0 ? (
-                <Empty icon={Star} title={t.favourites.noFavoriteStops} hint={t.favourites.noFavoriteStopsHint} />
-              ) : (
-                favoriteStops.map((stop) => (
-                  <SavedRow key={stop.id} onOpen={open(() => onSelectStop(stop))} onRemove={() => onRemoveFavoriteStop(stop.id)} removeLabel={t.favourites.remove}>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-accent shrink-0" />
-                      <span className="min-w-0 break-words font-bold text-body text-ink group-hover:text-accent">{stop.name}</span>
-                    </div>
-                    <div className="text-label text-ink-3 mt-0.5 ml-6">
-                      {poleCode(stop) && (
-                        <>
-                          {t.favourites.codeShort} <span className="tnum font-bold text-ink-2">{poleCode(stop)}</span> &bull;{' '}
-                        </>
-                      )}
-                      {stop.zone}
-                    </div>
-                    <div className="flex gap-1 flex-wrap mt-2 ml-6">
-                      {/* The number, once: they printed the line's id, and the 11 and its three
-                          variants, "11-Igrexa de Bóveda" among them, are all an "11" on the bus. */}
-                      {linesByNumber(stop.lines).map((line) => (
-                        <LineBadge key={line.number} number={line.number} color={line.color} size="inline" />
-                      ))}
-                    </div>
-                  </SavedRow>
-                ))
-              ))}
-
-            {tab === 'lines' &&
-              (favoriteLines.length === 0 ? (
-                <Empty icon={Route} title={t.favourites.noFavoriteLines} hint={t.favourites.noFavoriteLinesHint} />
-              ) : (
-                favoriteLines.map((line) => (
-                  <SavedRow key={line.id} onOpen={open(() => onSelectLine(line))} onRemove={() => onRemoveFavoriteLine(line.id)} removeLabel={t.favourites.remove}>
-                    <div className="flex items-center gap-2.5">
-                      <LineBadge number={line.number} color={line.color} size="row" />
-                      <div className="min-w-0">
-                        <span className="break-words font-bold text-body text-ink group-hover:text-accent">{line.name}</span>
-                        <div className="text-label text-ink-3 mt-0.5 flex flex-wrap items-center gap-x-2">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-ink-3" />
-                            {frequencyLabel(line, lang)}
-                          </span>
-                          <span>&bull;</span>
-                          <span>{daysLabel(line, lang)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </SavedRow>
-                ))
-              ))}
-          </div>
+          <CloseButton label={t.favourites.close} onClick={onClose} />
         </div>
+        {/* The tabs' icons go with the star, for the same reason: the word before the picture. */}
+        <Segmented
+          value={tab}
+          onChange={setTab}
+          options={[
+            {
+              id: 'stops',
+              label: (
+                <span className="flex items-center justify-center gap-1.5">
+                  <MapPin className="hidden w-3.5 h-3.5 shrink-0 text-accent @min-icons:block" />
+                  {t.favourites.tabStops} ({favoriteStops.length})
+                </span>
+              ),
+            },
+            {
+              id: 'lines',
+              label: (
+                <span className="flex items-center justify-center gap-1.5">
+                  <Route className="hidden w-3.5 h-3.5 shrink-0 @min-icons:block" />
+                  {t.favourites.tabLines} ({favoriteLines.length})
+                </span>
+              ),
+            },
+          ]}
+        />
       </div>
-    </div>
+
+      <div className="flex-1 overflow-y-auto py-5 px-cap-5 space-y-2.5">
+        {tab === 'stops' &&
+          (favoriteStops.length === 0 ? (
+            <Empty icon={Star} title={t.favourites.noFavoriteStops} hint={t.favourites.noFavoriteStopsHint} />
+          ) : (
+            favoriteStops.map((stop) => (
+              <SavedRow key={stop.id} onOpen={open(() => onSelectStop(stop))} onRemove={() => onRemoveFavoriteStop(stop.id)} removeLabel={t.favourites.remove}>
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-accent shrink-0" />
+                  <span className="min-w-0 break-words font-bold text-body text-ink group-hover:text-accent">{stop.name}</span>
+                </div>
+                <div className="text-label text-ink-3 mt-0.5 ml-6">
+                  {poleCode(stop) && (
+                    <>
+                      {t.favourites.codeShort} <span className="tnum font-bold text-ink-2">{poleCode(stop)}</span> &bull;{' '}
+                    </>
+                  )}
+                  {stop.zone}
+                </div>
+                <div className="flex gap-1 flex-wrap mt-2 ml-6">
+                  {/* The number, once: they printed the line's id, and the 11 and its three
+                      variants, "11-Igrexa de Bóveda" among them, are all an "11" on the bus. */}
+                  {linesByNumber(stop.lines).map((line) => (
+                    <LineBadge key={line.number} number={line.number} color={line.color} size="inline" />
+                  ))}
+                </div>
+              </SavedRow>
+            ))
+          ))}
+
+        {tab === 'lines' &&
+          (favoriteLines.length === 0 ? (
+            <Empty icon={Route} title={t.favourites.noFavoriteLines} hint={t.favourites.noFavoriteLinesHint} />
+          ) : (
+            favoriteLines.map((line) => (
+              <SavedRow key={line.id} onOpen={open(() => onSelectLine(line))} onRemove={() => onRemoveFavoriteLine(line.id)} removeLabel={t.favourites.remove}>
+                <div className="flex items-center gap-2.5">
+                  <LineBadge number={line.number} color={line.color} size="row" />
+                  <div className="min-w-0">
+                    <span className="break-words font-bold text-body text-ink group-hover:text-accent">{line.name}</span>
+                    <div className="text-label text-ink-3 mt-0.5 flex flex-wrap items-center gap-x-2">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-ink-3" />
+                        {frequencyLabel(line, lang)}
+                      </span>
+                      <span>&bull;</span>
+                      <span>{daysLabel(line, lang)}</span>
+                    </div>
+                  </div>
+                </div>
+              </SavedRow>
+            ))
+          ))}
+      </div>
+    </Drawer>
   );
 }
