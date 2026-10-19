@@ -557,7 +557,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       >
         <label className="flex flex-wrap items-center gap-2 px-3 pb-3 text-label font-semibold text-ink-2">
           <span className="shrink-0">{t.arrivals.atTimeLabel}</span>
-          <input type="time" value={atTime} onChange={(e) => setAtTime(e.target.value)} className="h-tap rounded-control border border-edge bg-bg px-2 font-mono text-body text-ink" />
+          <input type="time" value={atTime} onChange={(e) => setAtTime(e.target.value)} className="field field-clock" />
         </label>
       </Disclosure>
       {Object.keys(watches).length > 0 && <Notice className="mt-3">{t.arrivals.watchForeground}</Notice>}

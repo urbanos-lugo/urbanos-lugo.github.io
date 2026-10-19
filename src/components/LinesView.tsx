@@ -137,7 +137,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.lines.searchLines}
               aria-label={t.lines.searchLines}
-              className="h-tap w-full rounded-control border border-edge bg-surface px-3.5 text-body text-ink placeholder:text-ink-3"
+              className="field"
             />
 
             {/* No scroll box of its own: on a phone the page scrolls, on a desktop the column
