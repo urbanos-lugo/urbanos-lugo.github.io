@@ -270,7 +270,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
               onSelect={onSelectStop}
               trailing={
                 <span className="tnum shrink-0 text-right">
-                  <span className="block text-body font-semibold">~{stop.walkMeters} m</span>
+                  <span className="block text-body font-semibold">{t.common.walkDistance(stop.walkMeters)}</span>
                   <span className="block text-label text-ink-3">{t.stopHome.walk(stop.walkMinutes)}</span>
                 </span>
               }

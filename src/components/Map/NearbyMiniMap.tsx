@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { escapeHtml } from '../../utils/html';
+import { useT } from '../../i18n';
 import { BusStop } from '../../types';
 import { useIsDark } from '../../hooks/useIsDark';
 import { useLeafletMap } from '../../hooks/useLeafletMap';
@@ -24,6 +25,7 @@ export function NearbyMiniMap({ centre, stops, onSelectStop, regionLabel }: Near
   const onSelectRef = useRef(onSelectStop);
   onSelectRef.current = onSelectStop;
   const colors = mapColors(useIsDark());
+  const t = useT();
   const { label, kind } = centre;
   const map = useLeafletMap(containerRef, { center: [centre.lat, centre.lng], zoom: 16, scrollWheelZoom: false, region: regionLabel });
 
@@ -37,7 +39,7 @@ export function NearbyMiniMap({ centre, stops, onSelectStop, regionLabel }: Near
     const bounds = L.latLngBounds([at]);
     for (const stop of stops) {
       bounds.extend([stop.lat, stop.lng]);
-      const marker = L.circleMarker([stop.lat, stop.lng], stopDotStyle(colors, DRAW.stopRadius.nearby)).bindTooltip(`${escapeHtml(stop.name)} · ~${Math.round(stop.walkMeters)} m`, { direction: 'top', offset: [0, DRAW.tooltip.lift] });
+      const marker = L.circleMarker([stop.lat, stop.lng], stopDotStyle(colors, DRAW.stopRadius.nearby)).bindTooltip(`${escapeHtml(stop.name)} · ${escapeHtml(t.common.walkDistance(stop.walkMeters))}`, { direction: 'top', offset: [0, DRAW.tooltip.lift] });
       marker.on('click', () => onSelectRef.current(stop));
       group.addLayer(marker);
     }
@@ -45,7 +47,7 @@ export function NearbyMiniMap({ centre, stops, onSelectStop, regionLabel }: Near
     return () => {
       group.remove();
     };
-  }, [map, centre.lat, centre.lng, label, kind, stops, colors]);
+  }, [map, centre.lat, centre.lng, label, kind, stops, colors, t]);
 
   return <div ref={containerRef} className="h-map-card w-full" />;
 }

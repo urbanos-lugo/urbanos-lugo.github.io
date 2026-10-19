@@ -416,7 +416,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                     <span className="block break-words text-body font-semibold">
                       {nearestStop.name}
                     </span>
-                    <span className="block text-label text-ink-2">~{Math.round(walkMeters)} m</span>
+                    <span className="block text-label text-ink-2">{t.common.walkDistance(walkMeters)}</span>
                   </span>
                 </li>
               ))}
@@ -587,7 +587,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                   <button onClick={() => onSelectStop(pole)} className="flex min-h-tap w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-edge bg-bg px-3 py-2 text-left">
                     <span className="min-w-floor-name flex-1 break-words text-body font-semibold">{pole.name}</span>
                     <PoleCode code={poleCode(pole)} />
-                    <span className="tnum shrink-0 text-label text-ink-2">~{pole.walkMeters} m</span>
+                    <span className="tnum shrink-0 text-label text-ink-2">{t.common.walkDistance(pole.walkMeters)}</span>
                   </button>
                 </li>
               ))}

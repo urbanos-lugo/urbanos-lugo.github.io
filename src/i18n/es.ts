@@ -560,6 +560,8 @@ export const es: Dict = {
 
   common: {
     min: 'min',
+    // How far on foot, roughly: the router's estimate, rounded to the metre.
+    walkDistance: (metres: number) => `~${metres} m`,
     tomorrow: 'mañana',
     weekdays: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
     onWeekday: (day: string) => `el ${day}`,

@@ -152,7 +152,7 @@ export function MapControls(p: MapControlsProps) {
               <button key={line.id} onClick={() => p.onSelectLine(line)} className="w-full p-2 rounded-control text-left flex items-center gap-2 text-label bg-surface border border-line hover:bg-surface transition-colors">
                 <LineBadge number={line.number} color={line.color} size="sm" />
                 <span className="min-w-0 flex-1 break-words text-ink-2">{nearestStop.name}</span>
-                <span className="tnum shrink-0 font-semibold text-ink-3">~{walkMeters} m</span>
+                <span className="tnum shrink-0 font-semibold text-ink-3">{t.common.walkDistance(walkMeters)}</span>
               </button>
             ))}
           </div>

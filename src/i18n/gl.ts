@@ -615,6 +615,8 @@ export const gl = {
 
   common: {
     min: 'min',
+    // How far on foot, roughly: the router's estimate, rounded to the metre.
+    walkDistance: (metres: number) => `~${metres} m`,
     tomorrow: 'mañá',
     // getDay() order, Sunday first.
     weekdays: ['domingo', 'luns', 'martes', 'mércores', 'xoves', 'venres', 'sábado'],

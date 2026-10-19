@@ -569,6 +569,8 @@ export const en: Dict = {
 
   common: {
     min: 'min',
+    // How far on foot, roughly: the router's estimate, rounded to the metre.
+    walkDistance: (metres: number) => `~${metres} m`,
     tomorrow: 'tomorrow',
     weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     onWeekday: (day: string) => `on ${day}`,
