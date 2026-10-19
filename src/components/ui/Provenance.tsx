@@ -15,6 +15,12 @@ export function Approx({ on, inherit = false, title }: { on: boolean; inherit?: 
   ) : null;
 }
 
+/** That this app is nobody's official one, under a screen's title where the operator is named. */
+export function NotAffiliated() {
+  const t = useT();
+  return <p className="mt-1 border-l-strong border-edge pl-2 text-label text-ink-3">{t.fares.notAffiliated}</p>;
+}
+
 /**
  * Where a time came from, in the two shapes the whole app uses: solid for a time the
  * operator prints, dashed for one derived from it. Colour never carries it alone.

@@ -2,6 +2,7 @@ import { CreditCard, Info, Phone, Globe, HelpCircle, type LucideIcon } from 'luc
 import type { ReactNode } from 'react';
 import { useT } from '../i18n';
 import { FARE_CARDS } from '../data/transitData';
+import { NotAffiliated } from './ui/Provenance';
 import { SectionLabel } from './ui/SectionLabel';
 import { SectionTitle } from './ui/SectionTitle';
 
@@ -42,7 +43,7 @@ export function FaresView() {
             {t.fares.faresTitle}
           </SectionTitle>
           {/* Right under the line that names the operator and calls the prices official. */}
-          <p className="text-label text-ink-3 mt-1 border-l-strong border-edge pl-2">{t.fares.notAffiliated}</p>
+          <NotAffiliated />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {FARE_CARDS.map((fare) => {

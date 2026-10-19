@@ -6,6 +6,7 @@ import { isSnapshotStale } from '../utils/snapshotAge';
 import { NOTICE_LANG } from '../utils/operatorNotices';
 import type { ServiceAlerts } from '../hooks/useServiceAlerts';
 import { NOTICE_META, NOTICES_REVIEWED_ON } from '../data/structuralNotices';
+import { NotAffiliated } from './ui/Provenance';
 import { SectionLabel } from './ui/SectionLabel';
 import { SectionTitle } from './ui/SectionTitle';
 
@@ -130,7 +131,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
             <SectionTitle icon={AlertTriangle} tone="warn" subtitle={t.fares.alertsSubtitle}>
               {t.fares.alertsTitle}
             </SectionTitle>
-            <p className="text-label text-ink-3 mt-1 border-l-strong border-edge pl-2">{t.fares.notAffiliated}</p>
+            <NotAffiliated />
           </div>
           <button
             id="sync-alerts-btn"
