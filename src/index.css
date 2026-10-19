@@ -623,6 +623,10 @@
   .field::placeholder { color: var(--c-ink-3); }
   .field-clock { width: auto; background-color: var(--c-bg); padding-inline: calc(var(--spacing) * 2); font-family: var(--font-mono); }
 
+  /* What went wrong with a field or a request, said under it in the warn ink: the camera that
+     would not start, a code that matches no stop, a position refused. */
+  .field-error { font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-semibold); color: var(--c-warn-fg); }
+
   /* A card on a screen's column or in the map's panel: the card corner, the hairline edge, the
      ground, raised. No padding, so a card can be the padded item inside a bare .fold wrapper,
      and each column keeps its own; a state's tone is the caller's utility. */

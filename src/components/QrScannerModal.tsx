@@ -161,7 +161,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
           <span>{hasBarcodeDetector ? (isScanning ? t.qr.stopScan : t.qr.scanBtn) : t.qr.noCamera}</span>
         </button>
         {cameraError && (
-          <p role="alert" className="text-label font-bold text-warn-ink px-1 mb-2">
+          <p role="alert" className="field-error mb-2">
             {cameraError}
           </p>
         )}
@@ -186,7 +186,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             className="field py-2.5 font-semibold focus:bg-bg focus:outline-hidden focus:ring-strong focus:ring-accent"
           />
           {errorMsg && (
-            <p id="qr-manual-error" role="alert" className="text-label font-bold text-warn-ink px-1">
+            <p id="qr-manual-error" role="alert" className="field-error">
               {errorMsg}
             </p>
           )}

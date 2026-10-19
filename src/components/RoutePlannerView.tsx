@@ -416,7 +416,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               </div>
 
               {gpsRefused && (
-                <p role="alert" className="mt-2 text-label font-semibold text-warn-ink">
+                <p role="alert" className="field-error mt-2">
                   {t.map.locationDenied}
                 </p>
               )}
