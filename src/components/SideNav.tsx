@@ -3,6 +3,7 @@ import { tabLink } from '../hooks/useTabRoute';
 import { useLang, useT } from '../i18n';
 import { Settings, type SettingsProps } from './ui/Settings';
 import { CountBadge } from './ui/CountBadge';
+import { OnTripMark } from './ui/OnTripMark';
 import { Wordmark } from './ui/Wordmark';
 
 interface SideNavProps extends SettingsProps {
@@ -37,12 +38,7 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
             <a key={id} {...tabLink(id, setActiveTab, lang)} aria-current={on ? 'page' : undefined} className={row(on)}>
               <Icon className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
               <span className="flex-1">{label}</span>
-              {tripActive && id === 'plan' && (
-                <>
-                  <span className={`h-2.5 w-2.5 shrink-0 rounded-pill ${on ? 'bg-bg' : 'bg-accent'}`} aria-hidden="true" />
-                  <span className="sr-only">{t.companion.onTrip}</span>
-                </>
-              )}
+              {tripActive && id === 'plan' && <OnTripMark className={`shrink-0 ${on ? 'bg-bg' : 'bg-accent'}`} />}
             </a>
           );
         })}

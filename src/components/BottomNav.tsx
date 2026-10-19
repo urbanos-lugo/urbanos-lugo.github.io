@@ -1,6 +1,7 @@
 import { useLang, useT } from '../i18n';
 import { navSections, type Tab } from './navSections';
 import { tabLink } from '../hooks/useTabRoute';
+import { OnTripMark } from './ui/OnTripMark';
 
 interface BottomNavProps {
   activeTab: Tab;
@@ -38,12 +39,7 @@ export function BottomNav({ activeTab, setActiveTab, tripActive = false }: Botto
           >
             <span className="relative">
               <Icon className="h-5 w-5" aria-hidden="true" />
-              {tripActive && id === 'plan' && (
-                <>
-                  <span className="absolute -right-1.5 -top-1 h-2.5 w-2.5 rounded-pill border-strong border-bg bg-accent" aria-hidden="true" />
-                  <span className="sr-only">{t.companion.onTrip}</span>
-                </>
-              )}
+              {tripActive && id === 'plan' && <OnTripMark className="absolute -right-1.5 -top-1 border-strong border-bg bg-accent" />}
             </span>
             <span className={`text-label ${on ? 'font-semibold' : 'font-normal'}`}>{label}</span>
           </a>
