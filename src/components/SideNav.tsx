@@ -3,6 +3,7 @@ import { tabLink } from '../hooks/useTabRoute';
 import { useLang, useT } from '../i18n';
 import { Settings, type SettingsProps } from './ui/Settings';
 import { CountBadge } from './ui/CountBadge';
+import { Wordmark } from './ui/Wordmark';
 
 interface SideNavProps extends SettingsProps {
   activeTab: Tab;
@@ -26,7 +27,7 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
     // A landmark, so a screen reader moving by landmark does not meet a rail with holes in it.
     <aside aria-label={t.nav.appName} className="hidden w-rail shrink-0 flex-col border-r border-line bg-bg lg:flex">
       <div className="px-5 pb-4 pt-5">
-        <span className="text-emph font-semibold tracking-title">{t.nav.appName}</span>
+        <Wordmark />
       </div>
 
       <nav className="flex flex-col gap-0.5 px-2.5" aria-label={t.nav.main}>

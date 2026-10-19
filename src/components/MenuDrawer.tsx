@@ -3,6 +3,7 @@ import { CloseButton } from './ui/controls';
 import { CountBadge } from './ui/CountBadge';
 import { NameStack } from './ui/NameStack';
 import { Drawer } from './ui/Drawer';
+import { Wordmark } from './ui/Wordmark';
 import { tabLink } from '../hooks/useTabRoute';
 import { useLang, useT } from '../i18n';
 import { asideSections, type Tab } from './navSections';
@@ -27,7 +28,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
   return (
     <Drawer open={open} onClose={onClose} label={t.menu.open} closeLabel={t.menu.close}>
       <div className="flex items-center justify-between border-b border-edge px-cap-4.5 py-4">
-        <span className="text-emph font-semibold tracking-title">{t.nav.appName}</span>
+        <Wordmark />
         <CloseButton label={t.menu.close} onClick={onClose} />
       </div>
 
