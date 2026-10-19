@@ -15,6 +15,9 @@ interface AlertsViewProps {
   alerts: ServiceAlerts;
 }
 
+/** The notices, three abreast from md up: the incidents and the structural ones. */
+const NOTICE_GRID = 'grid grid-cols-1 md:grid-cols-3 gap-4';
+
 /** An instant from the feed (ISO, because one scrape serves every language), or the raw value rather than "Invalid Date". */
 function formatInstant(value: string | undefined, locale: string): string {
   if (!value) return '—';
@@ -177,7 +180,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
         )}
 
         {liveAlerts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={NOTICE_GRID}>
             {/* The council's feed dates its items; the operator's bell does not, so its `date` is the moment this app read the page, and says so. */}
             {liveAlerts.map((alert) => (
               <AlertCard key={alert.id} alert={alert} when={alert.source === 'concello' ? formatInstant(alert.date, locale) : t.fares.seenAt(formatInstant(alert.date, locale))} source={alert.source === 'concello' ? t.fares.sourceConcello : t.fares.sourceOperator} />
@@ -222,7 +225,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
           {/* They are reviewed monthly; two months means a review was missed, and the reader is told. */}
           {monthsSinceReview >= 2 && <p className="mt-1 text-note font-semibold text-warn-ink">{t.fares.structuralStale(monthsSinceReview)}</p>}
           <div className="mb-3" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={NOTICE_GRID}>
             {structuralNotices.map((alert) => (
               <AlertCard key={alert.id} alert={alert} when={t.fares.reviewedOn(new Date(alert.date).toLocaleDateString(locale))} />
             ))}
