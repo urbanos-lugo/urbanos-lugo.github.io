@@ -244,9 +244,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
         {t.stopHome.near}
       </Heading>
       {locatedAt && (
-        <div className="mt-2.5 overflow-hidden rounded-control border border-edge">
-          <LazyNearbyMiniMap centre={{ lat: locatedAt[0], lng: locatedAt[1], label: t.stopHome.youAreHere, kind: 'user' }} stops={nearby} onSelectStop={onSelectStop} regionLabel={t.map.nearbyRegion} />
-        </div>
+        <LazyNearbyMiniMap centre={{ lat: locatedAt[0], lng: locatedAt[1], label: t.stopHome.youAreHere, kind: 'user' }} stops={nearby} onSelectStop={onSelectStop} regionLabel={t.map.nearbyRegion} className="mt-2.5" />
       )}
       {nearby.length === 0 ? (
         <>

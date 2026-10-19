@@ -580,9 +580,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             </ul>
           </Disclosure>
         )}
-        <div className="mt-2 overflow-hidden rounded-control border border-edge">
-          <LazyNearbyMiniMap centre={{ lat: selectedStop.lat, lng: selectedStop.lng, label: selectedStop.name, kind: 'stop' }} stops={polesNearby} onSelectStop={onSelectStop} regionLabel={t.arrivals.stopMapRegion} />
-        </div>
+        <LazyNearbyMiniMap centre={{ lat: selectedStop.lat, lng: selectedStop.lng, label: selectedStop.name, kind: 'stop' }} stops={polesNearby} onSelectStop={onSelectStop} regionLabel={t.arrivals.stopMapRegion} className="mt-2" />
       </section>
 
       <Disclosure frame="rule" className="mt-4" summary={t.arrivals.reportPosition}>

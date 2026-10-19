@@ -12,7 +12,8 @@ const NearbyMiniMap = lazy(() => import('./NearbyMiniMap').then((m) => ({ defaul
 /** The map's own height, so nothing moves when it arrives. */
 const Placeholder = () => <div className="h-map-card w-full bg-surface" />;
 
-export function LazyNearbyMiniMap(props: NearbyMiniMapProps) {
+/** Framed here, the control corner and the hairline; the space above it is the caller's. */
+export function LazyNearbyMiniMap({ className, ...props }: NearbyMiniMapProps & { className: string }) {
   const holder = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
 
@@ -27,7 +28,7 @@ export function LazyNearbyMiniMap(props: NearbyMiniMapProps) {
   }, [seen]);
 
   return (
-    <div ref={holder}>
+    <div ref={holder} className={`overflow-hidden rounded-control border border-edge ${className}`}>
       {seen ? (
         <Suspense fallback={<Placeholder />}>
           <NearbyMiniMap {...props} />
