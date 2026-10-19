@@ -4,6 +4,7 @@ import { Provenance } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
 import { SectionLabel } from './ui/SectionLabel';
 import { Notice } from './ui/controls';
+import { Figure } from './ui/Figure';
 import { useT } from '../i18n';
 import { TripCompanion, useTripPosition } from '../hooks/useTripCompanion';
 import { ALARM_RADIUS_M } from '../services/stopAlarm';
@@ -122,10 +123,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
             <span className={label}>{t.planner.alight}</span>
             <p className={headline}>{segment?.toStop?.name}</p>
             <div className="rule-above mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-              <span className="flex items-baseline gap-2">
-                <span className="tnum text-num font-bold tracking-display text-ink">{progress?.stopsRemaining ?? '—'}</span>
-                <span className="text-body text-ink-3">{t.companion.stops(progress?.stopsRemaining ?? 0)}</span>
-              </span>
+              <Figure value={progress?.stopsRemaining ?? '—'} unit={t.companion.stops(progress?.stopsRemaining ?? 0)} />
               {/* Wrapping, as the card above does: at 200 % text the minutes, the time and the
                   provenance chip ran 106 px out of the card and the screen 58 px past the phone. */}
               {minutesToAlighting !== null && (

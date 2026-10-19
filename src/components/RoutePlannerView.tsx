@@ -14,6 +14,7 @@ import { useClock } from '../hooks/useClock';
 import { boardingIsNow, type TripPlace } from '../utils/tripProgress';
 import { SectionLabel } from './ui/SectionLabel';
 import { EmptyState } from './ui/EmptyState';
+import { Figure } from './ui/Figure';
 import { ChoiceChip, Disclosure, Notice, NoticeDisclosure, Segmented } from './ui/controls';
 import { PlaceField, suggestionsFor, type Suggestion } from './planner/PlaceField';
 import { TripOptions } from './planner/TripOptions';
@@ -611,10 +612,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
 
               {/* The three numbers that answer "should I do this trip", on one baseline: how long on the left, when on the right. */}
               <div key={answered} className="anim-rise flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3">
-                <span className="flex items-baseline gap-2">
-                  <span className="tnum text-num font-bold tracking-display">{shown.durationMinutes}</span>
-                  <span className="text-body text-ink-3">{t.common.min}</span>
-                </span>
+                <Figure value={shown.durationMinutes} unit={t.common.min} />
                 <span className="flex flex-wrap items-baseline gap-x-2">
                   <span className="sr-only">{t.planner.departureLabel}</span>
                   {/* Past the last bus the answer is another day's: said beside the clock, where the eye goes. */}

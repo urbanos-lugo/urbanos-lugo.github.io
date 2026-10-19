@@ -259,7 +259,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
   /** Minutes, with the tilde carrying "derived" in the figure; overdue is quieter, the least certain thing on the screen. */
   const Minutes = ({ arrival }: { arrival: StopArrival }) => (
-    <span className={`tnum shrink-0 text-num font-bold tracking-display ${arrival.overdueMinutes ? 'text-ink-3' : arrival.etaMinutes === 0 ? 'text-accent' : 'text-ink-max'}`}>
+    <span className={`figure shrink-0 ${arrival.overdueMinutes ? 'text-ink-3' : arrival.etaMinutes === 0 ? 'text-accent' : 'text-ink-max'}`}>
       {arrival.overdueMinutes ? (
         <span className="text-emph">{t.common.overdue(arrival.overdueMinutes)}</span>
       ) : arrival.etaMinutes === 0 ? (

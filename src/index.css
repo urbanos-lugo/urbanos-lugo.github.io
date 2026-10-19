@@ -608,6 +608,10 @@
      The space above the rule is the caller's. */
   .rule-above { border-top: var(--default-border-width) solid var(--c-line); padding-top: calc(var(--spacing) * 3); }
 
+  /* A screen's one big number: the board's minutes, the planner's, the ride's stops to go.
+     Tabular figures in the mono face at the number size, tightened like a display line. */
+  .figure { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-num); line-height: var(--text-num--line-height); font-weight: var(--font-weight-bold); letter-spacing: var(--tracking-display); }
+
   /* A card on a screen's column or in the map's panel: the card corner, the hairline edge, the
      ground, raised. No padding, so a card can be the padded item inside a bare .fold wrapper,
      and each column keeps its own; a state's tone is the caller's utility. */
