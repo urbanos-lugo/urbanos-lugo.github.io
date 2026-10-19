@@ -268,7 +268,7 @@ export default function App() {
                   <Suspense
                     fallback={
                       <div className="page map-gutter">
-                        <div className="flex h-map-desktop animate-waiting items-center justify-center rounded-card bg-surface text-body font-medium text-ink-3">{t.map.loadingMap}</div>
+                        <div className="map-placeholder flex h-map-desktop animate-waiting items-center justify-center text-body font-medium text-ink-3">{t.map.loadingMap}</div>
                       </div>
                     }
                   >

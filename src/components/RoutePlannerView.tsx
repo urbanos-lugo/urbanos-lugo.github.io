@@ -699,7 +699,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 </div>
                 <div className={`fold ${showMap ? '' : 'fold-closed'}`}>
                   <div className="relative">
-                    <Suspense fallback={<div className="w-full h-map-card sm:h-map-card-sm rounded-card bg-surface animate-waiting" />}>
+                    <Suspense fallback={<div className="map-placeholder h-map-card animate-waiting sm:h-map-card-sm" />}>
                       <RouteMap plan={planResult} origin={endpoints.origin} destination={endpoints.destination} walkPaths={walkPaths} className="w-full h-map-card sm:h-map-card-sm rounded-card overflow-hidden border border-edge z-0" />
                     </Suspense>
                     {/* The map ends at the fold on a phone, so the chip that says the trip is written out further down sits on it. */}

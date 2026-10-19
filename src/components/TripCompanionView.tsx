@@ -166,7 +166,7 @@ export function TripCompanionView({ companion }: { companion: TripCompanion }) {
 
       <div>
         <SectionLabel icon={MapPin} className="mb-2">{t.planner.routeMap}</SectionLabel>
-        <Suspense fallback={<div className={`${MAP_HEIGHT} w-full animate-waiting rounded-card bg-surface`} />}>
+        <Suspense fallback={<div className={`map-placeholder animate-waiting ${MAP_HEIGHT}`} />}>
           <RouteMap
             plan={trip.plan}
             origin={trip.origin ?? undefined}

@@ -644,6 +644,11 @@
      holds and hugs them a step closer, until those are chosen one way or the other. */
   .inset-panel { @apply rounded-control border border-line bg-surface p-3; }
 
+  /* A map's space while its chunk loads: the card corner on the surface. The height is the
+     map's own, so nothing moves when it arrives, and the pulse (animate-waiting) stays beside
+     it where the waiting indicators are counted. */
+  .map-placeholder { @apply w-full rounded-card bg-surface; }
+
   /* A labelled action. Primary is the accent fill; secondary a bordered fill a step off its
      ground (the caller makes it bg-bg where it sits on a tint or on glass); outbound an <a> to
      the operator's site. A floor rather than a height, so a label that wraps grows the button
