@@ -33,6 +33,7 @@ import { sectionedNotices } from './utils/operatorNotices';
 import { changesNow, latestRun, readNoticeChanges, runsAt } from './utils/noticeChanges';
 import { isSnapshotStale } from './utils/snapshotAge';
 import { BusStop, BusLine } from './types';
+import { Pane } from './components/ui/Pane';
 
 // Leaflet and its layers are only needed on the map tab, so they load with it.
 const InteractiveMap = lazy(() => import('./components/Map/TransitMap').then((m) => ({ default: m.TransitMap })));
@@ -230,14 +231,13 @@ export default function App() {
               {/* One heading for the page, naming what is on screen: correct in both the one-pane and the two-pane layout. */}
               <h1 className="sr-only">{screenTitle}</h1>
 
-              {/* Below lg the two panes take turns; from lg up the saved stops stay beside the board, each pane positioned for the reason LinesView gives. */}
+              {/* Below lg the two panes take turns; from lg up the saved stops stay beside the board. */}
               {activeTab === 'stops' && (
                 <div className="page h-full lg:grid lg:grid-cols-12 lg:gap-6 lg:px-6 lg:pt-4">
-                  <div className={`lg:relative lg:col-span-5 lg:block lg:h-full lg:overflow-y-auto ${showStopBoard ? 'hidden' : ''}`}>
+                  <Pane side="list" shown={!showStopBoard}>
                     <StopHome favoriteStopIds={favoriteStopIds} favoriteLineIds={favoriteLineIds} onSelectLine={openLine} recentStopIds={recentStopIds} onClearRecent={clearRecentStops} onSelectStop={selectStop} onOpenQrScanner={() => setIsQrModalOpen(true)} />
-                  </div>
-                  {/* In from the right when it takes the list's place, like every push on a phone; the way back is not animated. From lg up the panes never take turns. */}
-                  <div className={`anim-push-in lg:animate-none lg:relative lg:col-span-7 lg:block lg:h-full lg:overflow-y-auto ${showStopBoard ? '' : 'hidden'}`}>
+                  </Pane>
+                  <Pane side="detail" shown={showStopBoard}>
                     <StopArrivalsView
                       selectedStop={selectedStop}
                       onSelectLine={openLine}
@@ -255,7 +255,7 @@ export default function App() {
                       changes={noticeChanges}
                       onOpenAlerts={() => setActiveTab('info')}
                     />
-                  </div>
+                  </Pane>
                 </div>
               )}
 

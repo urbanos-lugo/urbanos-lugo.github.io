@@ -10,6 +10,7 @@ import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDura
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
 import { BackButton, ChoiceChip, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { Pane } from './ui/Pane';
 import { SectionTitle } from './ui/SectionTitle';
 import { Approx } from './ui/Provenance';
 import { LineBadge, lineTint } from './ui/LineBadge';
@@ -131,11 +132,8 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
 
   return (
     <div className="page page-gutter h-full py-4 lg:pb-0">
-      {/* From lg up each pane scrolls on its own, so each is positioned: otherwise the absolute
-          boxes inside (screen-reader text, timeline dots) take <main> as containing block,
-          escape the pane's clip, and <main> scrolls a second time into an empty page. */}
       <div className="lg:grid lg:h-full lg:grid-cols-12 lg:gap-6">
-        <div className={`space-y-4 lg:relative lg:col-span-5 lg:block lg:h-full lg:overflow-y-auto lg:pb-4 ${showDetail ? 'hidden' : ''}`}>
+        <Pane side="list" shown={!showDetail} className="space-y-4 lg:pb-4">
           <div className="card space-y-4 py-4 px-cap-4 lg:p-5">
             <div>
               <SectionTitle icon={Route} small subtitle={t.lines.subtitle}>
@@ -221,9 +219,9 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               })}
             </div>
           </div>
-        </div>
+        </Pane>
 
-        <div className={`anim-push-in space-y-4 lg:relative lg:animate-none lg:col-span-7 lg:block lg:h-full lg:overflow-y-auto lg:pb-4 ${showDetail ? '' : 'hidden'}`}>
+        <Pane side="detail" shown={showDetail} className="space-y-4 lg:pb-4">
           <BackButton label={t.lines.backToLines} onClick={() => setShowDetail(false)} />
 
           <div className="card space-y-4 py-6 px-cap-6">
@@ -530,7 +528,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               })}
             </div>
           </div>
-        </div>
+        </Pane>
       </div>
     </div>
   );
