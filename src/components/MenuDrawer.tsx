@@ -33,10 +33,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
       </div>
 
       <div className="flex flex-col gap-0.5 px-2.5 py-3">
-        {asideSections(t, alertCount).map(({ id, Icon, label, badge }) => (
-          // The count is part of the name, with a pause: read from the markup it came out as "Avisos do servizo1".
-          // After a colon, not in brackets: a name's brackets are dropped by checkers before it is
-          // matched with what the control shows, and the count it shows was then not in its name.
+        {asideSections(t, alertCount).map(({ id, Icon, label, badge, name }) => (
           <a
             key={id}
             {...tabLink(
@@ -47,7 +44,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
               },
               lang,
             )}
-            aria-label={badge > 0 ? `${label}: ${badge}` : undefined}
+            aria-label={name}
             className="flex min-h-14 items-center gap-4 rounded-card px-cap-3 py-2 text-left"
           >
             <Icon className={`h-5 w-5 shrink-0 ${id === 'info' ? 'text-warn-ink' : 'text-ink-2'}`} aria-hidden="true" />
