@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
-import { ArrowLeft, Bus, Calendar, ChevronRight, Clock, MapPin, Route, Star, TriangleAlert } from 'lucide-react';
+import { Bus, Calendar, ChevronRight, Clock, MapPin, Route, Star, TriangleAlert } from 'lucide-react';
 import { useLang, useT } from '../i18n';
 import { BusLine, BusStop, ServiceAlert } from '../types';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
@@ -9,7 +9,7 @@ import { getScheduledBuses } from '../utils/vehicles';
 import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDuration, type ScheduledRun } from '../utils/schedule';
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
-import { ChoiceChip, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { BackButton, ChoiceChip, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionTitle } from './ui/SectionTitle';
 import { Approx } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
@@ -208,10 +208,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
         </div>
 
         <div className={`anim-push-in space-y-4 lg:relative lg:animate-none lg:col-span-7 lg:block lg:h-full lg:overflow-y-auto lg:pb-4 ${showDetail ? '' : 'hidden'}`}>
-          <button onClick={() => setShowDetail(false)} className="-ml-1 flex h-tap items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden">
-            <ArrowLeft className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
-            {t.lines.backToLines}
-          </button>
+          <BackButton label={t.lines.backToLines} onClick={() => setShowDetail(false)} />
 
           <div className="card space-y-4 py-6 px-cap-6">
             <div className="flex flex-col justify-between gap-4 border-b border-line pb-5 2xl:flex-row 2xl:items-center">

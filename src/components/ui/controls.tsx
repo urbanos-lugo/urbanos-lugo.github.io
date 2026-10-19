@@ -1,4 +1,4 @@
-import { ChevronDown, Star, TriangleAlert, X, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Star, TriangleAlert, X, type LucideIcon } from 'lucide-react';
 import { useState, type CSSProperties, type ReactNode } from 'react';
 
 /**
@@ -35,6 +35,19 @@ export function IconButton({
       className={`flex h-tap w-tap items-center justify-center rounded-control border ${on ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${className}`}
     >
       <Icon className={`h-4.5 w-4.5 ${fill === undefined ? '' : 'stroke-filled'} ${iconClassName}`} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />
+    </button>
+  );
+}
+
+/**
+ * Back to the list a two-pane screen came from, on a phone: from lg up both panes show at
+ * once and it goes. The space under it is the caller's.
+ */
+export function BackButton({ label, onClick, className = '' }: { label: string; onClick: () => void; className?: string }) {
+  return (
+    <button type="button" onClick={onClick} className={`-ml-1 flex h-tap items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden ${className}`}>
+      <ArrowLeft className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
+      {label}
     </button>
   );
 }

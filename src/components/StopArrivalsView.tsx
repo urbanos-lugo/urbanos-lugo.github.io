@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, type CSSProperties } from 'react';
-import { ArrowLeft, Bell, Check, Clock, Map as MapIcon, Share2 } from 'lucide-react';
+import { Bell, Check, Clock, Map as MapIcon, Share2 } from 'lucide-react';
 import { BusStop, BusLine, ServiceAlert, StopArrival } from '../types';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
 import { changesNow, closedAt, pastTimetable, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
@@ -15,7 +15,7 @@ import { useOperatorTimes } from '../hooks/useOperatorTimes';
 import { Approx, Provenance } from './ui/Provenance';
 import { LineBadge } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
-import { CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { BackButton, CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionLabel } from './ui/SectionLabel';
 import { EmptyState } from './ui/EmptyState';
 import { watchForStop, ringAlarm, notify, requestNotificationPermission, ALARM_RADIUS_M, AlarmHandle } from '../services/stopAlarm';
@@ -311,10 +311,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
   return (
     <div className="page-column px-cap-3.5 pb-8 pt-4">
-      <button onClick={onBack} className="-ml-1 mb-1 flex h-tap items-center gap-1.5 pr-3 text-body font-medium text-ink-2 lg:hidden">
-        <ArrowLeft className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
-        {t.arrivals.back}
-      </button>
+      <BackButton label={t.arrivals.back} onClick={onBack} className="mb-1" />
 
       <header className="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
