@@ -40,6 +40,16 @@ export function IconButton({
 }
 
 /**
+ * The veil behind a drawer or a sheet, which closes it: a button, since closing is an action
+ * and the veil is the target most people reach for first. For the finger, not the Tab key:
+ * the overlay's own close is the same action. className places it (absolute in a drawer's
+ * frame, fixed over the map).
+ */
+export function Scrim({ label, onClose, className }: { label: string; onClose: () => void; className: string }) {
+  return <button type="button" tabIndex={-1} aria-label={label} onClick={onClose} className={`anim-fade-full inset-0 bg-scrim ${className}`} />;
+}
+
+/**
  * A time to ask about, with its words in front: the planner's "depart at" or "arrive by"
  * (with the clock icon) and the board's "at another time". The field goes under the words
  * when both do not fit; the box around it is the caller's.

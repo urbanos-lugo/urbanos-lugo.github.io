@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import { LocateFixed, SlidersHorizontal } from 'lucide-react';
-import { CloseButton } from '../ui/controls';
+import { CloseButton, Scrim } from '../ui/controls';
 import { useT } from '../../i18n';
 import { BusStop, BusLine } from '../../types';
 import { BUS_STOPS, BUS_LINES, LUGO_CENTER, lineById, poleCode } from '../../data/transitData';
@@ -196,8 +196,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
     // No page padding on a phone: the map is the screen there, edge to edge.
     <div className="page map-gutter h-full sm:h-auto">
       <div className="h-full sm:h-auto grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* The scrim: a button, because closing is an action and this is the target most people reach for first. */}
-        {sheetOpen && <button type="button" aria-label={t.map.closeControls} onClick={closeSheet} className="anim-fade-full fixed inset-0 z-map-overlay bg-scrim lg:hidden" />}
+        {sheetOpen && <Scrim label={t.map.closeControls} onClose={closeSheet} className="fixed z-map-overlay lg:hidden" />}
 
         <MapControls
           sheetRef={sheetRef}

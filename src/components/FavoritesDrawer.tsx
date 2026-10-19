@@ -6,7 +6,7 @@ import { daysLabel, frequencyLabel } from '../utils/serviceLabels';
 import { BusStop, BusLine } from '../types';
 import { BUS_STOPS, BUS_LINES, linesByNumber, poleCode } from '../data/transitData';
 import { LineBadge } from './ui/LineBadge';
-import { CloseButton, Segmented } from './ui/controls';
+import { CloseButton, Scrim, Segmented } from './ui/controls';
 import { EmptyState } from './ui/EmptyState';
 
 interface FavoritesDrawerProps {
@@ -66,8 +66,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
 
   return (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.favourites.title} className="fixed inset-0 z-dialog overflow-hidden">
-      {/* For the finger, not the Tab key: the X beside the title is the same action. */}
-      <button className="anim-fade-full absolute inset-0 bg-scrim" onClick={onClose} aria-label={t.favourites.close} tabIndex={-1} />
+      <Scrim label={t.favourites.close} onClose={onClose} className="absolute" />
       {/* The strip of page to the left stops growing with the type, and the panel may be
           narrower than its content wants: at 200% text it was 80 px wider than the screen
           and hid its own close button. */}

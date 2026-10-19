@@ -1,5 +1,5 @@
 import { ChevronRight } from 'lucide-react';
-import { CloseButton } from './ui/controls';
+import { CloseButton, Scrim } from './ui/controls';
 import { CountBadge } from './ui/CountBadge';
 import { NameStack } from './ui/NameStack';
 import { useDialog } from '../hooks/useDialog';
@@ -28,8 +28,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
 
   return (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={t.menu.open} className="fixed inset-0 z-dialog">
-      {/* For the finger, not the Tab key: the X beside the title is the same action. */}
-      <button className="anim-fade-full absolute inset-0 bg-scrim" onClick={onClose} aria-label={t.menu.close} tabIndex={-1} />
+      <Scrim label={t.menu.close} onClose={onClose} className="absolute" />
       <div className="@container anim-slide-in absolute inset-y-0 right-0 flex w-menu max-w-menu-max flex-col border-l border-edge bg-bg shadow-overlay">
         <div className="flex items-center justify-between border-b border-edge px-cap-4.5 py-4">
           <span className="text-emph font-semibold tracking-title">{t.nav.appName}</span>
