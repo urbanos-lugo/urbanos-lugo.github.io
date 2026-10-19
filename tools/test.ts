@@ -26,7 +26,7 @@ import { ALARM_RADIUS_M, subscribePosition } from '../src/services/stopAlarm';
 import { poleCode, FARES, linesByNumber } from '../src/data/transitData';
 import { STALE_AFTER_MS, isSnapshotStale } from '../src/utils/snapshotAge';
 import { MAX_PER_WINDOW, MAX_PLANS_PER_WINDOW, rateLimit } from '../src/security/rateLimit';
-import { RECENT_ROUTES } from '../src/hooks/useStoredList';
+import { RECENT_ROUTES, remembered, toggled } from '../src/hooks/useStoredList';
 import { SNAPSHOT_AFTER_MS, readSnapshot } from '../src/hooks/useServiceAlerts';
 import { readOperatorTimes } from '../src/hooks/useOperatorTimes';
 import { noticeLink } from '../src/utils/operatorNotices';
@@ -39,7 +39,7 @@ import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components
 import { routeOnFoot } from '../src/utils/walkRouter';
 import { metresBetween } from '../src/utils/geo';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
-import { HOLIDAY_YEARS, buildRuns, dayKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, isLineInService, scheduledDuration } from '../src/utils/schedule';
+import { HOLIDAY_YEARS, buildRuns, dayKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
 import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
 import festivos from '../src/data/festivos.json';
 import { holidaysDue } from './checkHolidaysAhead';
@@ -2035,17 +2035,18 @@ console.log('\nuntested corners');
 ok('a service window that crosses midnight is not read as finished', () => {
   // A night line running 22:30 to 06:30 has a window ending before it starts, and the naive
   // comparison called it closed all day. (The "no service" banner no longer reads this: it
-  // reads the runs, yesterday's included -- see networkAtRest.)
+  // reads the runs, yesterday's included -- see networkAtRest.) The wrapper that also asked
+  // the day's pattern went on 19 October 2026, used by nothing but this check.
   const night = { firstDeparture: '22:30', lastDeparture: '06:30', services: [{ days: ['laborable'] }] } as any;
-  const tuesday = (h: number, m: number) => new Date(2026, 7, 18, h, m);
+  const at = (h: number, m: number) => h * 60 + m;
 
-  assert(isLineInService(night, tuesday(23, 0)), 'a night line is closed at 23:00');
-  assert(isLineInService(night, tuesday(2, 0)), 'a night line is closed at 02:00');
-  assert(!isLineInService(night, tuesday(12, 0)), 'a night line is open at midday');
+  assert(isWithinServiceWindow(night, at(23, 0)), 'a night line is closed at 23:00');
+  assert(isWithinServiceWindow(night, at(2, 0)), 'a night line is closed at 02:00');
+  assert(!isWithinServiceWindow(night, at(12, 0)), 'a night line is open at midday');
 
   const day = { firstDeparture: '07:15', lastDeparture: '22:00', services: [{ days: ['laborable'] }] } as any;
-  assert(isLineInService(day, tuesday(12, 0)), 'a day line is closed at midday');
-  assert(!isLineInService(day, tuesday(3, 0)), 'a day line is open at 03:00');
+  assert(isWithinServiceWindow(day, at(12, 0)), 'a day line is closed at midday');
+  assert(!isWithinServiceWindow(day, at(3, 0)), 'a day line is open at 03:00');
 });
 
 ok('nearby stops come back nearest first, with a walk rather than a straight line', () => {
@@ -2471,6 +2472,27 @@ ok('a cached map tile costs the phone its own size, not megabytes', () => {
   const config = read('vite.config.ts');
   const tiles = config.slice(config.indexOf("cacheName: 'map-tiles'"), config.indexOf('}', config.indexOf('cacheableResponse', config.indexOf("cacheName: 'map-tiles'"))) + 1);
   assert(/cacheableResponse: \{ statuses: \[200\] \}/.test(tiles), `the tile cache keeps opaque responses again: ${tiles.slice(tiles.indexOf('cacheableResponse')).split('\n')[0]}`);
+});
+
+ok('the service worker never answers the API from its own cache', () => {
+  // A NetworkFirst rule for /api/alerts handed a self-hosted app, offline, an answer up to six
+  // hours old as a live one, counted in the badge; on the published site, whose API is another
+  // origin, Workbox never matched it at all (audit, 19 October 2026). The app's own fallback is
+  // the precached alerts.json, dated on screen.
+  const rules = read('vite.config.ts').replace(/^\s*\/\/.*$/gm, '');
+  assert(!/urlPattern:[^\n]*api/.test(rules), 'a service worker rule answers API requests from its cache again');
+});
+
+ok('a star or a recent stop set in one open copy of the app survives another copy', () => {
+  // The installed app and a tab each kept their own list and wrote it whole: a stop starred in
+  // one was gone once the other starred something (audit, 19 October 2026).
+  const known = new Set(['a', 'b', 'c']);
+  assert.deepStrictEqual(toggled([], ['a'], 'b', known), ['a', 'b'], 'a star from the other copy was dropped');
+  assert.deepStrictEqual(toggled(['a'], ['a', 'b'], 'a', known), ['b'], 'unstarring dropped what the other copy had starred');
+  assert.deepStrictEqual(toggled(['a'], [], 'a', known), [], 'unstarring what the other copy had already removed starred it again');
+  assert.deepStrictEqual(toggled(['a'], null, 'b', known), ['a', 'b'], 'with nothing readable stored, the shown list was not kept');
+  const isStr = (x: unknown): x is string => typeof x === 'string';
+  assert.deepStrictEqual(remembered(['x'], ['y', 'x'], 'z', isStr, (p, q) => p === q, 6), ['z', 'y', 'x'], 'a recent stop from the other copy was lost');
 });
 
 ok('a browser that refuses site data still gets the app', () => {
@@ -5196,6 +5218,11 @@ ok('what the interface announces, names and keeps is what the README and DECIDID
   const ride = read('src/hooks/useTripCompanion.ts');
   assert(/const \[keepAwakeOn, setKeepAwakeOn\] = useState\(false\)/.test(ride) && /CAN_KEEP_AWAKE \? \{/.test(ride), 'the keep-awake switch no longer starts off, or shows where the API is missing');
   assert.deepStrictEqual(readdirSync(join(root, 'public')).filter((f) => f.endsWith('.svg')), ['favicon.svg'], 'there is more than one drawing of the icon again');
+  // Googlebot asked for /favicon.ico three times in its first week and got 404 (crawl stats,
+  // 19 October 2026). It wraps icon-192.png byte for byte, so it is not a second drawing.
+  const ico = readFileSync(join(root, 'public', 'favicon.ico'));
+  assert(ico.readUInt16LE(2) === 1 && ico.readUInt16LE(4) === 1 && ico.subarray(22).equals(readFileSync(join(root, 'public', 'icon-192.png'))), 'favicon.ico is no longer icon-192.png in an icon container');
+  assert(/<link rel="icon" type="image\/png" sizes="192x192" href="%BASE_URL%icon-192\.png" \/>/.test(read('index.html')), 'the page no longer offers search engines a raster icon');
   const background = /background_color: '(#[0-9a-f]{6})'/i.exec(read('vite.config.ts'))?.[1] ?? '#ffffff';
   assert(relLum(background) < 0.02, `the installed app opens on ${background}, a white flash before the dark page`);
 });

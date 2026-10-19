@@ -24,7 +24,6 @@ export const LANG_NAME: Record<Lang, string> = { gl: 'Galego', es: 'Español', e
 export const LOCALE: Record<Lang, string> = { gl: 'gl-ES', es: 'es-ES', en: 'en-GB' };
 
 export const translations = (lang: Lang): Dict => DICTIONARIES[lang] ?? gl;
-export const isLang = (value: unknown): value is Lang => LANGS.includes(value as Lang);
 
 /**
  * The interface language, for components. Set once at the top of the app; everything

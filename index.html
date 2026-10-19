@@ -22,6 +22,9 @@
          One file rather than an inline data URI: the same mark is already shipped for the
          manifest and precached by the service worker, and two copies of a logo drift. -->
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <!-- The same mark as a raster for search results, which want a multiple of 48 px; the
+         manifest's 192 px icon, and favicon.ico wraps it, so neither is another drawing. -->
+    <link rel="icon" type="image/png" sizes="192x192" href="%BASE_URL%icon-192.png" />
     <script src="%BASE_URL%theme-init.js"></script>
 
     <meta name="theme-color" content="#d81f26" />

@@ -217,17 +217,8 @@ export default defineConfig({
               cacheableResponse: { statuses: [200] },
             },
           },
-          {
-            // Service alerts are the only genuinely live data: prefer the network, fall
-            // back to the last answer instead of an error.
-            urlPattern: /\/api\/alerts/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'service-alerts',
-              networkTimeoutSeconds: 5,
-              expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 * 6 },
-            },
-          },
+          // No rule for /api/: the notices fall back to the precached alerts.json, which says
+          // when it was taken. A cached API answer came back as a live one, hours old.
         ],
       },
     }),

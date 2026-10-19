@@ -64,10 +64,6 @@ export function isWithinServiceWindow(line: BusLine, minutes: number): boolean {
   return first <= last ? minutes >= first && minutes <= last : minutes >= first || minutes <= last;
 }
 
-export function isLineInService(line: BusLine, now: Date = new Date()): boolean {
-  return lineRunsOn(line, dayKind(now)) && isWithinServiceWindow(line, now.getHours() * 60 + now.getMinutes());
-}
-
 /**
  * Cumulative seconds from the first stop to each stop. Two allowances the operator does
  * not publish: 90 s for a leg the build could not measure, 20 s standing at each stop.

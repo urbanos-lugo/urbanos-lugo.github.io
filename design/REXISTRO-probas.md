@@ -3026,3 +3026,38 @@ desde o 19 de outubro, como un cambio feito a propósito e con auditoría.
 
 - Comparar Chrome e o GL de software das dúas imaxes, e volver medir en 26.04 cando
   cambie algún dos dous.
+
+## Rolda 39: unha auditoría do repositorio enteiro, e cinco arranxos — 19 de outubro de 2026
+
+Pedido: auditar o repositorio enteiro (servidor, worker, lecturas de fóra, motor, almacenamento,
+service worker) e arranxar o atopado.
+
+### Medido
+
+- Favoritos e recentes: cada copia aberta da app (a instalada e unha lapela) gardaba a súa
+  lista enteira; unha estrela posta nunha perdíase cando a outra marcaba outra.
+- A regra `NetworkFirst` de `/api/alerts` no service worker: na web publicada, cuxo API é
+  outra orixe, Workbox non a aplicaba nunca (só casa unha orixe allea desde o comezo do
+  enderezo); nun servidor propio sen rede devolvía unha resposta de ata seis horas como se
+  fose en directo, e o distintivo contábaa.
+- `isLineInService` e `isLang` non as usaba ninguén fóra do seu check ou de ningures.
+- As estatísticas de rastreo de Search Console (14 a 17 de outubro): 11 peticións, 3 delas a
+  `/favicon.ico`, con 404.
+- Catro rutas do API do servidor propio repetían outras: `/api/stop/:code/arrivals`,
+  `/api/realtime/:stopId`, `/api/buses/live` e `POST /api/alerts/sync`; a app non usaba ningunha.
+
+### Feito
+
+- Favoritos e recentes cambian sobre o que está gardado agora, e a lista que amosa cada copia só
+  decide para onde vai a estrela. Un check novo, con catro casos.
+- A regra de `/api/` sae do service worker; un check novo impide que volva.
+- `isLineInService` e `isLang` borradas; o check da xanela nocturna pregunta agora a
+  `isWithinServiceWindow`, a parte que de verdade comprobaba.
+- A páxina ofrece `icon-192.png` como icona, e `public/favicon.ico` é ese PNG nun contedor ICO.
+- As catro rutas repetidas quitadas; o README dío. No servidor construído dan 404, e as outras
+  seguen respondendo.
+- 257 comprobacións. Os tres checks novos, probados contra o seu fallo de volta.
+
+### Queda
+
+- Que as estatísticas de rastreo deixen de ter 404 en `/favicon.ico`.

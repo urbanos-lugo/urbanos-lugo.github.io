@@ -25,7 +25,9 @@ de afirmar. Cada decisión de abaixo se tomou contra unha cifra, non contra un g
   atravesando a placa, e a parada como un anel sobre esa liña. Vista a 16, 20, 32, 64 e
   160 px contra outras dúas variantes e mantida; que a 16 px se lea coma un «m» está dito e
   aceptado. Un só ficheiro, `public/favicon.svg`; había dous debuxos e dous debuxos
-  diverxen.
+  diverxen. Desde o 19 de outubro de 2026 a páxina ofrece tamén `icon-192.png` como icona
+  (os buscadores queren un múltiplo de 48 px), e `favicon.ico` é ese mesmo PNG dentro dun
+  contedor ICO, porque Googlebot pedía `/favicon.ico` e levaba 404: o mesmo debuxo, non outro.
 - **Tres tons levan significado e ningún outro o leva**: vermello a app, azul unha hora
   publicada polo operador, ámbar unha hora calculada por esta app. Sepáranos 50 graos ou
   máis en oklch, e un check átao. O oficial **non foi a verde**, aínda que o plan o dicía:

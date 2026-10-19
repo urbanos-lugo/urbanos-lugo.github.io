@@ -73,16 +73,13 @@ async function startServer() {
   });
 
   // Scheduled departures for one stop. Every entry carries `precision`; nothing here is a vehicle observation.
-  const handleArrivals = (req: express.Request, res: express.Response) => {
-    const code = queryString(req.params.code) || queryString(req.params.stopId);
+  app.get('/api/arrivals/:code', (req, res) => {
+    const code = queryString(req.params.code);
     const { stop, arrivals } = getArrivalsForStop(code);
     if (!stop) return res.status(404).json({ error: 'Stop not found', code });
     // `computedAt` is the clock the minutes were counted against, not a data freshness stamp.
     res.json({ stop, arrivals, computedAt: new Date().toISOString(), source: 'timetable' });
-  };
-  app.get('/api/arrivals/:code', handleArrivals);
-  app.get('/api/stop/:code/arrivals', handleArrivals);
-  app.get('/api/realtime/:stopId', handleArrivals); // an old name kept so QR links do not break
+  });
 
   app.get('/api/routes/:lineId', (req, res) => {
     const line = BUS_LINES.find((l) => l.id === req.params.lineId || l.number === req.params.lineId);
@@ -98,9 +95,7 @@ async function startServer() {
   });
 
   // Where each run should be if it is keeping to its timetable: interpolated, never observed.
-  const handleScheduledPositions = (_req: express.Request, res: express.Response) => res.json({ source: 'timetable-interpolated', buses: getScheduledBuses() });
-  app.get('/api/buses/scheduled-positions', handleScheduledPositions);
-  app.get('/api/buses/live', handleScheduledPositions); // the previous name, which said "live" of something nothing observes
+  app.get('/api/buses/scheduled-positions', (_req, res) => res.json({ source: 'timetable-interpolated', buses: getScheduledBuses() }));
 
   app.get('/api/plan', (req, res) => {
     const from = queryString(req.query.from).slice(0, MAX_QUERY_LENGTH);
@@ -111,7 +106,6 @@ async function startServer() {
   });
 
   app.get('/api/alerts', async (req, res) => res.json(await syncOfficialAlerts(queryString(req.query.refresh) === 'true')));
-  app.post('/api/alerts/sync', async (_req, res) => res.json(await syncOfficialAlerts(true)));
   // The operator's own minutes at a stop; only a server can ask (no CORS header on their side). Shared with the Deno worker.
   app.get('/api/paradas/:code/agora', async (req, res) => {
     const { status, body } = await operatorTimesResponse(queryString(req.params.code));

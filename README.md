@@ -1076,14 +1076,15 @@ navegación, e a WCAG (2.4.5) pide máis dun camiño a cada páxina dun conxunto
 | `GET` | `/api/lines/:id` | Unha liña |
 | `GET` | `/api/stops` | Paradas, con `?q=` opcional |
 | `GET` | `/api/arrivals/:code` | Próximas chegadas nunha parada |
-| `GET` | `/api/stop/:code/arrivals` | Idem (alias) |
-| `GET` | `/api/realtime/:stopId` | Idem (alias) |
 | `GET` | `/api/routes/:lineId` | Percorrido en GeoJSON |
-| `GET` | `/api/buses/scheduled-positions` | Onde debería ir cada expedición segundo o horario. **Non son vehículos observados.** `/api/buses/live` mantense como alias antigo |
+| `GET` | `/api/buses/scheduled-positions` | Onde debería ir cada expedición segundo o horario. **Non son vehículos observados** |
 | `GET` | `/api/plan?from=&to=` | Cálculo de traxecto |
 | `GET` | `/api/alerts` | Avisos oficiais (`?refresh=true` forza) |
-| `POST` | `/api/alerts/sync` | Forza a sincronización |
 | `GET` | `/api/fares` | Tarifas |
+
+Os alias `/api/stop/:code/arrivals`, `/api/realtime/:stopId` e `/api/buses/live`, e o
+`POST /api/alerts/sync`, quitáronse o 19 de outubro de 2026: repetían rutas de arriba e a app
+non usaba ningún. Os QR dos postes apuntan á páxina do operador, non a este servidor.
 
 ---
 
@@ -1702,7 +1703,7 @@ Agrupa os postes duplicados, resolve os identificadores oficiais, asigna zonas e
 pnpm test
 ```
 
-255 comprobacións con asercións sobre o que xa estivo mal algunha vez: unicidade de
+257 comprobacións con asercións sobre o que xa estivo mal algunha vez: unicidade de
 códigos, coherencia entre `stop.lines` e os itinerarios, xeometría que segue as rúas,
 tramos non máis curtos ca a liña recta, ventás de servizo nocturnas, monotonía das horas
 de paso, flota baleira fóra de servizo, puntos de interese preto da rede, traxectos
