@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronDown, Star, TriangleAlert, X, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Clock, Star, TriangleAlert, X, type LucideIcon } from 'lucide-react';
 import { useState, type CSSProperties, type ReactNode } from 'react';
 
 /**
@@ -36,6 +36,33 @@ export function IconButton({
     >
       <Icon className={`h-4.5 w-4.5 ${fill === undefined ? '' : 'stroke-filled'} ${iconClassName}`} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />
     </button>
+  );
+}
+
+/**
+ * A time to ask about, with its words in front: the planner's "depart at" or "arrive by"
+ * (with the clock icon) and the board's "at another time". The field goes under the words
+ * when both do not fit; the box around it is the caller's.
+ */
+export function TimeField({
+  label,
+  value,
+  onChange,
+  clock = false,
+  className = '',
+}: {
+  label: ReactNode;
+  value: string;
+  onChange: (value: string) => void;
+  clock?: boolean;
+  className?: string;
+}) {
+  return (
+    <label className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-label font-semibold text-ink-2 ${className}`}>
+      {clock && <Clock className="h-3.5 w-3.5 shrink-0 text-accent" aria-hidden="true" />}
+      <span className="shrink-0">{label}</span>
+      <input type="time" value={value} onChange={(e) => onChange(e.target.value)} className="field field-clock" />
+    </label>
   );
 }
 

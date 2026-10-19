@@ -15,7 +15,7 @@ import { useOperatorTimes } from '../hooks/useOperatorTimes';
 import { Approx, Provenance } from './ui/Provenance';
 import { LineBadge, lineTint } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
-import { BackButton, CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { BackButton, CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented, TimeField } from './ui/controls';
 import { SectionLabel } from './ui/SectionLabel';
 import { EmptyState } from './ui/EmptyState';
 import { NameStack } from './ui/NameStack';
@@ -555,10 +555,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           </>
         }
       >
-        <label className="flex flex-wrap items-center gap-2 px-3 pb-3 text-label font-semibold text-ink-2">
-          <span className="shrink-0">{t.arrivals.atTimeLabel}</span>
-          <input type="time" value={atTime} onChange={(e) => setAtTime(e.target.value)} className="field field-clock" />
-        </label>
+        <TimeField label={t.arrivals.atTimeLabel} value={atTime} onChange={setAtTime} className="px-3 pb-3" />
       </Disclosure>
       {Object.keys(watches).length > 0 && <Notice className="mt-3">{t.arrivals.watchForeground}</Notice>}
 

@@ -15,7 +15,7 @@ import { boardingIsNow, type TripPlace } from '../utils/tripProgress';
 import { SectionLabel } from './ui/SectionLabel';
 import { EmptyState } from './ui/EmptyState';
 import { Figure } from './ui/Figure';
-import { ChoiceChip, Disclosure, Notice, NoticeDisclosure, Segmented } from './ui/controls';
+import { ChoiceChip, Disclosure, Notice, NoticeDisclosure, Segmented, TimeField } from './ui/controls';
 import { PlaceField, suggestionsFor, type Suggestion } from './planner/PlaceField';
 import { TripOptions } from './planner/TripOptions';
 import { Itinerary } from './planner/Itinerary';
@@ -427,11 +427,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                     wider than the phone: the clock field's monospace face is wider on Linux than on
                     Windows, where the same row fitted and the audit saw nothing. */}
                 {timeMode !== 'now' && (
-                  <label className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-label font-semibold text-ink-2">
-                    <Clock className="w-3.5 h-3.5 text-accent shrink-0" />
-                    <span className="shrink-0">{timeMode === 'arrive' ? t.planner.arriveByLabel : t.planner.departAtLabel}</span>
-                    <input type="time" value={timeValue} onChange={(e) => setTimeValue(e.target.value)} className="field field-clock" />
-                  </label>
+                  <TimeField clock label={timeMode === 'arrive' ? t.planner.arriveByLabel : t.planner.departAtLabel} value={timeValue} onChange={setTimeValue} className="mt-2" />
                 )}
               </div>
 
