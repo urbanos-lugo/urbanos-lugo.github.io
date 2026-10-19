@@ -575,6 +575,10 @@
     .disclosure[open]::details-content { block-size: auto; }
   }
 
+  /* What a screen is about, heading it: the stop on its board, the saved stops, the error that
+     replaced a view. Applied from the utilities so it compiles to what they drew. */
+  .screen-title { @apply text-title font-semibold tracking-title; }
+
   /* Small capitals naming the block, the value or the group they lead: a section label, a
      run-in at the head of a sentence, a caption. The colour, the box and the margin are the
      caller's (SectionLabel gives the common ones). */

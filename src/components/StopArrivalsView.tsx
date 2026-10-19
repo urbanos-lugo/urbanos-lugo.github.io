@@ -315,7 +315,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
       <header className="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-title font-semibold tracking-title">{selectedStop.name}</h2>
+          <h2 className="screen-title">{selectedStop.name}</h2>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <PoleCode code={poleCode(selectedStop)} />
             <span className="text-label text-ink-3">

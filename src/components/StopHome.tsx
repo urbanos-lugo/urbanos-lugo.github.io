@@ -120,7 +120,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
 
   return (
     <div className="page-column px-cap-3.5 pb-8 pt-4">
-      <h2 className="flex items-center gap-2 text-title font-semibold tracking-title">
+      <h2 className="screen-title flex items-center gap-2">
         <Star className="h-5 w-5 shrink-0 text-warn-ink stroke-filled" fill="currentColor" aria-hidden="true" />
         {t.stopHome.saved}
       </h2>
