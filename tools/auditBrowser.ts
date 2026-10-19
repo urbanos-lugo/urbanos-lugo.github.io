@@ -1710,6 +1710,7 @@ async function siteDataRefused(): Promise<Finding[]> {
 /* ------------------------------------------------------------------------------------- */
 
 // Imported by visualDiff.ts for its states; run, it audits.
+let ran = false;
 if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
   const quick = process.argv[2] === 'quick';
   const PASSES: Pass[] = quick
@@ -1722,7 +1723,6 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
       ];
   const PAGES = Number(process.env.AUDIT_PAGES ?? 4);
 
-  let ran = false;
   const started = Date.now();
   await withBrowser(async (browser) => {
     ran = true;
@@ -1827,6 +1827,8 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
     console.log(`  house bar: under 12 px ${all.filter((f) => f.kind === 'size').length}, under 44 px ${all.filter((f) => f.kind === 'target44').length}, under 48 px between the bars ${all.filter((f) => f.kind === 'room').length}`);
     if (gated.length) process.exitCode = 1;
   });
-  // Under CI a run that could not start is a failure: the gate would otherwise pass by not looking.
-  if (!ran && process.env.CI) process.exitCode = 1;
 }
+// Under CI a run that audited nothing is a failure, or the gate passes by not looking: one that
+// could not start, and one launched in a way the line above does not recognise, which printed
+// nothing and exited 0. Only the photograph tool, which imports these states, is let off.
+if (!ran && process.env.CI && !/visualDiff\.ts$/.test(process.argv[1] ?? '')) process.exitCode = 1;
