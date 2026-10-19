@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { AlertTriangle, HelpCircle, Newspaper, RefreshCw, CheckCircle2, Clock } from 'lucide-react';
 import { LOCALE, useLang, useT } from '../i18n';
 import { ServiceAlert } from '../types';
@@ -43,6 +43,34 @@ function LinesAffected({ lines }: { lines: string[] }) {
   );
 }
 
+/**
+ * A notice's words: the title, the description where it says more, what the caller adds, and
+ * the way to the whole. A quoted notice keeps the language it was written in (NOTICE_LANG);
+ * the ones this app wrote are the reader's.
+ */
+function NoticeBody({ title, description, link, lang, children }: { title: string; description: string; link?: string; lang?: string; children?: ReactNode }) {
+  const t = useT();
+  return (
+    <>
+      <h3 lang={lang} className="mt-1 break-words font-bold text-ink text-body">
+        {title}
+      </h3>
+      {/* The operator posts a notice as one line, so the title and the description are the same words. */}
+      {description !== title && (
+        <p lang={lang} className="text-note text-ink-2 mt-1.5">
+          {description}
+        </p>
+      )}
+      {children}
+      {link && (
+        <a href={link} target="_blank" rel="noopener noreferrer" className="link mt-1">
+          {t.fares.readInFull}
+        </a>
+      )}
+    </>
+  );
+}
+
 /** One notice: who said it (an operator notice is not a council press release), when, which lines, and the words. */
 function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string; source?: string }) {
   const t = useT();
@@ -60,32 +88,19 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
           <LinesAffected lines={alert.linesAffected || []} />
         </div>
       </div>
-      {/* A quoted notice keeps the language it was written in (NOTICE_LANG); the ones this app wrote are the reader's. */}
-      <h3 lang={quoted} className="break-words font-bold text-ink text-body">
-        {alert.title}
-      </h3>
-      {/* The operator posts a notice as one line, so the title and the description are the same words. */}
-      {alert.description !== alert.title && (
-        <p lang={quoted} className="text-note text-ink-2 mt-1.5">
-          {alert.description}
-        </p>
-      )}
-      {/* A notice the operator wrote out line by line, read off its home page: each part in its words, its heading naming the line. */}
-      {alert.sections?.map((section, i) => (
-        <div key={i} lang={quoted} className="rule-above mt-3">
-          <h4 className="break-words text-label font-semibold text-ink">{section.heading}</h4>
-          {section.paragraphs.map((paragraph, j) => (
-            <p key={j} className="mt-1 text-note text-ink-2">
-              {paragraph}
-            </p>
-          ))}
-        </div>
-      ))}
-      {alert.link && (
-        <a href={alert.link} target="_blank" rel="noopener noreferrer" className="link mt-1">
-          {t.fares.readInFull}
-        </a>
-      )}
+      <NoticeBody title={alert.title} description={alert.description} link={alert.link} lang={quoted}>
+        {/* A notice the operator wrote out line by line, read off its home page: each part in its words, its heading naming the line. */}
+        {alert.sections?.map((section, i) => (
+          <div key={i} lang={quoted} className="rule-above mt-3">
+            <h4 className="break-words text-label font-semibold text-ink">{section.heading}</h4>
+            {section.paragraphs.map((paragraph, j) => (
+              <p key={j} className="mt-1 text-note text-ink-2">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        ))}
+      </NoticeBody>
     </div>
   );
 }
@@ -227,19 +242,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
             {councilNews.map((item) => (
               <li key={item.id} className="p-4 sm:p-5">
                 <span className="caps-label text-ink-3">{formatInstant(item.date, locale)}</span>
-                <h3 lang={NOTICE_LANG} className="mt-1 font-bold text-ink text-body">
-                  {item.title}
-                </h3>
-                {item.description !== item.title && (
-                  <p lang={NOTICE_LANG} className="text-note text-ink-2 mt-1.5">
-                    {item.description}
-                  </p>
-                )}
-                {item.link && (
-                  <a href={item.link} target="_blank" rel="noopener noreferrer" className="link mt-1">
-                    {t.fares.readInFull}
-                  </a>
-                )}
+                <NoticeBody title={item.title} description={item.description} link={item.link} lang={NOTICE_LANG} />
               </li>
             ))}
           </ul>
