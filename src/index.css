@@ -627,6 +627,12 @@
      would not start, a code that matches no stop, a position refused. */
   .field-error { font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-semibold); color: var(--c-warn-fg); }
 
+  /* A control floating over the map: a pill on the glass ground, the map blurred behind it, a
+     hairline edge. Its tone (an accent edge, a fill when picked, the dashed edge of ~ ESTIMADO)
+     and its shadow are the caller's. Applied from Tailwind's own utilities so it compiles to
+     exactly what they drew. */
+  .map-glass { @apply rounded-pill border border-edge bg-bg/glass backdrop-blur-glass; }
+
   /* A card on a screen's column or in the map's panel: the card corner, the hairline edge, the
      ground, raised. No padding, so a card can be the padded item inside a bare .fold wrapper,
      and each column keeps its own; a state's tone is the caller's utility. */

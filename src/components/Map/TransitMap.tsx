@@ -278,7 +278,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                 and beneath them when those open; one tap takes the buses off again. */}
             {layers.buses && (
               <div className="pointer-events-none absolute inset-x-0 top-16 z-map-float flex justify-center px-3 lg:top-3">
-                <p className="pointer-events-auto flex items-center gap-1 rounded-pill border-dash border-dashed border-estimated-line bg-bg/glass pl-3.5 text-estimated shadow-raised backdrop-blur-glass">
+                <p className="pointer-events-auto flex items-center gap-1 map-glass border-dash border-dashed border-estimated-line pl-3.5 text-estimated shadow-raised">
                   <span className="text-label font-semibold">~ {t.map.busesEstimatedNotice}</span>
                   <CloseButton label={t.map.hideBuses} title={t.map.hideBuses} onClick={() => setLayers((l) => ({ ...l, buses: false }))} round />
                 </p>
@@ -293,8 +293,8 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
               aria-pressed={follow.isFollowing}
               aria-label={locateLabel}
               title={locateLabel}
-              className={`pointer-events-auto absolute bottom-5 left-3 z-map-float flex h-12 w-12 items-center justify-center rounded-pill border shadow-float backdrop-blur-glass disabled:opacity-disabled lg:hidden ${
-                follow.isFollowing ? 'border-accent bg-bg/glass text-accent' : 'border-edge bg-bg/glass text-ink-2'
+              className={`pointer-events-auto absolute bottom-5 left-3 z-map-float flex h-12 w-12 items-center justify-center map-glass shadow-float disabled:opacity-disabled lg:hidden ${
+                follow.isFollowing ? 'border-accent text-accent' : 'text-ink-2'
               }`}
             >
               <LocateFixed className="h-5 w-5" aria-hidden="true" />
@@ -304,7 +304,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
               type="button"
               onClick={() => setSheetOpen(true)}
               aria-expanded={sheetOpen}
-              className="pointer-events-auto absolute bottom-5 left-1/2 z-map-float flex h-12 -translate-x-1/2 items-center gap-2 rounded-pill border border-edge bg-bg/glass px-4 text-label font-bold text-ink shadow-float backdrop-blur-glass lg:hidden"
+              className="pointer-events-auto absolute bottom-5 left-1/2 z-map-float flex h-12 -translate-x-1/2 items-center gap-2 map-glass px-4 text-label font-bold text-ink shadow-float lg:hidden"
             >
               <SlidersHorizontal className="h-4 w-4 text-accent" aria-hidden="true" />
               {t.map.controls}

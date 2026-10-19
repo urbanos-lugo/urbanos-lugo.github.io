@@ -13,7 +13,7 @@ interface LineChipsProps {
   onAll: () => void;
 }
 
-const chip = 'pointer-events-auto flex h-tap shrink-0 items-center rounded-pill border shadow-raised backdrop-blur-glass';
+const chip = 'pointer-events-auto flex h-tap shrink-0 items-center map-glass shadow-raised';
 
 /** The numbers more than one line answers to (four are numbered 11), so only those chips carry a branch name. */
 const sharedNumbers = (() => {
@@ -48,7 +48,7 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-map-chips lg:hidden">
       <div className={`no-scrollbar flex gap-1.5 px-3 py-2.5 ${expanded ? 'max-h-chips-max flex-wrap overflow-y-auto' : 'overflow-x-auto'}`}>
-        <button type="button" onClick={onAll} aria-pressed={picked.length === 0} className={`${chip} px-4 text-label font-semibold ${picked.length === 0 ? 'border-accent bg-accent text-on-accent' : 'border-edge bg-bg/glass text-ink-2'}`}>
+        <button type="button" onClick={onAll} aria-pressed={picked.length === 0} className={`${chip} px-4 text-label font-semibold ${picked.length === 0 ? 'border-accent bg-accent text-on-accent' : 'text-ink-2'}`}>
           {t.map.allLines}
         </button>
         {/* Second, not last: at the end of a row that scrolls, "stop making me scroll" is only reachable by scrolling. */}
@@ -60,7 +60,7 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
           // after a colon, since a name's brackets are dropped before it is matched.
           aria-label={`${expanded ? t.map.collapseLines : t.map.expandLines}: ${listed.length}`}
           title={expanded ? t.map.collapseLines : t.map.expandLines}
-          className={`${chip} gap-1 border-edge bg-bg/glass px-3.5 text-label font-bold text-ink-2`}
+          className={`${chip} gap-1 px-3.5 text-label font-bold text-ink-2`}
         >
           <span className="tnum">{listed.length}</span>
           <ChevronDown className="disclosure-chevron h-4 w-4" aria-hidden="true" />
