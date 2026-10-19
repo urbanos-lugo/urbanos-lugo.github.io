@@ -369,7 +369,7 @@
   --radius-pill: calc(infinity * 1px);
 
   --default-border-width: 1px;  /* the hairline */
-  --border-width-strong: 2px;   /* a line's own edge on its tinted row, a rail, a marker's ring */
+  --border-width-strong: 2px;   /* a rail, a marker's ring, a timeline node's ring */
   --border-width-dash: 1.5px;   /* the dash of ~ ESTIMADO */
   --border-width-heavy: 3px;    /* the bar of a chosen option, the QR reader's frame */
   --ring-width-hair: 1px;
@@ -877,13 +877,12 @@
      text drops to 3.7:1, which is not a trade this app makes.
 
      The border then takes the colour at full strength, where nothing is written and
-     the bar is 3:1 — that is what makes a line recognisable at a glance. */
+     the bar is 3:1 — that is what makes a line recognisable at a glance. It is the row's
+     1 px hairline: a 2 px width written here never applied, since this layer loses to
+     the rows' own border utility (measured: 1 px on every row). */
   .tint-strong {
     --tint-mix: var(--tint-strong);
     --tint-edge-mix: var(--tint-strong-edge);
-  }
-  .tint-strong.tint-edge {
-    border-width: var(--border-width-strong);
   }
 
   /* There was a `filter: brightness(2.8)` on the dark tile pane here, and taking it out
