@@ -8,6 +8,7 @@ import { useT } from '../i18n';
 import { LineBadge } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
 import { CountBadge } from './ui/CountBadge';
+import { IconButton } from './ui/controls';
 import { NameStack } from './ui/NameStack';
 import { asideSections, navSections, type Tab } from './navSections';
 
@@ -142,14 +143,10 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
           </button>
         </div>
         {/* The same badge as the drawer row: the count was only inside the drawer, so on a phone it existed for whoever opened the menu. */}
-        <button
-          onClick={onOpenMenu}
-          className="relative flex h-bar-field w-bar-field shrink-0 items-center justify-center rounded-control border border-edge bg-surface text-ink-2 lg:hidden"
-          aria-label={alertCount > 0 ? `${t.menu.open}. ${t.menu.alerts}: ${alertCount}` : t.menu.open}
-        >
+        <IconButton bar onClick={onOpenMenu} label={alertCount > 0 ? `${t.menu.open}. ${t.menu.alerts}: ${alertCount}` : t.menu.open} className="relative shrink-0 lg:hidden">
           <Menu className="h-5 w-5" aria-hidden="true" />
           <CountBadge n={alertCount} overlay />
-        </button>
+        </IconButton>
       </div>
 
       {/* What the rows hold, for the ear: the kinds present, or the "nothing matches" sentence, once the rows are current. */}

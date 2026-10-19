@@ -2,9 +2,12 @@ import { ArrowLeft, ChevronDown, Clock, Star, TriangleAlert, X, type LucideIcon 
 import { useState, type CSSProperties, type ReactNode } from 'react';
 
 /**
- * A 44 px square icon button. With `on` it is a toggle, said with aria-pressed, and `on`
- * swaps it to the warm "active" fill; without, it is a plain button that says nothing of
- * being pressed (the map and share buttons are not switches).
+ * A 44 px square bordered button that shows no word, so its label names it. With `on` it is
+ * a toggle, said with aria-pressed, and `on` swaps it to the warm "active" fill; without, it
+ * is a plain button that says nothing of being pressed (the map and share buttons are not
+ * switches). `onSurface` takes the ground's fill where it sits on a surface tile (the run
+ * stepper); `bar` is the top bar's px size. children follow the icon, or stand for it (the
+ * stepper's arrows are text, the menu's glyph a size up).
  */
 export function IconButton({
   icon: Icon,
@@ -13,28 +16,38 @@ export function IconButton({
   onClick,
   title,
   fill,
+  disabled,
+  onSurface = false,
+  bar = false,
   className = '',
   iconClassName = '',
+  children,
 }: {
-  icon: LucideIcon;
+  icon?: LucideIcon;
   label: string;
   on?: boolean;
   onClick: () => void;
   title?: string;
   /** Fill the icon (a starred star). */
   fill?: boolean;
+  disabled?: boolean;
+  onSurface?: boolean;
+  bar?: boolean;
   className?: string;
   iconClassName?: string;
+  children?: ReactNode;
 }) {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       aria-pressed={on}
       aria-label={label}
       title={title}
-      className={`flex h-tap w-tap items-center justify-center rounded-control border ${on ? 'border-warn bg-warn text-warn-ink' : 'border-edge bg-surface text-ink-2'} ${className}`}
+      className={`flex ${bar ? 'h-bar-field w-bar-field' : 'h-tap w-tap'} items-center justify-center rounded-control border disabled:opacity-disabled ${on ? 'border-warn bg-warn text-warn-ink' : `border-edge ${onSurface ? 'bg-bg' : 'bg-surface'} text-ink-2`} ${className}`}
     >
-      <Icon className={`h-4.5 w-4.5 ${fill === undefined ? '' : 'stroke-filled'} ${iconClassName}`} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />
+      {Icon && <Icon className={`h-4.5 w-4.5 ${fill === undefined ? '' : 'stroke-filled'} ${iconClassName}`} fill={fill ? 'currentColor' : 'none'} aria-hidden="true" />}
+      {children}
     </button>
   );
 }

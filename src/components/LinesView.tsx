@@ -9,7 +9,7 @@ import { getScheduledBuses } from '../utils/vehicles';
 import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDuration, type ScheduledRun } from '../utils/schedule';
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
-import { BackButton, ChoiceChip, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { BackButton, ChoiceChip, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionTitle } from './ui/SectionTitle';
 import { Approx } from './ui/Provenance';
 import { LineBadge, lineTint } from './ui/LineBadge';
@@ -393,9 +393,9 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
               // the two at 200% text, they pushed the right arrow 118 px off the screen.
               <div className="inset-panel flex flex-wrap items-center justify-between gap-3 border-edge p-2.5">
                 {/* Named: an arrow on its own was read out as "left arrow", which says where it points and not what it does. */}
-                <button onClick={() => setPickedRunIndex(Math.max(0, runIndex - 1))} disabled={runIndex === 0} aria-label={t.lines.previousRun} title={t.lines.previousRun} className="order-2 @min-stepper:order-none flex h-tap w-tap shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
+                <IconButton onSurface onClick={() => setPickedRunIndex(Math.max(0, runIndex - 1))} disabled={runIndex === 0} label={t.lines.previousRun} title={t.lines.previousRun} className="order-2 shrink-0 text-body font-semibold @min-stepper:order-none">
                   &larr;
-                </button>
+                </IconButton>
                 <div className="order-1 basis-full text-center leading-name @min-stepper:order-none @min-stepper:basis-0 @min-stepper:flex-1">
                   <div className="caps-label text-accent">{t.lines.showingRun}</div>
                   <div className="text-body font-black text-accent font-mono">
@@ -414,9 +414,9 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                     )}
                   </div>
                 </div>
-                <button onClick={() => setPickedRunIndex(Math.min(runs.length - 1, runIndex + 1))} disabled={runIndex >= runs.length - 1} aria-label={t.lines.nextRun} title={t.lines.nextRun} className="order-3 @min-stepper:order-none flex h-tap w-tap shrink-0 items-center justify-center rounded-control border border-edge bg-bg text-body font-semibold text-ink-2 disabled:opacity-disabled">
+                <IconButton onSurface onClick={() => setPickedRunIndex(Math.min(runs.length - 1, runIndex + 1))} disabled={runIndex >= runs.length - 1} label={t.lines.nextRun} title={t.lines.nextRun} className="order-3 shrink-0 text-body font-semibold @min-stepper:order-none">
                   &rarr;
-                </button>
+                </IconButton>
               </div>
             ) : (
               <div className="inset-panel border-edge p-2.5 text-label font-semibold text-ink-2">
