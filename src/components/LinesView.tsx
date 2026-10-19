@@ -49,6 +49,28 @@ function Fact({ icon: Icon, label, children, title }: { icon: typeof Clock; labe
   );
 }
 
+/**
+ * How many buses the timetable puts on the line now. In the list's dense row the number alone,
+ * the sentence said to a screen reader, and it never shrinks; on the line's page the sentence,
+ * among the header's tags.
+ */
+function RunningBuses({ count, compact = false }: { count: number; compact?: boolean }) {
+  const t = useT();
+  return (
+    <span title={t.lines.enRouteHint} className={`flex items-center border border-edge bg-surface text-ink-2 ${compact ? 'shrink-0 gap-0.5 rounded-tag px-1.5 text-label font-bold' : 'tag gap-1'}`}>
+      <Bus className={`${compact ? 'h-2.5 w-2.5' : 'h-3 w-3'} text-ink-3`} aria-hidden="true" />
+      {compact ? (
+        <>
+          <span aria-hidden="true">{count}</span>
+          <span className="sr-only">{t.lines.enRoute(count)}</span>
+        </>
+      ) : (
+        t.lines.enRoute(count)
+      )}
+    </span>
+  );
+}
+
 export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelectStop, onViewLineOnMap, favoriteLineIds = [], onToggleFavoriteLine, notices = [], changes = null, onOpenAlerts }: LinesViewProps) {
   const t = useT();
   const lang = useLang();
@@ -189,13 +211,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                           <span className="shrink-0">{frequencyLabel(line, lang)}</span>
                           <span className="shrink-0">&bull;</span>
                           <span>{daysLabel(line, lang)}</span>
-                          {running > 0 && (
-                            <span title={t.lines.enRouteHint} className="flex shrink-0 items-center gap-0.5 text-ink-2 font-bold text-label bg-surface px-1.5 rounded-tag border border-edge">
-                              <Bus className="w-2.5 h-2.5 text-ink-3" aria-hidden="true" />
-                              <span aria-hidden="true">{running}</span>
-                              <span className="sr-only">{t.lines.enRoute(running)}</span>
-                            </span>
-                          )}
+                          {running > 0 && <RunningBuses count={running} compact />}
                         </div>
                       </div>
                     </div>
@@ -219,12 +235,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="tag bg-surface text-ink-2 uppercase tracking-caps">{t.lines.lineLabel(currentLine.number)}</span>
                     {currentLine.category === 'hospital' && <span className="tag bg-warn text-warn-ink">{t.lines.categories.hospital}</span>}
-                    {busesOnLine.length > 0 && (
-                      <span title={t.lines.enRouteHint} className="tag flex items-center gap-1 border border-edge bg-surface text-ink-2">
-                        <Bus className="w-3 h-3 text-ink-3" />
-                        {t.lines.enRoute(busesOnLine.length)}
-                      </span>
-                    )}
+                    {busesOnLine.length > 0 && <RunningBuses count={busesOnLine.length} />}
                   </div>
                   <h2 className="text-emph font-bold text-ink mt-1 break-words">{currentLine.name}</h2>
                 </div>
