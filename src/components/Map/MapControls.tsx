@@ -17,6 +17,8 @@ export const AROUND_STOP_RADIUS_M = 400;
 export const NEARBY_RADIUS_M = 750;
 
 const card = 'card p-3.5';
+/** A panel's list of rows that scrolls inside its card; the height cap is each list's. */
+const list = 'space-y-1 overflow-y-auto pr-1';
 
 export interface MapControlsProps {
   sheetRef: RefObject<HTMLDivElement | null>;
@@ -147,7 +149,7 @@ export function MapControls(p: MapControlsProps) {
       {p.preset === 'nearby' && p.nearbyLines.length > 0 && (
         <div className={card}>
           <SectionLabel quiet className="mb-2">{t.map.nearbyTitle(NEARBY_RADIUS_M)}</SectionLabel>
-          <div className="space-y-1 max-h-list-nearby-max overflow-y-auto pr-1">
+          <div className={`${list} max-h-list-nearby-max`}>
             {p.nearbyLines.map(({ line, nearestStop, walkMeters }) => (
               <button key={line.id} onClick={() => p.onSelectLine(line)} className="row-button p-2">
                 <LineBadge number={line.number} color={line.color} size="sm" />
@@ -191,7 +193,7 @@ export function MapControls(p: MapControlsProps) {
           </button>
         </div>
         {/* Drawing the route and reading the timetable are two different errands, so two buttons. */}
-        <div className="space-y-1 max-h-list-lines-max overflow-y-auto pr-1">
+        <div className={`${list} max-h-list-lines-max`}>
           {p.listedLines.map((line) => {
             const isSelected = p.pickedLineIds.includes(line.id);
             return (
