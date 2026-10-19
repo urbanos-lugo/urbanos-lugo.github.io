@@ -13,7 +13,7 @@ import { newIssueUrl } from '../project';
 import { clockDriftFromTimetable, deviceTimeZone } from '../utils/clock';
 import { useOperatorTimes } from '../hooks/useOperatorTimes';
 import { Approx, Provenance } from './ui/Provenance';
-import { LineBadge } from './ui/LineBadge';
+import { LineBadge, lineTint } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
 import { BackButton, CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionLabel } from './ui/SectionLabel';
@@ -68,7 +68,6 @@ interface LineGroup {
   headwayMinutes: number | null;
 }
 
-const tint = (color: string) => ({ '--line': color }) as CSSProperties;
 
 export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSelectStop, onBack, isFavorite, onToggleFavorite, viaQr, notices = [], changes = null, onOpenAlerts }: StopArrivalsViewProps) {
   const t = useT();
@@ -411,7 +410,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             <p className="text-label text-ink-3">{t.arrivals.nearbyLinesHint}</p>
             <ul className="mt-2.5 flex flex-col gap-1.5">
               {nearbyLines.map(({ line, nearestStop, walkMeters }) => (
-                <li key={line.id} style={tint(line.color)} className="tint tint-edge flex flex-wrap items-center gap-x-3 gap-y-1 rounded-control border px-cap-2.5 py-2">
+                <li key={line.id} style={lineTint(line.color)} className="line-row tint tint-edge">
                   {lineButton(line.id, line.number, line.color)}
                   <span className="min-w-floor-name flex-1">
                     <span className="block break-words text-body font-semibold">
@@ -523,7 +522,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       ) : (
         <ul className="anim-fade mt-3 flex flex-col gap-2.5">
           {groups.map((g) => (
-            <li key={g.key} className="tint tint-edge overflow-hidden rounded-card border" style={tint(g.lineColor)}>
+            <li key={g.key} className="tint tint-edge overflow-hidden rounded-card border" style={lineTint(g.lineColor)}>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3">
                 {lineButton(g.lineId, g.lineNumber, g.lineColor)}
                 <span className="min-w-floor-name flex-1">

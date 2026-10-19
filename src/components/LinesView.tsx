@@ -12,7 +12,7 @@ import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
 import { BackButton, ChoiceChip, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionTitle } from './ui/SectionTitle';
 import { Approx } from './ui/Provenance';
-import { LineBadge } from './ui/LineBadge';
+import { LineBadge, lineTint } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
 
 /** The categories the dataset actually uses, in the order the lines declare them. */
@@ -159,8 +159,8 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                       setDirectionIndex(0);
                       setShowDetail(true);
                     }}
-                    style={{ '--line': line.color } as CSSProperties}
-                    className={`tint tint-strong w-full px-cap-3 py-2.5 rounded-control cursor-pointer border transition-all flex items-center justify-between gap-2.5 text-left ${isCurrent ? 'border-accent shadow-hair' : 'tint-edge'}`}
+                    style={lineTint(line.color)}
+                    className={`line-row tint tint-strong w-full justify-between gap-2.5 px-cap-3 py-2.5 cursor-pointer transition-all text-left ${isCurrent ? 'border-accent shadow-hair' : 'tint-edge'}`}
                   >
                     {/* The name keeps a floor of 6rem and goes under the number when both do not fit:
                         with the type at 200% it was cut to its first letter, "R…". */}

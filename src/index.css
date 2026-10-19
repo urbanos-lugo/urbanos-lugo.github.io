@@ -595,6 +595,12 @@
   .chip-rail { display: flex; gap: calc(var(--spacing) * 1.5); overflow-x: auto; scrollbar-width: none; }
   .chip-rail::-webkit-scrollbar { display: none; }
 
+  /* A line's row, tinted with its own colour by .tint and .tint-edge: its badge, its name and
+     what follows, wrapping under the name at large text. Box and layout only -- the colour of
+     the fill and the edge stay the tint's, so the hairline here sets no colour. The lines list
+     sets its own padding and gap, and its chosen row's accent edge, as utilities. */
+  .line-row { display: flex; flex-wrap: wrap; align-items: center; column-gap: calc(var(--spacing) * 3); row-gap: var(--spacing); border-radius: var(--radius-control); border-width: var(--default-border-width); border-style: solid; padding: calc(var(--spacing) * 2) min(calc(var(--spacing) * 2.5), calc(var(--cap-step) * 2.5)); }
+
   /* A card on a screen's column or in the map's panel: the card corner, the hairline edge, the
      ground, raised. No padding, so a card can be the padded item inside a bare .fold wrapper,
      and each column keeps its own; a state's tone is the caller's utility. */
