@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { useT } from '../i18n';
 import { FARE_CARDS } from '../data/transitData';
 import { SectionLabel } from './ui/SectionLabel';
+import { SectionTitle } from './ui/SectionTitle';
 
 /** Where somebody can check any of this: the operator's own site, and an independent reader of the same timetables. */
 const PORTALS = [
@@ -12,13 +13,6 @@ const PORTALS = [
 ];
 
 const card = 'card py-5 px-cap-5';
-
-const Title = ({ icon: Icon, children, small = false }: { icon: LucideIcon; children: ReactNode; small?: boolean }) => (
-  <h2 className={`font-bold text-ink uppercase tracking-caps flex items-center gap-2 ${small ? 'text-body' : 'text-emph'}`}>
-    <Icon className={`${small ? 'w-4 h-4' : 'w-5 h-5'} text-accent`} aria-hidden="true" />
-    {children}
-  </h2>
-);
 
 const Bullets = ({ title, lines, hollow = false }: { title: string; lines: string[]; hollow?: boolean }) => (
   <div>
@@ -44,8 +38,9 @@ export function FaresView() {
     <div className="page page-gutter py-6 space-y-8">
       <div className="space-y-4">
         <div>
-          <Title icon={CreditCard}>{t.fares.faresTitle}</Title>
-          <p className="text-label text-ink-3 mt-0.5">{t.fares.faresSubtitle}</p>
+          <SectionTitle icon={CreditCard} subtitle={t.fares.faresSubtitle}>
+            {t.fares.faresTitle}
+          </SectionTitle>
           {/* Right under the line that names the operator and calls the prices official. */}
           <p className="text-label text-ink-3 mt-1 border-l-strong border-edge pl-2">{t.fares.notAffiliated}</p>
         </div>
@@ -74,8 +69,9 @@ export function FaresView() {
 
       {/* Summarised rather than copied: their page is the one that counts and is linked. */}
       <div className={card}>
-        <Title icon={Info}>{t.rules.title}</Title>
-        <p className="mt-0.5 text-label text-ink-3">{t.rules.subtitle}</p>
+        <SectionTitle icon={Info} subtitle={t.rules.subtitle}>
+          {t.rules.title}
+        </SectionTitle>
         <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
           <Bullets title={t.rules.mustTitle} lines={t.rules.must} />
           <Bullets title={t.rules.mustNotTitle} lines={t.rules.mustNot} hollow />
@@ -87,9 +83,9 @@ export function FaresView() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className={`${card} space-y-3`}>
-          <Title icon={HelpCircle} small>
+          <SectionTitle icon={HelpCircle} small>
             {t.fares.faqTitle}
-          </Title>
+          </SectionTitle>
           <div className="space-y-3">
             {t.faresContent.faqs.map((faq, i) => (
               <div key={i} className="p-3 bg-surface rounded-control border border-line">
@@ -101,9 +97,9 @@ export function FaresView() {
         </div>
 
         <div className={`${card} space-y-4`}>
-          <Title icon={Info} small>
+          <SectionTitle icon={Info} small>
             {t.fares.contactTitle}
-          </Title>
+          </SectionTitle>
           <div className="space-y-3 text-label text-ink-2">
             <div className="flex items-start gap-3 p-3 bg-surface rounded-control border border-line">
               <Phone className="w-4 h-4 text-accent shrink-0 mt-0.5" />

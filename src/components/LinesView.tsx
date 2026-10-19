@@ -10,6 +10,7 @@ import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDura
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
 import { ChoiceChip, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { SectionTitle } from './ui/SectionTitle';
 import { LineBadge } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
 
@@ -114,11 +115,9 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
         <div className={`space-y-4 lg:relative lg:col-span-5 lg:block lg:h-full lg:overflow-y-auto lg:pb-4 ${showDetail ? 'hidden' : ''}`}>
           <div className="card space-y-4 py-4 px-cap-4 lg:p-5">
             <div>
-              <h2 className="font-bold text-ink text-body uppercase tracking-caps flex items-center gap-2">
-                <Route className="w-4 h-4 text-accent" />
+              <SectionTitle icon={Route} small subtitle={t.lines.subtitle}>
                 {t.lines.title}
-              </h2>
-              <p className="text-label text-ink-3 mt-0.5">{t.lines.subtitle}</p>
+              </SectionTitle>
             </div>
 
             <div className="chip-rail pb-2">
@@ -341,10 +340,9 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
           </div>
 
           <div className="card py-5 px-cap-5">
-            <h3 className="font-bold text-ink text-body uppercase tracking-caps mb-2 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-accent" />
+            <SectionTitle icon={Clock} small as="h3" className="mb-2">
               {t.lines.scheduleTable} &mdash; {direction.origin} ({departures.length})
-            </h3>
+            </SectionTitle>
             {/* All of them: two rows of 30 in a box that scrolled on its own hid the rest from a thumb. */}
             <div className="flex flex-wrap gap-1.5">
               {departures.map(({ time, derived: guessed }, idx) => (
@@ -369,13 +367,18 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
           <div className="card @container space-y-4 py-6 px-cap-6">
             <div className="flex flex-col gap-3">
               <div>
-                <h3 className="font-bold text-ink text-body uppercase tracking-caps flex items-center gap-2">
-                  <Route className="w-4 h-4 text-accent" />
+                <SectionTitle
+                  icon={Route}
+                  small
+                  as="h3"
+                  subtitle={
+                    <>
+                      {direction.origin} &rarr; {direction.destination}
+                    </>
+                  }
+                >
                   {t.lines.stopsInDirection} ({direction.stops.length})
-                </h3>
-                <div className="text-label text-ink-3 mt-0.5">
-                  {direction.origin} &rarr; {direction.destination}
-                </div>
+                </SectionTitle>
               </div>
               {currentLine.directions.length > 1 && (
                 <Segmented

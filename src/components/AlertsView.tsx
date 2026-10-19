@@ -7,6 +7,7 @@ import { NOTICE_LANG } from '../utils/operatorNotices';
 import type { ServiceAlerts } from '../hooks/useServiceAlerts';
 import { NOTICE_META, NOTICES_REVIEWED_ON } from '../data/structuralNotices';
 import { SectionLabel } from './ui/SectionLabel';
+import { SectionTitle } from './ui/SectionTitle';
 
 interface AlertsViewProps {
   /** Fetched once in App, so this screen and the navigation badge cannot disagree. */
@@ -126,11 +127,9 @@ export function AlertsView({ alerts }: AlertsViewProps) {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-emph font-bold text-ink uppercase tracking-caps flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-warn-ink" />
+            <SectionTitle icon={AlertTriangle} tone="warn" subtitle={t.fares.alertsSubtitle}>
               {t.fares.alertsTitle}
-            </h2>
-            <p className="text-label text-ink-3 mt-0.5">{t.fares.alertsSubtitle}</p>
+            </SectionTitle>
             <p className="text-label text-ink-3 mt-1 border-l-strong border-edge pl-2">{t.fares.notAffiliated}</p>
           </div>
           <button
@@ -219,11 +218,9 @@ export function AlertsView({ alerts }: AlertsViewProps) {
       {councilNews.length > 0 && (
         <div className="space-y-4">
           <div>
-            <h2 className="text-emph font-bold text-ink uppercase tracking-caps flex items-center gap-2">
-              <Newspaper className="w-5 h-5 text-ink-2" />
+            <SectionTitle icon={Newspaper} tone="quiet" subtitle={t.fares.newsSubtitle}>
               {t.fares.newsTitle}
-            </h2>
-            <p className="text-label text-ink-3 mt-0.5">{t.fares.newsSubtitle}</p>
+            </SectionTitle>
           </div>
           <ul className="divide-y divide-line rounded-card border border-edge bg-surface/quiet">
             {councilNews.map((item) => (

@@ -5,6 +5,7 @@ import { BusLine, BusStop } from '../../types';
 import type { NearbyLine } from '../../utils/places';
 import { LineBadge } from '../ui/LineBadge';
 import { SectionLabel } from '../ui/SectionLabel';
+import { SectionTitle } from '../ui/SectionTitle';
 import { ChoiceChip, CloseButton } from '../ui/controls';
 
 export type Preset = 'all' | 'nearby' | 'stop' | 'hula' | 'campus' | 'ceao';
@@ -107,11 +108,9 @@ export function MapControls(p: MapControlsProps) {
       <div className="card p-4">
         <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-line">
           <div>
-            <h2 className="font-bold text-ink text-body uppercase tracking-caps flex items-center gap-2">
-              <Navigation className="w-4 h-4 text-accent" />
+            <SectionTitle icon={Navigation} small subtitle={t.map.subtitle}>
               {t.map.mapTitle}
-            </h2>
-            <p className="text-label text-ink-3">{t.map.subtitle}</p>
+            </SectionTitle>
           </div>
           <div className="text-right">
             <span className="flex items-center gap-1 text-label font-black text-estimated">
