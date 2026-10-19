@@ -359,7 +359,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 </ChoiceChip>
               ))}
             </div>
-            {departures.some((d) => d.derived) && <p className="mt-2 text-label leading-prose text-ink-3">{t.lines.derivedDepartures}</p>}
+            {departures.some((d) => d.derived) && <p className="mt-2 text-note text-ink-3">{t.lines.derivedDepartures}</p>}
           </div>
 
           <div className="card @container space-y-4 py-6 px-cap-6">

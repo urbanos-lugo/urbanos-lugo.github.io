@@ -17,7 +17,7 @@ const card = 'card py-5 px-cap-5';
 const Bullets = ({ title, lines, hollow = false }: { title: string; lines: string[]; hollow?: boolean }) => (
   <div>
     <SectionLabel as="h3">{title}</SectionLabel>
-    <ul className="mt-2 space-y-1.5 text-label leading-prose text-ink">
+    <ul className="mt-2 space-y-1.5 text-note text-ink">
       {lines.map((line) => (
         <li key={line} className="flex gap-2">
           <span className={`mt-1.75 h-1.5 w-1.5 shrink-0 rounded-pill ${hollow ? 'border border-ink-3' : 'bg-ink-3'}`} aria-hidden="true" />
@@ -56,7 +56,7 @@ export function FaresView() {
                   {/* No invented number when the operator publishes none. */}
                   <div className="text-title font-black text-ink mt-1 font-mono">{fare.price || <span className="text-body text-ink-3">{t.fares.priceNotPublished}</span>}</div>
                   <p className="text-label font-bold text-ink-2 mt-1">{copy(words.subtitle, minutes)}</p>
-                  <p className="text-label text-ink-3 mt-2 leading-prose">{copy(words.details, minutes)}</p>
+                  <p className="text-note text-ink-3 mt-2">{copy(words.details, minutes)}</p>
                 </div>
                 <a href={fare.sourceUrl} target="_blank" rel="noopener noreferrer" className="link mt-3 self-start">
                   {fare.source}

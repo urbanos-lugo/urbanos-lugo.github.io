@@ -65,7 +65,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
       </h3>
       {/* The operator posts a notice as one line, so the title and the description are the same words. */}
       {alert.description !== alert.title && (
-        <p lang={quoted} className="text-label text-ink-2 mt-1.5 leading-prose">
+        <p lang={quoted} className="text-note text-ink-2 mt-1.5">
           {alert.description}
         </p>
       )}
@@ -74,7 +74,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
         <div key={i} lang={quoted} className="rule-above mt-3">
           <h4 className="break-words text-label font-semibold text-ink">{section.heading}</h4>
           {section.paragraphs.map((paragraph, j) => (
-            <p key={j} className="mt-1 text-label leading-prose text-ink-2">
+            <p key={j} className="mt-1 text-note text-ink-2">
               {paragraph}
             </p>
           ))}
@@ -155,7 +155,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
 
         {/* Where these came from when it was not from asking just now: the static build reads the last snapshot, and a stale incident read as current is the worse mistake. */}
         {liveAlerts.length > 0 && (snapshotAt || unreachable) && (
-          <p className={`rounded-card border px-4 py-3 text-label leading-prose ${stale ? 'border-warn bg-warn/quiet text-warn-ink' : 'border-edge bg-surface text-ink-2'}`}>
+          <p className={`rounded-card border px-4 py-3 text-note ${stale ? 'border-warn bg-warn/quiet text-warn-ink' : 'border-edge bg-surface text-ink-2'}`}>
             {unreachable && !snapshotAt ? t.fares.unknownStatusDesc : t.fares.snapshotNotice(formatInstant(snapshotAt ?? undefined, locale))}
           </p>
         )}
@@ -177,7 +177,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
               </div>
               <div className="min-w-floor-status flex-1">
                 <h3 className={`break-words text-body font-bold ${unreachable || stale ? 'text-ink' : 'text-official'}`}>{statusTitle}</h3>
-                <p className="text-label text-ink-2 mt-0.5 leading-prose">{statusDesc}</p>
+                <p className="text-note text-ink-2 mt-0.5">{statusDesc}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-label text-official font-medium">
                   <span>
                     {t.fares.lastCheck} <b>{formatInstant(snapshotAt ?? data?.lastSyncTime, locale)}</b>
@@ -202,9 +202,9 @@ export function AlertsView({ alerts }: AlertsViewProps) {
 
         <div className="pt-2">
           <SectionLabel as="h3">{t.fares.structuralTitle}</SectionLabel>
-          <p className="mt-1 text-label leading-prose text-ink-3">{t.fares.structuralSource}</p>
+          <p className="mt-1 text-note text-ink-3">{t.fares.structuralSource}</p>
           {/* They are reviewed monthly; two months means a review was missed, and the reader is told. */}
-          {monthsSinceReview >= 2 && <p className="mt-1 text-label font-semibold leading-prose text-warn-ink">{t.fares.structuralStale(monthsSinceReview)}</p>}
+          {monthsSinceReview >= 2 && <p className="mt-1 text-note font-semibold text-warn-ink">{t.fares.structuralStale(monthsSinceReview)}</p>}
           <div className="mb-3" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {structuralNotices.map((alert) => (
@@ -230,7 +230,7 @@ export function AlertsView({ alerts }: AlertsViewProps) {
                   {item.title}
                 </h3>
                 {item.description !== item.title && (
-                  <p lang={NOTICE_LANG} className="text-label text-ink-2 mt-1.5 leading-prose">
+                  <p lang={NOTICE_LANG} className="text-note text-ink-2 mt-1.5">
                     {item.description}
                   </p>
                 )}

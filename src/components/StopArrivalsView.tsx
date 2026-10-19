@@ -484,7 +484,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-label leading-prose text-ink-3">{t.arrivals.operatorSaysNote(new Date(operatorTimes.fetchedAt).toLocaleTimeString(LOCALE[lang], { hour: '2-digit', minute: '2-digit' }))}</p>
+          <p className="mt-2 text-note text-ink-3">{t.arrivals.operatorSaysNote(new Date(operatorTimes.fetchedAt).toLocaleTimeString(LOCALE[lang], { hour: '2-digit', minute: '2-digit' }))}</p>
         </section>
       )}
 
@@ -600,21 +600,21 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       </section>
 
       <Disclosure frame="rule" className="mt-4" summary={t.arrivals.reportPosition}>
-        <p className="text-label leading-prose text-ink-3">{t.arrivals.positionChecked}</p>
-        <p className="mt-1.5 text-label leading-prose text-ink-3">{t.arrivals.reportNotCouncil}</p>
+        <p className="text-note text-ink-3">{t.arrivals.positionChecked}</p>
+        <p className="mt-1.5 text-note text-ink-3">{t.arrivals.reportNotCouncil}</p>
         <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="link mt-2">
           {t.arrivals.reportCta}
         </a>
       </Disclosure>
 
-      {anyOverdue && <p className="rule-above mt-4 pt-3.5 text-label leading-prose text-ink-3">{t.common.overdueNote}</p>}
+      {anyOverdue && <p className="rule-above mt-4 pt-3.5 text-note text-ink-3">{t.common.overdueNote}</p>}
 
       {nonePublished ? (
         <Disclosure frame="rule" className="mt-4" summary={t.arrivals.whyEstimatedTitle}>
-          <p className="pb-1 text-label leading-prose text-ink-3">{t.arrivals.whyEstimated(timingPoints.published, timingPoints.total)}</p>
+          <p className="pb-1 text-note text-ink-3">{t.arrivals.whyEstimated(timingPoints.published, timingPoints.total)}</p>
         </Disclosure>
       ) : (
-        arrivals.length > 0 && <p className="rule-above mt-4 pt-3.5 text-label leading-prose text-ink-3">{t.arrivals.precisionNote}</p>
+        arrivals.length > 0 && <p className="rule-above mt-4 pt-3.5 text-note text-ink-3">{t.arrivals.precisionNote}</p>
       )}
     </div>
   );

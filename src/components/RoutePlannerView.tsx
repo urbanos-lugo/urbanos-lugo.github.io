@@ -664,7 +664,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                       </span>
                     </div>
                   )}
-                  <p className="mt-2 text-label leading-prose text-ink-2">
+                  <p className="mt-2 text-note text-ink-2">
                     <span className="caps-label text-ink-2">{t.planner.timeProvenanceTitle}</span> {measuredWalk ? t.planner.timeProvenanceMeasured : t.planner.timeProvenance}
                   </p>
                   {planResult.fare && planResult.fare.busLegs > 0 && (

@@ -259,6 +259,8 @@
      reader's own setting scales all of it together. */
   --text-label: 0.75rem;
   --text-label--line-height: 1.35;
+  --text-note: var(--text-label);      /* label-size prose that runs to several lines: notes, notices */
+  --text-note--line-height: var(--leading-prose);
   --text-body: 0.9375rem;
   --text-body--line-height: 1.45;
   --text-emph: 1.1875rem;

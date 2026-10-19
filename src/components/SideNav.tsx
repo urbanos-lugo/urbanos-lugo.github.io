@@ -60,7 +60,7 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
 
       <div className="mt-auto flex flex-col gap-3 border-t border-line p-3.5">
         <Settings {...settings} />
-        <p className="px-1 text-label leading-prose text-ink-3">{t.menu.sourceShort}</p>
+        <p className="px-1 text-note text-ink-3">{t.menu.sourceShort}</p>
       </div>
     </aside>
   );

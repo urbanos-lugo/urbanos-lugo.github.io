@@ -69,7 +69,7 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
 
       <div className="mt-2 border-t border-line">
         {arrivals.length === 0 ? (
-          <p className="px-3.5 py-4 text-label leading-prose text-ink-2">{t.arrivals.noArrivals}</p>
+          <p className="px-3.5 py-4 text-note text-ink-2">{t.arrivals.noArrivals}</p>
         ) : (
           <ul className="divide-y divide-line">
             {arrivals.map((a, i) => (

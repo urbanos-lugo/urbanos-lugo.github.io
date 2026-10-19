@@ -157,7 +157,7 @@ export function SaveStar({ on, onToggle, label, className }: { on: boolean; onTo
 }
 
 const NOTICE_SIZE = {
-  normal: 'anim-rise p-3 text-label leading-prose',
+  normal: 'anim-rise p-3 text-note',
   inline: 'w-full items-center px-2.5 py-1.5 text-label font-bold',
   alarm: 'anim-rise px-3 py-2.5 text-body font-semibold',
 } as const;
@@ -210,7 +210,7 @@ export function Notice({
  */
 export function NoticeDisclosure({ summary, children, seeFull, className = '' }: { summary: ReactNode; children: ReactNode; seeFull?: { label: string; onOpen: () => void }; className?: string }) {
   return (
-    <details className={`disclosure rounded-control border border-warn bg-warn text-label leading-prose text-warn-ink ${className}`}>
+    <details className={`disclosure rounded-control border border-warn bg-warn text-note text-warn-ink ${className}`}>
       <summary className="flex min-h-tap cursor-pointer items-start gap-2 p-3">
         <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         <span className="min-w-0 flex-1">{summary}</span>
