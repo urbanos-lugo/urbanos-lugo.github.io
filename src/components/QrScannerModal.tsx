@@ -7,6 +7,7 @@ import { BusStop } from '../types';
 import { BUS_STOPS } from '../data/transitData';
 import { findStop } from '../utils/places';
 import { CloseButton, Notice } from './ui/controls';
+import { DialogTitle } from './ui/DialogTitle';
 import { SectionLabel } from './ui/SectionLabel';
 
 interface QrScannerModalProps {
@@ -131,15 +132,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
 
         {/* Clear of the close button over the corner, and wrapping: at 200% text the heading ran
             68 px past the card, under the button. */}
-        <div className="flex flex-wrap items-center gap-3 mb-4 pr-11">
-          <div className="w-12 h-12 shrink-0 rounded-control bg-accent text-on-accent flex items-center justify-center">
-            <QrCode className="w-6 h-6" />
-          </div>
-          <div className="min-w-floor-title flex-1">
-            <h2 className="break-words font-bold text-emph text-ink uppercase tracking-display">{t.qr.title}</h2>
-            <p className="text-label text-ink-3">{t.qr.subtitle}</p>
-          </div>
-        </div>
+        <DialogTitle icon={QrCode} tone="accent" title={t.qr.title} subtitle={t.qr.subtitle} className="mb-4 pr-11" />
 
         {isScanning && (
           <div className="relative rounded-control overflow-hidden bg-ink mb-3 aspect-camera">

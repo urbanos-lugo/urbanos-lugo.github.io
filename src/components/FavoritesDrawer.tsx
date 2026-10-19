@@ -6,6 +6,7 @@ import { BusStop, BusLine } from '../types';
 import { BUS_STOPS, BUS_LINES, linesByNumber, poleCode } from '../data/transitData';
 import { LineBadge } from './ui/LineBadge';
 import { CloseButton, Segmented } from './ui/controls';
+import { DialogTitle } from './ui/DialogTitle';
 import { Drawer } from './ui/Drawer';
 import { EmptyState } from './ui/EmptyState';
 
@@ -67,17 +68,7 @@ export function FavoritesDrawer({ isOpen, onClose, favoriteStopIds, favoriteLine
     <Drawer open={isOpen} onClose={onClose} label={t.favourites.title} closeLabel={t.favourites.close} wide>
       <div className="@container py-5 px-cap-5 border-b border-edge bg-surface">
         <div className="flex items-center justify-between gap-3 mb-4">
-          <div className="flex min-w-0 items-center gap-2.5">
-            {/* The star is the title's decoration: where the heading has less than 14rem it goes,
-                rather than the heading breaking as "FAVORI-TOS". */}
-            <div className="hidden w-9 h-9 shrink-0 rounded-control bg-warn items-center justify-center @min-icons:flex">
-              <Star className="w-5 h-5 fill-current text-warn-ink" />
-            </div>
-            <div className="min-w-0">
-              <h2 className="break-words font-bold text-ink text-body uppercase tracking-display">{t.favourites.title}</h2>
-              <p className="text-label text-ink-3">{t.favourites.subtitle}</p>
-            </div>
-          </div>
+          <DialogTitle icon={Star} tone="warn" title={t.favourites.title} subtitle={t.favourites.subtitle} compact />
           <CloseButton label={t.favourites.close} onClick={onClose} />
         </div>
         {/* The tabs' icons go with the star, for the same reason: the word before the picture. */}
