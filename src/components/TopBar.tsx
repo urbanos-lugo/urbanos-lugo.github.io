@@ -8,6 +8,7 @@ import { useT } from '../i18n';
 import { LineBadge } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
 import { CountBadge } from './ui/CountBadge';
+import { NameStack } from './ui/NameStack';
 import { asideSections, navSections, type Tab } from './navSections';
 
 interface TopBarProps {
@@ -168,12 +169,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
               <MapPin className="h-4.5 w-4.5 shrink-0 text-ink-3" aria-hidden="true" />
               {/* The name keeps 6rem and the pole code goes under it when both do not fit: at 200%
                   text the names spilled up to 130 px out of their box, over the code. */}
-              <span className="min-w-floor-name flex-1">
-                <span className="block break-words text-emph font-semibold">{stop.name}</span>
-                <span className="block text-label text-ink-3">
-                  {stop.zone} · {t.common.lines(stop.lines.length)}
-                </span>
-              </span>
+              <NameStack name={stop.name} hint={`${stop.zone} · ${t.common.lines(stop.lines.length)}`} size="emph" floor />
               <PoleCode code={poleCode(stop)} className="ml-auto" />
             </Row>
           ))}
@@ -190,10 +186,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
           {places.map(({ lm, stop, walkMeters }) => (
             <Row key={lm.name} onClick={choose(() => onSelectPlace(lm.name))}>
               <Landmark className="h-4.5 w-4.5 shrink-0 text-ink-3" aria-hidden="true" />
-              <span className="min-w-0 flex-1">
-                <span className="block break-words text-emph font-semibold">{lm.name}</span>
-                <span className="block text-label text-ink-3">{t.search.nearestStop(stop.name, walkMeters)}</span>
-              </span>
+              <NameStack name={lm.name} hint={t.search.nearestStop(stop.name, walkMeters)} size="emph" />
             </Row>
           ))}
 
@@ -201,7 +194,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
           {screens.map(({ id, Icon, label }) => (
             <Row key={id} onClick={choose(() => onOpenTab(id))}>
               <Icon className="h-4.5 w-4.5 shrink-0 text-ink-3" aria-hidden="true" />
-              <span className="min-w-0 flex-1 break-words text-emph font-semibold">{label}</span>
+              <NameStack name={label} size="emph" />
             </Row>
           ))}
         </div>

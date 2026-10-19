@@ -4,6 +4,7 @@ import type { BusLine, BusStop, TripSegment } from '../../types';
 import { stopName } from '../../data/transitData';
 import { LineBadge } from '../ui/LineBadge';
 import { Approx, Provenance } from '../ui/Provenance';
+import { NameStack } from '../ui/NameStack';
 
 interface ItineraryProps {
   segments: TripSegment[];
@@ -47,13 +48,19 @@ function BusStep({ seg, onSelectStop, onSelectLine }: { seg: TripSegment & { lin
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
         <LineBadge number={seg.line.number} color={seg.line.color} title={seg.line.name} onClick={() => onSelectLine(seg.line)} />
         {/* Where this bus is going, not what the line is called: the name is its two termini and did not fit. */}
-        <span className="min-w-floor-name flex-1 break-words text-body font-semibold" title={seg.line.name}>
-          <span className="sr-only">{t.service.towards('')}</span>
-          <span aria-hidden="true" className="text-ink-3">
-            →{' '}
-          </span>
-          {direction?.destination ?? seg.line.name}
-        </span>
+        <NameStack
+          floor
+          title={seg.line.name}
+          name={
+            <>
+              <span className="sr-only">{t.service.towards('')}</span>
+              <span aria-hidden="true" className="text-ink-3">
+                →{' '}
+              </span>
+              {direction?.destination ?? seg.line.name}
+            </>
+          }
+        />
         <span className="tnum ml-auto shrink-0 text-emph font-bold">{seg.durationMinutes} min</span>
       </div>
       <div className="mt-3">

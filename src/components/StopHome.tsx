@@ -10,6 +10,7 @@ import { useClock } from '../hooks/useClock';
 import { LazyNearbyMiniMap } from './Map/LazyNearbyMiniMap';
 import { LineBadge, lineTint } from './ui/LineBadge';
 import { EmptyState } from './ui/EmptyState';
+import { NameStack } from './ui/NameStack';
 import { Approx } from './ui/Provenance';
 
 interface StopHomeProps {
@@ -41,13 +42,15 @@ function StopRow({ stop, onSelect, trailing }: { stop: BusStop; onSelect: (stop:
   return (
     <li>
       <button onClick={() => onSelect(stop)} className="flex w-full items-center gap-3 rounded-control border border-edge px-cap-3.5 py-3 text-left">
-        <span className="min-w-0 flex-1">
-          <span className="block break-words text-body font-semibold">{stop.name}</span>
-          <span className="block text-label text-ink-3">
-            {trailing ? '' : `${stop.zone} · `}
-            {t.common.lines(stop.lines.length)}
-          </span>
-        </span>
+        <NameStack
+          name={stop.name}
+          hint={
+            <>
+              {trailing ? '' : `${stop.zone} · `}
+              {t.common.lines(stop.lines.length)}
+            </>
+          }
+        />
         {trailing}
       </button>
     </li>
@@ -145,8 +148,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                 {/* The name whole, on as many lines as it takes: it is what the reader matches
                     against the pole. The zone shared its line and cut it -- "Rda. Muralla 56 (Si…"
                     on a phone, "Rda. Muralla …" at 320 px, and nothing at all at 200% text. */}
-                <span className="block text-emph font-semibold">{stop.name}</span>
-                <span className="block text-label text-ink-3">{stop.zone}</span>
+                <NameStack name={stop.name} hint={stop.zone} size="emph" />
                 {arrivals.length === 0 ? (
                   next ? (
                     <span className="mt-2.5 flex flex-wrap items-center gap-1.5 text-body">
@@ -200,10 +202,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                     still lost its end at 320 px, at 200 % and under a reader's text spacing. */}
                 <button onClick={() => onSelectLine(line)} style={lineTint(line.color)} className="line-row tint tint-edge tint-strong w-full text-left">
                   <LineBadge number={line.number} color={line.color} />
-                  <span className="min-w-floor-name flex-1">
-                    <span className="block break-words text-body font-semibold">{line.name}</span>
-                    <span className="block text-label text-ink-2">{stop ? t.stopHome.savedLinesAt(stop.name) : t.stopHome.savedLinesNoStop}</span>
-                  </span>
+                  <NameStack name={line.name} hint={stop ? t.stopHome.savedLinesAt(stop.name) : t.stopHome.savedLinesNoStop} floor onTint />
                   {next && (
                     <span className="tnum ml-auto shrink-0 text-right">
                       <span className="block text-emph font-bold">

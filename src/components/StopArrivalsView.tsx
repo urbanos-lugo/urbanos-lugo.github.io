@@ -18,6 +18,7 @@ import { PoleCode } from './ui/PoleCode';
 import { BackButton, CloseButton, Disclosure, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
 import { SectionLabel } from './ui/SectionLabel';
 import { EmptyState } from './ui/EmptyState';
+import { NameStack } from './ui/NameStack';
 import { watchForStop, ringAlarm, notify, requestNotificationPermission, ALARM_RADIUS_M, AlarmHandle } from '../services/stopAlarm';
 
 interface StopArrivalsViewProps {
@@ -412,12 +413,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               {nearbyLines.map(({ line, nearestStop, walkMeters }) => (
                 <li key={line.id} style={lineTint(line.color)} className="line-row tint tint-edge">
                   {lineButton(line.id, line.number, line.color)}
-                  <span className="min-w-floor-name flex-1">
-                    <span className="block break-words text-body font-semibold">
-                      {nearestStop.name}
-                    </span>
-                    <span className="block text-label text-ink-2">{t.common.walkDistance(walkMeters)}</span>
-                  </span>
+                  <NameStack name={nearestStop.name} hint={t.common.walkDistance(walkMeters)} floor onTint />
                 </li>
               ))}
             </ul>
@@ -502,9 +498,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
                   not fit: with the type at 200% the name was squeezed to one letter a line. */}
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 {lineButton(a.lineId, a.lineNumber, a.lineColor)}
-                <span className="min-w-floor-name flex-1 break-words text-emph font-semibold">
-                  {a.destination}
-                </span>
+                <NameStack name={a.destination} size="emph" floor />
                 <span className={`ml-auto flex shrink-0 items-end gap-1.5 ${skipsHere(a.lineNumber) ? 'line-through opacity-struck' : ''}`}>
                   <Minutes arrival={a} />
                   {minUnit(a)}
@@ -525,12 +519,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             <li key={g.key} className="tint tint-edge overflow-hidden rounded-card border" style={lineTint(g.lineColor)}>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3">
                 {lineButton(g.lineId, g.lineNumber, g.lineColor)}
-                <span className="min-w-floor-name flex-1">
-                  <span className="block break-words text-emph font-semibold">
-                    {g.destination}
-                  </span>
-                  {g.headwayMinutes !== null && <span className="mt-0.5 block text-label text-ink-3">{t.arrivals.every(g.headwayMinutes)}</span>}
-                </span>
+                <NameStack name={g.destination} hint={g.headwayMinutes !== null && t.arrivals.every(g.headwayMinutes)} size="emph" floor />
                 <span className={`ml-auto flex shrink-0 items-end gap-1.5 ${skipsHere(g.lineNumber) ? 'line-through opacity-struck' : ''}`}>
                   <Minutes arrival={g.departures[0]} />
                   {minUnit(g.departures[0])}
@@ -585,7 +574,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               {polesNearby.map((pole) => (
                 <li key={pole.id}>
                   <button onClick={() => onSelectStop(pole)} className="flex min-h-tap w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-edge bg-bg px-3 py-2 text-left">
-                    <span className="min-w-floor-name flex-1 break-words text-body font-semibold">{pole.name}</span>
+                    <NameStack name={pole.name} floor />
                     <PoleCode code={poleCode(pole)} />
                     <span className="tnum shrink-0 text-label text-ink-2">{t.common.walkDistance(pole.walkMeters)}</span>
                   </button>

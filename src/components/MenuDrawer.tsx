@@ -1,6 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import { CloseButton } from './ui/controls';
 import { CountBadge } from './ui/CountBadge';
+import { NameStack } from './ui/NameStack';
 import { useDialog } from '../hooks/useDialog';
 import { tabLink } from '../hooks/useTabRoute';
 import { useLang, useT } from '../i18n';
@@ -54,7 +55,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
               className="flex min-h-14 items-center gap-4 rounded-card px-cap-3 py-2 text-left"
             >
               <Icon className={`h-5 w-5 shrink-0 ${id === 'info' ? 'text-warn-ink' : 'text-ink-2'}`} aria-hidden="true" />
-              <span className="min-w-0 flex-1 break-words text-emph font-semibold">{label}</span>
+              <NameStack name={label} size="emph" />
               {/* A space the row does not draw, between the words and the count: run together, the
                   text read "servizo1", which did not match the name "servizo (1)" (2.5.3). */}{' '}
               <CountBadge n={badge} />
