@@ -23,6 +23,9 @@ const SIZES = {
   xl: 'h-14 w-14 rounded-control text-title',
 } as const;
 
+/** The badge's classes, for the map's popups too, which are HTML strings outside React. */
+export const lineBadgeClass = (size: keyof typeof SIZES) => `tnum flex shrink-0 items-center justify-center font-bold text-on-line ${SIZES[size]}`;
+
 export function LineBadge({
   number,
   color,
@@ -40,7 +43,7 @@ export function LineBadge({
   'aria-label'?: string;
   onClick?: () => void;
 }) {
-  const classes = `tnum flex shrink-0 items-center justify-center font-bold text-on-line ${SIZES[size]} ${className}`;
+  const classes = `${lineBadgeClass(size)} ${className}`;
   const style = { backgroundColor: color };
   return onClick ? (
     <button type="button" onClick={onClick} title={title} aria-label={aria['aria-label']} className={classes} style={style}>
