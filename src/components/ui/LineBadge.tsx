@@ -1,5 +1,8 @@
 import type { CSSProperties } from 'react';
 
+/** A line's colour as the --line the .tint rules mix into a row's fill and edge. */
+export const lineTint = (color: string) => ({ '--line': color }) as CSSProperties;
+
 /**
  * A line's number on its colour: the badge printed on the poles and the buses, which is
  * what a rider matches against. Sizes, smallest first: 'inline' in a run of text, 'sm' in
@@ -10,8 +13,6 @@ import type { CSSProperties } from 'react';
  * The sizes are the ones the screens asked for through className overrides, which had
  * drifted into nine geometries; geometry belongs here, not at the call.
  */
-/** A line's colour as the --line the .tint rules mix into a row's fill and edge. */
-export const lineTint = (color: string) => ({ '--line': color }) as CSSProperties;
 
 const SIZES = {
   inline: 'min-w-6 rounded-tag px-1.5 py-0.5 text-label',
