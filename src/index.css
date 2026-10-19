@@ -620,10 +620,12 @@
      reader's demo stops. A 44 px floor, the surface fill and the control's edge and corner. */
   .row-button { display: flex; width: 100%; min-height: var(--spacing-tap); align-items: center; justify-content: space-between; gap: calc(var(--spacing) * 2); padding: calc(var(--spacing) * 2.5); border: var(--default-border-width) solid var(--c-border); border-radius: var(--radius-control); background-color: var(--c-surface); text-align: left; font-size: var(--text-label); line-height: var(--text-label--line-height); }
 
-  /* A text field: the 44 px floor, the surface fill, the control's edge and corner, body type.
-     Its focus is the global ring. .field-clock is the native time input set in a panel: as wide
-     as its clock, on the ground, in the mono face. */
-  .field { min-height: var(--spacing-tap); width: 100%; border: var(--default-border-width) solid var(--c-border); border-radius: var(--radius-control); background-color: var(--c-surface); padding-inline: calc(var(--spacing) * 3.5); font-size: var(--text-body); line-height: var(--text-body--line-height); color: var(--c-ink); }
+  /* A text field: 44 px, the surface fill, the control's edge and corner, body type. One line
+     is the 44 px box, as h-tap drew it: with the floor alone Chrome set the text a pixel higher.
+     A field padded to its own height (the QR code) takes h-auto and keeps the floor. Its focus
+     is the global ring. .field-clock is the native time input set in a panel: as wide as its
+     clock, on the ground, in the mono face. */
+  .field { min-height: var(--spacing-tap); height: var(--spacing-tap); width: 100%; border: var(--default-border-width) solid var(--c-border); border-radius: var(--radius-control); background-color: var(--c-surface); padding-inline: calc(var(--spacing) * 3.5); font-size: var(--text-body); line-height: var(--text-body--line-height); color: var(--c-ink); }
   .field::placeholder { color: var(--c-ink-3); }
   .field-clock { width: auto; background-color: var(--c-bg); padding-inline: calc(var(--spacing) * 2); font-family: var(--font-mono); }
 

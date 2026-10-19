@@ -176,7 +176,7 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
             aria-label={t.qr.inputLabel}
             aria-invalid={errorMsg ? true : undefined}
             aria-describedby={errorMsg ? 'qr-manual-error' : undefined}
-            className="field py-2.5 font-semibold focus:bg-bg focus:outline-hidden focus:ring-strong focus:ring-accent"
+            className="field h-auto py-2.5 font-semibold focus:bg-bg focus:outline-hidden focus:ring-strong focus:ring-accent"
           />
           {errorMsg && (
             <p id="qr-manual-error" role="alert" className="field-error">
