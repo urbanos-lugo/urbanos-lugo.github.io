@@ -866,8 +866,9 @@
      And theme them. Leaflet paints these from its own sheet — white plate, near-black
      glyph, a grey plate for the disabled end of the range — so at night the zoom sat on
      the map as a white brick two inches from a locate button that was themed properly.
-     Same surface, same border, same ink, same corner radius as that button: they are two
-     halves of one set of map controls and they should look it.
+     Same surface, same border, same ink as that button: they are two halves of one set of
+     map controls and they should look it. Not the same corner or shadow: the locate button
+     is a round glass control (.map-glass, shadow-float) and the bar keeps its own.
 
      !important throughout because Leaflet ships its CSS unlayered, and an unlayered rule
      beats anything in @layer base however late it comes. */
