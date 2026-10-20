@@ -6,8 +6,8 @@ import { useState, type CSSProperties, type ReactNode } from 'react';
  * a toggle, said with aria-pressed, and `on` swaps it to the warm "active" fill; without, it
  * is a plain button that says nothing of being pressed (the map and share buttons are not
  * switches). `onSurface` takes the ground's fill where it sits on a surface tile (the run
- * stepper); `bar` is the top bar's px size. children follow the icon, or stand for it (the
- * stepper's arrows are text, the menu's glyph a size up).
+ * stepper); `bar` is the top bar's px size. children follow the icon (the menu's count), or
+ * stand for it (the stepper's arrows are text).
  */
 export function IconButton({
   icon: Icon,

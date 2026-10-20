@@ -143,8 +143,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
           </button>
         </div>
         {/* The same badge as the drawer row: the count was only inside the drawer, so on a phone it existed for whoever opened the menu. */}
-        <IconButton bar onClick={onOpenMenu} label={alertCount > 0 ? `${t.menu.open}. ${t.menu.alerts}: ${alertCount}` : t.menu.open} className="relative shrink-0 lg:hidden">
-          <Menu className="h-5 w-5" aria-hidden="true" />
+        <IconButton bar icon={Menu} onClick={onOpenMenu} label={alertCount > 0 ? `${t.menu.open}. ${t.menu.alerts}: ${alertCount}` : t.menu.open} className="relative shrink-0 lg:hidden">
           <CountBadge n={alertCount} overlay />
         </IconButton>
       </div>
