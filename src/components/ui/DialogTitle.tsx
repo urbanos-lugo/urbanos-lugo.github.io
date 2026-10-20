@@ -9,7 +9,7 @@ import type { LucideIcon } from 'lucide-react';
  */
 export function DialogTitle({ icon: Icon, tone, title, subtitle, compact = false, className = '' }: { icon: LucideIcon; tone: 'warn' | 'accent'; title: string; subtitle: string; compact?: boolean; className?: string }) {
   return (
-    <div className={`flex items-center ${compact ? 'min-w-0 gap-2.5' : 'flex-wrap gap-3'} ${className}`}>
+    <div className={`flex items-center gap-3 ${compact ? 'min-w-0' : 'flex-wrap'} ${className}`}>
       <div className={`shrink-0 items-center justify-center rounded-control ${compact ? 'hidden h-9 w-9 @min-icons:flex' : 'flex h-12 w-12'} ${tone === 'warn' ? 'bg-warn text-warn-ink' : 'bg-accent text-on-accent'}`}>
         <Icon className={`${compact ? 'h-5 w-5' : 'h-6 w-6'} ${tone === 'warn' ? 'fill-current' : ''}`} aria-hidden="true" />
       </div>
