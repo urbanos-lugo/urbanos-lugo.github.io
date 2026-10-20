@@ -394,7 +394,6 @@
   --shadow-raised: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); /* a card, a chip on the map */
   --shadow-float: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* a list over the page, a button over the map */
   --shadow-overlay: 0 25px 50px -12px rgb(0 0 0 / 0.25); /* a sheet, a drawer, a dialog */
-  --shadow-map-bar: 0 4px 12px oklch(0 0 0 / 0.16);
   --shadow-tooltip: 0 2px 10px rgb(0 0 0 / 0.18);
   --shadow-pin: 0 1px 4px rgb(0 0 0 / 0.4);
   --drop-shadow-marker: 0 1px 2px rgb(0 0 0 / 0.35);
@@ -867,9 +866,9 @@
      And theme them. Leaflet paints these from its own sheet — white plate, near-black
      glyph, a grey plate for the disabled end of the range — so at night the zoom sat on
      the map as a white brick two inches from a locate button that was themed properly.
-     Same surface, same border, same ink as that button: they are two halves of one set of
-     map controls and they should look it. Not the same corner or shadow: the locate button
-     is a round glass control (.map-glass, shadow-float) and the bar keeps its own.
+     Same surface, same border, same ink and the same float over the map as that button:
+     they are two halves of one set of map controls and they should look it. Not the same
+     corner: a bar of two buttons is not a circle, so it keeps its own.
 
      !important throughout because Leaflet ships its CSS unlayered, and an unlayered rule
      beats anything in @layer base however late it comes. */
@@ -877,7 +876,7 @@
   .leaflet-touch .leaflet-bar {
     border: var(--default-border-width) solid var(--c-border) !important;
     border-radius: var(--radius-map-bar) !important;
-    box-shadow: var(--shadow-map-bar) !important;
+    box-shadow: var(--shadow-float) !important;
     /* So the children's square corners are cut by the rounded container instead of
        poking out of it. */
     overflow: hidden;
