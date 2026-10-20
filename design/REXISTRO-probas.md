@@ -3098,8 +3098,8 @@ tamén a `develop`.
 
 ## Rolda 41: a suite só garda o que fai fallar o código — 20 de outubro de 2026
 
-Pedido: rematar a limpeza de `tools/test.ts` que empezou en e6da930. A regra: só checks de
-extremo a extremo e de lóxica (formatadores, a escada do planificador, analizadores, probas
+Pedido: rematar a limpeza de `tools/test.ts` que empezou no commit «The suite keeps only
+checks that run the code». A regra: só checks de extremo a extremo e de lóxica (formatadores, a escada do planificador, analizadores, probas
 sobre o conxunto de datos), cada un capaz de fallar cando o código se rompe dun xeito que
 importa; ningún que lea un ficheiro fonte, unha folla de estilo, un workflow ou un
 documento e case o seu texto cunha expresión regular. O número de checks non é un obxectivo.
@@ -3121,7 +3121,7 @@ documento e case o seu texto cunha expresión regular. O número de checks non �
 - A cámara, coas dúas vías de apagado de `QrScannerModal.tsx` rotas (o efecto
   `if (!isOpen) stopCamera()` e o `track.stop()` da limpeza do escaneo): `audit:browser` dá
   un só achado, «the camera is still running behind the closed scanner», e sae con 1.
-  Restaurado. Os sete fallos de e6da930 xa estaban probados; este era o que faltaba.
+  Restaurado. Os sete fallos dese commit xa estaban probados; este era o que faltaba.
 - `pnpm test` non corría en Windows: o servidor arrancábase con `node_modules/.bin/tsx`,
   que alí é un `.cmd` que `spawn` non abre, e despois borrábase o seu cartafol antes de que
   o proceso saíse.
@@ -3143,17 +3143,31 @@ documento e case o seu texto cunha expresión regular. O número de checks non �
 - CLAUDE.md leva a regra e as cinco portas (`check:policy` coas catro de antes); o que
   dicía que `pnpm test` gardaba a lista de CI, os workflows que len fóra e os resumos do
   README, corrixido ou quitado. O README perde a conta de checks, e cada «`pnpm test`
-  comproba» que deixou de ser certo con e6da930 di agora o que o comproba, ou cala.
+  comproba» que deixou de ser certo con ese commit di agora o que o comproba, ou cala.
   SECURITY, PRIVACY e CONTRIBUTING, igual.
-- `pnpm test` 152 checks, `check:policy` 6; lint, `check:deep`, a reconstrución dos datos
-  (sen cambios) e o build en verde; `audit:browser` enteiro: 0 achados en 242 medicións de 162 estados, en 504 s, e as
-  promesas (política, cámara, minutos dun poste escaneado) sen ningún.
+- Nove checks conservaban a súa lóxica e remataban cunha expresión regular sobre o código
+  fonte (os títulos das pestanas, o idioma do enderezo, as rutas e o sitemap, o tempo de
+  viaxe dunha liña, a camiñada medida, a orde das opcións, o «~» do taboleiro baleiro, as
+  liñas dos favoritos e a chave das filas). Esas liñas van. Dúas tiñan detrás algo que se
+  pode preguntar de verdade e cámbianse por iso: `withMeasuredWalk` cun bus perdido por
+  tres minutos (a chegada móvese só polo camiño de despois), e o que escribe o build, un
+  `404.html` e unha páxina por ruta e idioma co seu propio título. Romper cada unha, na
+  aritmética e quitando `dist/en/lines/index.html`, fai fallar o check. A etiqueta de Search
+  Console pasa a `check:policy`.
+- Sobre b44c11c (a rolda 40, cuxo check da ponte queda): `pnpm test` 153 checks,
+  `check:policy` 7; lint, `check:deep`, a reconstrución dos datos (sen cambios) e o build
+  en verde; `audit:browser` enteiro: 0 achados en 242 medicións de 162 estados, en 491 s,
+  consola limpa, e as promesas (política, cámara, minutos dun poste escaneado) sen ningún.
 
 ### Queda
 
-- Nove checks que quedan aínda rematan cunha expresión regular sobre o código fonte xunto á
-  súa lóxica: os títulos das pestanas, o idioma do enderezo, as rutas e o sitemap, o tempo
-  de viaxe dunha liña, a camiñada medida, a orde das opcións, o «~» do taboleiro baleiro,
-  as liñas dos favoritos e a chave das filas.
-- Xa non se comproba que os tres mapas collan os controis traducidos dun só sitio, nin que
-  todo diálogo pase por `useDialog`: `audit:browser` percorre co teclado só o menú.
+- O que xa só gardaba unha expresión regular e agora non garda nada: que os tres mapas
+  collan os controis traducidos dun só sitio; que todo diálogo pase por `useDialog`
+  (`audit:browser` percorre co teclado só o menú); que a app titule a páxina con
+  `pageHead` e escolla o idioma polo enderezo primeiro; que as pestanas sexan ligazóns co
+  idioma; que a ficha dunha liña pregunte a `scheduledDuration`; que a pantalla de rutas
+  liste as opcións ordenadas, con chave por viaxe, diga cando o camiño non chega e
+  replanifique unha vez só; o «~» do taboleiro baleiro; que os favoritos usen
+  `linesByNumber`; que as filas do taboleiro usen `rowKeys`; e que `pushState` quede fóra
+  do actualizador de estado. Cada un é un fallo que xa pasou; se volve, un check de
+  extremo a extremo no navegador é o sitio.

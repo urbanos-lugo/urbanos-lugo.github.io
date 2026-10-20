@@ -210,6 +210,12 @@ ok('the documents name every data file, every bundled library and every host a v
   assert.deepStrictEqual(listed, allowed, `PRIVACY.md lists [${listed.join(', ')}] as the hosts a visit contacts; the policy allows [${allowed.join(', ')}]`);
 });
 
+ok('index.html keeps the Search Console verification tag', () => {
+  // Search Console re-checks its verification tag now and then; a head rewrite that
+  // dropped it would end the verification without anything on screen changing.
+  assert(/<meta name="google-site-verification" content="[\w-]{20,}"/.test(read('index.html')), 'index.html lost the Search Console verification tag');
+});
+
 ok('no session transcript and no build output is tracked, and the ignore file still says so', () => {
   // The assistant directories hold verbatim transcripts and absolute paths with the
   // machine's user name, and this repository is public (CLAUDE.md); build output is not

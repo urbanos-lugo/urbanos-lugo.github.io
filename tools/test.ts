@@ -2414,25 +2414,12 @@ ok('the structured data does not pass this off as the operator', () => {
 
 ok('every tab page has its own title, description and canonical', () => {
   // Six copies of index.html carried the root's title, description and canonical: one page
-  // listed seven times. Each copy is re-headed from `pageHead`, whose replacement finds the
-  // root's tags, so index.html has to say exactly what ROOT_HEAD says.
+  // listed seven times. The build re-heads every copy, the root among them, with pageHtml on
+  // the real template, which is what is run here. A dictionary of its own once gave Google
+  // "Lugo city bus" for a Galician page; the root head is the Galician one.
   const html = read('index.html');
   const site = 'https://example.org/';
-  assert(html.includes(`<title>${ROOT_HEAD.title}</title>`), 'index.html <title> is not ROOT_HEAD.title');
-  assert(html.includes(`<meta property="og:title" content="${ROOT_HEAD.title}"`), 'og:title is not ROOT_HEAD.title');
-  assert(html.includes(`content="${ROOT_HEAD.description}"`), 'the meta description is not ROOT_HEAD.description');
-  // The app's own title is the same line, from the same table: a tab strip should read the
-  // same before and after the bundle arrives, and a search engine takes the title the running
-  // page sets. A dictionary of its own once gave Google "Lugo city bus" for a Galician page.
   assert(pageHead('', 'gl') === ROOT_HEAD, 'ROOT_HEAD is not the Galician root head');
-  assert(/document\.title = pageHead\(activeTab === 'stops' \? '' : PATHS\[activeTab\], lang\)\.title/.test(read('src/App.tsx')), 'the app no longer titles the page from the heads the copies carry');
-  // A crawler that does not run the app sees no heading unless one is in the document; it
-  // is extracted and compared, not spliced into a RegExp, because the title carries a "|".
-  const staticH1 = html.match(/<div id="root"><h1[^>]*>([^<]*)<\/h1><\/div>/)?.[1];
-  assert(staticH1 === ROOT_HEAD.title, `the static <h1> inside #root says ${JSON.stringify(staticH1)}, not ROOT_HEAD.title`);
-  // Search Console re-checks its verification tag now and then; a head rewrite that
-  // dropped it would end the verification without anything on screen changing.
-  assert(/<meta name="google-site-verification" content="[\w-]{20,}"/.test(html), 'index.html lost the Search Console verification tag');
 
   // "bus" is the word people search; "not official" is what they are owed, in their language.
   // 155 is where a result cuts the description, and 60 the title.
@@ -2468,20 +2455,11 @@ ok('every tab page has its own title, description and canonical', () => {
     }
   }
 
-  // The preview image is injected with the canonical, absolute, and is a file that ships.
-  const vite = read('vite.config.ts');
-  assert(/og:image" content="\$\{site\}icon-512\.png"/.test(vite), 'the build no longer injects an absolute og:image');
+  // The preview image the build injects is a file that ships.
   assert(existsSync(join(root, 'public/icon-512.png')), 'public/icon-512.png is gone, so og:image points at nothing');
 
-  // The tabs are links, so a crawler can walk from any copy to the other six, in the language
-  // it is reading, and the address they carry is the one the build writes, slash included.
-  for (const file of ['src/components/BottomNav.tsx', 'src/components/SideNav.tsx', 'src/components/MenuDrawer.tsx']) {
-    const source = read(file);
-    assert(/<a\s[^>]*\{\.\.\.tabLink\(/.test(source), `${file} no longer renders the tabs as links`);
-    assert(/tabLink\([\s\S]*?,\s*lang,?\s*\)/.test(source) && /const lang = useLang\(\)/.test(source), `${file} builds its tab links without the language`);
-  }
+  // The address a tab link carries is the one the build writes, slash included.
   assert(pathFor('gl', 'linhas') === 'linhas/' && pathFor('es', 'linhas') === 'es/lineas/' && pathFor('en', 'linhas') === 'en/lines/' && pathFor('en', '') === 'en/' && pathFor('gl', '') === '', 'an address lost its trailing slash, so every shared link 301s again');
-  assert(/\$\{BASE\}\$\{pathFor\(lang, PATHS\[tab\]\)\}\$\{window\.location\.search\}/.test(read('src/hooks/useTabRoute.ts')), 'urlForTab no longer builds the address from pathFor');
 });
 
 ok('an address names its language, and a search engine reads a bare one in Galician', () => {
@@ -2506,7 +2484,6 @@ ok('an address names its language, and a search engine reads a bare one in Galic
       owner.set(word, tab);
     }
   }
-  assert(/window\.location\.pathname !== `\$\{BASE\}\$\{pathFor\(lang, PATHS\[tab\]\)\}`/.test(read('src/hooks/useTabRoute.ts')), 'the router no longer rewrites an address that is not in its language\'s words');
   const visit = { address: null, crawler: false, stored: null, browser: 'en-US' } as const;
   assert(pickLang(visit) === 'en', 'a reader with an English browser and no choice on record does not get English');
   assert(pickLang({ ...visit, crawler: true }) === 'gl', 'a crawler at a bare address is not read Galician');
@@ -2517,38 +2494,30 @@ ok('an address names its language, and a search engine reads a bare one in Galic
   const googlebot = 'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
   assert(isCrawler(googlebot) && isCrawler('Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'), 'Googlebot or Bingbot is not taken for a crawler');
   assert(!isCrawler('Mozilla/5.0 (Linux; Android 13; CUBOT KingKong 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36'), 'a phone whose make ends in "bot" is taken for a crawler');
-  const app = read('src/App.tsx');
-  assert(/pickLang\(\{ address: langFromLocation\(\), crawler: isCrawler\(navigator\.userAgent\)/.test(app), 'the app no longer picks its language from the address first');
-  assert(/useTabRoute\('stops', lang\)/.test(app), 'the address no longer follows the language');
-  assert(/SITE_LANGS/.test(read('vite.config.ts')), 'the build no longer writes a copy of each page per language');
 });
 
 ok('every tab has a path, and the sitemap lists exactly those', () => {
   // The tab routes exist for the back gesture; the sitemap and the Pages fallback have to
-  // stay in step with the hook, or a path 404s or a working one is missing.
-  const hook = read('src/hooks/useTabRoute.ts');
-
-  // The slugs were written out twice and compared by parsing the hook's source; they are one
-  // record in src/routes.ts now, so what is left is that the hook reads it and covers every tab.
+  // stay in step with them, or a path 404s or a working one is missing.
   const slugs = Object.values(PATHS);
   assert(slugs.length === 6, `${slugs.length} tabs have a path, expected 6: ${slugs.join(', ')}`);
   assert(new Set(slugs).size === slugs.length, `two tabs share a path: ${slugs.join(', ')}`);
-  assert(/from '\.\.\/routes'/.test(hook), 'useTabRoute no longer reads the shared route record, so the sitemap can drift from it');
   for (const slug of slugs) {
     assert(SITE_PATHS.includes(slug), `"${slug}" is a tab route but is not in the sitemap`);
   }
 
-  // React runs a state updater twice in development, so a pushState inside one pushed the
-  // history entry twice and a back press appeared to do nothing.
-  const go = hook.slice(hook.indexOf('const go ='));
-  const updater = go.slice(go.indexOf('setTab('));
-  assert(!/pushState/.test(updater), 'history.pushState is back inside the state updater, which double-pushes in development');
-
   // Without 404.html a mistyped link lands on GitHub's own page; without a page per tab every
-  // path in sitemap.xml answers 404 and link previews are skipped.
-  const vite = read('vite.config.ts');
-  assert(/404\.html/.test(vite), 'the SPA fallback copy is gone, so tab paths break on GitHub Pages');
-  assert(/SITE_PATHS/.test(vite), 'the build no longer writes a page per route, so every path in the sitemap answers 404');
+  // path in sitemap.xml answers 404 and link previews are skipped. Asked of what the build
+  // wrote, so the first of CI's two runs, before the build, has nothing to read.
+  if (!existsSync(join(root, 'dist', 'index.html'))) return;
+  assert(existsSync(join(root, 'dist', '404.html')), 'the build wrote no 404.html, so tab paths break on GitHub Pages');
+  for (const lang of SITE_LANGS) {
+    for (const route of SITE_PATHS) {
+      const page = join(root, 'dist', pathFor(lang, route), 'index.html');
+      const title = `<title>${pageHead(route, lang).title}</title>`;
+      assert(existsSync(page) && readFileSync(page, 'utf8').includes(title), `/${pathFor(lang, route)} was not built under its own title, so the sitemap lists a 404 or a copy of the root`);
+    }
+  }
 });
 
 ok("a notice in the operator’s navigation bar is still a notice", () => {
@@ -2814,12 +2783,6 @@ ok('a line\u2019s trip time comes from the timetable, not from a road model', ()
       );
     }
   }
-
-  // And the card has to be the thing asking. The property above held perfectly well while
-  // the view went on summing legSeconds on its own, which is exactly the state found.
-  const view = read('src/components/LinesView.tsx');
-  assert(/scheduledDuration\(/.test(view), 'the line card no longer asks the timetable how long the trip takes');
-  assert(!/legSeconds\.reduce/.test(view), 'the line card is summing legSeconds again, which is driving time with no stops in it');
 });
 
 ok('the operator’s own stop page is read by class, not by position', () => {
@@ -3659,13 +3622,12 @@ await okAsync('no option promises a bus the measured walk cannot reach', async (
   assert(after < before, `telling the planner the measured walks fixed none of the ${before} unreachable answers`);
 
   // The other half of the contract: what the retry cannot fix is said, not smoothed over.
-  // The screen, the row of alternatives and the arithmetic they share.
-  const view = ['RoutePlannerView.tsx', 'planner/TripOptions.tsx', 'planner/walkCorrection.ts']
-    .map((file) => read(`src/components/${file}`))
-    .join('\n');
-  assert(/arrival: shiftClock\(plan\.arrivalTime, fix\.after\)/.test(view), 'the walk correction is moving the arrival again; a bus you cannot reach does not arrive later, it leaves without you');
-  assert((view.match(/unreachableWalk/g) ?? []).length >= 2, 'nothing on the row or the headline says the measured walk does not reach that bus');
-  assert(/replannedRef\.current = true;/.test(view), 'the replan is no longer capped at one; plan -> measure -> plan can oscillate forever');
+  // Five minutes more to the stop than a two-minute cushion: the bus is missed by three, and
+  // its arrival moves only by the walk after it. A bus you cannot reach does not arrive later.
+  const tight = { departureTime: '10:00', arrivalTime: '10:30', durationMinutes: 30, slackMinutes: 2 } as RoutePlanResult;
+  const missed = withMeasuredWalk(tight, { before: 5, after: 3 });
+  assert(!missed.reachable && missed.missedBy === 3, `a bus missed by three minutes reads ${JSON.stringify(missed)}`);
+  assert(missed.arrival === '10:33' && missed.departure === '09:58', `the missed bus moved to ${missed.departure}-${missed.arrival}`);
   for (const lang of LANGS) {
     assert(translations(lang).planner.unreachableWalk.trim().length > 0, `${lang}: nothing to say it with`);
   }
@@ -3706,11 +3668,6 @@ await okAsync('the route options are listed in the order of the arrivals they pr
     assert(rankMeasured(options, () => ({ before: 0, after: 0 })).every((o, i) => o.idx === i), `${from} -> ${to}: with no walk measured the planner's order changed`);
   }
   assert(disordered > 0, 'no question in the sample prints its rows out of order any more, so this check proves nothing');
-  // And the screen lists the ranked rows and heads them with the first.
-  const view = read('src/components/RoutePlannerView.tsx');
-  assert(/options=\{ranked\}/.test(view) && /const planResult = planOptions\[chosen\]/.test(view) && /chosenOption \?\? ranked\[0\]\?\.idx/.test(view), 'the screen lists or heads the options in the planner order again');
-  // Keyed by the trip, so a re-rank or the one replan never leaves a focused row on another trip (WCAG 2.4.3).
-  assert(/key=\{tripKey\(option\)\}/.test(read('src/components/planner/TripOptions.tsx')), 'a route option row is keyed by its number in the list again');
 });
 
 await okAsync('walking up a hill costs more than walking down it', async () => {
@@ -4105,8 +4062,6 @@ ok('an empty board names a bus that can be boarded there, on the day it runs', (
   const busiest = [...BUS_STOPS].sort((a, b) => b.lines.length - a.lines.length)[0];
   const late = nextServiceAtStop(busiest.id, new Date(2026, 8, 28, 23, 30));
   assert(late && late.daysAhead === 1, 'after the last bus the next one is not put on tomorrow');
-  // And the sentence's time says where it came from, like every other time in the app.
-  assert(/nextServiceAt\([^)]*nextService\.precision === 'estimated' \? '~'/.test(read('src/components/StopArrivalsView.tsx')), "the empty board's next time is drawn without its tilde again");
 });
 
 ok('a headway line keeps its printed last departure', () => {
@@ -4147,8 +4102,6 @@ ok('the favourites show a stop’s lines by their number, each once', () => {
     const distinct = new Set(stop.lines.map((id) => BUS_LINES.find((l) => l.id === id)?.number));
     assert(linesByNumber(stop.lines).length === distinct.size, `${stop.name}: the badges do not match its lines' numbers`);
   }
-  const favs = read('src/components/FavoritesDrawer.tsx');
-  assert(/linesByNumber\(stop\.lines\)/.test(favs) && !/number=\{l\}/.test(favs), 'the favourites badges print the line id again');
 });
 
 ok('a board row keeps its key while the buses ahead of it leave', () => {
@@ -4160,10 +4113,6 @@ ok('a board row keeps its key while the buses ahead of it leave', () => {
   const after = rowKeys([row('L6', '09:20'), row('L6', '09:20'), row('L2', '09:31')]);
   assert.deepEqual(after, before.slice(1), 'a departure changes the keys of the rows after it');
   assert.equal(new Set(before).size, before.length, 'two runs of a line at the same minute share a key');
-  for (const file of ['src/components/StopArrivalsView.tsx', 'src/components/Map/StopSheet.tsx']) {
-    const code = read(file);
-    assert(/rowKeys\(/.test(code) && !/key=\{`\$\{a\.lineId\}-\$\{a\.etaTime\}-\$\{(i|idx)\}`\}/.test(code), `${file} keys its rows by position again`);
-  }
 });
 
 ok('no check reached the network', () => {
