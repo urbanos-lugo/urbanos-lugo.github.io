@@ -591,14 +591,14 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         </a>
       </Disclosure>
 
-      {anyOverdue && <p className="rule-above mt-4 pt-3.5 text-note text-ink-3">{t.common.overdueNote}</p>}
+      {anyOverdue && <p className="rule-above mt-4 text-note text-ink-3">{t.common.overdueNote}</p>}
 
       {nonePublished ? (
         <Disclosure frame="rule" className="mt-4" summary={t.arrivals.whyEstimatedTitle}>
           <p className="pb-1 text-note text-ink-3">{t.arrivals.whyEstimated(timingPoints.published, timingPoints.total)}</p>
         </Disclosure>
       ) : (
-        arrivals.length > 0 && <p className="rule-above mt-4 pt-3.5 text-note text-ink-3">{t.arrivals.precisionNote}</p>
+        arrivals.length > 0 && <p className="rule-above mt-4 text-note text-ink-3">{t.arrivals.precisionNote}</p>
       )}
     </div>
   );
