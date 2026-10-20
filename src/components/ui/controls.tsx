@@ -203,7 +203,7 @@ export function SaveStar({ on, onToggle, label, className }: { on: boolean; onTo
 const NOTICE_SIZE = {
   normal: 'anim-rise p-3 text-note',
   inline: 'w-full items-center px-2.5 py-1.5 text-label font-bold',
-  alarm: 'anim-rise px-3 py-2.5 text-body font-semibold',
+  alarm: 'anim-rise p-3 text-body font-semibold',
 } as const;
 
 /**
