@@ -3177,6 +3177,14 @@ solto novo. Nunha rama propia, `design-tokens`, sen publicar.
   `.map-glass`, no das dúas etiquetas de procedencia. Cada unha volveu fallar co seu fallo
   posto de volta (21 roturas, unha de cada vez) e pasar sen el. `pnpm test` queda nas 153
   de develop, e o check do escape da etiqueta dunha liña admite agora as clases que leva.
+- As cinco portas en verde sobre esa rama, e `audit:browser` enteiro dúas veces sobre a
+  mesma build: 0 achados en 242 medicións de 162 estados, consola limpa, as promesas sen
+  ningún. A barra da casa (obxectivos baixo 44 px) dá 307 e 283, e o 19 de outubro 289: o
+  único que cambia entre as dúas pasadas son as tres ligazóns de crédito do mapa base, en
+  85 e 77 estados, segundo cargue a tempo ou non; os estados do mapa sós, dúas veces, 79 e
+  79. Fóra diso, a mesma lista de 16 elementos que o 19, e as tres suxestións do
+  planificador no teléfono 4 px máis estreitas (328 → 324), polo recheo de 16 px da
+  tarxeta do formulario, que foi unha das escollas.
 
 ### Erros nosos durante esta rolda
 
