@@ -604,7 +604,7 @@
   /* A line's row, tinted with its own colour by .tint and .tint-edge: its badge, its name and
      what follows, wrapping under the name at large text. Box and layout only -- the colour of
      the fill and the edge stay the tint's, so the hairline here sets no colour. The lines list
-     sets its own padding and gap, and its chosen row's accent edge, as utilities. */
+     sets only its chosen row's accent edge, as a utility. */
   .line-row { display: flex; flex-wrap: wrap; align-items: center; column-gap: calc(var(--spacing) * 3); row-gap: var(--spacing); border-radius: var(--radius-control); border-width: var(--default-border-width); border-style: solid; padding: calc(var(--spacing) * 2) min(calc(var(--spacing) * 2.5), calc(var(--cap-step) * 2.5)); }
 
   /* A block set off from what is above it by a hairline rule: the board's foot (its map, its

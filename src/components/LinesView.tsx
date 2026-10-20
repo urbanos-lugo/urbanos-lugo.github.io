@@ -180,7 +180,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                       setShowDetail(true);
                     }}
                     style={lineTint(line.color)}
-                    className={`line-row tint tint-strong w-full justify-between gap-2.5 px-cap-3 py-2.5 cursor-pointer transition-all text-left ${isCurrent ? 'border-accent shadow-hair' : 'tint-edge'}`}
+                    className={`line-row tint tint-strong w-full justify-between cursor-pointer transition-all text-left ${isCurrent ? 'border-accent shadow-hair' : 'tint-edge'}`}
                   >
                     {/* The name keeps a floor of 6rem and goes under the number when both do not fit:
                         with the type at 200% it was cut to its first letter, "R…". */}
