@@ -400,7 +400,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             {shownRun ? (
               // Narrower than 16rem, the times go on top and the arrows under them: squeezed between
               // the two at 200% text, they pushed the right arrow 118 px off the screen.
-              <div className="inset-panel flex flex-wrap items-center justify-between gap-3 border-edge p-2.5">
+              <div className="inset-panel flex flex-wrap items-center justify-between gap-3">
                 {/* Named: an arrow on its own was read out as "left arrow", which says where it points and not what it does. */}
                 <IconButton onSurface onClick={() => setPickedRunIndex(Math.max(0, runIndex - 1))} disabled={runIndex === 0} label={t.lines.previousRun} title={t.lines.previousRun} className="order-2 shrink-0 text-body font-semibold @min-stepper:order-none">
                   &larr;
@@ -428,7 +428,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                 </IconButton>
               </div>
             ) : (
-              <div className="inset-panel border-edge p-2.5 text-label font-semibold text-ink-2">
+              <div className="inset-panel text-label font-semibold text-ink-2">
                 {t.lines.noRunsToday}
                 {/* A weekday-only line on a holiday Monday: without the reason, "does not run today" reads as a mistake. */}
                 {isHoliday(new Date()) && <span className="block mt-1 font-normal">{t.lines.holidayToday}</span>}
