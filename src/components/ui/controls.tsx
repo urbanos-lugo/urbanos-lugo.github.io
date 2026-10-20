@@ -139,16 +139,16 @@ export function CloseButton({
 }
 
 /**
- * One of a row of choices, the one picked filled and said with aria-pressed: a 44 px floor,
- * label-size semibold, never wrapping. Three looks are in use, and kept until one is chosen:
- * ink (the lines' categories and runs), accent with an outline and a lift (the map's
- * presets), accent as a flat pill (the planner's shortcuts). dense is the run times' narrow
- * padding and the map presets', where five have to fit a sidebar.
+ * One of a row of choices, the one picked filled in ink and said with aria-pressed: a 44 px
+ * floor, the control's corner, label-size semibold, never wrapping. One look everywhere (the
+ * lines' categories and runs, the map's presets, the planner's shortcuts): ink reads as chosen
+ * without borrowing a meaning, where the accent red is the app's and several lines' colour and
+ * these rows sit beside line colours. dense is the run times' narrow padding and the map
+ * presets', where five have to fit a sidebar.
  */
 export function ChoiceChip({
   on,
   onClick,
-  tone = 'ink',
   dense = false,
   children,
   className = '',
@@ -156,18 +156,12 @@ export function ChoiceChip({
 }: {
   on: boolean;
   onClick: () => void;
-  tone?: 'ink' | 'accent' | 'pill';
   dense?: boolean;
   children: ReactNode;
   className?: string;
   'aria-label'?: string;
   title?: string;
 }) {
-  const look = {
-    ink: on ? 'border border-ink bg-ink text-bg' : 'border border-edge text-ink-2',
-    accent: on ? 'border border-accent bg-accent text-on-accent shadow-hair' : 'border border-edge bg-surface text-ink-2',
-    pill: on ? 'rounded-pill bg-accent text-on-accent' : 'rounded-pill bg-surface text-ink-2',
-  }[tone];
   return (
     <button
       type="button"
@@ -175,7 +169,7 @@ export function ChoiceChip({
       aria-pressed={on}
       aria-label={aria['aria-label']}
       title={aria.title}
-      className={`flex min-h-tap shrink-0 items-center justify-center whitespace-nowrap text-label font-semibold ${tone === 'pill' ? '' : 'rounded-control'} ${dense ? 'px-2.5' : 'px-3.5'} ${look} ${className}`}
+      className={`flex min-h-tap shrink-0 items-center justify-center whitespace-nowrap rounded-control border text-label font-semibold ${dense ? 'px-2.5' : 'px-3.5'} ${on ? 'border-ink bg-ink text-bg' : 'border-edge text-ink-2'} ${className}`}
     >
       {children}
     </button>

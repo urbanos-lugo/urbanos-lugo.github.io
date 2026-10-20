@@ -74,7 +74,7 @@ export function MapControls(p: MapControlsProps) {
       {/* A scrolling row on a phone, where five stacked buttons took 150 px of a sheet; wrapped in the sidebar, where a sideways scroll hides four of five. */}
       <div className="chip-rail lg:flex-wrap lg:overflow-x-visible">
         {presets.map(([preset, label]) => (
-          <ChoiceChip key={preset} on={p.preset === preset} onClick={() => p.onPreset(preset)} tone="accent" dense>
+          <ChoiceChip key={preset} on={p.preset === preset} onClick={() => p.onPreset(preset)} dense>
             {label}
           </ChoiceChip>
         ))}

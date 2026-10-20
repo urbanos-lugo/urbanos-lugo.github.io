@@ -518,7 +518,6 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           setDestQuery(qp.query);
                           calculate(originQuery, qp.query);
                         }}
-                        tone="pill"
                         className="snap-start"
                       >
                         {qp.label}
