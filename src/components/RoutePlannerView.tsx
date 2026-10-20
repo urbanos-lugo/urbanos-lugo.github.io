@@ -374,7 +374,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
           >
             {/* A bare wrapper: the row can only shrink to its item's padding and border, so the card itself as the item left a 30 px stub when folded. */}
             <div>
-          <div className="card py-3.5 px-cap-3.5 sm:p-6">
+          <div className="card py-4 px-cap-4 sm:p-6">
             <h2 className="sr-only">{t.planner.title}</h2>
             <div className="relative">
               <div className="relative rounded-card border border-edge bg-surface">

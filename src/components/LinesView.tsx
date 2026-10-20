@@ -346,7 +346,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
             )}
           </div>
 
-          <div className="card py-5 px-cap-5">
+          <div className="card py-6 px-cap-6">
             <SectionTitle icon={Clock} small as="h3" className="mb-2">
               {t.lines.scheduleTable} &mdash; {direction.origin} ({departures.length})
             </SectionTitle>
