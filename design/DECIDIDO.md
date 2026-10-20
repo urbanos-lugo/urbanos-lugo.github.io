@@ -412,11 +412,11 @@ descrición. Catro regras, e o que quedou fóra:
 
 - **Cada valor visual é un token con nome de papel**, en `src/index.css`, e as escalas
   propias de Tailwind bórranse (`--*: initial`). Un valor novo entra como token, co seu
-  porqué ao lado, ou non entra: `pnpm test` falla nunha clase, un estilo en liña, unha cor
-  nunha cadea ou un número dunha capa do mapa que non nomee un. Medido na árbore de antes:
-  256 valores sen nome; despois, 0 (rolda 37).
-- **O que se repite é un compoñente ou unha clase**, e `pnpm test` garda a sinatura de cada
-  copia feita a man (42, e catro dentro dun mesmo ficheiro).
+  porqué ao lado, ou non entra: `pnpm run check:policy` falla nunha clase, un estilo en
+  liña, unha cor nunha cadea ou un número dunha capa do mapa que non nomee un. Medido na
+  árbore de antes: 256 valores sen nome; despois, 0 (rolda 37).
+- **O que se repite é un compoñente ou unha clase**, e `pnpm run check:policy` garda a
+  sinatura de cada copia feita a man (42, e catro dentro dun mesmo ficheiro).
 - **Xúntase só o descoido claro.** Unha diferenza sen razón escrita e dun paso de escala
   xuntouse, e cada píxel que moveu está na rolda 37; unha que podía ser querida quedou como
   variante, e decidiuse ao día seguinte (abaixo). As fotos de cada estado, nos dous temas,

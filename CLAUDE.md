@@ -38,7 +38,7 @@ green:
 ```
 pnpm run lint          # tsc --noEmit
 pnpm test              # tools/test.ts — prints "N checks passed"
-pnpm run check:policy  # tools/checkPolicy.ts — pins, triggers, network tools, documents, lockfile
+pnpm run check:policy  # tools/checkPolicy.ts — pins, triggers, network tools, documents, lockfile, design vocabulary
 pnpm run check:deep    # invariant + planner sweeps over the whole dataset, ~20s
 pnpm run build         # vite build + esbuild of the server bundle
 ```
@@ -63,7 +63,8 @@ before and after (each on its own port, `BASE=`), then `pnpm run visual:compare 
 
 Every visual value is a token named by its role in `src/index.css` (Tailwind's own scales
 are cleared), and every repeated element is one component in `src/components/ui/` or one
-class there; `pnpm test` fails on a one-off value or a pattern spelled out by hand.
+class there; `pnpm run check:policy` fails on a one-off value or a pattern spelled out by
+hand.
 
 Hit somebody else's server — see the network block before running any of these:
 `pnpm run data:fetch`, `pnpm run data:osm`, `pnpm run data:amenities`,
@@ -116,8 +117,9 @@ formatters, the planner's logic ladder, parsers, proofs over the dataset. Write 
 only if it would actually fail when the code is broken in a way that matters; everything
 else is noise. No check that reads a source file, stylesheet, workflow or document and
 matches its text with a regex. The number of checks is not a goal. What only a file can
-show — what the workflows pin and run, what the documents name — is repository policy,
-and lives in `tools/checkPolicy.ts`, not in the suite.
+show — what the workflows pin and run, what the documents name, which values and patterns
+the interface may spell — is repository policy, and lives in `tools/checkPolicy.ts`, not in
+the suite.
 
 `pnpm run check:deep` is the other half: two sweeps over the full dataset that `pnpm
 test` cannot reach. Run it before claiming a data or planner change works.

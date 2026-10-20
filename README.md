@@ -802,7 +802,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   ├── visualDiff.ts               fotografa eses estados en dúas builds e compara píxel a píxel
 │   ├── fullAudit.ts                informe de calidade de datos
 │   ├── lib.ts                      o que cada ferramenta levaba repetido: raíz, JSON, estatísticas
-│   ├── checkPolicy.ts              política do repositorio: fixacións, disparadores, documentos
+│   ├── checkPolicy.ts              política do repositorio: fixacións, disparadores, documentos, vocabulario visual
 │   └── test.ts                     comprobacións executables
 ├── .github/workflows/
 │   ├── deploy-pages.yml            publica en Pages: push, por calendario e a man
@@ -1205,9 +1205,9 @@ Antes de outubro de 2026 había 256 valores sen nome: 96 clases, 57 valores crus
 regras do propio `index.css`, 44 números nas capas dos mapas, 24 cores en cadeas, 18
 atributos `style` e 6 atributos SVG no HTML dos popups, unha clase que non xeraba nada e un
 tamaño que nada usaba; e iso contando as escalas de Tailwind como se fosen tokens. Agora
-son 0, e unha comprobación de `pnpm test` compila cada clase do código contra o tema sen
-resolver e falla en canto unha non le un `var(--…)`, e tamén nun estilo en liña, nun
-número dunha capa, nunha cor escrita nunha cadea ou nun token que xa non usa ninguén.
+son 0, e unha comprobación de `pnpm run check:policy` compila cada clase do código contra o
+tema sen resolver e falla en canto unha non le un `var(--…)`, e tamén nun estilo en liña,
+nun número dunha capa, nunha cor escrita nunha cadea ou nun token que xa non usa ninguén.
 
 O que se repite é un compoñente ou unha clase: 48 elementos estaban escritos a man en
 entre dous e vinte sitios cada un, e cada un ten agora o seu (`.btn`, `.card`, `.tag`,

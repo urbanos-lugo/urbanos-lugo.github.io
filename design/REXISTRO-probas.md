@@ -3169,6 +3169,14 @@ solto novo. Nunha rama propia, `design-tokens`, sen publicar.
   con `CI=1` saía con 0 sen dicir nada, e agora con 1. E a táboa de tamaños do README,
   medida de novo nas dúas builds (KiB, gzip 9, brotli 11): folla de estilos 60,0 → 62,7 KB,
   anaco de entrada 629,4 → 617,4 KB.
+- Despois da rolda 41, o mesmo 20 de outubro, a rama sobre 29d2ace: as 15 comprobacións
+  novas len ficheiros en vez de correr o código, así que pasan sen tocar de `pnpm test` a
+  `check:policy` (7 → 22), co filtro `TEST_ONLY` para probar unha soa. As tres asercións que
+  estaban en checks que a rolda 41 moveu ou borrou van con elas: a rede da auditoría fóra da
+  súa condición e o navegador perdido, no check das portas; `.edge-estimated` despois de
+  `.map-glass`, no das dúas etiquetas de procedencia. Cada unha volveu fallar co seu fallo
+  posto de volta (21 roturas, unha de cada vez) e pasar sen el. `pnpm test` queda nas 153
+  de develop, e o check do escape da etiqueta dunha liña admite agora as clases que leva.
 
 ### Erros nosos durante esta rolda
 
