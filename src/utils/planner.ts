@@ -4,7 +4,7 @@
  */
 import { BUS_STOPS, FARES, lineById } from '../data/transitData';
 import { directionLabel } from './serviceLabels';
-import { Lang, translations } from '../i18n';
+import { Lang, translations } from '../i18n/translations';
 import { BusDirection, BusStop, BusLine, Precision, RoutePlanResult, TripFare, TripSegment } from '../types';
 import { getDistanceMeters } from './geo';
 import { formatMinutes, parseTimeToMinutes } from './schedule';

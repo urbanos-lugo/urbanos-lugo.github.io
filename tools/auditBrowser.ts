@@ -81,6 +81,7 @@ const KINDS = {
   forced: 'forced colours (1.4.1 / 1.4.11)',
   motion: '2.2.2 / 2.3 / reduced motion',
   console: 'console',
+  privacy: 'what PRIVACY.md, DATA.md and SECURITY.md promise',
   reach: 'state not reached',
   size: 'house bar: text under 12 px',
   target44: 'house bar: target under 44 px',
@@ -124,8 +125,10 @@ const PREPARE = `(() => {
   try { localStorage.clear(); sessionStorage.clear(); for (const [k, v] of Object.entries(set.stored)) localStorage.setItem(k, v); } catch (e) {}
   const where = set.geo === 'granted' ? { coords: { latitude: set.at[0], longitude: set.at[1], accuracy: 12 }, timestamp: Real.now() } : null;
   const answer = (ok, fail) => setTimeout(() => (where ? ok(where) : fail && fail({ code: 1, message: 'denied' })), 60);
-  navigator.geolocation.getCurrentPosition = (ok, fail) => answer(ok, fail);
-  navigator.geolocation.watchPosition = (ok, fail) => { answer(ok, fail); return 1; };
+  // Counted: PRIVACY.md says the position is asked for only where the reader asks for it.
+  window.__auditGeo = 0;
+  navigator.geolocation.getCurrentPosition = (ok, fail) => { window.__auditGeo++; answer(ok, fail); };
+  navigator.geolocation.watchPosition = (ok, fail) => { window.__auditGeo++; answer(ok, fail); return 1; };
   navigator.geolocation.clearWatch = () => {};
   if (navigator.permissions) {
     const query = navigator.permissions.query.bind(navigator.permissions);
@@ -139,6 +142,15 @@ interface Prepared {
   geo: 'granted' | 'denied' | 'none';
   at: [number, number];
 }
+
+/** The keys PRIVACY.md says the app keeps on the device, by store: what a state leaves there is held to these. */
+const PROMISED_KEYS = (() => {
+  const privacy = readFileSync(new URL('../PRIVACY.md', import.meta.url), 'utf8');
+  const table = (from: string, to: string) => [...privacy.slice(privacy.indexOf(from), privacy.indexOf(to)).matchAll(/^\| `([^`]+)` \|/gm)].map((m) => m[1]);
+  const keys = { local: table('## Kept on your device', 'Two more are kept'), session: table('Two more are kept', '## Your location') };
+  if (!keys.local.length || !keys.session.length) throw new Error('PRIVACY.md no longer has the two tables of keys this audit holds the page to');
+  return keys;
+})();
 
 const busiest = [...BUS_STOPS].sort((a, b) => b.lines.length - a.lines.length);
 /** Two saved stops, a saved line and a stop seen recently: what a regular rider's phone holds. */
@@ -199,12 +211,13 @@ const audited = new URL(BASE).host;
  * answered from the fixtures, and anything else is refused. Service workers are bypassed so
  * no request can leave through one.
  */
-async function guard(page: Session, mode: () => Api): Promise<void> {
+async function guard(page: Session, mode: () => Api, seen: (url: URL) => void = () => {}): Promise<void> {
   await page.send('Network.setBypassServiceWorker', { bypass: true });
   await page.send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
   page.on('Fetch.requestPaused', (p) => {
     const requestId = p.requestId as string;
     const url = new URL((p.request as { url: string }).url);
+    seen(url);
     const send = (status: number, body: unknown) =>
       void page
         .send('Fetch.fulfillRequest', {
@@ -860,6 +873,9 @@ const words = (d: typeof gl) => ({
   yesOnIt: d.companion.yesOnIt,
   clearRecent: d.stopHome.clearRecent,
   undoClear: d.planner.undoClear,
+  alerts: d.menu.alerts,
+  scan: d.qr.scanBtn,
+  operatorSays: d.arrivals.operatorSaysTitle,
 });
 type Words = ReturnType<typeof words>;
 const DICT: Record<Lang, typeof gl> = { gl, es, en };
@@ -880,6 +896,8 @@ interface State {
   dialog?: boolean;
   /** In the page, after the probes: what this state has to announce. Returns the failures. */
   expect?: string;
+  /** In the page, after the probes: what PRIVACY.md, DATA.md or SECURITY.md promise of this state. Returns the failures. */
+  promise?: string;
   /** After the setup, a real tap -- at the centre of the map, or on a bus -- which Leaflet answers and a scripted click does not. */
   tap?: 'mapCentre' | 'bus';
 }
@@ -900,8 +918,18 @@ const planned = `const o = document.getElementById('input-origin-query'), d = do
   if (!(await until(() => document.querySelector('main [tabindex="-1"]') && !document.querySelector('[aria-busy="true"]')))) return 'no answer';
   await pause(1200);`;
 
+/**
+ * The fixtures carry one operator notice and one council press note. DATA.md: the council's
+ * notes are press releases, not incidents, so the count of notices the navigation shows is one.
+ */
+const ONE_INCIDENT = `const counts = [...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label')).filter((l) => l.includes(T.alerts + ': ')).map((l) => Number(l.slice(l.lastIndexOf(': ') + 2)));
+  if (!counts.length) return ['nothing shows the count of notices, so the count was not looked at'];
+  return counts.every((n) => n === 1) ? [] : ['one operator notice and one council press note are counted ' + counts.join(', ') + ': a press note is not an incident (DATA.md)'];`;
+/** The stops near a position, each with its walk: "~240 m". */
+const NEAR_LIST = `/~\\s?\\d+\\s?m(?![a-z])/i.test(document.querySelector('main').innerText)`;
+
 const STATES: State[] = [
-  { screen: 'paradas', name: 'inicio' },
+  { screen: 'paradas', name: 'inicio', promise: ONE_INCIDENT },
   { screen: 'paradas', name: 'gardadas', stored: REGULAR },
   {
     screen: 'paradas',
@@ -935,6 +963,7 @@ const STATES: State[] = [
     name: 'preto',
     geo: 'granted',
     setup: `if (!press(seeText(T.locate))) return 'no locate button'; if (!(await until(() => document.querySelectorAll('main ul li').length > 2))) return 'no nearby list'; await pause(1500); return true;`,
+    promise: `return ${NEAR_LIST} ? [] : ['the stops near a position given show no walk, so the refusal below proves nothing'];`,
   },
   {
     screen: 'paradas',
@@ -942,6 +971,8 @@ const STATES: State[] = [
     geo: 'denied',
     setup: `if (!press(seeText(T.locate))) return 'no locate button'; if (!(await until(() => document.querySelector('main [role=alert]')))) return 'no error shown'; return true;`,
     expect: `const a = document.querySelector('main [role=alert]'); return a && a.textContent.trim() ? [] : ['the refusal is not announced'];`,
+    // The stops screen never guesses where you are: a refusal is said, not answered from the centre of Lugo.
+    promise: `return ${NEAR_LIST} ? ['with the position refused the screen lists stops near somewhere: it guessed'] : [];`,
   },
   { screen: 'paradas', name: 'menu', phoneOnly: true, dialog: true, setup: `if (!press(byLabel(T.menu))) return 'no menu button'; await pause(500); return true;` },
   { screen: 'paradas', name: 'favoritos', stored: REGULAR, dialog: true, setup: `if (!press(byLabel(T.favourites))) return 'no favourites button'; await pause(500); return true;` },
@@ -1109,14 +1140,16 @@ interface Worker {
   api: Api;
   logged: string[];
   thrown: string[];
+  /** Requests for the operator's minutes behind a pole's QR, since the state began. */
+  agora: number;
 }
 
 async function worker(browser: Browser): Promise<Worker> {
   // Isolated: the pages run side by side and one origin's storage is shared by every page in
   // a context, so one state's preparation cleared another's saved stops and language mid-load.
   const page = await browser.newPage(true);
-  const w: Worker = { page, api: 'incidents', logged: [], thrown: page.uncaught() };
-  await guard(page, () => w.api);
+  const w: Worker = { page, api: 'incidents', logged: [], thrown: page.uncaught(), agora: 0 };
+  await guard(page, () => w.api, (url) => void (url.pathname.endsWith('/agora') && w.agora++));
   await page.onNewDocument(PREPARE);
   // Focus as if the window were in front: :focus-visible is off in a page that thinks it is
   // in the background, and four of these run side by side.
@@ -1142,7 +1175,7 @@ async function worker(browser: Browser): Promise<Worker> {
 async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> {
   const { page } = w;
   w.api = state.api ?? 'incidents';
-  w.logged.length = w.thrown.length = 0;
+  w.logged.length = w.thrown.length = w.agora = 0;
   await page.send('Emulation.setDeviceMetricsOverride', pass.desktop ? DESKTOP : PHONE);
   await page.send('Emulation.setEmulatedMedia', { features: [] });
   const prepared: Prepared = {
@@ -1218,6 +1251,25 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
     const failed = await page.call<string[]>(`function (T) {${state.expect}}`, words(DICT[pass.lang]));
     for (const f of failed) first.findings.push({ kind: 'status', where: label(state), detail: f });
   }
+  if (state.promise) {
+    const failed = await page.call<string[]>(`function (T) {${state.promise}}`, words(DICT[pass.lang]));
+    for (const f of failed) first.findings.push({ kind: 'privacy', where: label(state), detail: f });
+  }
+  // PRIVACY.md and DATA.md, held to what the state actually did: every key it left on the
+  // device is one PRIVACY.md lists in that store; no cookie; the position asked for only in a
+  // state that pressed something that asks for it; and the operator's minutes only for a
+  // pole somebody scanned. Each count is also asked to move where it should, or it proves nothing.
+  const kept = await page.evaluate<{ local: string[]; session: string[]; cookie: string; geo: number }>(
+    `(() => { const keys = (s) => { try { return Object.keys(s()); } catch (e) { return []; } }; return { local: keys(() => localStorage), session: keys(() => sessionStorage), cookie: document.cookie, geo: window.__auditGeo || 0 }; })()`,
+  );
+  const promised = (detail: string) => first.findings.push({ kind: 'privacy', where: label(state), detail });
+  for (const store of ['local', 'session'] as const) for (const key of kept[store]) if (!PROMISED_KEYS[store].includes(key)) promised(`${store}Storage holds "${key}", which PRIVACY.md does not list there`);
+  if (kept.cookie) promised(`the page set a cookie: ${kept.cookie.slice(0, 60)}`);
+  if (!state.geo && kept.geo) promised(`the position was asked for ${kept.geo} time(s) with nothing pressed that asks for it`);
+  if (state.geo && !kept.geo) first.findings.push({ kind: 'reach', where: label(state), detail: 'something that asks for the position was pressed and nothing asked, so the count proves nothing' });
+  const scanned = /[?&]parada=/.test(state.query ?? '');
+  if (!scanned && w.agora) promised(`the operator's minutes were asked for ${w.agora} time(s) with no pole scanned (DATA.md: only for whoever scanned it)`);
+  if (scanned && !w.agora) first.findings.push({ kind: 'reach', where: label(state), detail: 'a scanned pole never asked for the operator’s minutes, so the count proves nothing' });
 
   // The layouts, in the first theme only: the shape of the page does not change with its colours.
   const metrics = pass.desktop ? DESKTOP : PHONE;
@@ -1498,6 +1550,105 @@ async function keyboard(browser: Browser): Promise<{ findings: Finding[]; visite
   return { findings, visited };
 }
 
+/** A camera that is never a camera: a canvas's stream, counting the tracks still running. And a detector that finds nothing. */
+const FAKE_CAMERA = `(() => {
+  window.__cameraLive = 0;
+  window.__cameraStarted = 0;
+  window.BarcodeDetector = class { static async getSupportedFormats() { return ['qr_code']; } async detect() { return []; } };
+  if (!navigator.mediaDevices) Object.defineProperty(navigator, 'mediaDevices', { value: {}, configurable: true });
+  navigator.mediaDevices.getUserMedia = async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 16;
+    canvas.getContext('2d').fillRect(0, 0, 16, 16);
+    const stream = canvas.captureStream(5);
+    for (const track of stream.getTracks()) {
+      window.__cameraLive++;
+      window.__cameraStarted++;
+      const stop = track.stop.bind(track);
+      track.stop = () => { if (track.readyState === 'live') window.__cameraLive--; stop(); };
+    }
+    return stream;
+  };
+})();`;
+
+/**
+ * The promises a single state cannot show, in the browser that keeps them:
+ *
+ *   the policy as the server sends it refuses a script injected into the page, and eval;
+ *   the scanner's camera is off once its dialog is closed, never left running behind it;
+ *   the operator's minutes for a scanned pole go when another stop is opened, rather than
+ *   staying on screen under a stop they were never asked for.
+ */
+async function promises(browser: Browser): Promise<Finding[]> {
+  const findings: Finding[] = [];
+  const pass: Pass = { name: 'promises', desktop: false, lang: 'gl', themes: ['light'], deep: false };
+  const T = words(DICT.gl);
+  const found = (where: string, detail: string) => findings.push({ kind: 'privacy', where, detail });
+
+  const w = await worker(browser);
+  await runState(w, pass, STATES.find((s) => s.name === 'inicio')!);
+  const policy = await w.page.evaluate<{ inline: boolean; evaluated: boolean; built: boolean; reported: number }>(`(async () => {
+    let reported = 0;
+    document.addEventListener('securitypolicyviolation', () => reported++);
+    window.__injected = false;
+    const s = document.createElement('script');
+    s.textContent = 'window.__injected = true';
+    document.head.appendChild(s);
+    // From a task of the page's own: DevTools lets eval run inside its own evaluation, policy or not.
+    let evaluated = false, built = false;
+    setTimeout(() => {
+      try { evaluated = eval('true'); } catch (e) {}
+      try { built = new Function('return true')(); } catch (e) {}
+    }, 0);
+    await new Promise((r) => setTimeout(r, 300));
+    return { inline: window.__injected, evaluated, built, reported };
+  })()`);
+  if (policy.inline) found('policy', 'a script injected into the page ran: the policy admits inline script');
+  if (policy.evaluated || policy.built) found('policy', 'eval or new Function ran: the policy admits unsafe-eval');
+  if (!policy.reported) findings.push({ kind: 'reach', where: 'policy', detail: 'nothing was refused or reported, so the policy was never in force here' });
+
+  // The minutes of a scanned pole, then another stop opened from the search box.
+  await runState(w, pass, STATES.find((s) => s.name === 'parada qr')!);
+  // Another pole: the scanned one, opened again from the search, is not a change of stop.
+  const other = busiest.find((s) => s.officialToken !== 'uilP')!;
+  const switched = await w.page.call<string | true>(
+    `async function (T, name) {${REACH}
+      const said = () => [...document.querySelectorAll('main h3')].some((h) => h.textContent.trim() === T.operatorSays);
+      if (!said()) return 'the scanned pole never showed the operator’s minutes';
+      const i = document.getElementById('site-search'); if (!i) return 'no search box';
+      fill(i, name); await pause(900);
+      const hit = [...document.querySelectorAll('header button, header a')].find((b) => b.textContent.includes(name));
+      if (!hit) return 'the search box did not offer ' + name; hit.click();
+      if (!(await until(() => document.querySelector('main').textContent.includes(name)))) return 'the board of ' + name + ' never opened';
+      await pause(800);
+      return said() ? 'the operator’s minutes for the scanned pole stayed on screen under ' + name : true;
+    }`,
+    T,
+    other.name,
+  );
+  if (switched !== true) (/stayed on screen/.test(switched) ? found : (where: string, detail: string) => findings.push({ kind: 'reach', where, detail }))('scanned pole', switched);
+  await w.page.close();
+
+  // The camera, through a page that has one.
+  const c = await worker(browser);
+  await c.page.onNewDocument(FAKE_CAMERA);
+  await runState(c, pass, STATES.find((s) => s.name === 'qr')!);
+  const camera = await c.page.call<string | true>(
+    `async function (T) {${REACH}
+      if (!press(seeText(T.scan))) return 'no scan button';
+      if (!(await until(() => window.__cameraLive > 0))) return 'the scanner never started the camera';
+      document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      if (!(await until(() => !document.querySelector('[role=dialog][aria-modal=true]')))) return 'Escape did not close the scanner';
+      await pause(300);
+      return window.__cameraLive === 0 ? true : 'the camera is still running behind the closed scanner';
+    }`,
+    T,
+  );
+  if (camera !== true) (/still running/.test(camera) ? found : (where: string, detail: string) => findings.push({ kind: 'reach', where, detail }))('camera', camera);
+  await c.page.close();
+  return findings;
+}
+
 /**
  * The app with site data refused -- Chrome's "don't allow sites to save data", which some
  * readers turn on and some webviews ship with. Reading `window.localStorage` then throws,
@@ -1589,6 +1740,7 @@ await withBrowser(async (browser) => {
   await sequence('forced colours', () => forced(browser));
   await sequence('reduced motion', () => motion(browser));
   await sequence('site data refused', () => siteDataRefused());
+  await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
 
   // 3.2.3 and 2.4.2, across the states of a pass: the navigation is the same in the same
   // order everywhere, and each screen has a title of its own.

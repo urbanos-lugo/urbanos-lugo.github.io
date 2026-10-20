@@ -4,7 +4,7 @@
  */
 import { BUS_STOPS, BUS_LINES, lineById, stopName } from '../data/transitData';
 import { dayWord, daysLabel } from './serviceLabels';
-import { Lang, translations } from '../i18n';
+import { Lang, translations } from '../i18n/translations';
 import { BusStop, BusLine, DayKind, Precision, StopArrival } from '../types';
 import { MINUTES_PER_DAY, anchorIndex, buildRuns, dayKind, formatMinutes, isHoliday, lineRunsOn, minutesNow, parseTimeToMinutes, type ScheduledRun } from './schedule';
 import { findStop } from './places';

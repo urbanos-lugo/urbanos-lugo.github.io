@@ -4,7 +4,7 @@
  * from the structured fields, in any of the three. Place names stay as published.
  */
 import { BusDirection, BusLine } from '../types';
-import { Lang, translations } from '../i18n';
+import { Lang, translations } from '../i18n/translations';
 import { median } from './schedule';
 
 /**

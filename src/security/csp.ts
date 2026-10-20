@@ -30,6 +30,14 @@ const apiOrigin = (() => {
   }
 })();
 
+/**
+ * The map's two hosts: OpenFreeMap for the vector tiles, glyphs and sprites, and OSM's raster
+ * tiles for a device with no WebGL2. The page draws from them and the service worker caches
+ * them (vite.config.ts builds its rule from this list), and the worker's own fetch answers to
+ * connect-src, so the directives below and that rule cannot name different hosts.
+ */
+export const MAP_ORIGINS = ['https://tiles.openfreemap.org', 'https://tile.openstreetmap.org'];
+
 /** The digest of the one inline script, in the form CSP wants. */
 export const THEME_INIT_HASH = `sha256-${createHash('sha256').update(THEME_INIT_SOURCE, 'utf8').digest('base64')}`;
 
@@ -46,11 +54,11 @@ const DIRECTIVES = [
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
   // blob: because the renderer decodes sprites and glyphs into object URLs before drawing.
-  "img-src 'self' data: blob: https://tiles.openfreemap.org https://tile.openstreetmap.org",
+  `img-src 'self' data: blob: ${MAP_ORIGINS.join(' ')}`,
   // The raster host too: sent as a header, this policy is also the service worker's, and a
   // worker's fetch answers to connect-src. Without it the worker re-fetched every raster
   // tile, was refused, and a self-hosted map that fell back to raster drew nothing.
-  `connect-src 'self' https://tiles.openfreemap.org https://tile.openstreetmap.org${apiOrigin}`,
+  `connect-src 'self' ${MAP_ORIGINS.join(' ')}${apiOrigin}`,
   'upgrade-insecure-requests',
 ];
 

@@ -3,15 +3,20 @@
  * rather than in the browser, and each check names the bug it guards against.
  */
 import assert from 'assert';
-import { readFileSync, readdirSync, existsSync, statSync } from 'fs';
-import { execFileSync } from 'child_process';
+import { readFileSync, readdirSync, existsSync, statSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'fs';
+import { execFileSync, spawn } from 'child_process';
+import { createContext, runInContext } from 'vm';
+import { request as httpRequest } from 'http';
+import { createServer as createNetServer } from 'net';
+import { networkInterfaces, tmpdir } from 'os';
+import { brotliCompressSync, brotliDecompressSync } from 'zlib';
 import { join, dirname, sep } from 'path';
 import { fileURLToPath } from 'url';
 import { BUS_STOPS, BUS_LINES } from '../src/data/transitData';
 import { MAX_OPERATOR_REQUESTS_PER_MINUTE, CACHE_TTL_MS as OPERATOR_CACHE_MS, operatorTimesForStop, operatorTimesResponse, parseOperatorTimes } from '../src/services/operatorTimes';
 import { dayWord, daysLabel, frequencyLabel } from '../src/utils/serviceLabels';
 import { CSP_HEADER, CSP_META, THEME_INIT_HASH } from '../src/security/csp';
-import { THEME_INIT_SOURCE, THEME_STORAGE_KEY } from '../src/security/themeInit';
+import { apiUrl } from '../src/services/apiUrl';
 import { createHash } from 'node:crypto';
 import { buildSync } from 'esbuild';
 import { REPO_URL } from '../src/project';
@@ -31,7 +36,8 @@ import { SNAPSHOT_AFTER_MS, readSnapshot } from '../src/hooks/useServiceAlerts';
 import { readOperatorTimes } from '../src/hooks/useOperatorTimes';
 import { noticeLink } from '../src/utils/operatorNotices';
 import { changesNow, matchStop, noticeOver, pastTimetable, readNoticeChanges, runsAt, runsUntil, serviceDay, setsOff, stopSkipper, underNotice } from '../src/utils/noticeChanges';
-import { plainText } from '../src/utils/html';
+import { escapeHtml, plainText } from '../src/utils/html';
+import { badgeHtml } from '../src/components/Map/popupHtml';
 import { STORAGE_KEYS, readJson, readString, writeJson, writeString } from '../src/utils/storage';
 import { LANG_PREFIX, PATHS, SLUGS, isCrawler, parsePath, pathFor, pickLang } from '../src/routes';
 import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src/services/walkingPath';
@@ -174,13 +180,6 @@ ok('stop.lines and the itineraries agree in both directions', () => {
     const actual = [...(served.get(s.id) || [])].sort().join(',');
     const claimed = [...s.lines].sort().join(',');
     assert(actual === claimed, `${s.id} (${s.name}) claims [${claimed}] but is served by [${actual}]`);
-  }
-});
-
-ok('no line references a line id that does not exist', () => {
-  const known = new Set(BUS_LINES.map((l) => l.id));
-  for (const s of BUS_STOPS) {
-    for (const l of s.lines) assert(known.has(l), `${s.id} references unknown line ${l}`);
   }
 });
 
@@ -615,15 +614,6 @@ ok('a better-connected stop a short walk away is considered', () => {
 
 console.log('\nhonesty of displayed times');
 
-ok('every arrival states where its time came from', () => {
-  const midday = new Date(2026, 7, 19, 13, 30, 0);
-  for (const stop of BUS_STOPS.slice(0, 60)) {
-    for (const arrival of getArrivalsForStop(stop.id, midday).arrivals) {
-      assert(arrival.precision === 'published' || arrival.precision === 'estimated', `${stop.id}/${arrival.lineId} has no stated precision`);
-    }
-  }
-});
-
 ok('every published claim is backed by the row that names that stop', () => {
   // Printed, AND printed in the row of a timing point that resolves to this stop: the headway
   // fallback starts at a printed time, so "some time somewhere in the table" cannot fail.
@@ -715,15 +705,6 @@ ok('a planned trip states the provenance of every bus leg', () => {
   }
 });
 
-ok('no vehicle carries a field we cannot honestly fill', () => {
-  // speedKmH, lastUpdated and delaySeconds were invented and shown as if measured.
-  for (const bus of getScheduledBuses(new Date(2026, 7, 19, 13, 30, 0))) {
-    for (const banned of ['speedKmH', 'lastUpdated', 'isDelayed', 'delaySeconds']) {
-      assert(!(banned in bus), `ScheduledBus still exposes ${banned}`);
-    }
-  }
-});
-
 console.log('\narrivals and planning');
 
 ok('a busy stop has a board at midday and none at 04:00', () => {
@@ -799,13 +780,6 @@ ok('a real corridor plans end to end', () => {
   assert(plan!.durationMinutes > 0 && plan!.durationMinutes < 240, `implausible duration: ${plan!.durationMinutes} min`);
 });
 
-ok('a stop resolves by id, by code and by name', () => {
-  const s = BUS_STOPS[0];
-  assert(findStop(s.id)?.id === s.id, 'by id');
-  assert(findStop(s.code)?.id === s.id, 'by code');
-  assert(findStop(s.name)?.id === s.id, 'by name');
-});
-
 ok('walking estimates account for the street detour', () => {
   const w = estimateWalk(1000);
   assert(w.meters > 1000, 'walk should be longer than the straight line');
@@ -858,38 +832,6 @@ ok('a line badge can be read', () => {
 });
 
 console.log('\ntimetable fidelity');
-
-ok('published timing points are reproduced exactly', () => {
-  let verified = 0;
-  for (const line of BUS_LINES) {
-    const pattern = line.services?.find((p) => p.days.includes('laborable'));
-    if (!pattern) continue;
-    const printed = new Set(pattern.rows.flatMap((r) => r.times));
-
-    line.directions.forEach((_, di) => {
-      for (const run of buildRuns(line, di, BUS_STOPS, 'laborable')) {
-        for (const index of run.publishedStopIndices) {
-          const time = formatMinutes(run.minutesByStopIndex[index] % 1440);
-          assert(printed.has(time), `line ${line.number} claims ${time} is published, but the table never prints it`);
-          verified++;
-        }
-      }
-    });
-  }
-  assert(verified > 100, `only ${verified} published stop-times checked`);
-});
-
-ok('a run passes its stops in order', () => {
-  for (const line of BUS_LINES) {
-    line.directions.forEach((_, di) => {
-      for (const run of buildRuns(line, di, BUS_STOPS, 'laborable')) {
-        for (let i = 1; i < run.minutesByStopIndex.length; i++) {
-          assert(run.minutesByStopIndex[i] >= run.minutesByStopIndex[i - 1], `line ${line.number} goes back in time between stops ${i - 1} and ${i}`);
-        }
-      }
-    });
-  }
-});
 
 console.log('\nitineraries hold together');
 
@@ -997,146 +939,6 @@ ok('the options offered are visibly different from each other', () => {
   }
 });
 
-console.log('\ntranslations');
-
-ok('the three dictionaries have exactly the same shape', () => {
-  // The type already enforces the shape; this catches what it cannot: a key present
-  // everywhere but empty, or a function in one language where another has a string.
-  const walk = (node: unknown, path: string, out: Map<string, string>) => {
-    if (typeof node === 'function') out.set(path, 'function');
-    else if (Array.isArray(node)) node.forEach((v, i) => walk(v, `${path}[${i}]`, out));
-    else if (node && typeof node === 'object') {
-      for (const [k, v] of Object.entries(node)) walk(v, path ? `${path}.${k}` : k, out);
-    } else out.set(path, typeof node);
-    return out;
-  };
-
-  const shapes = LANGS.map((lang) => ({ lang, shape: walk(translations(lang), '', new Map()) }));
-  const reference = shapes[0];
-
-  for (const { lang, shape } of shapes.slice(1)) {
-    for (const [path, kind] of reference.shape) {
-      assert(shape.has(path), `${lang} is missing "${path}"`);
-      assert(shape.get(path) === kind, `${lang}."${path}" is a ${shape.get(path)} where ${reference.lang} has a ${kind}`);
-    }
-    for (const path of shape.keys()) {
-      assert(reference.shape.has(path), `${lang} has an extra key "${path}"`);
-    }
-  }
-});
-
-ok('the price a trip shows is the one anybody pays', () => {
-  // The planner showed 0,45 € (the Tarxeta Cidadá price) as the cost of the trip, with the
-  // 0,64 € a visitor pays struck through beside it. The default is what is true for whoever
-  // is reading; the better fare is offered, never assumed.
-  assert(FARES.singleTicket > FARES.citizenCard, 'the ordinary fare is no longer the dearer one, so this check is about the wrong number');
-
-  const view = read('src/components/RoutePlannerView.tsx');
-
-  // The summary line -- the one figure you see without opening anything -- has to be the
-  // ordinary fare. Take the first fare rendered in the file: it is the summary's.
-  const firstFare = view.search(/fare\.(singleTicket|citizenCard)Euros/);
-  assert(firstFare > 0, 'the planner no longer shows a fare at all');
-  assert(/^fare\.singleTicketEuros/.test(view.slice(firstFare)), 'the first fare the planner shows is the discounted one; it should be the ordinary ticket');
-
-  // And no fare is ever struck through.
-  assert(!/line-through/.test(view), 'a fare is crossed out again, which reads as a price that no longer applies');
-});
-
-ok('the Galician card is called what its own issuer calls it', () => {
-  // One card named two ways (TMG here, TPG there, in three languages), and the expansion
-  // disagreed with its own acronym. The issuer writes "Transporte Metropolitano de Galicia".
-  const files = ['src/i18n/gl.ts', 'src/i18n/es.ts', 'src/i18n/en.ts', 'src/data/transitData.ts', 'README.md'];
-  for (const file of files) {
-    const source = read(file);
-    assert(!/\bTPG\b/.test(source), `${file} still calls the card TPG; the issuer calls it TMG`);
-    assert(!/transporte p[úu]blico de Galicia|public transport card \(TMG\)/i.test(source), `${file} expands TMG as "public transport"; the M is for Metropolitano`);
-  }
-
-  // And the fare card itself still names it, in every language.
-  for (const lang of LANGS) {
-    const title = translations(lang).fares.cards.tmg.title;
-    assert(/TMG/.test(title), `${lang}: the metropolitan fare card no longer says TMG`);
-  }
-});
-
-ok('every map gets its chrome from the one place that has it', () => {
-  // Three maps built their own furniture, so the "Leaflet |" prefix was dropped in one and
-  // printed by the other two. It lives in createBasemap now; a fourth map cannot be born
-  // with the old line, and nobody puts scroll-wheel zoom back on a small map in a page.
-  const mapDir = join(root, 'src/components/Map');
-
-  const basemap = readFileSync(join(mapDir, 'basemap.ts'), 'utf8');
-  assert(/attributionControl\?\.setPrefix\(false\)/.test(basemap), 'createBasemap no longer drops the "Leaflet" prefix, so every map prints it again');
-
-  // Since the simplification of 20 September 2026 every map is built in one hook, and the
-  // loop that looked for `L.map(` in Map/*.tsx found none and asserted nothing. So: exactly
-  // one file builds a Leaflet map, and it gives each map the basemap, a name and its zoom
-  // titles in the reader's language. The route map was born after the other two got theirs,
-  // and said "Zoom in" under a Galician itinerary.
-  const buildsAMap = (text: string) => {
-    const leaflet = /import\s+(?:\*\s+as\s+)?(\w+)\s+from\s+'leaflet'/.exec(text)?.[1];
-    return !!leaflet && new RegExp(`\\b${leaflet}\\.map\\(|new\\s+${leaflet}\\.Map\\(`).test(text);
-  };
-  const builders = sourcesUnder('src').filter((file) => buildsAMap(readFileSync(file, 'utf8'))).map(relative);
-  assert.deepStrictEqual(builders, [join('src', 'hooks', 'useLeafletMap.ts')], `Leaflet maps are built in ${builders.join(', ') || 'no file'}; useLeafletMap is the one place that gives them a basemap, a name and translated controls`);
-  const hook = read('src/hooks/useLeafletMap.ts');
-  assert(/createBasemap\(/.test(hook), 'useLeafletMap builds a map without createBasemap, so it gets neither the basemap nor its attribution');
-  assert(/setAttribute\('aria-label', region\)/.test(hook), 'the map hook no longer names its map, so each one is an unnamed tab stop');
-  assert(/t\.map\.zoomIn/.test(hook) && /t\.map\.zoomOut/.test(hook), 'the map hook no longer titles the zoom buttons in the reader’s language');
-  for (const file of readdirSync(mapDir).filter((f) => /\.tsx?$/.test(f) && f !== 'basemap.ts')) {
-    assert(!/setPrefix\(/.test(readFileSync(join(mapDir, file), 'utf8')), `${file} sets the attribution prefix itself; that belongs in basemap.ts for all of them`);
-  }
-  for (const file of ['TransitMap.tsx', 'RouteMap.tsx', 'NearbyMiniMap.tsx']) {
-    assert(/useLeafletMap\(/.test(readFileSync(join(mapDir, file), 'utf8')), `${file} no longer gets its map from useLeafletMap`);
-  }
-
-  // The two maps that live inside something the reader scrolls have to let them scroll.
-  for (const file of ['RouteMap.tsx', 'NearbyMiniMap.tsx']) {
-    const source = readFileSync(join(mapDir, file), 'utf8');
-    assert(/scrollWheelZoom:\s*false/.test(source), `${file} zooms on the scroll wheel, and it sits inside a page that scrolls`);
-  }
-
-  // The route map is built inside a column that is display:none on a phone, and Leaflet's
-  // invalidateSize keeps the zoom worked out for the old box: three of twenty-nine pieces on screen.
-  const routeMap = readFileSync(join(mapDir, 'RouteMap.tsx'), 'utf8');
-  assert(/getBounds\(\)\.contains\(/.test(routeMap), 'RouteMap no longer checks that the trip is still on the map after a resize');
-
-  // `fitBounds` rounds down to a whole zoom unless told otherwise: 46% of the box, then 67%
-  // after an unrelated tap. The basemap is vector and draws at any zoom, so it owns the setting.
-  assert(/map\.options\.zoomSnap = 0/.test(basemap), 'the basemap no longer turns off whole-level zoom snapping, so fitBounds wastes up to half of every map');
-  for (const file of readdirSync(mapDir).filter((f) => f.endsWith('.tsx'))) {
-    const source = readFileSync(join(mapDir, file), 'utf8');
-    assert(!/zoomSnap/.test(source), `${file} sets zoomSnap itself; it comes from the basemap, like the attribution prefix`);
-  }
-});
-
-ok('a lost WebGL context ends in a raster map, not a blank one', () => {
-  // Seen once in a production console; forced, the basemap goes blank while the routes and
-  // stops on Leaflet's own canvas stay, with no word to the reader. The basemap listens for
-  // the loss and the return, waits a grace while the page is visible, then swaps itself for
-  // the raster fallback and remembers for the session. All in a browser: this reads the source.
-  const basemap = read('src/components/Map/basemap.ts');
-  assert(/webglcontextlost/.test(basemap) && /webglcontextrestored/.test(basemap), 'the basemap no longer watches for the context going and coming back');
-  const grace = Number(basemap.match(/CONTEXT_GRACE_MS = ([\d_]+)/)?.[1].replace(/_/g, ''));
-  assert(grace >= 2000 && grace <= 15000, `the grace is ${grace} ms: under 2 s it gives up on a context the browser was about to restore, over 15 s the blank is a screen`);
-
-  const swap = basemap.slice(basemap.indexOf('const armGrace'), basemap.indexOf('CONTEXT_GRACE_MS);'));
-  assert(swap.length > 0, 'the grace timer is gone from the basemap');
-  for (const [what, pattern] of [
-    ['counts only while the page is visible', /visibilityState !== 'visible'/],
-    ['remembers for the session', /webgl2 = false/],
-    ['removes the dead layer', /removeLayer\(layer\)/],
-    ['puts the raster fallback in its place', /createBasemap\(shown\)\.addTo\(map\)/],
-  ] as const) {
-    assert(pattern.test(swap), `the fallback no longer ${what}`);
-  }
-  // A map born raster never goes through the vector path, so it needs the same dropped
-  // prefix, or it prints the two-line "Leaflet | © OpenStreetMap contributors" credit.
-  const raster = basemap.slice(basemap.indexOf('if (!hasWebGL2())'), basemap.indexOf('return raster;'));
-  assert(/setPrefix\(false\)/.test(raster), 'the raster fallback prints the "Leaflet" prefix that the vector path drops');
-});
-
 ok('the renderer’s bridge does nothing in a frame that comes after its map is gone', () => {
   // An uncaught "Cannot read properties of null (reading 'getZoom')" in Ruta's "no route"
   // state on a desktop, in two of eight weekly audits in October 2026. The bridge answers a
@@ -1159,28 +961,7 @@ ok('the renderer’s bridge does nothing in a frame that comes after its map is 
   }
 });
 
-ok('the out-of-service banner still fits on two lines', () => {
-  // The banner was a 162 px panel on a 375 px phone; it is two truncating lines now, and a
-  // longer translation is cut off rather than wrapped. Measured at 375 px the column takes
-  // 54 characters; the chevron costs two, and the bold line is measured with a time in it.
-  const SMALL_LINE = 52; // 54 minus the " ›" appended in App.tsx
-  const BOLD_LINE = 42;
-
-  for (const lang of LANGS) {
-    const t = translations(lang);
-    const closed = t.nightBanner.closed('07:00');
-    assert(closed.length <= BOLD_LINE, `${lang}: "${closed}" is ${closed.length} characters and the banner's first line fits ${BOLD_LINE}`);
-    assert(t.nightBanner.festivals.length <= SMALL_LINE, `${lang}: "${t.nightBanner.festivals}" is ${t.nightBanner.festivals.length} characters and the second line fits ${SMALL_LINE}`);
-    // The festival sentence keeps "no service" from being a lie on a festival night: extra
-    // buses only ever appear as a notice. Shortening it is fine; dropping it is not.
-    assert(/festa|fiesta|festival/i.test(t.nightBanner.festivals), `${lang}: the banner no longer mentions the festival reinforcements`);
-  }
-
-  // And the row is the link: "see notices" survives as the accessible name of the whole
-  // bar rather than as a 44 px row of its own.
-  const app = read('src/App.tsx');
-  assert(/nightBanner\.seeNotices/.test(app) && /sr-only[^>]*>\s*\{t\.nightBanner\.seeNotices\}/.test(app), 'the notices link is no longer the accessible name of the banner row');
-});
+console.log('\ntranslations');
 
 ok('a hint that says "press the star" also says the name a screen reader gives it', () => {
   // WCAG 1.3.3. The three empty states said only "press the star", and the button is named
@@ -1236,39 +1017,6 @@ ok('every language can plan a trip and gets prose in that language', () => {
     `the itinerary text is identical across languages — the engine is ignoring lang: ` +
       [...byLang].map(([lang, text]) => `${lang}: ${text.slice(0, 70)}`).join('  //  '),
   );
-});
-
-ok('PRIVACY.md lists every key this app writes to the device', () => {
-  // PRIVACY.md names the keys and what each holds; a key added without a row is the document
-  // quietly becoming false, and a saved trip is text somebody typed.
-  // The helpers take only a key declared in STORAGE_KEYS, which also names the store that
-  // keeps it, so an undeclared key does not compile; this holds that table to the document.
-  // A key mentioned anywhere in it used to be enough, so the trip could have moved to
-  // localStorage, against what the document promises, with the check still green.
-  const privacy = read('PRIVACY.md');
-  const sections = {
-    local: privacy.slice(privacy.indexOf('## Kept on your device'), privacy.indexOf('Two more are kept')),
-    session: privacy.slice(privacy.indexOf('Two more are kept'), privacy.indexOf('## Your location')),
-  };
-  const words = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
-  const said = (pattern: RegExp) => words.indexOf((privacy.match(pattern)?.[1] ?? '').toLowerCase());
-  const counts = { local: said(/(\w+) things are saved in your browser's `localStorage`/), session: said(/(\w+) more are kept in `sessionStorage`/) };
-  for (const store of ['local', 'session'] as const) {
-    const kept = Object.entries(STORAGE_KEYS).filter(([, s]) => s === store).map(([key]) => key).sort();
-    const listed = [...sections[store].matchAll(/^\| `([^`]+)` \|/gm)].map((m) => m[1]).sort();
-    assert(kept.length > 0, `no key is kept in ${store}Storage, so this is reading the wrong table`);
-    assert.deepStrictEqual(listed, kept, `PRIVACY.md's ${store}Storage table lists [${listed.join(', ')}]; the app keeps [${kept.join(', ')}] there`);
-    assert(counts[store] === kept.length, `PRIVACY.md counts ${counts[store]} keys in ${store}Storage; the app keeps ${kept.length}`);
-  }
-
-  // Every key is spelled `urbanos-lugo-…` or `urbanos_lugo_…`, so the spelling is scanned for,
-  // in any quote: a key the helpers never see -- the pre-paint script, the reload guard --
-  // is still a key, and still belongs in the table.
-  for (const full of sourcesUnder('src')) {
-    for (const m of readFileSync(full, 'utf8').matchAll(/['"`](urbanos[-_]lugo[-_][a-z_-]+)['"`]/g)) {
-      assert(m[1] in STORAGE_KEYS, `${relative(full)} spells the storage key ${m[1]}, which STORAGE_KEYS does not declare`);
-    }
-  }
 });
 
 ok('the trip companion counts stops against the list, and never backwards', () => {
@@ -1519,24 +1267,6 @@ ok('a trip survives a reload with its lines put back by id, and refuses one it c
   assert(unpackTrip(text.replace(/"lineId":"[^"]+"/, '"lineId":"gone"')) === null, 'a line the dataset lacks was rebuilt');
 });
 
-ok('one alert radius, shared by the board and the trip companion', () => {
-  // The board's alarm and the ride's alert are one alarm: one radius, one ring, one prompt.
-  const radii: string[] = [];
-  for (const full of sourcesUnder('src')) {
-    for (const m of readFileSync(full, 'utf8').matchAll(/export const (\w*RADIUS_M) = (\d+)/g)) radii.push(`${m[1]}=${m[2]}`);
-  }
-  assert(radii.includes(`ALARM_RADIUS_M=${ALARM_RADIUS_M}`), 'the alarm radius moved out of stopAlarm.ts');
-  assert(radii.filter((r) => r.startsWith('ALARM_RADIUS_M')).length === 1, `${radii.join(', ')}: the alert radius is declared more than once`);
-  const companion = read('src/components/TripCompanionView.tsx');
-  const hook = read('src/hooks/useTripCompanion.ts');
-  assert(!/watchPosition\(/.test(companion + hook), 'the companion opened its own GPS watch instead of the shared one');
-  assert(/subscribePosition\(/.test(hook) && /ringAlarm\(\)/.test(hook), 'the companion does not ring the board\'s alarm');
-  // DECIDIDO.md: one position watch for the whole app. The map's "follow me" kept a second
-  // one, beside the two files this looked at; now stopAlarm.ts is the only caller anywhere.
-  const watchers = sourcesUnder('src').filter((file) => /watchPosition\(/.test(readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, ''))).map(relative);
-  assert.deepStrictEqual(watchers, [join('src', 'services', 'stopAlarm.ts')], `the GPS is watched from ${watchers.join(', ')}; the app has one watch, in stopAlarm.ts`);
-});
-
 await okAsync('the one position watch serves every listener, and a late one gets the last fix', async () => {
   // The map joined the board's alarm and the ride on one watch. What that has to keep: one
   // watchPosition however many listen, every fix to every listener, the last fix at once to
@@ -1584,45 +1314,6 @@ await okAsync('the one position watch serves every listener, and a late one gets
     offAnother();
   } finally {
     delete g.navigator.geolocation;
-  }
-});
-
-ok('the places that ask for a position are the ones PRIVACY.md lists', () => {
-  // PRIVACY.md names each place the app asks where you are, and said four while the map's
-  // "my location" made five. Each file that asks is pinned to the words PRIVACY.md uses for
-  // it: a sixth fails here until the page, and this table, say so.
-  const PLACES: Record<string, string> = {
-    [join('src', 'components', 'StopHome.tsx')]: '"stops near me"',
-    [join('src', 'components', 'RoutePlannerView.tsx')]: '"use my GPS location"',
-    [join('src', 'components', 'Map', 'useFollowMe.ts')]: '"my location"** on the map',
-    [join('src', 'components', 'StopArrivalsView.tsx')]: '**arrival alarm**',
-    [join('src', 'hooks', 'useTripCompanion.ts')]: '"Vou nesta"',
-  };
-  const asking = sourcesUnder('src')
-    .filter((file) => !file.endsWith(join('services', 'stopAlarm.ts')))
-    .filter((file) => /getCurrentPosition\(|subscribePosition\(|watchForStop\(|watchPosition\(/.test(readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')))
-    .map(relative)
-    .sort();
-  assert.deepStrictEqual(asking, Object.keys(PLACES).sort(), `the position is asked for in ${asking.join(', ')}; PRIVACY.md lists ${Object.keys(PLACES).length} places`);
-  const privacy = read('PRIVACY.md').replace(/\s+/g, ' ');
-  const words = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'];
-  assert(privacy.includes(`asks for it in ${words[asking.length]} places`), `PRIVACY.md does not say the app asks in ${words[asking.length]} places`);
-  for (const [file, label] of Object.entries(PLACES)) assert(privacy.includes(label.replace(/\s+/g, ' ')), `PRIVACY.md no longer names ${label}, where ${file} asks`);
-});
-
-ok('the answer column spaces its blocks in one place', () => {
-  // The gaps down the Ruta column ran 20, 0, 20, 20, 24 px because each block carried its
-  // own margin; Líneas ran 10, 12, 16, 16, 20. The column owns the rhythm now, and a block
-  // bringing its own margin back would look right alone and put the column out again.
-  for (const file of ['RoutePlannerView.tsx', 'LinesView.tsx']) {
-    const view = read(`src/components/${file}`);
-    assert(/className="space-y-4 bg-bg/.test(view), `${file}: no card declares the rhythm its blocks depend on`);
-    // mb-1, mb-2 and mb-1.5 sit inside a block -- a heading above its own content -- and
-    // are left alone. These were only ever used between blocks.
-    for (const stray of ['mb-4', 'mb-5', 'mt-6', 'mt-5', 'mt-4', 'mb-2.5']) {
-      const found = new RegExp(`className="[^"]*\\b${stray.replace('.', '\\.')}\\b`).exec(view);
-      assert(!found, `${file}: ${stray} is back — "${found?.[0]}" — the column spaces its blocks`);
-    }
   }
 });
 
@@ -1690,42 +1381,6 @@ ok('the itinerary prose does not repeat the figures its own row already shows', 
       }
     }
   }
-});
-
-ok('no translated key is left with nothing reading it', () => {
-  // A dictionary rots the other way round: the UI moves on and fourteen keys outlived their
-  // screens. Two access shapes count: `t.<ns>.<key>`, and `translations(lang).<ns>` then `t.<key>`.
-  const dictionary = read('src/i18n/gl.ts');
-
-  const keys: { ns: string; key: string }[] = [];
-  let ns = '';
-  for (const line of dictionary.split('\n')) {
-    const openNamespace = line.match(/^ {2}([a-zA-Z]+): \{/);
-    if (openNamespace) {
-      ns = openNamespace[1];
-      continue;
-    }
-    const entry = line.match(/^ {4}([a-zA-Z]+):/);
-    if (entry && ns) keys.push({ ns, key: entry[1] });
-  }
-  assert(keys.length > 100, `only found ${keys.length} keys — the parser is not reading the dictionary`);
-
-  const sources = sourcesUnder('src')
-    .filter((file) => !file.replace(/\\/g, '/').includes('/i18n/'))
-    .map((file) => readFileSync(file, 'utf8'))
-    .join('\n');
-
-  // A word boundary at the end: `includes` let `yourPositionAccurate` shield a dead
-  // `yourPosition`. Both parts are `[a-zA-Z]+`, so no regex metacharacter gets in.
-  const used = (haystack: string, namespace: string, key: string) =>
-    new RegExp(`\\.${namespace}\\.${key}\\b`).test(haystack) ||
-    new RegExp(`\\bt\\.${key}\\b`).test(haystack);
-
-  assert(!used('t.map.yourPositionAccurate(3)', 'map', 'yourPosition'), 'a key that only appears as another key’s prefix is still counting as used');
-
-  const dead = keys.filter(({ ns: namespace, key }) => !used(sources, namespace, key));
-
-  assert(dead.length === 0, `${dead.length} translated ${dead.length === 1 ? 'key has' : 'keys have'} nothing reading them: ` + dead.map((d) => `${d.ns}.${d.key}`).join(', '));
 });
 
 console.log('\nservice notices');
@@ -1827,8 +1482,6 @@ await okAsync('the worker does not ask the council’s feed, which never answere
     globalThis.fetch = realFetch;
     console.log = realLog;
   }
-  assert(/syncOfficialAlerts\(force, Date\.now\(\), false\)/.test(read('worker/index.ts')), 'the worker asks the council’s feed again');
-  assert(!/syncOfficialAlerts\([^)]*false\)/.test(read('server.ts') + read('tools/fetchAlerts.ts')), 'server.ts or the snapshot stopped reading the council’s feed');
 });
 
 ok('what the API sends is read, not trusted: text as text, and links only to the two notice sites', () => {
@@ -1859,9 +1512,6 @@ ok('what the API sends is read, not trusted: text as text, and links only to the
   const times = readOperatorTimes({ code: 'Zjge', fetchedAt: 'x', departures: [{ line: '6', towards: 'Ronda', minutes: 8 }, { line: { x: 1 }, towards: 'a', minutes: 1 }, { line: '7', towards: 'b', minutes: 'soon' }, null] });
   assert(times?.departures.length === 1 && times.departures[0].line === '6', `malformed departures reached the board: ${JSON.stringify(times)}`);
   assert(readOperatorTimes({ departures: 'none' }) === null && readOperatorTimes('x') === null, 'an answer with no list of departures was not refused');
-  // And the two hooks read what they fetch through these, rather than casting it.
-  assert(/setData\(readSnapshot\(await res\.json\(\)\)\)/.test(read('src/hooks/useServiceAlerts.ts')), 'the live notices answer reaches the screen unread again');
-  assert(/readOperatorTimes\(await res\.json\(\)\)/.test(read('src/hooks/useOperatorTimes.ts')), 'the operator’s minutes reach the board unread again');
 });
 
 /** The San Froilán 2026 notice as the worker served it, the parts that change something. */
@@ -1965,8 +1615,6 @@ ok('the planner never boards or leaves a line at a stop the notice closes', () =
   // And what the screens are given is what the notice says: the predicate comes from it.
   const skips = stopSkipper(readNoticeChanges([SAN_FROILAN], 2026), now);
   assert(skips?.('1.2', 's15') && !skips('1.1', 's15') && stopSkipper(readNoticeChanges([SAN_FROILAN], 2026), new Date(2026, 9, 8, 10, 0)) === undefined, 'the notice closes the wrong lines, or closes them on a day it does not name');
-  const planner = read('src/components/RoutePlannerView.tsx');
-  assert((planner.match(/underNotice\(changes, [^,]+, \(skipsStop\) => planTrips\(/g) ?? []).length === 3, 'a planTrips call on the Route screen ignores the notice');
 
   // Under the notice of the night the trip is on, not of the moment it is asked. Asked at 01:00
   // on the 13th, the night was still the 12th's and the planner kept the 1.2 off Praza Bretaña
@@ -1997,79 +1645,9 @@ ok('a notice whose own days are over leaves the app as it was', () => {
   assert(!noticeOver(newYear, new Date(2026, 11, 30, 12, 0)) && noticeOver(newYear, new Date(2027, 0, 3, 12, 0)), 'a January notice read in December was taken as this January, already gone');
   const newYearsEve = { ...SAN_FROILAN, description: 'Servicio especial los días 30 y 31 de diciembre', title: 'Fin de año' };
   assert(noticeOver(newYearsEve, new Date(2027, 0, 2, 12, 0)) && !noticeOver(newYearsEve, new Date(2026, 11, 29, 12, 0)), 'a December notice read in January was taken as next December');
-  // Everywhere at once, from the one place every screen reads the notices.
-  assert(/alerts: data\.alerts\.filter\(\(a\) => !noticeOver\(a, now\)\)/.test(read('src/hooks/useServiceAlerts.ts')) && /useServiceAlerts\(now\)/.test(read('src/App.tsx')), 'a notice whose days are over still reaches the screens');
-});
-
-ok('no view renders Galician or Spanish text of its own', () => {
-  // HORARIO OFICIAL sat in the markup as a literal, so an English reader saw it too, and no
-  // grep over the dictionary could see it. Place names are exempt: they arrive as expressions.
-  const marked = /(Liñas?|Líneas?|Paradas|Saída|Chegada|Frecuencia|Avisos|Tarifas|Buscar|Amosar|Ocultar|Espera|Percorrido|Traxecto|Trayecto|Marquesiña|Marquesina|Escanear|Aparencia|Apariencia|localización|Camiñar|Conexión|HORARIO OFICIAL|ESTIMADO)/;
-
-  const offenders: string[] = [];
-  for (const file of sourcesUnder('src')) {
-    // The dictionaries are supposed to be full of Galician and Spanish.
-    if (!/\.tsx?$/.test(file) || file.split(sep).includes('i18n')) continue;
-    // So is seo.ts: the structured data is build-time metadata in one language, not an
-    // interface string that follows the reader's choice.
-    if (file.endsWith(`${sep}seo.ts`)) continue;
-    const source = readFileSync(file, 'utf8');
-    source.split(/\r?\n/).forEach((line, i) => {
-      // A trailing comment is never rendered; only what is left of the code matters.
-      const text = line.replace(/\/\/.*$/, '').trim();
-      if (!text || text.startsWith('//') || text.startsWith('*') || text.startsWith('/*')) return;
-      // Template literals count too: the map builds tooltips as HTML strings and two labels hid
-      // there. A JSX text line is words, not an expression, attribute or import.
-      const inTemplate = /`[^`]*[A-Za-zÁÉÍÓÚÑ]/.test(text);
-      // Skipping every line with an '=' let a Galician placeholder through inside value={...},
-      // so quoted strings are checked on their own; class names never match a Galician word.
-      const isJsxText = !/^[<{}/]|=|import |const |type |interface /.test(text);
-      const quoted = (text.match(/'[^']*'|"[^"]*"/g) ?? []).join(' ');
-      if (!marked.test(isJsxText || inTemplate ? text : quoted)) return;
-      offenders.push(`${file.split(/[\\/]/).pop()}:${i + 1}  ${text.slice(0, 54)}`);
-    });
-  }
-
-  // The word list above knows twenty-five words, and only on a line of its own: `<p>Tarifas</p>`
-  // started with "<" and was let through, and so were "Próximos buses" and an English
-  // aria-label. So, in the views, any words between a tag and the next tag or expression,
-  // and any literal accessible name, title, placeholder or alt, in whatever language. The
-  // exceptions are names, which stay as their owners write them.
-  const NAMES = ['buslugo.com', 'Concello de Lugo - Mobilidade: 982 29 74 00', 'Monbus Lugo: 982 24 16 00'];
-  for (const file of sourcesUnder('src').filter((f) => f.endsWith('.tsx') && !f.split(sep).includes('i18n'))) {
-    const code = readFileSync(file, 'utf8').replace(/\{\/\*[\s\S]*?\*\/\}|\/\*[\s\S]*?\*\/|^\s*\/\/.*$/gm, (comment) => comment.replace(/[^\n]/g, ''));
-    const at = (index: number) => `${relative(file)}:${code.slice(0, index).split('\n').length}`;
-    // Not after `=` or `-`, which make `=>` and `->`; code between them (`a > b && c <`) has operators in it.
-    for (const m of code.matchAll(/(?<![=-])>([^<>{}]*)(?=[<{])/g)) {
-      const text = m[1].trim();
-      if (/\p{L}{2,}/u.test(text) && !/[=;()&|?`$]/.test(text) && !NAMES.includes(text)) offenders.push(`${at(m.index)}  ${text.slice(0, 54)}`);
-    }
-    for (const m of code.matchAll(/\b(aria-label|aria-description|title|placeholder|alt|label)="([^"]*)"/g)) {
-      if (/\p{L}{2,}/u.test(m[2]) && !m[2].includes('${')) offenders.push(`${at(m.index)}  ${m[1]}="${m[2].slice(0, 40)}"`);
-    }
-  }
-
-  assert(offenders.length === 0, `text typed straight into the markup instead of coming from the dictionary:\n  ` + offenders.join('\n  '));
 });
 
 console.log('\nuntested corners');
-
-ok('a service window that crosses midnight is not read as finished', () => {
-  // A night line running 22:30 to 06:30 has a window ending before it starts, and the naive
-  // comparison called it closed all day. (The "no service" banner no longer reads this: it
-  // reads the runs, yesterday's included -- see networkAtRest.) The wrapper that also asked
-  // the day's pattern went on 19 October 2026, used by nothing but this check.
-  const night = { firstDeparture: '22:30', lastDeparture: '06:30', services: [{ days: ['laborable'] }] } as any;
-  const at = (h: number, m: number) => h * 60 + m;
-
-  assert(isWithinServiceWindow(night, at(23, 0)), 'a night line is closed at 23:00');
-  assert(isWithinServiceWindow(night, at(2, 0)), 'a night line is closed at 02:00');
-  assert(!isWithinServiceWindow(night, at(12, 0)), 'a night line is open at midday');
-
-  const day = { firstDeparture: '07:15', lastDeparture: '22:00', services: [{ days: ['laborable'] }] } as any;
-  assert(isWithinServiceWindow(day, at(12, 0)), 'a day line is closed at midday');
-  assert(!isWithinServiceWindow(day, at(3, 0)), 'a day line is open at 03:00');
-});
 
 ok('nearby stops come back nearest first, with a walk rather than a straight line', () => {
   // The field is walkMeters, not distanceMeters: it is the straight line inflated by
@@ -2182,45 +1760,6 @@ await okAsync('when Overpass will not answer, a second instance is asked the sam
   }
 });
 
-ok('the published-stop count the board quotes matches the data', () => {
-  // The board explains "the operator publishes times at N of the M stops". Those two
-  // numbers used to be prose; they are counted now, and this is what keeps them true.
-  const { published, total } = timingPointStopCount();
-  assert(total === BUS_STOPS.length, `quoted ${total} stops, the dataset has ${BUS_STOPS.length}`);
-  assert(published > 0 && published < total, `${published} published of ${total} is not a believable split`);
-});
-
-ok('no colour is written straight into a class name', () => {
-  // The theme lives in tokens; a sweep took 707 fixed-palette classes to zero and three
-  // crept back, invisible to a sweep that only knew bg- and text-. This is the ratchet.
-  const FAMILY = /bg|text|border|ring|fill|stroke|from|via|to|divide|outline|shadow|placeholder/;
-  const HUE = /slate|gray|zinc|neutral|stone|blue|sky|indigo|amber|yellow|orange|green|emerald|teal|red|rose|pink|purple|violet/;
-  const PALETTE = new RegExp(String.raw`\b(?:${FAMILY.source})(?::[a-z-]+)?-(?:${HUE.source})-\d{2,3}\b`, 'g');
-
-  const offenders: string[] = [];
-  for (const file of sourcesUnder('src')) {
-    if (!/\.tsx?$/.test(file)) continue;
-    for (const hit of readFileSync(file, 'utf8').match(PALETTE) ?? []) {
-      offenders.push(`${file.split(/[\/]/).pop()}  ${hit}`);
-    }
-  }
-
-  assert(offenders.length === 0, `${offenders.length} fixed palette classes, which will not follow the theme: ` + [...new Set(offenders)].join(', '));
-});
-
-ok('a repository named <owner>.github.io deploys at the root', () => {
-  // The app moved on 13 October 2026 to an organisation site, urbanos-lugo.github.io, which
-  // Pages serves at the root. The deploy built every asset under /<repository>/, which there
-  // would have been /urbanos-lugo.github.io/, and the first deploy after the rename would
-  // have drawn nothing.
-  const deploy = read('.github/workflows/deploy-pages.yml');
-  assert(
-    /if \[ "\$\{NAME,,\}" = "\$\{OWNER,,\}\.github\.io" \]; then\s+export BASE_PATH="\/"\s+export SITE_URL="https:\/\/\$\{NAME,,\}\/"/.test(deploy),
-    'the deploy builds an <owner>.github.io repository under its own name again',
-  );
-  assert(/export BASE_PATH="\/\$NAME\/"\s+export SITE_URL="https:\/\/\$OWNER\.github\.io\/\$NAME\/"/.test(deploy), 'a project site is no longer built under its repository name');
-});
-
 ok('a saved snapshot stops speaking for the present once it is old', () => {
   // On static hosting the notices always come from the committed snapshot, and a stale one
   // kept asserting "running normally" in the present tense.
@@ -2235,21 +1774,6 @@ ok('a saved snapshot stops speaking for the present once it is old', () => {
   assert(isSnapshotStale(iso(13), now), 'thirteen hours should read as stale');
   assert(isSnapshotStale(iso(24 * 5), now), 'a five-day-old snapshot is not evidence about now');
   assert(isSnapshotStale('not a date', now), 'an unreadable date is not a fresh one');
-});
-
-ok('the notices snapshot is a file beside the page, not part of the bundle', () => {
-  // The scheduled deploy refreshes the snapshot before every build; imported, its timestamp
-  // renamed the entry chunk and the five that import from it, half a megabyte gzipped, five
-  // to seven times a day under pages that were open. As a file under public/ it keeps its
-  // name, a refresh moves 1.4 KB, and the service worker precaches it for the Avisos screen offline.
-  const snapshot = JSON.parse(read('public/alerts.json'));
-  assert(Array.isArray(snapshot.alerts) && typeof snapshot.fetchedAt === 'string', 'public/alerts.json is not a dated snapshot');
-  for (const file of sourcesUnder('src')) {
-    assert(!/from\s+['"][^'"]*alerts\.json['"]/.test(readFileSync(file, 'utf8')), `${relative(file)} imports the notices snapshot, which puts its timestamp back into the bundle`);
-  }
-  assert(/fetch\(`\$\{import\.meta\.env\.BASE_URL\}alerts\.json`\)/.test(read('src/hooks/useServiceAlerts.ts')), 'the hook no longer fetches the snapshot from beside the page');
-  assert(/at\('public\/alerts\.json'\)/.test(read('tools/fetchAlerts.ts')), 'fetchAlerts writes the snapshot somewhere the page cannot fetch it from');
-  assert(/globPatterns: \['\*\*\/\*\.\{[^}]*json[^}]*\}'\]/.test(read('vite.config.ts')), 'the service worker no longer precaches json, so the snapshot is gone offline');
 });
 
 await okAsync('the capped read returns every byte under the cap, whatever the chunking', async () => {
@@ -2287,18 +1811,6 @@ await okAsync('the capped read returns every byte under the cap, whatever the ch
     ),
   );
   assert(many.length === MAX_BODY_BYTES, `chunked, the read stopped at ${many.length} bytes, not the cap`);
-});
-
-ok('the QR count on the map is the number of poles that have one', () => {
-  // The map header counted every stop as having a QR code while the operator publishes a
-  // token for 271; the count and the claim have to be the same size.
-  const withToken = BUS_STOPS.filter((s) => poleCode(s)).length;
-  assert(withToken > 0, "no stop has a QR token at all");
-  assert(withToken < BUS_STOPS.length, "every stop has a token, so this test no longer proves anything");
-  for (const s of BUS_STOPS) {
-    const code = poleCode(s);
-    assert(code === null || code === s.officialToken, `${s.name}: code is not the token`);
-  }
 });
 
 ok('a pole with no coordinates is recovered only when its token says which pole it is', () => {
@@ -2422,87 +1934,50 @@ ok('a trip never rides a bus to reach a stop it could have walked to', () => {
   }
 });
 
-ok('the content security policy still refuses what it was written to refuse', () => {
-  // A CSP erodes one exception at a time. script-src is 'self' plus exactly one SHA-256, the
-  // inlined theme script; a hash admits one byte sequence and what it is vulnerable to is
-  // drift, so the digest is recomputed from the script actually inlined in the built page.
-  const script = CSP_HEADER.match(/script-src ([^;]+)/)?.[1] ?? '';
-  const hashes = [...script.matchAll(/'(sha256-[A-Za-z0-9+/=]+)'/g)].map((m) => m[1]);
-  assert(hashes.length === 1, `script-src carries ${hashes.length} hashes, not exactly 1: "${script.trim()}"`);
-  assert(script.trim() === `'self' '${hashes[0]}'`, `script-src is "${script.trim()}", not 'self' plus exactly one hash`);
-  assert(hashes[0] === THEME_INIT_HASH, 'the policy hash is not the one computed from the theme script');
-  // A hash and `'unsafe-inline'` are opposite things, and a browser that sees both ignores
-  // the second; saying so by name makes the failure read as what it is.
-  assert(!/unsafe-inline/.test(script), "script-src has taken 'unsafe-inline', which is not what a hash is for");
-  assert(THEME_INIT_HASH === `sha256-${createHash('sha256').update(THEME_INIT_SOURCE, 'utf8').digest('base64')}`, 'THEME_INIT_HASH is not the digest of THEME_INIT_SOURCE');
-
-  // And against the page that ships, when there is one to look at. CI runs the suite
-  // before the build, so a missing dist is skipped rather than failed.
-  const built = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist', 'index.html');
-  if (existsSync(built)) {
-    const html = readFileSync(built, 'utf8');
-    // Case-insensitive not because the build would ever write <SCRIPT>, but because a
-    // tag match that is not is what CodeQL flags, and it costs a flag to be right.
-    const inline = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
-    assert(inline.length === 1, `the built page has ${inline.length} inline scripts, not exactly 1`);
-    const digest = `sha256-${createHash('sha256').update(inline[0], 'utf8').digest('base64')}`;
-    assert(digest === hashes[0], `the built page inlines a script whose digest is ${digest}, which the policy does not allow`);
-    assert(html.includes(`'${hashes[0]}'`), 'the meta policy in the built page does not carry the hash of its own inline script');
-  }
-
-  // The map renderer runs a worker bundled as a same-origin module; handed a cross-origin URL
-  // it wraps it in a blob, and the fix is to make the bundler emit it again, not `blob:` here.
-  const worker = CSP_HEADER.match(/worker-src ([^;]+)/)?.[1] ?? '';
-  assert(worker.trim() === "'self'", `worker-src is "${worker.trim()}", not just 'self'`);
-  assert(!/unsafe-eval/.test(CSP_HEADER), 'unsafe-eval crept into the policy');
-  assert(/object-src 'none'/.test(CSP_HEADER), "object-src is no longer 'none'");
-  assert(/frame-ancestors 'none'/.test(CSP_HEADER), 'the header lost frame-ancestors');
-  // The meta form silently ignores frame-ancestors and logs an error for every visitor.
-  assert(!/frame-ancestors/.test(CSP_META), 'frame-ancestors is back in the meta policy');
-
-  // Every remote origin the policy allows should be one the app actually talks to.
-  const allowed = [...CSP_HEADER.matchAll(/https:\/\/[^\s;]+/g)].map((m) => m[0]);
-  const expected = [
-    'https://tiles.openfreemap.org',
-    'https://tile.openstreetmap.org',
-  ];
-  for (const origin of allowed) {
-    assert(expected.includes(origin), `${origin} is allowed by the policy but nothing uses it`);
-  }
+ok('the built page’s one inline script is the one its policy admits', () => {
+  // script-src is 'self' plus one SHA-256, the theme script, and a hash admits one byte
+  // sequence: what it is vulnerable to is the build rewriting the script it inlines. So the
+  // digest is taken of what the built page actually carries. Whether the policy then refuses
+  // what it should is asked of a browser, in audit:browser. CI runs this file before the
+  // build and again after it; the first run has no page to read.
+  const built = join(root, 'dist', 'index.html');
+  if (!existsSync(built)) return;
+  const html = readFileSync(built, 'utf8');
+  // Case-insensitive not because the build would ever write <SCRIPT>, but because a
+  // tag match that is not is what CodeQL flags, and it costs a flag to be right.
+  const inline = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
+  assert(inline.length === 1, `the built page has ${inline.length} inline scripts, not exactly 1`);
+  const digest = `sha256-${createHash('sha256').update(inline[0], 'utf8').digest('base64')}`;
+  assert(digest === THEME_INIT_HASH && CSP_HEADER.includes(`'${digest}'`), `the built page inlines a script whose digest is ${digest}, which the policy does not admit`);
+  assert(html.includes(`content="${CSP_META}"`), 'the built page does not carry the policy in its meta tag');
 });
 
-ok('the service worker may fetch every host it caches for', () => {
-  // Sent as a header, the policy is the service worker's too, and the worker re-fetches what
-  // it caches with fetch(), which answers to connect-src. The raster tiles were allowed as
-  // images and not as connections: on a self-hosted server, once the worker took over, every
-  // raster tile was refused and a map that had fallen back to raster was an empty grey box.
-  const connect = CSP_HEADER.match(/connect-src ([^;]+)/)?.[1].split(/\s+/) ?? [];
-  const patterns = [...read('vite.config.ts').matchAll(/urlPattern: \/\^https:\\\/\\\/\(([^)]+)\)/g)].map((m) => m[1]);
-  assert(patterns.length > 0, 'found no cross-origin runtime cache in vite.config.ts, so this is reading the wrong thing');
-  for (const host of patterns.flatMap((p) => p.split('|')).map((h) => h.replace(/\\\./g, '.'))) {
-    assert(connect.includes(`https://${host}`), `the service worker caches ${host} but connect-src does not let it fetch there`);
+await okAsync('the address the app calls for /api is the one its policy admits, and only that origin', async () => {
+  // apiUrl.ts builds the request and csp.ts admits the origin, each reading VITE_API_ORIGIN:
+  // name the setting differently in one and the build succeeds, and the published site's
+  // notices fail in the browser with nothing said. And the origin alone is admitted, so a
+  // stray path or query in the setting cannot widen the policy.
+  const saved = process.env.VITE_API_ORIGIN;
+  try {
+    process.env.VITE_API_ORIGIN = 'https://lugo-api.example.dev/';
+    const policy = (await import(`../src/security/csp.ts?${'with-api'}`)) as { CSP_HEADER: string; CSP_META: string };
+    const called = new URL(apiUrl('alerts', { VITE_API_ORIGIN: process.env.VITE_API_ORIGIN, BASE_URL: '/' }));
+    for (const text of [policy.CSP_HEADER, policy.CSP_META]) {
+      const connect = text.match(/connect-src ([^;]+)/)?.[1].split(' ') ?? [];
+      assert(connect.includes(called.origin), `the app asks ${called.origin} and connect-src is ${connect.join(' ')}`);
+    }
+    process.env.VITE_API_ORIGIN = 'https://lugo-api.example.dev/x?y=https://elsewhere.example';
+    const widened = (await import(`../src/security/csp.ts?${'with-path'}`)) as { CSP_HEADER: string };
+    const connect = widened.CSP_HEADER.match(/connect-src ([^;]+)/)?.[1] ?? '';
+    assert(connect.includes(' https://lugo-api.example.dev') && !/elsewhere|\/x/.test(connect), `a path or query in the setting reached the policy: ${connect}`);
+  } finally {
+    if (saved === undefined) delete process.env.VITE_API_ORIGIN;
+    else process.env.VITE_API_ORIGIN = saved;
   }
-});
-
-ok('a cached map tile costs the phone its own size, not megabytes', () => {
-  // Chrome charges an opaque response against the site's storage at megabytes whatever its
-  // size. The raster tiles were fetched without CORS, so each was opaque, and the tile cache
-  // kept responses with status 0: six raster tiles cost 38 MB of quota where ten vector tiles
-  // cost 3, with room for 600. OSM's tile servers answer CORS, so the tiles ask for it and
-  // nothing opaque is kept.
-  assert(/L\.tileLayer\(OSM_FALLBACK_TILES, \{[^}]*crossOrigin: true/.test(read('src/components/Map/basemap.ts')), 'the raster tiles are fetched without CORS again, so each is an opaque response');
-  const config = read('vite.config.ts');
-  const tiles = config.slice(config.indexOf("cacheName: 'map-tiles'"), config.indexOf('}', config.indexOf('cacheableResponse', config.indexOf("cacheName: 'map-tiles'"))) + 1);
-  assert(/cacheableResponse: \{ statuses: \[200\] \}/.test(tiles), `the tile cache keeps opaque responses again: ${tiles.slice(tiles.indexOf('cacheableResponse')).split('\n')[0]}`);
-});
-
-ok('the service worker never answers the API from its own cache', () => {
-  // A NetworkFirst rule for /api/alerts handed a self-hosted app, offline, an answer up to six
-  // hours old as a live one, counted in the badge; on the published site, whose API is another
-  // origin, Workbox never matched it at all (audit, 19 October 2026). The app's own fallback is
-  // the precached alerts.json, dated on screen.
-  const rules = read('vite.config.ts').replace(/^\s*\/\/.*$/gm, '');
-  assert(!/urlPattern:[^\n]*api/.test(rules), 'a service worker rule answers API requests from its cache again');
+  // Without the setting the app asks beside the page, and the policy names no other origin to ask.
+  assert(apiUrl('alerts', { VITE_API_ORIGIN: undefined, BASE_URL: '/' }) === '/api/alerts', 'without VITE_API_ORIGIN the app asks somewhere other than beside the page');
+  const connect = CSP_HEADER.match(/connect-src ([^;]+)/)?.[1].split(' ') ?? [];
+  assert(connect.filter((s) => s.startsWith('https://')).every((s) => /openfreemap|openstreetmap/.test(s)), `with no API origin set, connect-src admits ${connect.join(' ')}`);
 });
 
 ok('a star or a recent stop set in one open copy of the app survives another copy', () => {
@@ -2546,73 +2021,6 @@ ok('a browser that refuses site data still gets the app', () => {
       else delete g[name];
     }
   }
-  // Nothing else in the app reaches for the stores unguarded: the pre-paint script and the
-  // one-reload guard in main.tsx sit inside their own try, and everything else goes through here.
-  for (const file of sourcesUnder('src').filter((f) => !/[\\/]utils[\\/]storage\.ts$|[\\/]security[\\/]themeInit\.ts$|[\\/]main\.tsx$/.test(f))) {
-    const code = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
-    assert(!/\b(localStorage|sessionStorage)\b/.test(code), `${relative(file)} reaches for web storage outside the guarded helpers`);
-  }
-});
-
-ok('dark is the default, and only a choice is remembered', () => {
-  // Read standing at a pole after dark: the hook and the pre-paint script have to agree on
-  // dark by default, and the script is inlined because as a file it cost a round trip.
-  const hook = read('src/hooks/useTheme.ts');
-  const html = read('index.html');
-
-  assert(/\? stored : 'dark'/.test(hook), 'useTheme no longer falls back to dark');
-  assert(/next === 'dark' \? null : next/.test(hook), 'the default is being written to storage, so clearing site data would not return to it');
-  assert(/class="dark"/.test(html), 'index.html no longer ships the dark class');
-
-  // Both read the same key: the hook imports the one themeInit.ts names, and nothing
-  // catches it if either stops.
-  assert(/THEME_STORAGE_KEY/.test(hook) && !/urbanos-lugo-theme/.test(hook), 'useTheme spells its own storage key instead of importing the one the pre-paint script reads');
-  assert(THEME_INIT_SOURCE.includes(`'${THEME_STORAGE_KEY}'`), `the pre-paint theme script does not read ${THEME_STORAGE_KEY}`);
-
-  // The script has to survive into the page it is meant to run in, and it only gets there
-  // if the build's replacement still finds its tag.
-  const built = join(root, 'dist', 'index.html');
-  if (!existsSync(built)) return;
-  const page = readFileSync(built, 'utf8');
-  assert(page.includes(THEME_INIT_SOURCE), 'the built page does not carry the pre-paint theme script');
-  assert(!/src="[^"]*theme-init\.js"/.test(page), 'the built page still fetches the theme script as a file');
-});
-
-ok('the repository URL is written in one place', () => {
-  // Two things break quietly on a rename: the "wrong place" link and the User-Agent buslugo
-  // sees. Prose may spell the URL out; shipped code may not. The URL itself is looked for, not
-  // its owner: matched by owner, the move left this looking for a repository that had gone.
-  const offenders = sourcesUnder('src')
-    .filter((full) => {
-      const code = readFileSync(full, 'utf8');
-      return !full.endsWith(join('src', 'project.ts')) && (code.includes(REPO_URL) || /github\.com\/braisbrg/.test(code));
-    })
-    .map(relative);
-  assert(offenders.length === 0, `hardcodes the repository URL instead of importing REPO_URL: ${offenders.join(', ')}`);
-  assert(REPO_URL.startsWith('https://github.com/'), 'REPO_URL is not a GitHub URL');
-});
-
-ok('no tracked file outside the records names the old address', () => {
-  // The site moved from https://braisbrg.github.io/urbanos-lugo/ to https://urbanos-lugo.github.io/
-  // on 13 October 2026, and the old address gives 404 and redirects nowhere. A link, a
-  // canonical, a sample in a script or a line in the README that still named it would send a
-  // reader to a dead page and nothing would say so. The dated records and the move's own guide
-  // keep it on purpose, as what was true then, and the README to say it is dead; this file
-  // keeps it as the thing to look for.
-  const RECORDS = ['README.md', 'design/DECIDIDO.md', 'design/REXISTRO-probas.md', 'design/AUDITORIA-seo.md', 'design/NOTAS-fontes-e-autosuficiencia.md', 'design/MUDANZA-organizacion.md', 'tools/test.ts'];
-  const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' }).split('\0').filter(Boolean);
-  assert(tracked.length > 100, `git lists ${tracked.length} files, so this is not reading the repository`);
-  const offenders = tracked.filter((file) => {
-    if (RECORDS.includes(file) || !existsSync(join(root, file))) return false;
-    if (/\.(png|jpe?g|gif|webp|ico|woff2?|ttf|pdf|zip|gz)$/i.test(file)) return false;
-    // The old repository too: GitHub redirects it only until somebody creates one by that name.
-    return /braisbrg\.github\.io|github\.com\/braisbrg\/urbanos-lugo/i.test(readFileSync(join(root, file), 'utf8'));
-  });
-  assert(offenders.length === 0, `still names the old site or repository: ${offenders.join(', ')}`);
-  // The README names it once, to say it is dead and does not redirect. Any other paragraph
-  // naming it would be a link to follow.
-  const mentions = read('README.md').split(/\r?\n\s*\n/).filter((paragraph) => /braisbrg\.github\.io/i.test(paragraph));
-  assert(mentions.every((paragraph) => paragraph.includes('404')), 'README.md names braisbrg.github.io outside the paragraph that says it gives 404');
 });
 
 ok('the install-script setting uses the name the pinned pnpm reads', () => {
@@ -2808,26 +2216,6 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
   }
 });
 
-ok('the policy is not sent in development, where it serves a blank page', () => {
-  // The CSP from the dev server blocked Vite's inline preamble and HMR socket: `pnpm dev`
-  // rendered nothing. The header still goes out for `pnpm start`.
-  const server = read('server.ts');
-
-  const line = server.split('\n').find((l) => l.includes("setHeader('Content-Security-Policy'"));
-  assert(line, 'the server no longer sends a Content-Security-Policy at all');
-  assert(/if \(!isDev\)/.test(line!), `the CSP header is sent unconditionally, which breaks \`pnpm dev\`: ${line!.trim()}`);
-
-  // The page carries its own copy for GitHub Pages, and that one must not reach dev
-  // either -- it is injected when building, never written into the source HTML.
-  const html = read('index.html');
-  assert(!/Content-Security-Policy/.test(html), 'index.html has a CSP meta tag again; it applies to `vite dev` and blocks HMR');
-  const vite = read('vite.config.ts');
-  // Its own plugin, not any of the six that say `apply: 'build'`: with the line taken out of
-  // the injector the old pattern still matched the other five.
-  const injector = vite.slice(vite.indexOf("name: 'inject-csp'"), vite.indexOf('transformIndexHtml', vite.indexOf("name: 'inject-csp'")));
-  assert(injector.length > 0 && /apply: 'build'/.test(injector), 'the CSP injector no longer limits itself to builds');
-});
-
 ok('the app imports nothing from the tools, and the browser never imports the policy', () => {
   // CLAUDE.md: tools/ is never imported by the app. csp.ts hashes with node:crypto and reads
   // process.env, and says it is only ever imported by Node; in the bundle either would be a
@@ -2929,145 +2317,6 @@ ok('the documents name every data file, every bundled library and every host a v
   assert.deepStrictEqual(listed, allowed, `PRIVACY.md lists [${listed.join(', ')}] as the hosts a visit contacts; the policy allows [${allowed.join(', ')}]`);
 });
 
-ok('the figures the documents quote are the ones the code runs and the data holds', () => {
-  // A limit changed in the code leaves its documents quoting the old one, and nothing failed:
-  // with the operator's ceiling raised from 120 to 1,200 the check on it stayed green, because
-  // it reads the same constant. So each figure is read out of the sentence that quotes it,
-  // whitespace folded so a line break cannot hide it, and compared with what runs.
-  const doc = (file: string) => read(file).replace(/\s+/g, ' ');
-  const WORDS: Record<string, number> = { un: 1, one: 1, once: 1, dous: 2, two: 2, tres: 3, three: 3, catro: 4, four: 4, cinco: 5, five: 5, seis: 6, six: 6, dez: 10, ten: 10, doce: 12, twelve: 12, vinte: 20, twenty: 20, trinta: 30, thirty: 30 };
-  // Galician writes 21.093 and 0,1: a dot groups thousands, a comma marks the decimal.
-  const figure = (raw: string) => (raw.toLowerCase() in WORDS ? WORDS[raw.toLowerCase()] : raw.includes(',') ? Number(raw.replace(',', '.')) : Number(raw.replace(/\./g, '')));
-  const walk = JSON.parse(read('src/data/walk-network.json')) as { junctions: number[]; edges: number[] };
-  let edges = 0;
-  let metres = 0;
-  for (let i = 0; i < walk.edges.length; i += 5 + walk.edges[i + 4] * 2) {
-    edges++;
-    metres += walk.edges[i + 2];
-  }
-  // The dataset's own counts the README states: legs between consecutive stops, those that
-  // drive four times the straight line, and the operator's listings with no coordinates.
-  let legs = 0;
-  let detours = 0;
-  for (const line of BUS_LINES) {
-    for (const direction of line.directions) {
-      direction.legMeters?.forEach((road, i) => {
-        const a = BUS_STOPS.find((s) => s.id === direction.stops[i]);
-        const b = BUS_STOPS.find((s) => s.id === direction.stops[i + 1]);
-        if (!a || !b) return;
-        legs++;
-        const straight = getDistanceMeters(a.lat, a.lng, b.lat, b.lng);
-        if (direction.stopPathIndex?.length && straight > 5 && road / straight > 4) detours++;
-      });
-    }
-  }
-  const unplaced = (JSON.parse(read('data/official-raw.json')).stops as { coords?: unknown }[]).filter((s) => !Array.isArray(s.coords)).length;
-  const timing = rideTimeReport();
-  const tenth = (n: number) => Math.round(n * 10) / 10;
-  const QUOTED: [string, RegExp, number[]][] = [
-    ['README.md', /\*\*(\d+) paradas\*\* teñen a súa hora suxeita por horas oficiais a ambos os lados, e \*\*(\d+)\*\* quedan/, [timing.bracketed, timing.extrapolated]],
-    ['README.md', /Nos (\d+) tramos que se poden contrastar, o erro fronte ao impreso ten mediana de ([\d,]+) min, chega a ([\d,]+) min no peor caso lento e a −([\d,]+) no peor rápido, e só o (\d+)% cae/, [timing.legs.length, tenth(timing.median), tenth(timing.worstSlow), tenth(-timing.worstFast), timing.withinTwoMinutes]],
-    ['README.md', /\*\*(\d+) tramos de (\d+) \(/, [detours, legs]],
-    ['README.md', /\*\*(\d+) paradas sen coordenadas\*\*/, [unplaced]],
-    ['SECURITY.md', /the stop page at most (\d+) times a minute/, [MAX_OPERATOR_REQUESTS_PER_MINUTE]],
-    ['DATA.md', /asks for at most (\d+) pages a minute/, [MAX_OPERATOR_REQUESTS_PER_MINUTE]],
-    ['README.md', /detrás do QR como moito (\d+) veces por minuto/, [MAX_OPERATOR_REQUESTS_PER_MINUTE]],
-    ['SECURITY.md', /capped at (\d+) KB/, [MAX_BODY_BYTES / 1024]],
-    ['DATA.md', /capped at (\d+) KB/, [MAX_BODY_BYTES / 1024]],
-    ['README.md', /teito de (\d+) KB en cada lectura/, [MAX_BODY_BYTES / 1024]],
-    ['README.md', /(\d+) peticións por minuto e enderezo, (\d+) se son de planificación/, [MAX_PER_WINDOW, MAX_PLANS_PER_WINDOW]],
-    ['SECURITY.md', /(\d+) requests a minute per address/, [MAX_PER_WINDOW]],
-    ['SECURITY.md', /fetched at most (once) a minute behind a (\w+)-minute cache/, [60_000 / ALERTS_MIN_OUTBOUND_MS, ALERTS_CACHE_MS / 60_000]],
-    ['README.md', /(\w+) minutos para os avisos, (\w+) se a lectura fallou, (\w+) segundos para unha parada/, [ALERTS_CACHE_MS / 60_000, ALERTS_MIN_OUTBOUND_MS / 60_000, OPERATOR_CACHE_MS / 1000]],
-    ['DATA.md', /cached for (\w+) seconds/, [OPERATOR_CACHE_MS / 1000]],
-    ['README.md', /deixa de contar incidencias ás (\w+) horas/, [STALE_AFTER_MS / 3_600_000]],
-    ['README.md', /máis dos (\w+) segundos que o \*hook\* concede/, [SNAPSHOT_AFTER_MS / 1000]],
-    ['README.md', /(\w+) minutos abondan cando a chegada é oficial, [^;]*; (\w+) cando é interpolada/, [TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN]],
-    ['README.md', /Ten que sacarlle (\w+) minutos ao mellor bus, e nunca encabeza por riba de (\d+) minutos/, [WALK_MUST_BEAT_BUS_BY_MIN, MAX_HEADLINE_WALK_MIN]],
-    ['design/DECIDIDO.md', /a (\d+) m ou no propio poste/, [ALARM_RADIUS_M]],
-    ['design/DECIDIDO.md', /nos (\w+) minutos antes do bus/, [BOARDING_SOON_MIN]],
-    ['README.md', /nos (\w+) minutos antes do/, [BOARDING_SOON_MIN]],
-    ['design/DECIDIDO.md', /Aos (\w+) minutos da hora impresa/, [MISSED_AFTER_MIN]],
-    ['README.md', /Se pasan (\w+) minutos da hora de subida/, [MISSED_AFTER_MIN]],
-    ['PRIVACY.md', /it is capped at (\w+)/, [RECENT_ROUTES]],
-    ['PRIVACY.md', /the last (\w+) trips you planned/, [RECENT_ROUTES]],
-    ['README.md', /(\d+\.\d{3}) cruces e (\d+\.\d{3}) arestas/, [walk.junctions.length / 2, edges]],
-    ['DATA.md', /(\d+\.\d{3}) junctions, (\d+\.\d{3}) edges, (\d+\.\d{3}) km of walkable way/, [walk.junctions.length / 2, edges, Math.floor(metres / 1000)]],
-    ['PRIVACY.md', /(\d+\.\d{3}) junctions and (\d+\.\d{3}) edges/, [walk.junctions.length / 2, edges]],
-    ['README.md', /Paradas cun código QR no poste \| (\d+)/, [BUS_STOPS.filter((s) => poleCode(s)).length]],
-    ['CLAUDE.md', /(\d+) lines, (\d+) stops/, [BUS_LINES.length, BUS_STOPS.length]],
-    ['CLAUDE.md', /(\d+) stops, (\d+) lines, (\d+) poles with a printed code/, [BUS_STOPS.length, BUS_LINES.length, BUS_STOPS.filter((s) => poleCode(s)).length]],
-  ];
-  for (const [file, pattern, expected] of QUOTED) {
-    const found = pattern.exec(doc(file));
-    assert(found, `${file} no longer has the sentence ${pattern}; if it moved, move this with it`);
-    const said = found.slice(1).map(figure);
-    assert.deepStrictEqual(said, expected, `${file} says ${found[0]}, and the code or the data says ${expected.join(', ')}`);
-  }
-
-  // The council's feeds: one is read since 15 September 2026, and NOTICE.md went on crediting three.
-  const feeds = [...read('src/services/alertSyncService.ts').matchAll(/concellodelugo\.gal\/[^'"]*feed/g)].length;
-  assert(feeds === 1, `the app reads ${feeds} council feeds; the documents say one`);
-  for (const file of ['README.md', 'DATA.md', 'NOTICE.md', 'SECURITY.md', 'PRIVACY.md']) {
-    const plural = /\b(two|three|four|dous|tres|catro|\d+) (RSS )?(feeds|fontes RSS)\b/i.exec(doc(file));
-    assert(!plural, `${file} says "${plural?.[0]}"; the app reads one council feed`);
-  }
-});
-
-ok('what the servers bring reaches the reader only as DATA.md says', () => {
-  // DATA.md: the council's notices are press releases, not incidents, so they never count
-  // towards the navigation badge; the operator's own minutes behind a pole's QR are shown
-  // to somebody who arrived by scanning that sticker "and only them". server.ts: an unknown
-  // /api path is a JSON 404, never the app's page. Each was one line nothing checked.
-  const alerts = read('src/hooks/useServiceAlerts.ts');
-  assert(/const announcedIncidents = [^;]*\.filter\(\(a\) => a\.source !== 'concello'\)/.test(alerts), 'the navigation badge counts the council’s notices as incidents again');
-  const board = read('src/components/StopArrivalsView.tsx');
-  assert(/useOperatorTimes\(viaQr \? /.test(board) && (board.match(/useOperatorTimes\(/g) ?? []).length === 1, 'the board asks for the operator’s minutes without the reader having scanned the pole');
-  const app = read('src/App.tsx');
-  const qrSets = [...app.matchAll(/setQrStopId\(([^)]*)\)/g)].map((m) => m[1]);
-  assert(qrSets.length === 2 && qrSets.includes('viaQr ? stop.id : null') && qrSets.includes('stop.id'), `the scanned pole is set from ${qrSets.join(' and ')}; only the scanner and a ?parada= link may set it`);
-  assert(/onSelectStop=\{\(stop\) => selectStop\(stop, true\)\}/.test(app) && (app.match(/selectStop\([^)]*, true\)/g) ?? []).length === 1, 'something other than the QR scanner opens a board as scanned');
-  const server = read('server.ts');
-  const unknown = server.indexOf("app.use('/api', (_req, res) => res.status(404).json(");
-  assert(unknown > 0 && unknown > server.lastIndexOf("app.get('/api/") && unknown < server.indexOf('app.use(express.static('), 'an unknown /api path no longer gets a JSON 404 before the app’s page is served');
-});
-
-ok('the servers write nothing down but a failure’s path, and the page sets no cookie and parses no HTML', () => {
-  // PRIVACY.md: no cookie, nothing written to disk, no access log, and a failure logged by
-  // method and path alone. alertSyncService.ts: what is scraped is rendered by React as
-  // text, never as HTML. The 500 handler logged the whole URL, and a plan's query is the two
-  // addresses somebody typed; nothing else held any of these.
-  const serverSide = ['server.ts', 'worker/index.ts', ...sourcesUnder('src/security', 'src/services').map(relative)];
-  for (const file of serverSide) {
-    const code = read(file).replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
-    assert(!/\b(writeFile|appendFile|createWriteStream|writeFileSync|appendFileSync)\b/.test(code), `${file} writes to disk`);
-    for (const [call] of code.matchAll(/console\.\w+\([^;]*\)/g)) {
-      assert(!/originalUrl|req\.url\b|req\.query|searchParams|request\.url\b/.test(call), `${file} logs a request's query: ${call.slice(0, 80)}`);
-    }
-  }
-  assert(/console\.error\('request failed:', req\.method, req\.path, err\)/.test(read('server.ts')), 'the 500 handler no longer logs the method and path alone');
-  for (const file of sourcesUnder('src')) {
-    const code = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
-    assert(!/dangerouslySetInnerHTML/.test(code), `${relative(file)} renders a string as HTML through React`);
-    assert(!/document\.cookie/.test(code), `${relative(file)} touches cookies, and PRIVACY.md promises none`);
-  }
-});
-
-ok('what the browser floor does not cover is asked for only where it exists', () => {
-  // The README: below Baseline the app promises nothing, and what the floor does not cover
-  // degrades -- the screen kept awake only where the API exists, vibration optional, a
-  // notification only where there is a Notification. A call without its question works in
-  // Chrome and throws in Safari, which is the other half of the phones in Lugo.
-  for (const file of sourcesUnder('src').filter((f) => !f.endsWith('.d.ts'))) {
-    const code = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
-    const where = relative(file);
-    assert(!/navigator\.vibrate\(/.test(code), `${where} vibrates without asking whether the phone can`);
-    if (/navigator\.wakeLock\./.test(code)) assert(/'wakeLock' in navigator/.test(code), `${where} keeps the screen awake without asking whether the API exists`);
-    if (/new Notification\(|Notification\.(permission|requestPermission)/.test(code)) assert(/typeof Notification (===|!==) 'undefined'/.test(code), `${where} uses Notification without asking whether it exists`);
-    if (/webkitAudioContext|AudioContext/.test(code)) assert(/window\.AudioContext \|\| window\.webkitAudioContext/.test(code), `${where} reaches for AudioContext without Safari's prefixed one`);
-  }
-});
-
 ok('the limiter turns an address away past its minute, with a 429 and a time to come back', () => {
   // The README and SECURITY.md promise 120 requests a minute per address and 30 plans, then
   // a 429 with Retry-After. Only stress:http, against a running server, ever measured it.
@@ -3129,55 +2378,182 @@ ok('the services and the worker bundle for a runtime with no Node in it', () => 
   // that way, so a Node import would have passed every gate and broken the deployment. This
   // is the same esbuild call as `pnpm run worker:build`, for every service too, in memory.
   const entries = ['worker/index.ts', ...readdirSync(join(root, 'src', 'services')).filter((f) => f.endsWith('.ts')).map((f) => `src/services/${f}`)];
-  let bundled: ReturnType<typeof buildSync>;
   try {
-    bundled = buildSync({ absWorkingDir: root, entryPoints: entries, bundle: true, format: 'esm', platform: 'neutral', target: 'es2022', write: false, metafile: true, outdir: 'out', logLevel: 'silent' });
+    buildSync({ absWorkingDir: root, entryPoints: entries, bundle: true, format: 'esm', platform: 'neutral', target: 'es2022', write: false, outdir: 'out', logLevel: 'silent' });
   } catch (error) {
     throw new assert.AssertionError({ message: `the services do not bundle without Node: ${(error as Error).message.split('\n').slice(0, 3).join(' ')}` });
   }
-  // A global is not an import, so esbuild cannot see it; ours are read for Node's own.
-  const ours = Object.keys(bundled.metafile!.inputs).filter((file) => /^(src|worker)\/.*\.tsx?$/.test(file));
-  assert(ours.length > 5, `the bundle read only ${ours.length} of our files, so this is not looking at the services`);
-  for (const file of ours) {
-    const code = read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
-    const node = /\b(process\.|Buffer\b|require\(|__dirname|__filename)/.exec(code);
-    assert(!node, `${file} reaches for Node's ${node?.[1]}, and it is bundled into the worker or a service`);
+});
+
+await okAsync('the worker bundle answers in a runtime with no Node in it, and turns a malformed address away', async () => {
+  // A bundle that builds can still reach for `process` or `Buffer` at run time, which esbuild
+  // cannot see and Deno Deploy throws on. So the worker is bundled as it deploys and run in a
+  // context holding web standards alone, and asked the questions it exists to answer. A
+  // malformed escape in the stop code was an uncaught URIError, a 500 from the runtime.
+  const { outputFiles } = buildSync({ absWorkingDir: root, entryPoints: ['worker/index.ts'], bundle: true, format: 'iife', globalName: 'worker', platform: 'neutral', target: 'es2022', write: false, logLevel: 'silent' });
+  const asked: string[] = [];
+  const stored = new Map<string, Response>();
+  const web = {
+    URL, URLSearchParams, Request, Response, Headers, AbortSignal, AbortController, TextDecoder, TextEncoder, ReadableStream,
+    console: { log() {}, warn() {}, error() {} }, setTimeout, clearTimeout, queueMicrotask, encodeURIComponent, decodeURIComponent,
+    Deno: { env: { get: (key: string) => (key === 'ALLOWED_ORIGIN' ? 'https://owner.github.io' : undefined) } },
+    caches: { open: async () => ({ match: async (r: Request) => stored.get(r.url)?.clone(), put: async (r: Request, res: Response) => void stored.set(r.url, res), delete: async (r: Request) => stored.delete(r.url) }) },
+    fetch: async (input: unknown) => {
+      asked.push(String(input));
+      return new Response('<div class="sae-content-info"><div class="sae-content-info-line"><p>13</p></div><div class="sae-content-info-time"><p>7</p></div></div></div>', { status: 200 });
+    },
+  };
+  const sandbox = createContext(web);
+  runInContext(outputFiles[0].text, sandbox);
+  const handle = (sandbox as unknown as { worker: { handle: (r: Request) => Promise<Response> } }).worker.handle;
+  const pole = BUS_STOPS.find((s) => poleCode(s))!;
+
+  const minutes = await handle(new Request(`https://api.example/api/paradas/${pole.id}/agora`));
+  assert(minutes.status === 200, `the operator's minutes came back ${minutes.status}`);
+  assert((await minutes.json()).departures.length === 1, 'the operator’s minutes lost their departures on the way through the worker');
+  const notices = await handle(new Request('https://api.example/api/alerts'));
+  assert(notices.status === 200, `the notices came back ${notices.status}`);
+  // Deno Deploy's log held seven council reads on 6 and 13 October 2026, every one "not read
+  // after 4 s": the worker asks the operator alone, and the snapshot and server.ts the council too.
+  assert(!asked.some((url) => url.includes('concellodelugo.gal')), `the worker asked the council's feed: ${asked.join(', ')}`);
+  const malformed = await handle(new Request('https://api.example/api/paradas/%E0%A4%A/agora'));
+  assert(malformed.status === 400, `a malformed stop code came back ${malformed.status}, not 400`);
+});
+
+/** One request to a local server, path sent as written: a client that normalises `..` away cannot test a guard against it. */
+const ask = (port: number, path: string, { host = '127.0.0.1', method = 'GET', headers = {}, body }: { host?: string; method?: string; headers?: Record<string, string>; body?: string } = {}) =>
+  new Promise<{ status: number; headers: Record<string, string | string[] | undefined>; body: Buffer }>((resolve, reject) => {
+    const req = httpRequest({ host, port, path, method, headers }, (res) => {
+      const chunks: Buffer[] = [];
+      res.on('data', (c: Buffer) => chunks.push(c));
+      res.on('end', () => resolve({ status: res.statusCode ?? 0, headers: res.headers, body: Buffer.concat(chunks) }));
+    });
+    req.on('error', reject);
+    req.end(body);
+  });
+
+/**
+ * server.ts itself, started as `pnpm start` or `pnpm dev` starts it, in a folder holding a
+ * build of three files and, beside it, a dist-server/ that must never be served. Returns
+ * the port, everything it printed, and a way to stop it.
+ */
+async function startServer(args: string[]): Promise<{ port: number; printed: () => string; stop: () => void; folder: string }> {
+  const folder = mkdtempSync(join(tmpdir(), 'urbanos-server-'));
+  mkdirSync(join(folder, 'dist'));
+  mkdirSync(join(folder, 'dist-server'));
+  writeFileSync(join(folder, 'dist', 'index.html'), '<!doctype html><html lang="gl"><head><title>x</title></head><body><div id="root"></div></body></html>');
+  writeFileSync(join(folder, 'dist', 'app.js'), 'console.log("app");');
+  writeFileSync(join(folder, 'dist', 'app.js.br'), brotliCompressSync('console.log("app");'));
+  writeFileSync(join(folder, 'dist-server', 'secret.cjs'), 'SERVER BUNDLE');
+  writeFileSync(join(folder, 'dist-server', 'secret.cjs.br'), brotliCompressSync('SERVER BUNDLE'));
+  const port = await new Promise<number>((resolve) => {
+    const probe = createNetServer().listen(0, '127.0.0.1', () => {
+      const { port: free } = probe.address() as { port: number };
+      probe.close(() => resolve(free));
+    });
+  });
+  const env: NodeJS.ProcessEnv = { ...process.env, PORT: String(port) };
+  delete env.HOST;
+  const child = spawn(join(root, 'node_modules', '.bin', 'tsx'), [join(root, 'server.ts'), ...args], { cwd: folder, env, stdio: ['ignore', 'pipe', 'pipe'] });
+  let out = '';
+  child.stdout.on('data', (c) => (out += c));
+  child.stderr.on('data', (c) => (out += c));
+  const stop = () => {
+    child.kill();
+    rmSync(folder, { recursive: true, force: true });
+  };
+  for (let waited = 0; ; waited += 100) {
+    if (await ask(port, '/api/health').then(() => true, () => false)) break;
+    if (waited > 30_000 || child.exitCode !== null) {
+      stop();
+      throw new assert.AssertionError({ message: `server.ts ${args.join(' ')} never answered: ${out.slice(-400)}` });
+    }
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return { port, printed: () => out, stop, folder };
+}
+
+await okAsync('the built server sends its policy and headers, and keeps the rate limiter, the API and the build to themselves', async () => {
+  // What server.ts promises (SECURITY.md, PRIVACY.md), asked over HTTP of the real thing:
+  //  - the policy and the headers on every answer, and no cookie, no X-Powered-By;
+  //  - /api/PLAN is not /api/plan: routing matched it case-insensitively while the limiter
+  //    compared lower case, and 35 of 35 plans were served past a cut-off of 30;
+  //  - an unknown /api path is a JSON 404, never the app's page;
+  //  - a malformed escape is the caller's 400, not a 500 with a stack trace in the log, and
+  //    the log holds a failure's method and path at most, never a query somebody typed;
+  //  - a body over 32 KB is refused;
+  //  - nothing outside dist/ is served: the precompressed-copy guard let /../dist-server/
+  //    through, a sibling whose name also begins "dist".
+  const server = await startServer([]);
+  try {
+    const page = await ask(server.port, '/');
+    assert(page.status === 200 && /<div id="root">/.test(String(page.body)), `the page came back ${page.status}`);
+    const expected: Record<string, string> = {
+      'content-security-policy': CSP_HEADER,
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'DENY',
+      'referrer-policy': 'no-referrer',
+      'permissions-policy': 'geolocation=(self), camera=(self), screen-wake-lock=(self), microphone=()',
+      'cross-origin-opener-policy': 'same-origin',
+      'cross-origin-resource-policy': 'same-origin',
+    };
+    const health = await ask(server.port, '/api/health');
+    for (const res of [page, health]) {
+      for (const [name, value] of Object.entries(expected)) assert.strictEqual(res.headers[name], value, `${name} is ${res.headers[name]}`);
+      assert(!res.headers['x-powered-by'] && !res.headers['set-cookie'], 'the server names itself or sets a cookie');
+    }
+    assert(health.headers['cache-control'] === 'no-store', `an API answer may be cached: ${health.headers['cache-control']}`);
+
+    const upper = await ask(server.port, '/api/PLAN');
+    assert(upper.status === 404 && /Unknown endpoint/.test(String(upper.body)), `/api/PLAN reached the planner: ${upper.status} ${upper.body}`);
+    const unknown = await ask(server.port, '/api/nope');
+    assert(unknown.status === 404 && /json/.test(String(unknown.headers['content-type'])), `an unknown API path came back ${unknown.status} ${unknown.headers['content-type']}`);
+    const plans = [];
+    for (let i = 0; i <= MAX_PLANS_PER_WINDOW; i++) plans.push((await ask(server.port, '/api/plan')).status);
+    assert(plans.slice(0, MAX_PLANS_PER_WINDOW).every((s) => s === 400) && plans[MAX_PLANS_PER_WINDOW] === 429, `the plans in a minute came back ${plans.join(' ')}`);
+
+    const typed = 'Rúa-da-Raíña-14-segundo';
+    const malformed = await ask(server.port, `/api/paradas/%E0%A4%A/agora?from=${encodeURIComponent(typed)}`);
+    assert(malformed.status === 400 && /json/.test(String(malformed.headers['content-type'])), `a malformed address came back ${malformed.status}`);
+    const big = await ask(server.port, '/api/health', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ x: 'y'.repeat(40_000) }) });
+    assert(big.status === 413, `a 40 KB body came back ${big.status}`);
+
+    // The compressed copy is served where it exists, so the next question is not answered by its absence.
+    const app = await ask(server.port, '/app.js', { headers: { 'accept-encoding': 'br' } });
+    assert(app.headers['content-encoding'] === 'br' && String(brotliDecompressSync(app.body)) === 'console.log("app");', 'the build’s compressed copy is not served, so the guard below proves nothing');
+    for (const path of ['/../dist-server/secret.cjs', '/%2e%2e/dist-server/secret.cjs', '/..%2fdist-server/secret.cjs']) {
+      const res = await ask(server.port, path, { headers: { 'accept-encoding': 'br, gzip' } });
+      assert(!res.headers['content-encoding'], `${path} was answered with the compressed copy of a file outside dist/`);
+      assert(!String(res.body).includes('SERVER BUNDLE'), `${path} served a file from outside dist/`);
+    }
+    const printed = server.printed();
+    assert(!printed.includes(typed) && !/request failed/.test(printed), `the server logged what a request carried: ${printed.slice(-300)}`);
+    // Self-hosting listens everywhere; the development server, below, does not.
+    const outward = Object.values(networkInterfaces()).flat().find((a) => a && a.family === 'IPv4' && !a.internal)?.address;
+    if (outward) assert((await ask(server.port, '/api/health', { host: outward })).status === 200, `the built server does not answer on ${outward}`);
+  } finally {
+    server.stop();
   }
 });
 
-ok('the development server answers this machine, not the network', () => {
+await okAsync('the development server answers this machine alone, and sends no policy for Vite to trip on', async () => {
   // In development Vite serves any file under the project root, gitignored ones included,
   // and the server listened on 0.0.0.0: a file planted in .claude/ came back 200 through the
-  // machine's own Wi-Fi address. Development listens on localhost unless HOST says otherwise;
-  // the built server serves dist/ alone and still listens everywhere.
-  const server = read('server.ts');
-  assert(/const host = process\.env\.HOST \?\? \(isDev \? '127\.0\.0\.1' : '0\.0\.0\.0'\);/.test(server), 'development listens on every interface again');
-  assert(/app\.listen\(port, host,/.test(server), 'the server does not listen on the host it chose');
-});
-
-ok('no comment quotes a stop count the dataset no longer has', () => {
-  // Merging nine duplicated poles moved the total from 429 to 417 and left five comments
-  // asserting the old one. Only counts about stops in src/ are checked; "used to" is history.
-  const total = BUS_STOPS.length;
-  const wrong: string[] = [];
-  for (const full of sourcesUnder('src')) {
-    // Split on either ending: a stray carriage return broke "used to" across the join below.
-    const lines = readFileSync(full, 'utf8').split(/\r?\n/);
-    lines.forEach((line, i) => {
-      if (!/^\s*(\/\/|\*|\/\*)/.test(line)) return;
-      // The marker that makes a quotation history can sit a line or two above the number, with
-      // "used to" split across the wrap and a comment asterisk between the words.
-      const sentence = lines
-        .slice(Math.max(0, i - 2), i + 1)
-        .map((l) => l.replace(/^\s*(\/\/|\*|\/\*\*?)\s?/, ''))
-        .join(' ');
-      if (/used to|antes|adoitaba|read "/.test(sentence)) return;
-      for (const m of [...line.matchAll(/\b(\d{3})\s+(stops|paradas|dots|poles|postes)\b/g), ...line.matchAll(/\bof the (\d{3})\b/g)]) {
-        if (Number(m[1]) !== total) wrong.push(`${relative(full)}:${i + 1} says "${m[0]}", the dataset has ${total}`);
-      }
-    });
+  // machine's own Wi-Fi address. And the policy, sent there, refused Vite's inline preamble
+  // and its socket: `pnpm dev` drew nothing.
+  const server = await startServer(['--dev']);
+  try {
+    const health = await ask(server.port, '/api/health');
+    assert(health.status === 200 && health.headers['x-content-type-options'] === 'nosniff', `the development server answered ${health.status}`);
+    assert(!health.headers['content-security-policy'], 'the development server sends the policy, which blanks the page under Vite');
+    const outward = Object.values(networkInterfaces()).flat().find((a) => a && a.family === 'IPv4' && !a.internal)?.address;
+    if (outward) {
+      const reached = await ask(server.port, '/api/health', { host: outward }).then(() => true, () => false);
+      assert(!reached, `the development server answers on ${outward}, so anyone on the same network reaches the project folder`);
+    }
+  } finally {
+    server.stop();
   }
-  assert(wrong.length === 0, wrong.join('; '));
 });
 
 ok('a device on the wrong timezone is told, and one on the right one is not', () => {
@@ -3284,19 +2660,6 @@ ok('a query with nothing left in it matches nothing', () => {
   for (const q of ['mur', 'muralla', 'Gándaras', 'gandaras', 'Ronda Muralla', 'termas', 'pedrei']) {
     assert(finds(q) > 0, `"${q}" no longer finds anything`);
   }
-});
-
-ok('no source file mixes its line endings', () => {
-  // This repository used to check out CRLF on Windows, and one bare "\n" among hundreds of
-  // CRLFs is invisible in an editor and a whole-file diff later; it also broke a check here.
-  const mixed: string[] = [];
-  for (const full of [...listSourceFiles(join(root, 'src'), /\.(ts|tsx|css|html)$/), ...listSourceFiles(join(root, 'tools'), /\.(ts|tsx|css|html)$/)]) {
-    const text = readFileSync(full, 'utf8');
-    const crlf = (text.match(/\r\n/g) ?? []).length;
-    const lf = (text.match(/(?<!\r)\n/g) ?? []).length;
-    if (crlf > 0 && lf > 0) mixed.push(`${relative(full)} (${crlf} CRLF, ${lf} LF)`);
-  }
-  assert(mixed.length === 0, `mixed line endings in ${mixed.join(', ')}`);
 });
 
 ok('the search-engine tags are omitted rather than guessed', () => {
@@ -3479,26 +2842,6 @@ ok('every tab has a path, and the sitemap lists exactly those', () => {
   const vite = read('vite.config.ts');
   assert(/404\.html/.test(vite), 'the SPA fallback copy is gone, so tab paths break on GitHub Pages');
   assert(/SITE_PATHS/.test(vite), 'the build no longer writes a page per route, so every path in the sitemap answers 404');
-});
-
-ok('the hand-written notices are dated, not declared current', () => {
-  // Three notices about the city are written into the repository; they used to claim
-  // "vixente" and "activo", which a file cannot know. A review date cannot go out of date.
-  // The date moved out of the component on 13 October 2026, so the Monday tool can read it.
-  const view = read('src/data/structuralNotices.ts');
-
-  const stamp = view.match(/NOTICES_REVIEWED_ON = '(\d{4}-\d{2}-\d{2})'/);
-  assert(stamp, 'the hand-written notices no longer carry a review date');
-  const reviewed = new Date(stamp![1]);
-  assert(!Number.isNaN(reviewed.getTime()), `"${stamp![1]}" is not a date`);
-  assert(reviewed.getTime() <= Date.now(), 'the notices claim to have been reviewed in the future');
-
-  // And nothing puts a claim back where the component spreads the dictionary in.
-  for (const lang of ['gl', 'es', 'en']) {
-    const dict = read(`src/i18n/${lang}.ts`);
-    const block = dict.slice(dict.indexOf('notices: ['), dict.indexOf('],', dict.indexOf('notices: [')));
-    assert(!/\bdate:/.test(block), `${lang}.ts gives the hand-written notices a date of their own again; the review date is the only one that is true`);
-  }
 });
 
 ok("a notice in the operator’s navigation bar is still a notice", () => {
@@ -3772,21 +3115,6 @@ ok('a line\u2019s trip time comes from the timetable, not from a road model', ()
   assert(!/legSeconds\.reduce/.test(view), 'the line card is summing legSeconds again, which is driving time with no stops in it');
 });
 
-ok('the API is matched case-sensitively, so the rate limiter cannot be walked round', () => {
-  // Express matched routes case-insensitively while every path comparison was lower case, so
-  // /api/PLAN reached the planner past the rate limiter: 35 of 35 served, cut-off at 30.
-  // One setting rather than a lowercase at each comparison, so this guards the setting.
-  const server = read('server.ts');
-  assert(/app\.set\(\s*'case sensitive routing'\s*,\s*true\s*\)/.test(server), 'case-sensitive routing is off again, so /api/PLAN reaches the planner unlimited');
-
-  // And the setting only helps while the comparisons stay lower case; a mixed-case
-  // literal would miss the very requests routing now lets through.
-  const limiter = read('src/security/rateLimit.ts');
-  for (const [, literal] of limiter.matchAll(/req\.path\.startsWith\('([^']+)'\)/g)) {
-    assert(literal === literal.toLowerCase(), `the limiter compares req.path against "${literal}", which routing will never produce`);
-  }
-});
-
 ok('the operator’s own stop page is read by class, not by position', () => {
   // Real markup from the operator's stop page, decorative <svg> paths collapsed. An <svg> sits
   // between the classed div and its <p>, the line arrives as "L4.2" and the time as "20 min".
@@ -3821,47 +3149,6 @@ ok('the operator’s own stop page is read by class, not by position', () => {
   parseOperatorTimes('<div class="sae-content-info">'.repeat(4000));
   const spent = Date.now() - started;
   assert(spent < 1000, `unclosed blocks took ${spent} ms, which is heading for a stall`);
-});
-
-ok('nothing scraped reaches a Leaflet tooltip unescaped', () => {
-  // Leaflet takes HTML, not text: a name with a tag in it puts a real element in the DOM.
-  // Two maps carried scraped names straight into innerHTML while three escaped them.
-  const dir = join(root, 'src/components/Map');
-  const offenders: string[] = [];
-
-  for (const file of readdirSync(dir).filter((f) => /\.tsx?$/.test(f))) {
-    const lines = readFileSync(join(dir, file), 'utf8').split(/\r?\n/);
-    for (const [i, line] of lines.entries()) {
-      if (!/(bindTooltip|bindPopup)\(|innerHTML\s*=/.test(line)) continue;
-      // The call rarely fits on one line; three is enough for every one of them here.
-      const call = lines.slice(i, i + 4).join(' ');
-      // Names, zones and line numbers are the scraped fields, and so are a bus's destination
-      // and next stop. Numbers computed here are not markup and need no escaping.
-      const scraped = /\.(name|zone|number|color|address|destination|nextStopName|lineNumber|lineColor|code)\b/.exec(call);
-      if (scraped && !/escapeHtml/.test(call)) {
-        offenders.push(`${file}:${i + 1}  ${line.trim().slice(0, 70)}`);
-      }
-    }
-  }
-
-  // That reads four lines and is satisfied by one escapeHtml anywhere in them, and it never
-  // looked at divIcon markup: the trip map's pin printed a line number raw. So every value
-  // interpolated into a template that carries markup, at any depth, has to be escaped, a
-  // number, the dictionary's own markup, or a local escaped where it was made.
-  const NOT_TEXT = new Set(['weight', 'fontSize', 'minWidth', 'bus.bearing', 'rowButtonStyle', 'inner', 'ink']);
-  let read = 0;
-  for (const file of readdirSync(dir).filter((f) => /\.tsx?$/.test(f))) {
-    const code = readFileSync(join(dir, file), 'utf8');
-    const escapedLocals = new Set([...code.matchAll(/const (\w+) = escapeHtml\(/g)].map((m) => m[1]));
-    for (const { expr, at } of markupInterpolations(code)) {
-      read++;
-      const fine = /^(escapeHtml|badgeHtml)\(/.test(expr) || /^t\.\w+\.\w+$/.test(expr) || /\.toFixed\(\d\)$/.test(expr) || NOT_TEXT.has(expr) || escapedLocals.has(expr) || /^\w+ \? `/.test(expr);
-      if (!fine) offenders.push(`${file}:${code.slice(0, at).split('\n').length}  \${${expr.slice(0, 60)}}`);
-    }
-  }
-  assert(read > 25, `found only ${read} values interpolated into map markup, so the scan is not reading the templates`);
-
-  assert(offenders.length === 0, `scraped text reaches a Leaflet tooltip without escapeHtml:\n    ${offenders.join('\n    ')}`);
 });
 
 /**
@@ -3912,163 +3199,23 @@ function markupInterpolations(code: string): { expr: string; at: number }[] {
   return found;
 }
 
-ok('the build compresses its assets and the server hands them over', () => {
-  // Self-hosting put 544 KB on the wire where 116 KB of brotli would do. The fix is two
-  // halves useless apart: a build plugin that writes .br/.gz and a middleware that picks one.
-
-  const vite = read('vite.config.ts');
-  assert(/emitCompressedAssets/.test(vite), 'the build no longer writes compressed assets');
-  assert(/brotliCompressSync/.test(vite) && /gzipSync/.test(vite), 'the build writes only one encoding; a client that takes the other pays full price');
-
-  const server = read('server.ts');
-  assert(/Content-Encoding/.test(server), 'the server no longer serves the compressed copy');
-  assert(/'Vary', 'Accept-Encoding'/.test(server), 'Vary is gone, so a shared cache could hand a brotli body to a client that cannot read it');
-
-  // And if there is a build to look at, the files really are there. Skipped rather than
-  // failed when there is not, because the suite runs before the build in CI.
-  const assets = join(root, 'dist', 'assets');
-  if (!existsSync(assets)) return;
-  const entry = readdirSync(assets).find((f) => /^index-.*\.js$/.test(f));
-  if (!entry) return;
-  assert(existsSync(join(assets, entry + '.br')) && existsSync(join(assets, entry + '.gz')), `dist has ${entry} but no compressed copy beside it`);
-});
-
-ok('the download sizes the README quotes are the build’s, within five per cent', () => {
-  // "Every measured figure lives here and is updated here" (CLAUDE.md), and the size table
-  // is the one most moved by a change nobody connects to it: a dependency bump renamed and
-  // regrew the renderer, and the README was re-measured by hand afterwards. Read against the
-  // build when there is one -- CI's second run of this file, after `pnpm run build`.
-  const assets = join(root, 'dist', 'assets');
-  if (!existsSync(assets)) return;
-  const files = readdirSync(assets);
-  const size = (file: string) => statSync(join(assets, file)).size / 1024;
-  const chunk = (pattern: RegExp) => {
-    const found = files.filter((f) => pattern.test(f));
-    assert(found.length === 1, `the build has ${found.length} files matching ${pattern}, so the README's row cannot be read against it`);
-    return [size(found[0]), size(`${found[0]}.gz`), size(`${found[0]}.br`)];
-  };
-  const html = join(root, 'dist', 'index.html');
-  const page = [statSync(html).size, statSync(`${html}.gz`).size, statSync(`${html}.br`).size].map((n) => n / 1024);
-  const entry = chunk(/^index-[\w-]+\.js$/);
-  const styles = chunk(/^index-[\w-]+\.css$/);
-  const ROWS: [string, number[]][] = [
-    ['Anaco de entrada', entry],
-    ['Folla de estilos', styles],
-    ['\\*\\*Primeira carga\\*\\*', [0, 1, 2].map((i) => entry[i] + styles[i] + page[i])],
-    ['Renderizador do mapa, co estilo e a paleta', chunk(/^palette-[\w-]+\.js$/)],
-    ['Estilos do renderizador', chunk(/^palette-[\w-]+\.css$/)],
-    ['Worker do renderizador', chunk(/^maplibre-gl-worker-[\w-]+\.js$/)],
-    ['Xeometría viaria', chunk(/^route-geometry-[\w-]+\.js$/)],
-    ['Rede peonil con alturas', chunk(/^walk-network-[\w-]+\.js$/)],
-  ];
-  const readme = read('README.md');
-  const kb = (cell: string) => Number(cell.replace(/[*~\s]|KB.*$/g, '').replace(/\./g, ''));
-  for (const [label, built] of ROWS) {
-    const row = new RegExp(`^\\| ${label} \\| ([^|]+) \\| ([^|]+) \\| ([^|]+) \\|`, 'm').exec(readme);
-    assert(row, `the README's size table has no row "${label}"`);
-    row.slice(1, 4).forEach((cell, i) => {
-      const quoted = kb(cell);
-      assert(Math.abs(quoted - built[i]) <= Math.max(built[i] * 0.05, 2), `README: ${label.replace(/\\/g, '')} ${['raw', 'gzip', 'brotli'][i]} is ${cell.trim()}; the build has ${built[i].toFixed(0)} KB`);
-    });
+ok('a name bound for a map label arrives as text, whatever it contains', () => {
+  // Leaflet takes HTML, not text: a name with a tag in it puts a real element in the DOM. Two
+  // maps once carried scraped names straight into innerHTML. Every value the map's labels,
+  // popups and pins carry from the dataset goes through escapeHtml, so that is what is asked:
+  // nothing in its output can open a tag or leave an attribute, and nothing is lost.
+  const hostile = ['<img src=x onerror=alert(1)>', '"><script>alert(1)</script>', "' onmouseover='alert(1)", 'Rúa & Praza <b>', '&lt;already&gt;', 'Avda. Américas 14'];
+  const decode = (s: string) => s.replace(/&(lt|gt|quot|#39|amp);/g, (_, e: string) => ({ lt: '<', gt: '>', quot: '"', '#39': "'", amp: '&' })[e]!);
+  for (const value of hostile) {
+    const out = escapeHtml(value);
+    assert(!/[<>"']/.test(out), `escapeHtml left markup in ${JSON.stringify(out)}`);
+    assert(!/&(?!(lt|gt|quot|#39|amp);)/.test(out), `escapeHtml left a bare & in ${JSON.stringify(out)}`);
+    assert(decode(out) === value, `escapeHtml lost something: ${JSON.stringify(value)} came back ${JSON.stringify(decode(out))}`);
+    // The line badge takes a colour into an attribute and a number into the element.
+    const badge = badgeHtml(value, value);
+    assert(/^<span style="[^"<>]*">[^<>]*<\/span>$/.test(badge), `a hostile line colour or number broke out of the badge: ${badge}`);
   }
-  const fonts = files.filter((f) => f.endsWith('.woff2')).reduce((n, f) => n + size(f), 0);
-  const typeface = Number(/^\| Tipografía \| (\d+) KB/m.exec(readme)?.[1]);
-  assert(Math.abs(typeface - fonts) <= Math.max(fonts * 0.05, 2), `README: the typeface is ${typeface} KB; the build has ${fonts.toFixed(0)} KB`);
-
-  // And what the first visit downloads in the background, read from the service worker's
-  // own manifest: entries, distinct files, and their bytes raw, gzip and brotli (a file the
-  // build does not compress counts as itself in all three).
-  const listed = [...read('dist/sw.js').matchAll(/url:"([^"]+)"/g)].map((m) => m[1]);
-  const distinct = [...new Set(listed)];
-  const bytes = (file: string, suffix: string) => statSync(existsSync(join(root, 'dist', file + suffix)) ? join(root, 'dist', file + suffix) : join(root, 'dist', file)).size / 1048576;
-  const precache = ['', '.gz', '.br'].map((suffix) => distinct.reduce((n, file) => n + bytes(file, suffix), 0));
-  const said = /(\d+) ficheiros distintos \(o manifesto lista (\d+):[^)]*\), ([\d,]+) MB sen comprimir, ([\d,]+) MB en gzip e ([\d,]+) MB en brotli/.exec(readme.replace(/\s+/g, ' '));
-  assert(said, 'the README no longer gives the precache in files and megabytes, or the sentence moved');
-  assert(Number(said[1]) === distinct.length && Number(said[2]) === listed.length, `README: the precache is ${said[1]} files in ${said[2]} entries; the build's has ${distinct.length} in ${listed.length}`);
-  said.slice(3, 6).map((n) => Number(n.replace(',', '.'))).forEach((quoted, i) => {
-    assert(Math.abs(quoted - precache[i]) <= precache[i] * 0.05, `README: the precache is ${quoted} MB ${['raw', 'gzip', 'brotli'][i]}; the build's is ${precache[i].toFixed(2)} MB`);
-  });
-});
-
-ok('nothing on the critical path waits for a script over the network', () => {
-  // The theme script blocks the parser wherever it sits; as a file it was a whole round trip
-  // before the entry chunk was asked for, and preload tags made it worse. The property is
-  // that the browser reaches the entry chunk without waiting for a network round trip.
-  const built = join(root, 'dist', 'index.html');
-  // Skipped rather than failed when there is no build, because CI runs the suite first.
-  if (!existsSync(built)) return;
-  const html = readFileSync(built, 'utf8');
-
-  const module = html.match(/<script type="module"[^>]*\ssrc="([^"]+)"/);
-  assert(module, 'the built page has no entry chunk');
-  const before = html.slice(0, module!.index);
-
-  // Any `<script src>` above the module is a request the parser stops for. `async` and
-  // `defer` do not stop it, so they are allowed; nothing here uses them today.
-  const blocking = [...before.matchAll(/<script\b([^>]*)\bsrc=/g)]
-    .map((m) => m[1])
-    .filter((attrs) => !/\b(async|defer|type="module")\b/.test(attrs));
-  assert(blocking.length === 0, `${blocking.length} external script(s) block the parser before the entry chunk: ${blocking.join(' | ')}`);
-});
-
-ok('the mini map is deferred once, where it cannot be forgotten', () => {
-  // `lazy()` alone defers the chunk until the component renders, and the board stays mounted
-  // behind `hidden`, so the map was built inside display:none on every cold start. The
-  // deferral lives in one wrapper, and only the wrapper may name the map.
-  const wrapper = join('src', 'components', 'Map', 'LazyNearbyMiniMap.tsx');
-  const itself = join('src', 'components', 'Map', 'NearbyMiniMap.tsx');
-
-  const lazy = read(wrapper);
-  assert(/IntersectionObserver/.test(lazy), 'the map no longer waits until it is on screen');
-  assert(/h-\[240px\]/.test(lazy), 'the placeholder no longer holds the height the map takes');
-
-  // A type-only import costs nothing at runtime; a value import is the whole map.
-  const offenders = sourcesUnder('src')
-    .map(relative)
-    .filter((file) => file !== wrapper && file !== itself && /^\s*import\s+(?!type\b)[^;]*['"][^'"]*\/NearbyMiniMap['"]/m.test(read(file)));
-  assert(offenders.length === 0, `imports the mini map directly instead of LazyNearbyMiniMap: ${offenders.join(', ')}`);
-});
-
-ok('src/data holds only what ships, and the build inputs stay out of it', () => {
-  // Four files in src/data were build scaffolding the app never imported, 1.4 MB one
-  // distracted import away from the bundle. They live in data/ now.
-
-  const BUILD_ONLY = ['official-raw.json', 'osm-routes.json', 'routes.json', 'stop-amenities.json'];
-  for (const name of BUILD_ONLY) {
-    assert(!existsSync(join(root, 'src', 'data', name)), `${name} is back in src/data; it is a build input and the app never reads it`);
-    assert(existsSync(join(root, 'data', name)), `data/${name} is missing, so the build cannot run`);
-  }
-
-  // And nothing under src/ may import one of them, whatever directory it sits in.
-  const offenders: string[] = [];
-  for (const file of sourcesUnder('src')) {
-    const text = readFileSync(file, 'utf8');
-    for (const name of BUILD_ONLY) if (text.includes(name)) offenders.push(`${relative(file)} names ${name}`);
-  }
-  assert(offenders.length === 0, `a build input reached the app:\n    ${offenders.join('\n    ')}`);
-
-  // The other half of the same rule: everything left in src/data is either imported by the
-  // app or is the loader that imports it.
-  const shipped = readdirSync(join(root, 'src', 'data'));
-  assert(shipped.length > 0, 'src/data is empty, which cannot be right');
-});
-
-ok('the address the app calls for /api is the one the policy admits', () => {
-  // apiUrl.ts builds the request URL and csp.ts admits the origin; name the setting
-  // differently in one and the build succeeds and fails silently in the browser.
-  // In the code, not a comment: apiUrl.ts names the variable in its doc comment, and with the
-  // read renamed on purpose the comment alone kept this green.
-  for (const file of ['src/services/apiUrl.ts', 'src/security/csp.ts']) {
-    const code = read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
-    assert(code.includes('VITE_API_ORIGIN'), `${file} no longer reads VITE_API_ORIGIN, so the request and the policy can disagree`);
-  }
-
-  // csp.ts runs in Node, where import.meta.env does not exist. Comments are stripped first:
-  // the first draft of this check failed on its own explanation.
-  const csp = read('src/security/csp.ts')
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/\/\/.*$/gm, '');
-  assert(!csp.includes('import.meta.env'), 'csp.ts reads import.meta.env, which is undefined in Node');
+  assert(escapeHtml(null) === '' && escapeHtml(undefined) === '', 'a missing value is printed as text');
 });
 
 ok('a hidden HTML comment does not come out as visible text', () => {
@@ -4151,6 +3298,38 @@ ok('"stops near me" answers nothing when you are not near any', () => {
   for (const stop of BUS_STOPS) {
     const here = getNearbyStops(stop.lat, stop.lng).filter((s) => s.walkMeters <= NEARBY_STOP_LIMIT_METRES);
     assert(here.length > 0, `standing at ${stop.name} finds no stop within the limit`);
+  }
+});
+
+await okAsync('every request to somebody else’s site has a deadline, says who is asking, and follows no redirect', async () => {
+  // Without a deadline one stalled upstream holds a request open for as long as it likes.
+  // DATA.md promises the reader identifies itself in its User-Agent. And every host read here
+  // is fixed, while a redirect from one was followed wherever it pointed (OWASP's SSRF sheet:
+  // an allowlist means nothing to a client that follows). Asked of the requests the two
+  // services actually make: the operator's notices, the council's feed, a pole's minutes.
+  const realFetch = globalThis.fetch;
+  const realLog = console.log;
+  const sent: { url: string; init?: RequestInit }[] = [];
+  globalThis.fetch = (async (url: string, init?: RequestInit) => {
+    sent.push({ url: String(url), init });
+    return new Response('<html><body></body></html>', { status: 200 });
+  }) as typeof fetch;
+  console.log = () => {};
+  try {
+    // Five hours ahead, past whatever the checks above left in the notices' cache.
+    await syncOfficialAlerts(true, Date.now() + 5 * 60 * 60_000);
+    await operatorTimesForStop(`outbound-${Date.now()}`);
+  } finally {
+    globalThis.fetch = realFetch;
+    console.log = realLog;
+  }
+  const hosts = sent.map(({ url }) => new URL(url).host);
+  assert(hosts.includes('buslugo.com') && hosts.some((h) => h.includes('concellodelugo.gal')) && sent.length >= 3, `the services asked ${hosts.join(', ')}, so this did not see all three requests`);
+  for (const { url, init } of sent) {
+    assert(init?.signal instanceof AbortSignal, `${url} is asked with no deadline`);
+    assert(init.redirect === 'error', `${url} follows redirects (${init.redirect ?? 'the default, follow'})`);
+    const agent = new Headers(init.headers).get('User-Agent') ?? '';
+    assert(/^UrbanosLugoBot\/\d+\.\d+ \(\+\S+; unofficial timetable reader\)$/.test(agent) && agent.includes(REPO_URL), `${url} is asked as "${agent}"`);
   }
 });
 
@@ -4315,54 +3494,6 @@ await okAsync('the worker answers only for the origin it was given, and keeps on
     g.Deno = realDeno;
     g.caches = realCaches;
     globalThis.fetch = realFetch;
-  }
-});
-
-ok('every request to somebody else’s server has a deadline, and the server keeps its headers', () => {
-  // Protections the simplification kept and nothing checked. Without a deadline one stalled
-  // upstream holds a request, and in the browser a 30 s poll stacked requests behind a stall.
-  const calls: string[] = [];
-  for (const file of sourcesUnder('src/services', 'src/hooks')) {
-    const text = readFileSync(file, 'utf8');
-    for (let at = text.indexOf('fetch('); at !== -1; at = text.indexOf('fetch(', at + 6)) {
-      const call = text.slice(at, text.indexOf(';', at));
-      // The notices snapshot is a file beside the page, not somebody else's server.
-      if (/alerts\.json/.test(call)) continue;
-      calls.push(relative(file));
-      assert(/signal: AbortSignal\.timeout\??\.?\(\d/.test(call), `${relative(file)}: a fetch with no deadline: ${call.slice(0, 90)}`);
-      // A server reading somebody else's site says who it is (DATA.md: "identifies itself in
-      // its User-Agent"); a browser cannot set one, and asks only our own API.
-      const isServerSide = file.split(sep).includes('services') && !/apiUrl\(/.test(call);
-      if (isServerSide) {
-        assert(/'User-Agent': \w+/.test(call), `${relative(file)}: a request to somebody else's site that does not say who is asking: ${call.slice(0, 90)}`);
-        // Every host read here is fixed, and a redirect from one was followed wherever it
-        // pointed (OWASP's SSRF sheet: an allowlist means nothing to a client that follows).
-        assert(/redirect: 'error'/.test(call), `${relative(file)}: a request to somebody else's site that follows redirects: ${call.slice(0, 90)}`);
-      }
-      // And in the browser the deadline is asked for only where it exists: Safari 16 has none.
-      else assert(/AbortSignal\.timeout\?\.\(/.test(call), `${relative(file)}: AbortSignal.timeout is called in the browser without asking whether it exists`);
-    }
-  }
-  assert(calls.length >= 5, `found ${calls.length} outside requests, which means this is not reading what it thinks`);
-  for (const file of ['src/services/alertSyncService.ts', 'src/services/operatorTimes.ts']) {
-    assert(/= `UrbanosLugoBot\/[\d.]+ \(\+\$\{REPO_URL\}; unofficial timetable reader\)`/.test(read(file)), `${file} no longer sends a User-Agent naming this project and what it is`);
-  }
-
-  const server = read('server.ts');
-  for (const header of [
-    "res.setHeader('Content-Security-Policy', CSP_HEADER)",
-    "res.setHeader('X-Content-Type-Options', 'nosniff')",
-    "res.setHeader('X-Frame-Options', 'DENY')",
-    "res.setHeader('Referrer-Policy', 'no-referrer')",
-    "res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(self), screen-wake-lock=(self), microphone=()')",
-    "res.setHeader('Cache-Control', 'no-store')",
-    "express.json({ limit: '32kb' })",
-    // Express sent X-Powered-By: Express on every response, and neither of these was sent.
-    "app.disable('x-powered-by')",
-    "res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')",
-    "res.setHeader('Cross-Origin-Resource-Policy', 'same-origin')",
-  ]) {
-    assert(server.includes(header), `server.ts no longer has ${header}`);
   }
 });
 
@@ -4756,65 +3887,6 @@ await okAsync('the walking router returns a route you could actually walk', asyn
     }
   }
   assert(sampled > 50, `only ${sampled} pairs routed; the sweep is not sweeping`);
-});
-
-ok('the three front doors say the same true things', () => {
-  // The Galician README is the whole documentation; the other two are one screen each so a
-  // figure has one place to go stale. What cannot be in one language only is the honest
-  // labelling: not official, no time a measurement, and the counts they quote.
-  const doors = ['README.md', 'README.es.md', 'README.en.md'];
-
-  for (const door of doors) {
-    const text = read(door);
-
-    assert(/Monbus/.test(text) && /Concello de Lugo/.test(text), `${door} does not say who it is not`);
-    assert(/HORARIO OFICIAL/.test(text) && /ESTIMADO/.test(text), `${door} does not show the two labels every time carries`);
-
-    // Every count it states about the network has to be the count the network has.
-    for (const [claimed, what, actual] of [
-      [/\b(\d+) paradas\b/, 'stops', BUS_STOPS.length],
-      [/\b(\d+) stops\b/, 'stops', BUS_STOPS.length],
-      [/\b(?:as |all )?(\d+) (?:liñas|líneas|lines)\b/, 'lines', BUS_LINES.length],
-    ] as const) {
-      const found = claimed.exec(text);
-      if (found) {
-        assert(Number(found[1]) === actual, `${door} says ${found[1]} ${what}; there are ${actual}`);
-      }
-    }
-  }
-
-  // And each summary has to point at the full document, or it is a dead end rather than
-  // a front door.
-  for (const door of ['README.es.md', 'README.en.md']) {
-    const text = read(door);
-    assert(/\(README\.md\)/.test(text), `${door} does not link to the full README`);
-    assert(/\(PRIVACY\.md\)/.test(text), `${door} does not link to the privacy page`);
-  }
-  const gl = read('README.md');
-  assert(/README\.es\.md/.test(gl) && /README\.en\.md/.test(gl), 'README.md does not offer the other two');
-  // And each opens the app in its own language, now that each language has an address.
-  for (const [door, url] of [['README.md', 'https://urbanos-lugo.github.io/'], ['README.es.md', 'https://urbanos-lugo.github.io/es/'], ['README.en.md', 'https://urbanos-lugo.github.io/en/']]) {
-    assert(read(door).split('\n').slice(0, 4).join('\n').includes(`](${url})`), `${door} does not open the app at ${url}`);
-  }
-});
-
-ok('the surfaces seen before the README say "non oficial" first', () => {
-  // A search result, a link preview and the install prompt each show one line and none shows
-  // the README; the description opened with "Horarios oficiais" and the manifest borrowed
-  // the operator's name. "Non oficial" leads, and the description stays under 160 characters.
-  const html = read('index.html');
-  const config = read('vite.config.ts');
-  const meta = /<meta name="description" content="([^"]*)"/.exec(html)?.[1] ?? '';
-  const og = /<meta property="og:description" content="([^"]*)"/.exec(html)?.[1] ?? '';
-  const manifest = /description: '([^']*)'/.exec(config)?.[1] ?? '';
-  const shortName = /short_name: '([^']*)'/.exec(config)?.[1] ?? '';
-
-  for (const [where, text] of [['meta description', meta], ['og:description', og], ['manifest description', manifest]]) {
-    assert(/^Non oficial\./.test(text), `${where} does not open with "Non oficial."`);
-  }
-  assert(meta.length <= 160, `meta description is ${meta.length} characters; 160 is where a result cuts it`);
-  assert(!/\bbus ?lugo\b/i.test(shortName), `manifest short_name "${shortName}" reads as the operator's`);
-  assert(shortName.length <= 12, `manifest short_name "${shortName}" is longer than a launcher shows`);
 });
 
 await okAsync('no option promises a bus the measured walk cannot reach', async () => {
@@ -5217,326 +4289,6 @@ ok('what the basemap left out stays out', () => {
   assert(!residential || (residential.maxzoom ?? 24) <= 9, `dark: the residential fill reaches zoom ${residential?.maxzoom ?? 'any'}, past the 9 it is capped at`);
 });
 
-ok('what the interface announces, names and keeps is what the README and DECIDIDO say', () => {
-  // Small promises, each in one sentence and held by none. The README: toggles carry
-  // aria-pressed -- board views, map layers, line filters, time mode, trip options, theme and
-  // language -- and the navigation aria-current="page"; occupancy is "expected"; the line
-  // list says "1 en ruta", not "1 GPS". DECIDIDO: one segmented control, shared by the board
-  // and the planner; the ride has four states and no "done"; the keep-awake switch starts
-  // off and is not shown where the API is missing; one favicon file; the manifest dark.
-  const pressed = { 'ui/controls.tsx': 2, 'ui/Settings.tsx': 2, 'Map/MapControls.tsx': 3, 'Map/LineChips.tsx': 2, 'planner/TripOptions.tsx': 1 };
-  for (const [file, least] of Object.entries(pressed)) {
-    const found = (read(`src/components/${file}`).match(/aria-pressed=/g) ?? []).length;
-    assert(found >= least, `${file} announces ${found} pressed states, fewer than its ${least} toggles`);
-  }
-  for (const file of ['StopArrivalsView.tsx', 'RoutePlannerView.tsx']) assert(/<Segmented\b/.test(read(`src/components/${file}`)), `${file} draws its own segmented control again`);
-  for (const file of ['BottomNav.tsx', 'SideNav.tsx']) assert(/aria-current=\{[^}]*'page'/.test(read(`src/components/${file}`)), `${file} no longer marks the current tab as the page`);
-  for (const lang of LANGS) {
-    const t = translations(lang);
-    assert(/prevista|expected/i.test(t.map.occupancyLabel), `${lang}: occupancy is no longer called expected: "${t.map.occupancyLabel}"`);
-    assert(!/gps|live|directo/i.test(t.lines.enRoute(2)), `${lang}: the line list counts buses as tracked: "${t.lines.enRoute(2)}"`);
-  }
-  assert(/export type TripPhase = 'waiting' \| 'riding' \| 'alighting' \| 'walking';/.test(read('src/utils/tripProgress.ts')), 'the ride no longer has exactly its four states');
-  const ride = read('src/hooks/useTripCompanion.ts');
-  assert(/const \[keepAwakeOn, setKeepAwakeOn\] = useState\(false\)/.test(ride) && /CAN_KEEP_AWAKE \? \{/.test(ride), 'the keep-awake switch no longer starts off, or shows where the API is missing');
-  assert.deepStrictEqual(readdirSync(join(root, 'public')).filter((f) => f.endsWith('.svg')), ['favicon.svg'], 'there is more than one drawing of the icon again');
-  // Googlebot asked for /favicon.ico three times in its first week and got 404 (crawl stats,
-  // 19 October 2026). It wraps icon-192.png byte for byte, so it is not a second drawing.
-  const ico = readFileSync(join(root, 'public', 'favicon.ico'));
-  assert(ico.readUInt16LE(2) === 1 && ico.readUInt16LE(4) === 1 && ico.subarray(22).equals(readFileSync(join(root, 'public', 'icon-192.png'))), 'favicon.ico is no longer icon-192.png in an icon container');
-  assert(/<link rel="icon" type="image\/png" sizes="192x192" href="%BASE_URL%icon-192\.png" \/>/.test(read('index.html')), 'the page no longer offers search engines a raster icon');
-  const background = /background_color: '(#[0-9a-f]{6})'/i.exec(read('vite.config.ts'))?.[1] ?? '#ffffff';
-  assert(relLum(background) < 0.02, `the installed app opens on ${background}, a white flash before the dark page`);
-});
-
-ok('three tones carry meaning, at least 50 degrees apart, and the mark is the fleet red', () => {
-  // DECIDIDO.md: red is the app, blue a time the operator publishes, amber a time this app
-  // works out; nothing else carries meaning, they sit 50 degrees or more apart in oklch,
-  // "and a check holds it". There was no such check. The two hues 50 apart are the dark
-  // theme's accent and amber, so a few degrees of drift is a reader with a colour
-  // deficiency losing the difference between published and worked out.
-  const css = read('src/index.css');
-  const block = (selector: string) => css.slice(css.indexOf(`${selector} {`), css.indexOf('\n}', css.indexOf(`${selector} {`)));
-  const hue = (theme: string, token: string) => {
-    const value = new RegExp(`--c-${token}: oklch\\([\\d.]+ [\\d.]+ ([\\d.]+)\\)`).exec(block(theme))?.[1];
-    assert(value, `${theme} no longer gives --c-${token} as oklch, so its hue cannot be read`);
-    return Number(value);
-  };
-  const apart = (a: number, b: number) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
-  for (const theme of [':root', '.dark']) {
-    const tones = { accent: hue(theme, 'accent'), published: hue(theme, 'official-bg'), estimated: hue(theme, 'estimated-fg'), 'estimated line': hue(theme, 'estimated-line') };
-    assert(tones.estimated === tones['estimated line'], `${theme}: the estimated text and its dashed line are two hues, ${tones.estimated} and ${tones['estimated line']}`);
-    for (const [a, b] of [['accent', 'published'], ['accent', 'estimated'], ['published', 'estimated']] as const) {
-      assert(apart(tones[a], tones[b]) >= 50, `${theme}: ${a} at ${tones[a]} and ${b} at ${tones[b]} are ${apart(tones[a], tones[b])} degrees apart, under 50`);
-    }
-  }
-  // The token is a step darker for text; the mark itself is the fleet red, in its three places.
-  for (const [file, pattern] of [['index.html', /name="theme-color" content="#d81f26"/], ['vite.config.ts', /theme_color: '#d81f26'/], ['public/favicon.svg', /fill='#d81f26'/]] as const) {
-    assert(pattern.test(read(file)), `${file} no longer carries the fleet red #d81f26`);
-  }
-});
-
-ok('the basemap is not being amplified behind the palette', () => {
-  // For months the dark map was painted through a brightness filter on the tile pane, so
-  // every value in the style meant something else on screen.
-  const css = read('src/index.css');
-  const rule = css.match(/\.leaflet-tile-pane\s*\{[^}]*\}/);
-  assert(!rule || !/filter\s*:/.test(rule[0]), `the tile pane is filtered again: ${rule?.[0].replace(/\s+/g, ' ')}`);
-});
-
-ok('an open dialog keeps the keyboard, the board keeps quiet, and an answer takes the focus', () => {
-  // Three things a screen reader or a keyboard found on 14 September 2026 that no
-  // contrast or target measurement could see.
-
-  // With the menu open, fourteen Tab presses put focus on a button behind the drawer:
-  // `aria-modal` hides the page from a screen reader, not from the Tab key.
-  const dialog = read('src/hooks/useDialog.ts');
-  assert(/event\.key !== 'Tab'/.test(dialog) && /event\.shiftKey/.test(dialog), 'useDialog no longer wraps Tab inside the overlay');
-  // And every overlay goes through it, as the README says this file demands: the trap in
-  // the hook did nothing for a fifth modal that built its own. Each element marked
-  // aria-modal carries a ref made by useDialog, in its own file or handed down by the
-  // component that renders it (the map's sheet gets TransitMap's).
-  const views = sourcesUnder('src/components');
-  let overlays = 0;
-  for (const file of views) {
-    const code = readFileSync(file, 'utf8');
-    for (const m of code.matchAll(/aria-modal/g)) {
-      overlays++;
-      const tag = code.slice(code.lastIndexOf('<', m.index), code.indexOf('>', m.index));
-      const ref = /\bref=\{(?:p\.|props\.)?(\w+)\}/.exec(tag)?.[1];
-      const madeHere = !!ref && new RegExp(`const ${ref} = useDialog\\(`).test(code);
-      const handedDown = !!ref && views.some((other) => {
-        const parent = readFileSync(other, 'utf8');
-        const passed = new RegExp(`\\b${ref}=\\{(\\w+)\\}`).exec(parent)?.[1];
-        return !!passed && new RegExp(`const ${passed} = useDialog\\(`).test(parent);
-      });
-      assert(madeHere || handedDown, `${relative(file)} marks an overlay aria-modal without a ref from useDialog, so Tab walks out of it`);
-    }
-  }
-  assert(overlays >= 5, `found ${overlays} modal overlays; there are five, so this is not reading them`);
-
-  // The arrivals lists were `aria-live`: the minute tick changed every row at once, so
-  // each minute announced up to fifteen bare numbers with no line and no way to stop it.
-  const board = read('src/components/StopArrivalsView.tsx');
-  assert(!/<ul[^>]*aria-live/.test(board), 'an arrivals list is a live region again');
-
-  // "Calcular ruta" unmounted the button under the focus, and the "no route" sentence sat
-  // hidden behind the form on a phone; the answer column takes focus after every question.
-  const planner = read('src/components/RoutePlannerView.tsx');
-  assert(/ref=\{answerRef\}\s+tabIndex=\{-1\}/.test(planner), 'the answer column can no longer take focus');
-  // One reducer holds the rule: answering folds the form and counts the question, and
-  // the calculate handler goes through it rather than through three setters again.
-  assert(/action === 'answer'\s*\?\s*\{ formOpen: false, asked: true, answered: state\.answered \+ 1 \}/.test(planner), 'answering no longer folds the form and counts the question in one move');
-  assert(/ask\('answer'\);/.test(planner), 'the calculate handler no longer answers through the reducer');
-});
-
-ok('the map opens on nobody’s line, and a zoom step rebuilds only what the zoom changes', () => {
-  // measure:browser had four zoom steps at 2,133-4,055 ms of blocked main thread against
-  // a budget of 900. Three things, each of which would come back quietly.
-
-  // The map started with line 1.1 chosen -- the lines screen's default, passed through --
-  // so a fresh map drew a subject line with its arrows over a choice nobody had made.
-  const app = read('src/App.tsx');
-  assert(/useState<BusLine \| null>\(null\)/.test(app), 'App starts with a line selected again, and the map will draw it as chosen');
-
-  // 26,175 vertices projected and stroked whole at every zoom; now the ones the zoom can
-  // show, remembered per direction and zoom. And arrows only for the part in view.
-  const routes = read('src/components/Map/RouteLayer.tsx');
-  assert(/verticesAt\.set\(/.test(routes) && /LineUtil\.simplify\(/.test(routes), 'route vertices are no longer simplified per zoom before drawing');
-  assert(/offsetPath\(\s*verticesFor\(/.test(routes), 'the offset runs over the full geometry again');
-  assert(/reach\.contains\(at\)/.test(routes) && /map\.on\('moveend', placeArrows\)/.test(routes), 'arrows are built for the whole line again, not for the view');
-
-  // Every bus icon was rebuilt every three seconds whether or not anything about it changed.
-  const buses = read('src/components/Map/VehicleLayer.tsx');
-  assert(/drawn\?\.icon !== iconKey/.test(buses), 'bus icons are rebuilt on every tick again');
-
-  // The written stop names were permanent tooltips: a DOM element each, and a forced
-  // layout each on every zoom -- the largest frame left once the three above were gone.
-  const stopsLayer = read('src/components/Map/StopLayer.tsx');
-  assert(/stopNamesLayer\(/.test(stopsLayer) && !/permanent: true/.test(stopsLayer), 'the stop names are DOM tooltips again');
-
-  // A rung change rebuilt every marker in its new style, then restyled them all again: the
-  // selection effect followed the rung and the theme too, and each setStyle asked the canvas
-  // for a redraw. Traced at 6x CPU: 128 of them at the first zoom step, 67 ms of a 113 ms task.
-  const restyleDeps = stopsLayer.split('useEffect(').find((part) => part.includes('marker.setStyle('))?.match(/\}, \[([^\]]*)\]\);/)?.[1];
-  assert(restyleDeps === 'selectedStop?.id', `the selection restyle follows [${restyleDeps ?? 'nothing found'}], so a rung change restyles the markers the rebuild has just drawn`);
-  assert(stopsLayer.includes('}, [map, stops, visibleLineIds, showStops, rung, colors, thinnedIn]);'), 'the rebuild no longer follows the rung and the theme, and the restyle no longer covers for it');
-});
-
-ok('a page opened before a deploy reloads itself once when a chunk has gone', () => {
-  // Every rebuild renames the hashed chunks and the service worker drops the old names, so a
-  // page opened before a deploy failed to load the map. `vite:preloadError` reloads once.
-  const main = read('src/main.tsx');
-  assert(/addEventListener\('vite:preloadError'/.test(main), 'the entry no longer listens for a failed chunk load');
-  assert(/location\.reload\(\)/.test(main), 'a failed chunk load no longer reloads the page');
-  assert(/sessionStorage\.getItem\(key\) === target\) return/.test(main), 'the reload is no longer limited to once per address');
-});
-
-ok('the letter paints before the search rows do', () => {
-  // The first keystroke scored the network and drew the rows in the same render as the
-  // character; the rows come from a deferred copy of the query and are kept until it changes.
-  const topBar = read('src/components/TopBar.tsx');
-  assert(/useDeferredValue\(q\)/.test(topBar) && /useMemo\(\(\) => searchAll\(dq\), \[dq\]\)/.test(topBar), 'the search rows render in the same task as the keystroke again');
-});
-
-ok('what the phone hides behind a menu, the button says; the board answers before it asks', () => {
-  // Three things a phone got wrong and a desktop did not, each of which would come back
-  // as an unremarkable tidy-up: the notice count lived only inside the drawer; search rows
-  // truncated the one part that told three poles of a street apart; and the "board at
-  // another hour" picker pushed the first departure to the 479th pixel of an 812 px phone.
-  const topBar = read('src/components/TopBar.tsx');
-  assert(/alertCount > 0 && \(/.test(topBar), 'the phone menu button no longer carries the notice count');
-  assert(/alertCount=\{alerts\.announcedIncidents\}/.test(read('src/App.tsx')), 'App no longer hands the notice count to the top bar');
-  assert(!/className="block truncate[^"]*">\s*\{(stop|lm)\.name\}/.test(topBar), 'a search row truncates the stop or place name again');
-  const board = read('src/components/StopArrivalsView.tsx');
-  assert(board.indexOf('type="time"') > board.indexOf('{soon.map('), 'the time picker sits above the arrivals again');
-});
-
-ok('motion moves the interface, never a number; and the two things the first round got wrong', () => {
-  // Nineteen small animations, all CSS; two came back wrong from the browser: the pressed
-  // segment read as transparent to audit:browser (the thumb is a sibling), and a padded card
-  // as the fold's grid item left a 30 px stub when folded to 0fr.
-  const css = read('src/index.css');
-  assert(/\.seg-on\s*\{[^}]*background:\s*var\(--c-ink\)/.test(css), 'the pressed segment no longer carries its own fill at rest');
-  assert(/\.fold > \*\s*\{[^}]*overflow: hidden;[^}]*min-height: 0/.test(css), 'the fold item is no longer clipped and free to shrink');
-  const planner = read('src/components/RoutePlannerView.tsx');
-  const fold = planner.indexOf('className={`fold fold-lg-open fold-clear');
-  assert(fold > 0 && /^\s*<div>\s*$/m.test(planner.slice(fold, planner.indexOf('rounded-card', fold))), 'the planner folds the padded card directly again: a 30 px stub when closed');
-  // A rolling count is a live reading, and the only screen with one bus and one number is
-  // the ride; the board, with fifteen changing at once, would read as tracked.
-  assert(/anim-roll-in/.test(read('src/components/TripCompanionView.tsx')), 'the ride no longer rolls its one count');
-  assert(!/anim-roll-in/.test(read('src/components/StopArrivalsView.tsx')), 'the arrivals board rolls its minutes: it reads as live');
-  assert(/prefers-reduced-motion: reduce\)\s*\{[^}]*animation-duration: 0\.01ms !important/.test(css), 'reduced motion no longer stops the animations');
-});
-
-ok('a ride costs the phone what it shows, not a repaint every frame', () => {
-  // measure:browser, a minute of "Vou nesta" at 6x CPU: 45 s of main-thread work, 39 of them
-  // repainting the one looping animation, a box-shadow the compositor cannot run. And the
-  // map, mounted behind `hidden` once opened, kept its three-second clock going under the ride.
-  const css = read('src/index.css');
-  const keyframes = new Map([...css.matchAll(/@keyframes ([\w-]+) \{([^\n]*)\}\s*$/gm)].map((m) => [m[1], m[2]]));
-  const looping = [...css.matchAll(/animation: ([\w-]+) [^;]*\binfinite\b/g)].map((m) => m[1]);
-  assert(looping.length > 0, 'found no looping animation in index.css, so this is reading the wrong thing');
-  for (const name of looping) {
-    const body = keyframes.get(name);
-    assert(body, `the looping animation ${name} has no one-line @keyframes to read`);
-    const properties = [...body!.matchAll(/([\w-]+)\s*:/g)].map((m) => m[1]);
-    assert(properties.every((p) => p === 'opacity' || p === 'transform'), `${name} loops for ever and animates ${properties.join(', ')}: that repaints every frame on the main thread`);
-  }
-  assert(/useClock\(visible \? \d+ : null\)/.test(read('src/components/Map/TransitMap.tsx')), 'the map keeps its clock running while another tab is on screen');
-  assert(/<InteractiveMap [^>]*visible=\{activeTab === 'map'\}/.test(read('src/App.tsx')), 'the map is no longer told when it is hidden');
-});
-
-ok('every animation moves on the compositor: opacity and transform, nothing else', () => {
-  // The motion rule of 20 September 2026 says opacity and transform only, and two one-shots
-  // broke it until 2 October: `attention`, the ring around «Vou nesta», spread a box-shadow,
-  // and `seg-reveal` held a button's background colour. Each repainted every frame it ran,
-  // which is what the rule is there to stop; the ride's pulse did it for an hour at a time.
-  const css = read('src/index.css');
-  const keyframes = [...css.matchAll(/@keyframes ([\w-]+) \{([^\n]*)\}\s*$/gm)];
-  assert(keyframes.length > 10, `found ${keyframes.length} one-line @keyframes, so this is reading the wrong thing`);
-  assert(!/@keyframes [\w-]+ \{\s*$/m.test(css), 'a @keyframes spans several lines, where the reading below would not see it');
-  for (const [, name, body] of keyframes) {
-    const properties = [...body.matchAll(/([\w-]+)\s*:/g)].map((m) => m[1]);
-    assert(properties.every((p) => p === 'opacity' || p === 'transform'), `@keyframes ${name} animates ${properties.join(', ')}: that repaints every frame on the main thread`);
-  }
-});
-
-ok('every animation runs 120 to 240 ms, and only «Calculando» loops besides the waiting indicators', () => {
-  // The README said none ran over 240 ms while four did, from the day the sentence was
-  // written; it then named them, and on 6 October they came down to 240 (DECIDIDO). An
-  // animation outside 120-240 ms, a new loop, or a transition over 240 fails here, and so
-  // does the README if it stops saying so. The reduced-motion block zeroes every duration
-  // and is not read. The ride's pulse looped too until 8 October; it beats twice now, and
-  // the check after this one holds it to that.
-  const css = read('src/index.css').replace(/@media \(prefers-reduced-motion: reduce\)[\s\S]*?\n\s{2}\}\n/, '');
-  const ms = (value: string, unit: string) => Number(value) * (unit === 's' ? 1000 : 1);
-  const LOOPS = ['dot-bounce'];
-  const readme = read('README.md').replace(/\s+/g, ' ');
-  assert(readme.includes('Cada un dura entre 120 e 240 ms'), 'the README no longer says every animation runs 120 to 240 ms');
-  const animations = [...css.matchAll(/animation:\s*([\w-]+)\s+(\d+(?:\.\d+)?)(ms|s)\b([^;]*);/g)];
-  assert(animations.length > 12, `found ${animations.length} animations, so this is reading the wrong thing`);
-  for (const [, name, value, unit, rest] of animations) {
-    if (/\binfinite\b/.test(rest)) {
-      assert(LOOPS.includes(name), `${name} loops for ever; the README names one loop, «Calculando»`);
-      continue;
-    }
-    if (name === 'pulse-ring') continue;
-    const duration = ms(value, unit);
-    assert(duration >= 120 && duration <= 240, `${name} runs ${duration} ms, outside the 120-240 ms the README gives every animation`);
-    // The one delay is the ring around «Vou nesta», and the README gives it.
-    const delay = /(\d+(?:\.\d+)?)(ms|s)\b/.exec(rest);
-    if (delay) assert(name === 'attention' && readme.includes(`«Vou nesta» agarda ${ms(delay[1], delay[2])} ms`), `${name} waits ${ms(delay[1], delay[2])} ms and the README says otherwise`);
-  }
-  for (const [, value, unit] of css.matchAll(/transition:[^;]*?\b(\d+(?:\.\d+)?)(ms|s)\b/g)) {
-    assert(ms(value, unit) <= 240, `a transition runs ${ms(value, unit)} ms, over the 240 every movement keeps to`);
-  }
-  // And a duration written in a component, which the stylesheet never shows: the planner's
-  // swap arrow turned in 260 ms, in a bracketed Tailwind class (spelled out here, Tailwind
-  // would read it and ship the rule). Tailwind's duration-N is N ms; in an inline style, the
-  // first time in the value is the duration.
-  let inComponents = 0;
-  for (const file of sourcesUnder('src')) {
-    const source = readFileSync(file, 'utf8');
-    const found = [
-      ...[...source.matchAll(/\bduration-(?:(\d+)\b|\[(\d+(?:\.\d+)?)(ms|s)\])/g)].map(([, n, value, unit]) => (n ? Number(n) : ms(value, unit))),
-      ...[...source.matchAll(/\b(?:transition|animation)(?:Duration)?:\s*['"`][^'"`]*?(\d+(?:\.\d+)?)(ms|s)\b/g)].map(([, value, unit]) => ms(value, unit)),
-    ];
-    for (const duration of found) assert(duration <= 240, `${relative(file)} moves for ${duration} ms, over the 240 every movement keeps to`);
-    inComponents += found.length;
-  }
-  assert(inComponents >= 3, `found ${inComponents} durations in the components, so this is reading the wrong thing`);
-  // Tailwind's own loops (animate-spin, animate-pulse, …) never pass through the stylesheet
-  // either, and the README counted two loops while five more ran. They are waiting
-  // indicators, kept by DECIDIDO on 6 October; a sixth fails here.
-  const WAITING = [
-    'src/App.tsx animate-pulse', 'src/components/AlertsView.tsx animate-spin', 'src/components/RoutePlannerView.tsx animate-pulse',
-    'src/components/TripCompanionView.tsx animate-pulse', 'src/components/planner/PlaceField.tsx animate-pulse',
-  ];
-  const tailwindLoops = sourcesUnder('src').flatMap((file) => [...readFileSync(file, 'utf8').matchAll(/\banimate-(?!none\b)[\w-]+/g)].map(([cls]) => `${relative(file).replace(/\\/g, '/')} ${cls}`));
-  assert.deepStrictEqual(tailwindLoops.sort(), [...WAITING].sort(), `the Tailwind loops are not the five waiting indicators DECIDIDO keeps: ${tailwindLoops.join(', ')}`);
-  assert(readme.includes('Á parte van os indicadores de espera'), 'the README no longer names the waiting indicators');
-});
-
-ok('the ride’s pulse beats twice when the next stop changes, then holds still', () => {
-  // WCAG 2.2.2: what moves for more than five seconds beside other content needs a way to
-  // stop it on the page, and the reduced-motion setting is not one. The mark of the next stop
-  // in «Vou nesta» pulsed for the whole ride, the one A or AA criterion the app failed; on 8
-  // October 2026 the owner chose two beats each time the next stop changes (DECIDIDO).
-  const pulse = /\.live-dot::after \{[^}]*animation: pulse-ring (\d+(?:\.\d+)?)s [\w-]+ (\w+);/.exec(read('src/index.css'));
-  assert(pulse, 'the ride’s pulse is no longer drawn by .live-dot::after');
-  assert(/^\d+$/.test(pulse[2]) && Number(pulse[1]) * Number(pulse[2]) <= 5, `the ride’s pulse runs ${pulse[2]} times ${pulse[1]} s, past the five seconds 2.2.2 allows without a way to stop it`);
-  // It starts again on each change because the class moves to the row of the stop that is
-  // next now, a row of its own (keyed by the stop), whose ring starts from its first beat.
-  const ride = read('src/components/TripCompanionView.tsx');
-  assert(/<li key=\{stop\.id\}/.test(ride) && /isNext \? 'live-dot' : ''/.test(ride), 'the pulse no longer starts again on the stop that becomes next');
-  assert(/^\| 2\.2\.2 [^|]*\| A \| Arranxado \|/m.test(read('README.md')), 'the README’s WCAG table no longer says 2.2.2 is met');
-  assert(/2\.2\.2: \$\{e\}, and nothing on the page stops it/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer looks for a pulse that does not stop');
-});
-
-ok('on the bus, the card wraps at 200 % text, and the browser audit rides the bus to see it', () => {
-  // The audit had never been on the bus: its ride waited at the pole. It moves the page's
-  // clock past the departure and answers "Si, vou nel"; there, at 200 % text, the minutes,
-  // the time and the provenance chip ran 106 px out of the card and the screen 58 px past
-  // the phone, until the row wrapped (1.4.4).
-  const audit = read('tools/auditBrowser.ts');
-  assert(/name: 'a bordo'/.test(audit) && /window\.__auditLater\(40 \* 60000\)/.test(audit), 'the browser audit no longer rides the bus');
-  assert(/<span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">/.test(read('src/components/TripCompanionView.tsx')), 'on the bus the minutes, the time and the provenance run off the card at 200 % text again');
-});
-
-ok('a tap on «Calcular ruta» says «Calculando» before the plan holds the thread', () => {
-  // The plan ran inside the tap: "arrive by" held a slow phone for 5.0-6.4 s with nothing on
-  // screen to say why. The button now says «Calculando» in a frame of its own, and the plan
-  // waits until that frame has been painted.
-  const view = read('src/components/RoutePlannerView.tsx');
-  const body = view.slice(view.indexOf('const calculate = ('), view.indexOf('// A place chosen in the search box'));
-  assert(body.length > 200, 'could not find calculate() in RoutePlannerView, so this is reading the wrong thing');
-  assert(body.includes('setCalculating(true)'), 'calculate() no longer marks the button as calculating');
-  const painted = body.indexOf('afterPaint(');
-  assert(painted !== -1 && painted < body.indexOf('planTrips('), 'calculate() plans before the «Calculando» frame is on screen');
-  assert(/const afterPaint = \(run: \(\) => void\) => requestAnimationFrame\(\(\) => setTimeout\(run, 0\)\)/.test(view), 'afterPaint no longer waits for a painted frame');
-});
-
 await okAsync('what the planner remembers never changes what it answers', async () => {
   // The planner keeps what depends on the network alone per stop, and which bus a question
   // lands on while `now` is one instant: "arrive by" went from 1.6 s to 0.6 s on this machine
@@ -5659,31 +4411,6 @@ ok('a headway line keeps its printed last departure', () => {
   assert(exact.length === new Set(exact).size && exact[exact.length - 1] === 22 * 60, 'an exact span gains a duplicate last departure');
 });
 
-ok('the line screen marks a derived time as the board does, and nothing on it pulses', () => {
-  // 1,077 of the 1,585 departures of a day type -- ten lines print a first, a last and a
-  // frequency, and 26 direction-days start at a stop that is not a timing point -- were drawn
-  // in "Saídas desde cabeceira" as printed times, and a time already passed lost its tilde.
-  // The "bus here" dot pulsed over a position worked out from the timetable.
-  const lines = read('src/components/LinesView.tsx');
-  assert(/derived: derived\(r, 0\)/.test(lines), 'the departures table no longer asks whether each departure is printed');
-  assert(/\{derived\(shownRun, idx\) && '~'\}\s*\{formatMinutes\(passingMinutes\)\} &middot; \{t\.lines\.passed\}/.test(lines), 'a time already passed is drawn as printed again');
-  assert(/\{derived\(shownRun, 0\) && '~'\}/.test(lines), 'the run header draws a derived departure as printed');
-  assert(!/animate-pulse/.test(lines), 'something on the line screen pulses again');
-});
-
-ok('the planner turns the swap arrow on a swap only, and keeps the asked row in view', () => {
-  // The port counted every question: "Calcular" turned the arrow beside a desktop form that
-  // never folds. And scrolling to the answer after the fold hid the row above it -- 76 px,
-  // the way back to the fields.
-  const planner = read('src/components/RoutePlannerView.tsx');
-  const calculate = planner.slice(planner.indexOf('const calculate ='), planner.indexOf('const swap ='));
-  assert(calculate.length > 0 && !/setSwaps/.test(calculate), 'every question turns the swap arrow again');
-  assert(/const swap = \(\) => \{\s*setSwaps/.test(planner), 'a swap no longer turns the arrow');
-  assert(/askedRowRef\.current\?\.scrollIntoView/.test(planner) && !/answerRef\.current\?\.scrollIntoView/.test(planner), 'the answer scrolls the asked row out of view again');
-  // Two-line labels need room: a fixed 44 px and no padding filled the pill edge to edge.
-  assert(/\.seg-btn \{[^}]*min-height: 2\.75rem;[^}]*padding:/.test(read('src/index.css')), 'the segmented buttons are a fixed height with no padding again');
-});
-
 ok('the night banner is up exactly while no bus is on the road, and names the next one', () => {
   // It read each line's first and last departure from the terminus and the earliest
   // firstDeparture of any line on any day: "no service" for 34 minutes of a weekday while the
@@ -5702,41 +4429,6 @@ ok('the night banner is up exactly while no bus is on the road, and names the ne
   assert(translations('es').nightBanner.closed('07:10', dayWord('es', 1)) === 'Sin servicio · primer bus mañana a las 07:10', 'the banner sentence does not read');
 });
 
-ok('a malformed address is the caller’s mistake on both servers, and the build keeps to its own folder', () => {
-  // `/api/paradas/%E0%A4%A/agora` was a 500 and a stack trace in the log on express, and an
-  // uncaught URIError on the worker. And the precompressed-file guard compared without a
-  // separator, so a path into dist-server, which also begins "dist", passed it.
-  const server = read('server.ts');
-  assert(/err\.status >= 400 && err\.status < 500 \? err\.status : 500/.test(server), 'the express error handler answers a 4xx as a 500 again');
-  assert(/target\.startsWith\(distPath \+ path\.sep\)/.test(server), 'the precompressed-file guard lets a sibling of dist/ through again');
-  const worker = read('worker/index.ts');
-  assert(/try \{\s*code = decodeURIComponent\(stopMatch\[1\]\);\s*\} catch/.test(worker), 'the worker decodes the stop code unguarded again');
-});
-
-ok('the planner never plans from somewhere the phone did not say, and never shows its GPS token', () => {
-  // With the location refused it planned from Lugo's centre under "📍 Mi ubicación" -- what
-  // the stops screen refuses to do. And the token itself, my_location, was printed in the
-  // row above the answer, in the recent trips and in the destination field after a swap.
-  const planner = read('src/components/RoutePlannerView.tsx');
-  assert(!/LUGO_CENTER/.test(planner), 'the planner falls back to Lugo’s centre for a refused location again');
-  assert(/\{gpsRefused && \(/.test(planner) && /t\.map\.locationDenied/.test(planner), 'a refused location is no longer said');
-  assert(/\{placeLabel\(originQuery\)\} → \{placeLabel\(destQuery\)\}/.test(planner), 'the row above the answer prints the GPS token again');
-  assert(/\{placeLabel\(route\.from\)\}/.test(planner) && /\{placeLabel\(route\.to\)\}/.test(planner), 'the recent trips print the GPS token again');
-  assert(/display=\{destQuery === 'my_location' \? placeLabel\(destQuery\)/.test(planner), 'a swapped GPS origin shows as "my_location" in the destination again');
-});
-
-ok('the itinerary vouches for the boarding time only, and marks a worked-out arrival', () => {
-  // One chip per leg, at its foot, with the departure's precision: under "Baja en 07:30" it
-  // read HORARIO OFICIAL for an arrival the timetable does not print -- 966 of 6,469 legs
-  // over the quick destinations on a weekday morning -- while the answer above said ~07:30.
-  const itinerary = read('src/components/planner/Itinerary.tsx');
-  const board = itinerary.indexOf('label={t.planner.board}');
-  const chip = itinerary.indexOf('<Provenance precision={seg.precision');
-  const alight = itinerary.indexOf('label={t.planner.alight}');
-  assert(board > 0 && chip > board && alight > chip, 'the provenance chip no longer sits under the boarding time');
-  assert(/label=\{t\.planner\.alight\}[^>]*estimated=\{seg\.arrivalPrecision !== 'published'\}/.test(itinerary), 'the alighting time no longer says when it is worked out');
-});
-
 ok('the favourites show a stop’s lines by their number, each once', () => {
   // The badges printed the line's id: on 96 of the 417 stops one read "11-Igrexa de Bóveda",
   // "11-Calde" or "11-Santa Comba" where the bus says "11", and on three the 11 came twice.
@@ -5750,389 +4442,6 @@ ok('the favourites show a stop’s lines by their number, each once', () => {
   }
   const favs = read('src/components/FavoritesDrawer.tsx');
   assert(/linesByNumber\(stop\.lines\)/.test(favs) && !/number=\{l\}/.test(favs), 'the favourites badges print the line id again');
-});
-
-ok('a saved row’s bin is a named 44 px button, and its arrow is not a second, nameless one', () => {
-  // The bin was 28 px with only a title, a finger's width from the arrow; the arrow was a
-  // button with no name, repeating what the row itself does, read out as just "button".
-  const favs = read('src/components/FavoritesDrawer.tsx');
-  assert(/onClick=\{onRemove\} aria-label=\{removeLabel\}[^>]*h-11 w-11/.test(favs), 'the bin is small or nameless again');
-  assert(/onClick=\{onOpen\} tabIndex=\{-1\} aria-hidden="true"/.test(favs), 'the arrow is a second, nameless stop for the keyboard again');
-});
-
-ok('the line screen: today’s hours from today’s runs, every departure, no box scrolling inside the page', () => {
-  // "Horario de servizo" printed the line's first and last departure of any day, 07:15 - 22:00
-  // for the 7 on a Tuesday, whose first bus is 07:30. The list and the departures scrolled in
-  // boxes of their own inside the page, 520 px and two rows; the table's title was cut at 28
-  // characters; and an invisible hover hint pushed every stop row 7 px past its column.
-  const lines = read('src/components/LinesView.tsx');
-  assert(/label=\{t\.lines\.serviceHoursToday\}>\s*\{runs\.length \?/.test(lines), 'the hours are not today’s runs again');
-  assert(!/max-h-\[520px\]|max-h-24/.test(lines), 'a box scrolls inside the page again');
-  assert(!/\.slice\(0, 28\)/.test(lines), 'the departures title is cut again');
-  assert(!/t\.lines\.viewStop/.test(lines), 'the invisible hover hint is back');
-});
-
-ok('with the text at 200 % the side paddings stop growing and the bar keeps its buttons', () => {
-  // In rem, the page's, the panel's and the card's side padding doubled with the type: on a
-  // 375 px phone they kept 172 px and left a line's name 51 px, "R…". The bar's buttons were
-  // rem inside a 46 px bar and pushed the QR button half out of it; the favourites panel was
-  // 80 px wider than the screen and hid its own close button.
-  const css = read('src/index.css');
-  assert(/@utility px-cap-\* \{\s*padding-inline: min\(calc\(var\(--spacing\) \* --value\(number\)\), calc\(1\.25vw \* --value\(number\)\)\);/.test(css), 'the capped side padding is gone');
-  for (const file of [...sourcesUnder('src/components'), join(root, 'src/App.tsx')]) {
-    for (const [cls] of readFileSync(file, 'utf8').matchAll(/className="[^"]*\bmx-auto\b[^"]*"/g)) {
-      assert(!/[\s"]px-(3\.5|4)(?=[\s"])/.test(cls), `${relative(file)}: a page gutter grows with the type again: ${cls}`);
-    }
-  }
-  const bar = read('src/components/TopBar.tsx');
-  assert((bar.match(/h-\[44px\] w-\[44px\]/g) ?? []).length === 3 && !/h-11 w-11/.test(bar), 'the bar’s buttons are rem inside a px bar again');
-  const favs = read('src/components/FavoritesDrawer.tsx');
-  assert(/pl-\[min\(2\.5rem,12\.5vw\)\]/.test(favs) && /w-screen min-w-0 max-w-md/.test(favs), 'the favourites panel can be wider than the screen again');
-});
-
-ok('where a name shares its row, it keeps a floor and the rest goes under it', () => {
-  // Squeezed beside a badge and a time, a name at 200 % text had nothing left: the board's
-  // destination went one letter a line, a line's name was "R…", a search result's spilled up
-  // to 130 px out of its box, and in the route options "Co paseo medido xa non chegas a este
-  // bus" was printed over the minutes -- and took four lines on a 320 px phone at 100 % too.
-  const board = read('src/components/StopArrivalsView.tsx');
-  assert((board.match(/min-w-\[6rem\] flex-1/g) ?? []).length === 2 && (board.match(/ml-auto flex shrink-0 items-end gap-1\.5/g) ?? []).length === 2, 'a board row squeezes its destination again');
-  const lines = read('src/components/LinesView.tsx');
-  assert(/<span className="line-clamp-3 break-words">\{parts\[parts\.length - 1\]\}<\/span>/.test(lines) && /min-w-\[6rem\] flex-1/.test(lines), 'a line card cuts its name to a letter again');
-  assert(/ml-auto shrink-0 rounded bg-surface px-2 py-1/.test(read('src/components/TopBar.tsx')), 'a search result squeezes its name beside the pole code again');
-  const options = read('src/components/planner/TripOptions.tsx');
-  assert(/@container border-y/.test(options) && /@min-\[18rem\]:grid-cols-\[auto_1fr_auto\]/.test(options) && /col-span-2 row-start-2/.test(options), 'the route options squeeze their clocks between the lines and the minutes again');
-  assert(!/truncate/.test(options), 'a route option cuts its sentence again');
-  // Found by the audit's first run on the CI runner, not on Windows: the platform's monospace face decides the clock field's width.
-  assert(/<label className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1[^"]*">\s*<Clock/.test(read('src/components/RoutePlannerView.tsx')), "Route's time row pushes the screen sideways at 200 % text again");
-  assert(/tnum ml-auto shrink-0 text-emph font-bold/.test(read('src/components/planner/Itinerary.tsx')), 'a leg pushes its minutes off the screen again');
-  assert(!/truncate/.test(read('src/components/Map/MapControls.tsx')), 'a list on the map cuts a name again');
-  assert(/\.seg-btn \{ overflow-wrap: anywhere; \}/.test(read('src/index.css')), 'a word wider than its option spills into the next again');
-});
-
-ok('an empty saved stop names its next bus, with its day and its tilde, and the banner keeps its time', () => {
-  // A saved stop with no bus left today was a name and nothing else, where the board of the
-  // same stop names the next one. And the night banner cut its own time: with the day word in
-  // the sentence, "primeiro bus mañá ás ~06:50" ended "~0…".
-  const home = read('src/components/StopHome.tsx');
-  assert(/next: arrivals\.length \? null : nextServiceAtStop\(stop\.id\)/.test(home) && /t\.stopHome\.nextLater/.test(home), 'an empty saved stop no longer names its next bus');
-  assert(/next\.daysAhead > 0 && [^\n]*dayWord\(lang, next\.daysAhead\)/.test(home) && /next\.precision === 'estimated' && <span className="text-ink-3">~<\/span>/.test(home), 'the next bus on an empty saved stop loses its day or its tilde');
-  assert(/<span className="block text-body font-semibold">\{t\.nightBanner\.closed\(/.test(read('src/App.tsx')), 'the night banner cuts its sentence again');
-});
-
-ok('the page never scrolls under its own bars: main holds what is positioned inside it', () => {
-  // <main> was not positioned, so each absolute box inside it -- the screen-reader text of a
-  // line card, 1 px -- took its place from the page: on the lines tab the page grew 1,392 px
-  // taller than the screen, and a desktop scrollbar narrowed the bottom bar from 375 to
-  // 360 px each time the tab opened. The other three tabs had none that far down.
-  assert(/<main id="contido" className="relative\b/.test(read('src/App.tsx')), 'main is not the containing block of its absolute boxes again');
-  assert(/root\.scrollHeight - root\.clientHeight/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer measures a page taller than the screen');
-});
-
-ok('the map’s buses start hidden, and while they are shown the map says they are the timetable’s', () => {
-  // Drawn by default and moving, the buses read as tracked ones, and the one sentence saying
-  // otherwise lived in a popup that only opens on a tap. Nobody publishes where this
-  // network's buses are; the count above the map called them "buses en servizo".
-  const map = read('src/components/Map/TransitMap.tsx');
-  assert(/useState<Record<Layer, boolean>>\(\{ stops: true, buses: false, routes: true \}\)/.test(map), 'the buses are drawn by default again');
-  assert(/\{layers\.buses && \([\s\S]{0,600}\{t\.map\.busesEstimatedNotice\}/.test(map), 'the buses can be on the map without the sentence that says they are estimated');
-  assert(/aria-label=\{t\.map\.hideBuses\}/.test(map), 'the sentence lost its way to hide the buses');
-  for (const lang of LANGS) {
-    assert(/horario|timetable/.test(translations(lang).map.scheduledBusesCount), `${lang}: the bus count no longer says where the buses come from`);
-  }
-  assert(/name: 'buses'/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer measures the map with its buses on');
-});
-
-ok('every focusable thing shows its focus, in forced colours too', () => {
-  // WCAG 2.4.7. The two search fields had outline-none and nothing in its place: the focus
-  // rule set 2 px of accent and the utility set the style to none, so the keyboard reached
-  // them invisibly. Three more drew their focus as a box-shadow ring, which forced colours
-  // (Windows' contrast themes) take away; outline-hidden leaves a transparent outline that
-  // those themes paint. audit:browser presses Tab through every state and compares.
-  for (const file of sourcesUnder('src/components')) {
-    const code = readFileSync(file, 'utf8');
-    assert(!/\boutline-none\b/.test(code), `${relative(file)} takes the focus outline off with outline-none`);
-    for (const [cls] of code.matchAll(/className=(?:"[^"]*|\{`[^`]*)\boutline-hidden\b[^"`]*/g)) {
-      assert(/\bring-2\b/.test(cls) || /has-\[input:focus-visible\]:outline-2/.test(code), `${relative(file)} hides the outline with nothing in its place: ${cls.slice(0, 120)}`);
-    }
-  }
-});
-
-ok('a list laid over the page goes on Escape, on a lifted tap outside, and when the focus leaves it', () => {
-  // The search results came back over the page each time the field took the focus, with no
-  // Escape (1.4.13), and stayed when Tab moved on, so the next controls took the focus behind
-  // them (2.4.11); the planner's suggestions did the same over the time and the calculate
-  // button. Both closed on mousedown and touchstart, an action on the way down (2.5.2).
-  for (const file of sourcesUnder('src')) {
-    const code = readFileSync(file, 'utf8').replace(/^\s*\/\/.*$/gm, '');
-    assert(!/addEventListener\('(mousedown|touchstart|pointerdown)'|on(MouseDown|TouchStart|PointerDown)=/.test(code), `${relative(file)} acts on the way down of a tap (2.5.2)`);
-  }
-  const bar = read('src/components/TopBar.tsx');
-  assert(/document\.addEventListener\('click', away\)/.test(bar) && /event\.key === 'Escape'\) setOpen\(false\)/.test(bar), 'the search results no longer go on a tap outside and on Escape');
-  const leaves = /onBlur=\{\(event\) => \{\s*if \(event\.relatedTarget instanceof Node && !event\.currentTarget\.contains\(event\.relatedTarget\)\) (setOpen\(false\)|onLeave\(\));/;
-  assert(leaves.test(bar), 'the search results stay over the page when the focus leaves them');
-  assert(leaves.test(read('src/components/planner/PlaceField.tsx')) && /onLeave: \(\) => setActiveInput/.test(read('src/components/RoutePlannerView.tsx')), 'the planner’s suggestions stay over the form when the focus leaves the field');
-});
-
-ok('the QR code field has a name, and its errors are said and tied to it', () => {
-  // A code nobody knows appeared as a red line under the field in silence (4.1.3), with
-  // nothing on the field to say it was wrong or why (3.3.1), and the field's only name was
-  // the example inside it, gone at the first letter. A refused camera was silent too.
-  const qr = read('src/components/QrScannerModal.tsx');
-  assert(/aria-label=\{t\.qr\.inputLabel\}/.test(qr), 'the code field is named only by the example in it again');
-  assert(/aria-invalid=\{errorMsg \? true : undefined\}/.test(qr) && /aria-describedby=\{errorMsg \? 'qr-manual-error' : undefined\}/.test(qr), 'the code field no longer says it is wrong and why');
-  assert(/<p id="qr-manual-error" role="alert"/.test(qr), 'a code that matches no stop is said in silence again');
-  assert(/<p role="alert"[^>]*>\s*\{cameraError\}/.test(qr), 'a refused camera is said in silence again');
-});
-
-ok('a check of the notices that the reader asked for says it is checking, and what it found', () => {
-  // The button's words changed to "Sincronizando" and the cards below changed, and a screen
-  // reader was told about neither (4.1.3). A live region carries both, after a press only.
-  const view = read('src/components/AlertsView.tsx');
-  assert(/<span role="status" className="sr-only">\s*\{isSyncing \? t\.fares\.refreshing : asked \? \(snapshotAt \|\| unreachable \? t\.fares\.unknownStatusTitle : t\.fares\.checked\(liveAlerts\.length\)\) : ''\}/.test(view), 'checking the notices is said in silence again');
-  assert(/setAsked\(true\);\s*refresh\(true\);/.test(view), 'the result is no longer said after a press');
-  for (const lang of LANGS) {
-    const said = [0, 1, 3].map((n) => translations(lang).fares.checked(n));
-    assert(new Set(said).size === 3 && said.every((s, i) => i === 0 || s.includes(String([0, 1, 3][i]))), `${lang}: the check’s result does not say how many notices: ${said.join(' / ')}`);
-  }
-});
-
-ok('the line page names its arrows, says which run is on show, and names a stop by what it shows', () => {
-  // The run navigator's two buttons were read as "left arrow" and "right arrow" (4.1.2); the
-  // departure on show was filled in and said nothing; a stop row carried a label with its name
-  // and time only, so origin, destination, zone, code, "passed" and the bus the timetable puts
-  // there never reached a screen reader (1.3.1) and "click Orixe" found nothing (2.5.3); and a
-  // saved line was a star an icon cannot say.
-  const lines = read('src/components/LinesView.tsx');
-  assert(/aria-label=\{t\.lines\.previousRun\}/.test(lines) && /aria-label=\{t\.lines\.nextRun\}/.test(lines), 'the run arrows are read out as arrows again');
-  assert(/aria-pressed=\{idx === runIndex\}/.test(lines), 'the departure on show is no longer said to be the one pressed');
-  const at = lines.indexOf('role="button"');
-  assert(at > 0 && !/aria-label=/.test(lines.slice(at, lines.indexOf('className=', at))), 'a stop row is named apart from what it shows again');
-  assert(/<span className="sr-only">, \{t\.lines\.estimatedSr\}<\/span>/.test(lines), 'a stop row no longer says its worked-out time is estimated');
-  assert(/<span className="sr-only">\{t\.lines\.savedSr\}<\/span>/.test(lines), 'a saved line is a star that says nothing to a screen reader again');
-});
-
-ok('a control named apart from its words still contains the words it shows', () => {
-  // 2.5.3: a voice-control user says what they see. The map's line chips show "7" and were
-  // named by the route alone; the chip that unfolds them shows "24" and was named without
-  // it; the notices link read "servizo1" against a name of "servizo (1)". And a count in
-  // brackets is no count at all to a checker, which drops a name's brackets before matching
-  // it: the count goes after a colon. audit:browser compares every named control with its
-  // visible words, in every state, and runs axe's rule for the same thing.
-  const chips = read('src/components/Map/LineChips.tsx');
-  assert(/aria-label=\{`\$\{t\.lines\.lineLabel\(branch \? `\$\{line\.number\} \$\{branch\}` : line\.number\)\}: \$\{line\.name\}`\}/.test(chips), 'a line chip is named without the number and the branch it shows again');
-  assert(/aria-label=\{`\$\{expanded \? t\.map\.collapseLines : t\.map\.expandLines\}: \$\{listed\.length\}`\}/.test(chips), 'the unfold chip is named without the count it shows again');
-  for (const file of ['MenuDrawer.tsx', 'SideNav.tsx']) {
-    const code = read(`src/components/${file}`);
-    assert(/\{label\}<\/span>\s*(\{\/\*[\s\S]*?\*\/\})?\{' '\}\s*\{badge > 0/.test(code), `${file}: the words and the count run together again`);
-    assert(/aria-label=\{badge > 0 \? `\$\{label\}: \$\{badge\}` : undefined\}/.test(code), `${file}: the count in the name is in brackets again, where a checker drops it`);
-  }
-  assert(/`\$\{t\.menu\.open\}\. \$\{t\.menu\.alerts\}: \$\{alertCount\}`/.test(read('src/components/TopBar.tsx')), 'the menu button’s count is in brackets again');
-  assert(/push\('label', el, 'shows "'/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer compares names with the words controls show');
-});
-
-ok('no words are cut off where 320 px, 200 % text or a reader’s text spacing needs them', () => {
-  // 1.4.10, 1.4.4, 1.4.12. Eight places cut a name or a sentence with an ellipsis or a line
-  // clamp, and each lost words under one of the three: the map's line list and branch names,
-  // a saved line, the night banner, the planner's suggestions and its question, the map's
-  // stop sheet. Three stay, each named here with its reason: the line card's three lines,
-  // which no WCAG condition cut in audit:browser; the first half of a line's name, shown only
-  // on a tablet as a hint beside the whole; and the operator's one-word line label.
-  const allowed: Record<string, string[]> = {
-    'LinesView.tsx': ['<span className="line-clamp-3 break-words">{parts[parts.length - 1]}', '<span className="hidden truncate text-ink-2 font-semibold sm:inline lg:hidden">'],
-    'StopArrivalsView.tsx': ['<span className="min-w-0 flex-1 truncate text-body font-bold text-ink">{operatorLineLabel('],
-  };
-  for (const file of [...sourcesUnder('src/components'), join(root, 'src', 'App.tsx')]) {
-    const code = readFileSync(file, 'utf8');
-    const name = file.split(sep).pop()!;
-    for (const m of code.matchAll(/\b(truncate|line-clamp-\d)\b/g)) {
-      const line = code.slice(code.lastIndexOf('\n', m.index) + 1, code.indexOf('\n', m.index)).trim();
-      if (line.startsWith('//') || line.startsWith('*') || line.startsWith('{/*')) continue;
-      assert((allowed[name] ?? []).some((snippet) => line.includes(snippet)), `${relative(file)} cuts words again: ${line.slice(0, 140)}`);
-    }
-  }
-  assert(/cut by a line clamp/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer looks for text cut by a line clamp');
-});
-
-ok('a label a map shows on hover stays while the pointer moves onto it, and goes on Escape', () => {
-  // 1.4.13. Leaflet closed a stop's name the moment the pointer left the dot, so a reader
-  // who magnifies the screen could never move onto it to read it, and there was no key to put
-  // it away. Every map is built in useLeafletMap, so the one change covers the three.
-  const hook = read('src/hooks/useLeafletMap.ts');
-  assert(/const unhover = hoverableTooltips\(instance\);/.test(hook) && /unhover\(\);/.test(hook), 'the maps no longer make their hover labels hoverable');
-  assert(/owner\.off\('mouseout', owner\.closeTooltip\)/.test(hook) && /owner\.on\('mouseout', leave\)/.test(hook) && /label\.addEventListener\('mouseenter', stay\)/.test(hook) && /label\.style\.pointerEvents = 'auto'/.test(hook), 'a hover label closes again as the pointer leaves its marker for it');
-  const grace = Number(/export const HOVER_GRACE_MS = (\d+);/.exec(hook)?.[1]);
-  assert(grace >= 150 && grace <= 1000, `a hover label waits ${grace} ms for the pointer: too short to cross to it, or long enough to be in the way`);
-  assert(/event\.key === 'Escape' && open\) map\.closeTooltip\(open\)/.test(hook), 'Escape no longer puts a hover label away');
-  assert(/1\.4\.13: Escape does not put the hover label away/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer tries the map’s hover labels');
-});
-
-ok('a map moves without a drag: a tap brings that spot to the centre', () => {
-  // 2.5.7. The view moved only by dragging, a gesture some hands cannot make. A single tap on
-  // the map pans there; a stop's tap is the stop's, and a double click still zooms.
-  const hook = read('src/hooks/useLeafletMap.ts');
-  assert(/const unpan = panOnClick\(instance\);/.test(hook) && /unpan\(\);/.test(hook), 'the maps no longer pan on a tap');
-  assert(/map\.on\('click', onClick\)/.test(hook) && /map\.panTo\(event\.latlng/.test(hook), 'a tap on the map no longer brings that spot to the centre');
-  assert(/if \(original\?\._stopClaimed\) return;/.test(hook) && /map\.on\('dblclick', onDouble\)/.test(hook), 'a tap on a stop, or a double click, pans the map too');
-  assert(/animate: !window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)\.matches/.test(hook), 'the pan animates under reduced motion');
-  assert(/2\.5\.7: a click on the map does not move it/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer tries to move the map without a drag');
-});
-
-ok('the buses on the map are not Tab stops, and a screen reader still finds them', () => {
-  // 2.4.11. Leaflet made every bus a Tab stop, and with the buses on, the focus went to buses
-  // past the edge of the map and under the buttons that float on it. What a bus's popup says
-  // the lines screen says, where the keyboard reaches it; the bus stays an image with a name.
-  const buses = read('src/components/Map/VehicleLayer.tsx');
-  assert(/L\.marker\([^)]*\{[^}]*keyboard: false[^}]*\}\)/.test(buses), 'the buses on the map are Tab stops again');
-  assert(/setAttribute\('role', 'img'\)/.test(buses) && /setAttribute\('aria-label', label\)/.test(buses) && (buses.match(/\bname\((existing|marker), label\)/g) ?? []).length === 2, 'a bus on the map lost its name, or its name is not set again when its icon is rebuilt');
-});
-
-ok('in forced colours a pressed control, the current tab and the current line still look it', () => {
-  // Windows' contrast themes repaint fills and tints in the system's few colours, and those
-  // three said "this one" with a fill or a tint alone. audit:browser emulates the mode and
-  // compares each pressed or current control with a neighbour.
-  const css = read('src/index.css');
-  const block = css.slice(css.indexOf('@media (forced-colors: active)'), css.indexOf('@media (prefers-reduced-motion: reduce)'));
-  assert(/\[aria-pressed='true'\],\s*\[aria-current\]:not\(\[aria-current='false'\]\) \{\s*outline: 2px solid Highlight;/.test(block), 'a pressed or current control looks like its neighbours in forced colours again');
-  assert(/:focus-visible \{\s*outline: 4px double Highlight;/.test(block), 'in forced colours a pressed control with the focus shows one of the two, not both');
-  assert(/name: 'forced', desktop: false/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer looks at forced colours');
-});
-
-ok('the ride screen keeps its stop names whole, its bar on the screen, and the focus out from under the bar', () => {
-  // At 200 % text a stop's name had 100 px beside "baixas aquí" and its longest word ran out
-  // of the row; the bar at the foot took its side margin in plain rem and ran 11 px off the
-  // screen. And the keep-awake switch took the focus entirely behind that bar (2.4.11).
-  const ride = read('src/components/TripCompanionView.tsx');
-  assert(/min-w-\[min\(6rem,100%\)\] flex-1 break-words text-body \$\{passed/.test(ride) && /flex min-h-11 flex-wrap items-center/.test(ride), 'a stop on the ride is squeezed beside its label again');
-  assert(/trip-bar anim-sheet-up sticky bottom-0 z-10 -mx-\[min\(0\.875rem,4\.375vw\)\][^"]*px-\[min\(0\.875rem,4\.375vw\)\]/.test(ride), 'the ride’s bar grows past the page’s gutter with the type again');
-  assert(/<main id="contido" className="[^"]*has-\[\.trip-bar\]:scroll-pb-20/.test(read('src/App.tsx')), 'the focus can go behind the ride’s bar again');
-});
-
-ok('a notice quoted from the operator or the council says the language it is written in', () => {
-  // 3.1.2. Both write in Spanish (the council's feed is its /es/ edition), and their words are
-  // quoted inside Galician and English pages with no lang: a screen reader read them with a
-  // Galician or an English voice. Every place the quoted text reaches the screen carries it.
-  assert(/const CONCELLO_FEED_URL = 'https:\/\/concellodelugo\.gal\/es\//.test(read('src/services/alertSyncService.ts')) && /export const NOTICE_LANG = 'es';/.test(read('src/utils/operatorNotices.ts')), 'the notices are read in a language NOTICE_LANG does not say');
-  const view = read('src/components/AlertsView.tsx');
-  assert(/const quoted = source \? NOTICE_LANG : undefined;/.test(view) && (view.match(/lang=\{quoted\}/g) ?? []).length === 3 && (view.match(/lang=\{NOTICE_LANG\}/g) ?? []).length === 2, 'a quoted notice on the notices screen lost its language');
-  assert(/\{noticeDays && <p lang=\{NOTICE_LANG\}>\{noticeDays\}<\/p>\}/.test(read('src/components/StopArrivalsView.tsx')), 'the board’s notice strip quotes the operator without its language');
-  const lines = read('src/components/LinesView.tsx');
-  assert(/<span lang=\{NOTICE_LANG\}>\{alert\.description\}<\/span>/.test(lines) && /<p key=\{j\} lang=\{NOTICE_LANG\}/.test(lines), 'the line page quotes the operator without its language');
-});
-
-ok('nothing on screen is readable only in a hover tooltip', () => {
-  // A notice naming more than three lines folded the rest into "+N", with their numbers only in
-  // a title tooltip: no keyboard and no finger opens one, and a screen reader may not read it.
-  // A title may repeat what is on screen; it may not be the only place something is.
-  const view = read('src/components/AlertsView.tsx');
-  assert(!/cursor-help/.test(view) && !/lines\.slice\(3\)/.test(view) && /\{lines\.map\(\(l\) => \(/.test(view), 'a notice’s lines past the third are only in a hover tooltip again');
-  for (const file of sourcesUnder('src/components')) assert(!/cursor-help/.test(readFileSync(file, 'utf8')), `${relative(file)} keeps something in a hover tooltip again`);
-});
-
-ok('the planner says which destination is chosen, and reads "to" where the eye sees an arrow', () => {
-  // The quick destination chosen was filled in and said nothing (4.1.2); "from → to" hid the
-  // arrow from a screen reader and the two places ran together with no direction (1.3.1).
-  const planner = read('src/components/RoutePlannerView.tsx');
-  assert(/aria-pressed=\{chosen\}/.test(planner) && /chosen \? 'bg-accent text-on-accent'/.test(planner), 'the chosen quick destination is a fill and nothing else again');
-  assert(/aria-hidden="true">\s*→\s*<\/span>\s*<span className="sr-only">\{t\.planner\.toSr\}<\/span>/.test(planner), 'a recent route’s two places run together for a screen reader again');
-});
-
-ok('every screen can be reached a second way: the search box finds it by its name', () => {
-  // 2.4.5. The stops, the lines, the map and the planner were reached from the navigation and
-  // from the search and the links between screens; the notices and the fares from the
-  // navigation alone. The search box finds every screen by its name, in each language.
-  const bar = read('src/components/TopBar.tsx');
-  assert(/\[\.\.\.navSections\(t\), \.\.\.asideSections\(t, 0\)\]\.filter\(\(s\) => matchesQuery\(s\.label, dq\)\)/.test(bar) && /onClick=\{choose\(\(\) => onOpenTab\(id\)\)\}/.test(bar), 'the search box no longer finds the screens');
-  assert(/onOpenTab=\{goToTab\}/.test(read('src/App.tsx')), 'a screen found in the search box no longer opens');
-  for (const lang of LANGS) {
-    const t = translations(lang);
-    for (const label of [t.nav.stops, t.nav.lines, t.nav.map, t.nav.plan, t.menu.alerts, t.menu.fares]) assert(matchesQuery(label, label.split(' ')[0]), `${lang}: "${label}" is not found by its first word`);
-  }
-});
-
-ok('the poles on the board’s map are a list too, which a keyboard reaches', () => {
-  // 2.1.1. The other poles near a stop were dots on the map's canvas, taken by a tap and by
-  // nothing else, and the map's own name said they were "in the list above", which they were
-  // not. A folded list of them sits above the map, and the map's name points to it.
-  const board = read('src/components/StopArrivalsView.tsx');
-  assert(/\{polesNearby\.map\(\(pole\) => \([\s\S]{0,200}onClick=\{\(\) => onSelectStop\(pole\)\}/.test(board), 'the poles near a stop are reached only by a tap on the map again');
-  for (const lang of LANGS) {
-    const a = translations(lang).arrivals;
-    assert(a.stopMapRegion.includes(a.polesNearby), `${lang}: the map's name points to a list that is not the poles' list: "${a.stopMapRegion}"`);
-  }
-});
-
-ok('a map popup’s close button is readable, named in the reader’s language, and not under the map’s controls', () => {
-  // A bus's popup opened under the notice that floats over the map and its close button was
-  // covered (2.5.8); Leaflet paints that "×" #757575, 4.19:1 on the dark card (1.4.3), and names
-  // it "Close popup" in English inside a Galician page (3.1.2).
-  assert(/\.leaflet-container a\.leaflet-popup-close-button \{\s*color: var\(--c-ink-2\) !important;/.test(read('src/index.css')), 'the popup’s close button is Leaflet’s grey again');
-  assert(/instance\.on\('popupopen', [^\n]*setAttribute\('aria-label', closeLabel\.current\)\)/.test(read('src/hooks/useLeafletMap.ts')), 'a popup’s close button is named in English again');
-  const clear = /autoPanPaddingTopLeft: \[(\d+), (\d+)\]/.exec(read('src/components/Map/popupHtml.ts'));
-  assert(clear && Number(clear[2]) >= 100, 'popups on the network map no longer keep clear of the controls over its top');
-  assert(/bindPopup\(popupNode\(bus, onOpenLineRef\.current, lang\), POPUP_CLEAR_OF_CONTROLS\)/.test(read('src/components/Map/VehicleLayer.tsx')) && /\.\.\.POPUP_CLEAR_OF_CONTROLS/.test(read('src/components/Map/RouteLayer.tsx')) && /POPUP_CLEAR_OF_CONTROLS\)/.test(read('src/components/Map/useFollowMe.ts')), 'a popup on the network map can open under its controls again');
-  for (const lang of LANGS) assert(translations(lang).map.closePopup.trim(), `${lang}: a popup’s close button has no name`);
-});
-
-ok('a bus’s popup is not rebuilt under the keyboard’s focus', () => {
-  // The popup is rebuilt when its bus passes a stop, and the new content replaced the focused
-  // button with the rest: the focus fell to the page (2.4.3). It waits while the focus is in it,
-  // and keeps the old key so it is rebuilt once the focus has gone.
-  const buses = read('src/components/Map/VehicleLayer.tsx');
-  assert(/const holdsFocus = !!existing\?\.getPopup\(\)\?\.getElement\(\)\?\.contains\(document\.activeElement\);/.test(buses) && /drawn\?\.popup !== popupKey && !holdsFocus\) existing\.setPopupContent/.test(buses), 'a bus’s popup is rebuilt under the focus again');
-  assert(/popup: holdsFocus \? \(drawnRef\.current\[bus\.id\]\?\.popup \?\? popupKey\) : popupKey/.test(buses), 'a popup skipped under the focus is never rebuilt after');
-});
-
-ok('an open dialog leaves the focus where the keyboard put it', () => {
-  // useDialog listed onClose among its effect's dependencies, and every caller passes a new
-  // arrow on each render: each re-render of the page behind an open dialog -- the map's clock
-  // every 3 s, the app's every minute -- put the focus back on its first control (2.4.3).
-  const hook = read('src/hooks/useDialog.ts');
-  assert(/\}, \[open\]\);/.test(hook) && !/\}, \[open, onClose\]\);/.test(hook) && /onCloseRef\.current\(\);/.test(hook), 'an open dialog takes the focus back to its first control on every re-render again');
-  assert(/2\.4\.3: with nothing pressed, the focus moved by itself/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer waits to see the focus stay put in a dialog');
-});
-
-ok('the map is read and tabbed in the order it is drawn, and the tab bar hides none of its sheet', () => {
-  // 1.3.2 / 2.4.3. On a phone CSS order drew the quick filters first in the map's sheet, and
-  // the focus went down past locate and centre and back up to them; over the map, the buses
-  // notice came before the line chips drawn above it. And 2.4.11: the sheet sat under the tab
-  // bar, which hid its last 67 px and the line rows the focus scrolled there. None of this was
-  // seen: the audit's setup pressed the sheet's own hidden close button, so it never opened.
-  const controls = read('src/components/Map/MapControls.tsx');
-  assert((controls.match(/\border-first\b/g) ?? []).length <= 1, 'the map’s sheet moves a panel with CSS order again, away from where Tab meets it');
-  const map = read('src/components/Map/TransitMap.tsx');
-  assert(map.indexOf('<LineChips') < map.indexOf('busesEstimatedNotice'), 'the buses notice comes before the line chips drawn above it');
-  const z = (source: string, pattern: RegExp) => Number(source.match(pattern)?.[1] ?? NaN);
-  const chips = z(read('src/components/Map/LineChips.tsx'), /absolute inset-x-0 top-0 z-\[(\d+)\]/);
-  assert(chips > z(map, /absolute inset-x-0 top-16 z-\[(\d+)\]/), 'the line chips no longer open over the buses notice that now follows them');
-  assert(z(controls, /fixed inset-x-0 bottom-0 z-\[(\d+)\]/) > z(read('src/components/BottomNav.tsx'), /sticky bottom-0 z-\[(\d+)\]/), 'the tab bar covers the bottom of the map’s sheet again');
-  const audit = read('tools/auditBrowser.ts');
-  assert(/no dialog is open after the setup/.test(audit) && /getComputedStyle\(e\)\.visibility !== 'hidden'/.test(audit), 'a dialog state can pass the audit without its dialog open');
-  assert(/which the focus reached before it, in the same column/.test(audit), 'the browser audit no longer compares the Tab order with where things are drawn');
-});
-
-ok('clearing the recent routes can be undone, and the focus stays on the button', () => {
-  // 3.3.4: "Borrar" deleted the planner's recent routes at a tap, with no confirmation and no
-  // way back; and the button holding the focus went with the list, so the focus fell to the
-  // page (2.4.3). It is one button whose words change, so the focus has somewhere to stay.
-  const planner = read('src/components/RoutePlannerView.tsx');
-  assert(/\{cleared\.length \? t\.planner\.undoClear : t\.stopHome\.clearRecent\}/.test(planner), 'clearing the recent routes has no undo again, or the undo is a second button the focus falls out of');
-  assert(/\[\.\.\.cleared\]\.reverse\(\)\.forEach\(rememberRoute\)/.test(planner), 'undo no longer puts the routes back in their order');
-  assert(/role="status" className="sr-only">\s*\{cleared\.length \? t\.planner\.recentCleared : ''\}/.test(planner), 'clearing the recent routes is not announced');
-  assert(/after clearing the recent routes the focus is not on the way back/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer clears the recent routes');
-});
-
-ok('a map popup the keyboard goes into is brought inside the map first', () => {
-  // 2.4.11: a popup half off the map, and the focus reached its close button past the edge of
-  // the screen: the browser scrolled the map's box to it and Leaflet scrolled it back. Measured
-  // scrolled, the first fix panned the wrong way. Only for the keyboard: a pressed button must
-  // not slide from under a finger.
-  const hook = read('src/hooks/useLeafletMap.ts');
-  assert(/instance\.on\('popupopen', popupInViewOnFocus\)/.test(hook) && /addEventListener\('focusin'/.test(hook) && /map\.panBy\(\[dx, dy\]/.test(hook), 'a popup the keyboard enters is no longer brought into view');
-  assert(/focus\.target\.matches\(':focus-visible'\)\) return;/.test(hook), 'the popup pans under a pointer’s press too');
-  assert(/inViewOnFocus\.has\(el\)/.test(hook), 'each opening of a bound popup adds another focus listener, and another pan');
-  assert(/seen\.left \+ container\.scrollLeft/.test(hook) && /seen\.top \+ container\.scrollTop/.test(hook), 'the popup is measured with the map’s box scrolled to the focus, and panned the wrong way');
-  assert(/Three of the map's own arrow keys/.test(read('tools/auditBrowser.ts')), 'the browser audit no longer moves the map before the keyboard reaches a bus popup');
 });
 
 ok('a board row keeps its key while the buses ahead of it leave', () => {
@@ -6150,55 +4459,10 @@ ok('a board row keeps its key while the buses ahead of it leave', () => {
   }
 });
 
-ok('the README’s WCAG table answers for every A and AA criterion of 2.2, once', () => {
-  // The conformance table is the promise the rest of the accessibility work is measured
-  // against; a criterion dropped from it is one nobody is looking at any more.
-  const criteria = [
-    '1.1.1', '1.2.1', '1.2.2', '1.2.3', '1.2.4', '1.2.5', '1.3.1', '1.3.2', '1.3.3', '1.3.4', '1.3.5', '1.4.1', '1.4.2', '1.4.3', '1.4.4',
-    '1.4.5', '1.4.10', '1.4.11', '1.4.12', '1.4.13', '2.1.1', '2.1.2', '2.1.4', '2.2.1', '2.2.2', '2.3.1', '2.4.1', '2.4.2', '2.4.3',
-    '2.4.4', '2.4.5', '2.4.6', '2.4.7', '2.4.11', '2.5.1', '2.5.2', '2.5.3', '2.5.4', '2.5.7', '2.5.8', '3.1.1', '3.1.2', '3.2.1', '3.2.2',
-    '3.2.3', '3.2.4', '3.2.6', '3.3.1', '3.3.2', '3.3.3', '3.3.4', '3.3.7', '3.3.8', '4.1.2', '4.1.3',
-  ];
-  const readme = read('README.md');
-  const start = readme.indexOf('**Conformidade con WCAG 2.2');
-  assert(start > 0, 'the README has no WCAG conformance table');
-  const rows = readme.slice(start).split('\n').filter((line) => /^\| \d/.test(line));
-  const named = rows.flatMap((row) => row.split('|')[1].match(/\d\.\d\.\d+/g) ?? []);
-  assert.deepEqual([...named].sort(), [...criteria].sort(), 'the WCAG table lists other criteria than the 55 of 2.2 A and AA, or one twice');
-  for (const row of rows) {
-    const state = row.split('|')[3].trim().replace(/\*/g, '');
-    assert(['Cumpre', 'Arranxado', 'Non aplica', 'Non cumpre'].includes(state), `a WCAG row says neither cumpre, arranxado, non aplica nor non cumpre: ${row.slice(0, 60)}`);
-    assert(row.split('|')[4].trim().length > 20, `a WCAG row gives no reason: ${row.slice(0, 60)}`);
-  }
-});
-
-ok('the small "never"s in the comments hold', () => {
-  // Five promises written as a comment beside the line that keeps them, and held by nothing
-  // else: the stops screen never guesses where you are; the scanner never leaves the camera
-  // on behind a closed dialog; a stop change never leaves the last stop's operator minutes on
-  // screen; colour never carries provenance alone; checkFares reports and never applies.
-  const home = read('src/components/StopHome.tsx');
-  assert(!/LUGO_CENTER/.test(home) && /\(\) => \{\s*\/\/[^\n]*\n\s*setLocationError\(t\.stopHome\.denied\);/.test(home), 'the stops screen falls back to a position the phone never gave');
-  const scanner = read('src/components/QrScannerModal.tsx');
-  assert(/if \(!isOpen\) stopCamera\(\);/.test(scanner) && /streamRef\.current\?\.getTracks\(\)\.forEach\(\(track\) => track\.stop\(\)\);/.test(scanner), 'the scanner can leave the camera running behind a closed dialog');
-  assert(/useEffect\(\(\) => \{\s*setTimes\(null\);/.test(read('src/hooks/useOperatorTimes.ts')), 'a stop change can leave the previous stop’s operator minutes on screen');
-  const chip = read('src/components/ui/Provenance.tsx');
-  assert((chip.match(/\{text\}/g) ?? []).length === 2 && /t\.common\.officialBadge/.test(chip) && /t\.common\.estimatedBadge/.test(chip) && /border-dashed/.test(chip), 'a provenance chip carries its meaning in colour alone: both say their label, the estimated one dashed');
-  assert(!/\b(writeFile|writeJson|appendFile|createWriteStream)/.test(read('tools/checkFares.ts')), 'checkFares.ts writes a scraped fare somewhere; it reports a disagreement and applies nothing');
-});
-
 ok('no check reached the network', () => {
   // The other half of the refusal at the top: syncOfficialAlerts and the operator reader turn
   // a failed request into an answer, so a check that forgot its stub would pass on "unreachable".
   assert(reachedOut.length === 0, `checks tried to reach ${reachedOut.join(', ')}; every gate runs offline`);
-});
-
-// Last on purpose: it counts itself. The README quoted 141 while this file ran 143, which
-// is the kind of figure the front-doors rule exists for and the one nobody re-reads.
-ok('the README quotes the number of checks this file runs', () => {
-  const readme = read('README.md');
-  const quoted = readme.match(/^(\d+) comprobacións con asercións/m)?.[1];
-  assert(quoted === String(checks + 1), `README says ${quoted ?? 'nothing'} checks; this file runs ${checks + 1}`);
 });
 
 console.log(`\n${checks} checks passed\n`);

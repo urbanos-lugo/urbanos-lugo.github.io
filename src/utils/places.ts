@@ -3,7 +3,7 @@
  * a place, and the stops and lines near a point. Pure functions, no React.
  */
 import { BUS_STOPS, lineById } from '../data/transitData';
-import { Lang, translations } from '../i18n';
+import { Lang, translations } from '../i18n/translations';
 import { BusStop, BusLine } from '../types';
 import { matchesQuery, calculateRelevanceScore } from './searchUtils';
 import { getDistanceMeters } from './geo';

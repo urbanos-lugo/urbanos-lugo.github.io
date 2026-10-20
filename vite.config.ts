@@ -5,7 +5,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFi
 import path from 'path';
 import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { CSP_META } from './src/security/csp';
+import { CSP_META, MAP_ORIGINS } from './src/security/csp';
 import { THEME_INIT_SOURCE } from './src/security/themeInit';
 import { SITE_LANGS, SITE_PATHS, pageHtml, robotsTxt, siteUrl, sitemapXml, structuredData } from './src/seo';
 import { pathFor } from './src/routes';
@@ -207,7 +207,8 @@ export default defineConfig({
             // Map data: show what was seen before rather than grey squares offline. The
             // vector tiles, glyphs and sprites come from the one host; the raster is the
             // fallback for a device with no WebGL2.
-            urlPattern: /^https:\/\/(tiles\.openfreemap\.org|tile\.openstreetmap\.org)\/.*/i,
+            // The hosts are the policy's own list, so the worker never caches a host it may not fetch.
+            urlPattern: new RegExp(`^(${MAP_ORIGINS.map((origin) => origin.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')).join('|')})/.*`, 'i'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'map-tiles',

@@ -7,7 +7,7 @@
  * plan's stop list.
  */
 import { lineById, stopById, stopName } from '../data/transitData';
-import { Lang } from '../i18n';
+import { Lang } from '../i18n/translations';
 import { ALARM_RADIUS_M } from '../services/stopAlarm';
 import { Precision, RoutePlanResult, TripSegment } from '../types';
 import { getDistanceMeters } from './geo';
