@@ -2996,7 +2996,7 @@ miúdo.
 
 - A seguinte revisión, antes do 17 de novembro de 2026.
 
-## Rolda 37: un só vocabulario visual — do 13 ao 19 de outubro de 2026
+## Rolda 37: un só vocabulario visual — do 13 ao 20 de outubro de 2026
 
 Pedido: que cada cor, tamaño, espazo, canto, bordo, sombra, capa, duración e curva saia dun
 token con nome, sen ningún valor solto en compoñentes, estilos en liña ou cadeas de HTML;
@@ -3050,7 +3050,7 @@ solto novo. Nunha rama propia, `design-tokens`, sen publicar.
 
 ### Feito
 
-- `index.css` nomea o vocabulario enteiro polo seu papel: 185 nomes no bloque `@theme`
+- `index.css` nomea o vocabulario enteiro polo seu papel: 184 nomes no bloque `@theme`
   (transparencias, entreliñas e tracking, a unidade de espazo e os tamaños con papel,
   anchos e consultas de contedor, cantos, bordos e aneis, catro elevacións polo que fai a
   cousa, os desenfoques, unha escada de capas ancorada ás de Leaflet, seis duracións por
@@ -3159,7 +3159,7 @@ solto novo. Nunha rama propia, `design-tokens`, sen publicar.
   valores soltos, contra dez valores soltos de volta, un de cada vez; a dos patróns, coas
   copias de volta.
 - README (o vocabulario visual, `visual:shoot` e `visual:compare`, a árbore), CLAUDE.md,
-  DECIDIDO e NOTAS (Pendente 8).
+  DECIDIDO e NOTAS.
 - Despois da revisión, o 20 de outubro: `cdp.ts` rexeita o que agarda cando o navegador se
   perde a medio camiño, e un comando a un socket pechado falla ao momento (probado contra un
   navegador: antes os dous seguían agardando 3 s despois; agora fallan). A comprobación de
@@ -3201,17 +3201,46 @@ solto novo. Nunha rama propia, `design-tokens`, sen publicar.
   `lg`, `p-3` = tres unidades de 4 px), non de papel. Cada paso serve a varios papeis e os
   papeis están nas clases que os usan; un nome por uso repetiría o mesmo valor baixo varios
   nomes, que é o que o pedido quería evitar. Discutible, e do dono (DECIDIDO).
-- **As diferenzas que podían ser queridas** quedaron como variantes, sen mover un píxel:
-  NOTAS, Pendente 8.
+- **As diferenzas que podían ser queridas** quedaron como variantes, sen mover un píxel, e
+  decidíronse o 20 de outubro (DECIDIDO; abaixo, «As variantes, escollidas»).
 - O segmentado da configuración non é un patrón; a folla da parada e a dos controis do mapa
   non son caixóns; o fondo do diálogo do QR é o seu propio pano, non un veo; o marco do mapa
   da ruta é doutro compoñente e doutro canto.
 - O estilo do mapa base trae a súa paleta de OpenFreeMap, retocada en `buildMapStyle.ts` coas
   medidas de DECIDIDO, e fica fóra dos tokens.
 
+### As variantes, escollidas — 20 de outubro
+
+Pedido: aplicar as variantes que a rolda deixara para escoller, decididas o 20 de outubro
+(DECIDIDO), unha por commit, con fotos de antes e despois.
+
+- **Fotos.** As 2.128 tomas de cada tanda: cambian 2.006, e cada familia de estados é unha
+  das escollas. A icona do menú, en cada toma do teléfono, que leva a barra; as fichas de
+  escolla en tinta, nos filtros do mapa e nos destinos rápidos de Ruta; a sombra da barra de
+  zoom, en cada mapa; as filas da lista de liñas máis xuntas, e a lista sobe; o selector de
+  saídas e a tarxeta do horario, na páxina da liña; a etiqueta da tarifa sen contorno; o
+  campo do QR; o oco do título dos favoritos; as notas do taboleiro, que quedan 2 px máis
+  arriba e acurtan a páxina; o formulario de Ruta no teléfono. O resto está en estados que
+  tamén difiren entre dúas fotos da mesma build, e na toma do QR, por debaixo de 3 niveis.
+- **A tarifa e o «en ruta» sen contorno** van sobre a tarxeta branca, así que seguen sendo
+  unha caixa gris clara, non só texto en acento.
+- **`.tag` leva un bordo sen cor e o recheo devólvelle o píxel**: as etiquetas que non tiñan
+  bordo gardan a súa caixa, e a orixe e o destino, con 8 px de lado onde tiñan 6, medran 2 px
+  por lado. As tres que tiñan bordo quedan 1 px máis baixas arriba e abaixo; a tarifa e o
+  «en ruta», tamén 1 px máis estreitas por lado, e o «non para aquí», 1 px máis ancho.
+- **`audit:browser`**: 0 achados WCAG en 162 estados, e nada cortado nin desbordado a 320 px
+  nin ao 200 %, así que as etiquetas quedan con 8 px de lado. Os controis da casa baixo 44 px
+  pasan de 289 a 313 só polas tres ligazóns da atribución do mapa base, contadas en oito
+  estados máis: os mesmos elementos, ningún novo.
+- Un token menos, `--shadow-map-bar`: o `@theme` queda en 184.
+- Checks: o do destino escollido le a tinta, o do campo le o `.field` sen máis, e o dos
+  patróns rexeita unha etiqueta co seu propio bordo, lados ou peso, probado contra os catro
+  ficheiros de antes.
+- Visto e deixado: o campo das paradas de Ruta e as filas de parada dunha liña seguen co seu
+  propio anel de foco; non entraban nas escollas.
+
 ### Queda
 
-- As variantes de NOTAS, Pendente 8.
 - Levar a rama a `develop` e publicala, cousa do dono.
 
 ## Rolda 38: Ubuntu 26.04 no executor, probado e deixado — 14 e 15 de outubro de 2026

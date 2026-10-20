@@ -419,12 +419,49 @@ descrición. Catro regras, e o que quedou fóra:
   copia feita a man (42, e catro dentro dun mesmo ficheiro).
 - **Xúntase só o descoido claro.** Unha diferenza sen razón escrita e dun paso de escala
   xuntouse, e cada píxel que moveu está na rolda 37; unha que podía ser querida quedou como
-  variante ata que o dono escolla (NOTAS, Pendente 8). As fotos de cada estado, nos dous
-  temas, tres idiomas, teléfono e escritorio, comparadas cadro a cadro, son a proba.
+  variante, e decidiuse ao día seguinte (abaixo). As fotos de cada estado, nos dous temas,
+  tres idiomas, teléfono e escritorio, comparadas cadro a cadro, son a proba.
 - **Os pesos, os puntos de corte e os pasos de espazo levan nome de escala**, non de papel:
   cada paso serve a varios papeis, e os papeis están nas clases que os usan (`.btn`,
   `.caps-label`, `.figure`…). Un nome de papel por cada uso repetiría o mesmo valor baixo
   varios nomes. *Discutible: está argumentado na rolda 37, e é do dono.*
+
+## As variantes que quedaran abertas — 20 de outubro de 2026
+
+As que a rolda 37 deixara sen escoller, decididas pola mesma regra: o que xa se escolleu
+no proxecto e o que mellor lle senta á app. As fotos de antes e despois están na rolda 37.
+
+- **As fichas de escolla, un só aspecto: tinta.** O escollido en tinta, no canto do control,
+  sen sombra; os filtros do mapa perden o contorno e a sombra de acento, e os destinos
+  rápidos de Ruta a píldora de acento. Tres tons levan significado e nada máis (o vermello
+  é a app, o azul o oficial, o ámbar o calculado), o vermello de acento é tamén a cor de
+  varias liñas, e estas filas van á beira de cores de liña: por iso o acento queda fóra do
+  mapa. A tinta di «escollido» sen pedir prestado ningún significado. `dense` segue sendo
+  un tamaño, non un aspecto.
+- **As filas de liña fortes, 1 px.** A tinta forte aprobouse debuxada o 1 de outubro, e o
+  que se debuxaba era o 1 px que deixaba a regra morta de 2 px.
+- **As filas tinguidas, un só espazado**, o de `.line-row`, tamén na lista de liñas; e a
+  liña gardada co cursor de man, coma todo o que abre algo.
+- **As teselas dentro dunha tarxeta, as de `.inset-panel`**, tamén o selector de saídas de
+  Liñas: filete `line` e 12 px.
+- **Unha etiqueta, unha caixa.** `.tag` leva un bordo de 1 px sen cor, e o recheo devólvelle
+  o píxel, así que cada etiqueta garda a súa caixa e nas cores forzadas todas teñen a mesma.
+  Fóra os bordos de cada uso: a tarifa e o «en ruta» perden o contorno e son a mesma
+  etiqueta de superficie ca a orixe á súa beira, e é o texto o que leva o significado.
+  Negriña e 8 px de lado en todas.
+- **Os recheos das tarxetas, os das irmás**: 24 px na do horario, 16 no formulario de Ruta
+  por debaixo de `sm`.
+- **O que vai baixo un filete, 12 px**, tamén as notas do taboleiro.
+- **A alarma da viaxe, 12 px arriba e abaixo**, coma os outros avisos; garda o texto de corpo
+  en seminegra, que se le dunha ollada.
+- **O campo do código QR, o `.field` de sempre**: 44 px, o anel de foco e o fondo da app,
+  peso normal. Un foco igual en todo vale máis ca un anel propio.
+- **Os títulos dos diálogos, 12 px entre a tesela e o título**, un paso enteiro da escala.
+- **A icona do menú da barra, 18 px**, coma as outras da barra.
+- **A barra de zoom e o botón de localizarse, a mesma sombra**, `shadow-float`, porque os
+  dous flotan sobre o mapa. Os cantos non: unha barra de dous botóns non é un círculo.
+- **Os favoritos baleiros quedan coa tarxeta descontinua** das outras pantallas baleiras.
+- **A paleta do mapa base segue fóra dos tokens** (8 e 9 de setembro, arriba).
 
 ## Quedou aberto
 

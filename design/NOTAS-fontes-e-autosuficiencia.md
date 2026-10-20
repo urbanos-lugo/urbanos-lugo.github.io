@@ -344,37 +344,6 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    cambiar: ver que Chrome e que GL de software trae cada imaxe e comparalos; na rolda 28
    un Chrome novo xa moveu esta medida. A rama de proba é `ubuntu-26` (o seu único commit
    cambia as seis liñas `runs-on` e o check). 24.04 ten soporte de GitHub para anos.
-8. **As variantes visuais que quedaron sen escoller**, cousa do dono (rolda 37). Onde dúas
-   copias dun mesmo elemento diferían e non era claro que fose por descoido, quedaron as
-   dúas, como variante do compoñente ou como utilidade sobre a clase, sen mover un píxel.
-   Cada unha é escoller unha e borrar a outra:
-   - **As fichas de escolla**, tres aspectos (`ChoiceChip`, `tone`): tinta nas categorías e
-     as saídas de Liñas, acento con bordo e sombra nos filtros do mapa, píldora de acento
-     plana nos destinos rápidos de Ruta.
-   - **O bordo de 2 px das filas de liña fortes** nunca se debuxou: a regra perdía contra a
-     utilidade de 1 px e quitouse. Se se quería, é pór `border-strong` nesas filas.
-   - **A fila da lista de liñas**, 12 × 10 px de recheo e o seu oco, fronte ás outras filas
-     tinguidas; e a frecha da liña gardada, co cursor de frecha e non de man.
-   - **O selector de saídas de Liñas** (`.inset-panel`): bordo `edge` e 10 px, fronte ao
-     bordo `line` e 12 px das outras teselas da mesma pantalla.
-   - **As etiquetas**: o bordo da tarifa e do «en ruta»; o bordo da cor do propio fondo no
-     «non para aquí» (quizais o que o deixa recortado en cores forzadas); 6 fronte a 8 px
-     de lado nas tres que van á beira dun nome; o negro da data dun aviso e o seminegro do
-     «non para aquí», fronte ao negriña das outras.
-   - **Os recheos das tarxetas**: 20 px na do horario entre dúas de 24; 14 px no formulario
-     de Ruta por debaixo de `sm`, á beira dos 16 da resposta.
-   - **As notas do taboleiro**, 14 px baixo o filete, fronte aos 12 das seccións.
-   - **A alarma da viaxe**, 10 px arriba e abaixo, fronte aos 12 dos outros avisos.
-   - **O campo do código QR**: máis alto, seminegra, co seu propio anel de foco e fondo.
-   - **O título dos diálogos**: 10 px entre tesela e título nos favoritos, 12 no QR.
-   - **O botón do menú da barra**: a icona a 20 px, á beira das de 18 da mesma barra.
-   - **A barra de zoom e o botón de localizarse**: mesma superficie, bordo e tinta; non o
-     mesmo canto nin a mesma sombra.
-   - **Os favoritos baleiros** levan agora a tarxeta descontinua das outras pantallas
-     baleiras (unha fusión, 38 px máis baixa); se se quería o bloque de antes, volve nun
-     commit.
-   - **O mapa base** (`map-style-*.json`, xerado de OpenFreeMap) ten a súa propia paleta,
-     fóra dos tokens: as cores son do estilo de fóra, retocadas en `buildMapStyle.ts`.
 
 ### Lista para o iPhone
 

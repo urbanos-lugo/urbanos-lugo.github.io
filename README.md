@@ -1195,7 +1195,7 @@ JSX era `any` e ningunha prop se comprobaba; ao poñelos, dos 1.581 erros que sa
 Cada cor, tamaño, espazo, canto, bordo, sombra, capa, duración e curva que debuxa a
 interface ten nome, e o nome di para que serve, non canto vale: `tap` é o chan de 44 px,
 `glass` o fondo translúcido dun control sobre o mapa, `move` os 200 ms dun cambio de sitio.
-Están en `src/index.css`, 185 no bloque `@theme` e 32 cores de paleta con valor claro e
+Están en `src/index.css`, 184 no bloque `@theme` e 32 cores de paleta con valor claro e
 escuro; o mapa colle deles as cores e, da táboa `DRAW` de `palette.ts`, os números que
 Leaflet quere. As escalas propias de Tailwind están borradas (`--*: initial`): unha clase
 escrita contra un valor por defecto non xera nada en vez de traer de volta un valor que
@@ -1216,7 +1216,8 @@ unha copia feita a man, e catro máis dentro dun mesmo ficheiro, e di que usar n
 
 Onde dúas copias diferían por descoido xuntáronse, e cada fusión que move un píxel está
 listada na rolda 37 do rexistro de probas; onde a diferenza podía ser querida quedou como
-variante, á espera de que alguén escolla (NOTAS, Pendente 8). A proba son as fotos de cada
+variante, e o 20 de outubro escolleuse unha de cada (DECIDIDO): unha soa ficha de escolla,
+en tinta; unha soa caixa de etiqueta; os espazos das irmás. A proba son as fotos de cada
 estado, 2.122 cadros por tanda (`visual:shoot`, abaixo en «Verificación»): sobre o código
 final, coas fusións listadas postas de volta como debuxaban antes, o que queda fronte á build
 de antes é o ruído que dan dúas fotos da mesma build e tres diferenzas de subpíxel ou ao
