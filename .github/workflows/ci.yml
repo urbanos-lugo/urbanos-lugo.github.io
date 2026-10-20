@@ -7,9 +7,9 @@ name: Checks
 # pull requests this repository actually gets: Dependabot's, where the whole question is
 # whether a version bump still builds and still agrees with the operator's data.
 #
-# Deliberately not the deployment: a pull request must never publish. This runs the four
+# Deliberately not the deployment: a pull request must never publish. This runs the five
 # gates CLAUDE.md names, and three more steps that need their output, and stops there;
-# tools/test.ts holds this list and the order, so a step dropped here fails the suite.
+# tools/checkPolicy.ts holds this list and the order, so a step dropped here fails it.
 on:
   pull_request:
     branches: [main, develop]
@@ -43,6 +43,8 @@ jobs:
 
       - run: pnpm run lint
       - run: pnpm test
+      # Repository policy rather than the app: pins, triggers, network tools, documents, lockfile.
+      - run: pnpm run check:policy
 
       # The checks that were written and then never run by anything.
       #

@@ -3095,3 +3095,65 @@ tamén a `develop`.
 ### Queda
 
 - Quitar o parche cando a ponte publique unha versión que pregunte por si mesma.
+
+## Rolda 41: a suite só garda o que fai fallar o código — 20 de outubro de 2026
+
+Pedido: rematar a limpeza de `tools/test.ts` que empezou en e6da930. A regra: só checks de
+extremo a extremo e de lóxica (formatadores, a escada do planificador, analizadores, probas
+sobre o conxunto de datos), cada un capaz de fallar cando o código se rompe dun xeito que
+importa; ningún que lea un ficheiro fonte, unha folla de estilo, un workflow ou un
+documento e case o seu texto cunha expresión regular. O número de checks non é un obxectivo.
+
+### Medido
+
+- O axuste dos scripts de instalación, en catro cartafoles baleiros con `package.json`,
+  `pnpm-lock.yaml` e `pnpm-workspace.yaml`: `pnpm install --frozen-lockfile --offline` para
+  con `ERR_PNPM_IGNORED_BUILDS` sen o axuste, co nome vello (`onlyBuiltDependencies`) e co
+  marcador no canto de `true` ou `false`; tal como está, instala. Nesta máquina non para
+  nunca, porque a configuración global de pnpm leva `ignore-scripts`; o que ve CI vese con
+  `--config.ignore-scripts=false`.
+- A política importada desde `App.tsx`: o build pasa cun aviso (`node:crypto`
+  externalizado), e `audit:browser` falla con «nothing rendered» e
+  `uncaught: TypeError: (0 , Jc.createHash) is not a function`.
+- CodeQL: a configuración por defecto está activa (javascript-typescript e actions, en
+  `main` e semanal). A súa alerta 16, `js/bad-code-sanitization` en `tools/auditBrowser.ts`,
+  era exactamente o código empalmado que gardaba o check, e está pechada.
+- A cámara, coas dúas vías de apagado de `QrScannerModal.tsx` rotas (o efecto
+  `if (!isOpen) stopCamera()` e o `track.stop()` da limpeza do escaneo): `audit:browser` dá
+  un só achado, «the camera is still running behind the closed scanner», e sae con 1.
+  Restaurado. Os sete fallos de e6da930 xa estaban probados; este era o que faltaba.
+- `pnpm test` non corría en Windows: o servidor arrancábase con `node_modules/.bin/tsx`,
+  que alí é un `.cmd` que `spawn` non abre, e despois borrábase o seu cartafol antes de que
+  o proceso saíse.
+
+### Feito
+
+- Seis gardas pasan a `tools/checkPolicy.ts` (`pnpm run check:policy`), un paso de
+  `ci.yml` despois de `pnpm test`: o que fixan os workflows, as pausas das ferramentas que
+  preguntan a enrutadores públicos e ao IGN, as portas e cando se le un sitio alleo, o que
+  nomean os documentos, o que nunca se segue, e os mínimos do lockfile (fast-uri sobe a
+  3.1.8, o que xa dicía `pnpm-workspace.yaml`). A lista de pasos de `ci.yml` que fixa leva
+  o seu propio: quitalo fai fallar `check:policy`.
+- Tres borradas, cada unha co que a cobre: o axuste de instalación (a instalación
+  bloqueada de CI), a política fóra do navegador (o build e `audit:browser`), o código
+  empalmado nas ferramentas (CodeQL).
+- Un check novo: 417 paradas, 24 liñas e 271 postes cun código impreso.
+- O servidor dos checks arráncase con `node --import tsx`, e o cartafol bórrase cando o
+  proceso xa saíu.
+- CLAUDE.md leva a regra e as cinco portas (`check:policy` coas catro de antes); o que
+  dicía que `pnpm test` gardaba a lista de CI, os workflows que len fóra e os resumos do
+  README, corrixido ou quitado. O README perde a conta de checks, e cada «`pnpm test`
+  comproba» que deixou de ser certo con e6da930 di agora o que o comproba, ou cala.
+  SECURITY, PRIVACY e CONTRIBUTING, igual.
+- `pnpm test` 152 checks, `check:policy` 6; lint, `check:deep`, a reconstrución dos datos
+  (sen cambios) e o build en verde; `audit:browser` enteiro: 0 achados en 242 medicións de 162 estados, en 504 s, e as
+  promesas (política, cámara, minutos dun poste escaneado) sen ningún.
+
+### Queda
+
+- Nove checks que quedan aínda rematan cunha expresión regular sobre o código fonte xunto á
+  súa lóxica: os títulos das pestanas, o idioma do enderezo, as rutas e o sitemap, o tempo
+  de viaxe dunha liña, a camiñada medida, a orde das opcións, o «~» do taboleiro baleiro,
+  as liñas dos favoritos e a chave das filas.
+- Xa non se comproba que os tres mapas collan os controis traducidos dun só sitio, nin que
+  todo diálogo pase por `useDialog`: `audit:browser` percorre co teclado só o menú.

@@ -23,13 +23,13 @@ pnpm install          # pnpm, sempre; o lockfile é pnpm-lock.yaml
 pnpm dev              # Express + Vite en http://localhost:3001, só nesta máquina (HOST=0.0.0.0 para a rede)
 ```
 
-Antes de abrir o PR, as catro portas que pasa a integración continua:
+Antes de abrir o PR, as cinco portas que pasa a integración continua:
 
 ```bash
-pnpm run lint && pnpm test && pnpm run check:deep && pnpm run build
+pnpm run lint && pnpm test && pnpm run check:policy && pnpm run check:deep && pnpm run build
 ```
 
-As catro son locais e deterministas; pásaas cantas veces queiras. As ferramentas de
+As cinco son locais e deterministas; pásaas cantas veces queiras. As ferramentas de
 `tools/` que len de fóra —`data:fetch`, `reconcile`, `compare:operator`, `check:parsers` e
 as demais que o README marca— pásanse a man, unha vez, e non van nunca nun bucle.
 

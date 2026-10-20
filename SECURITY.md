@@ -13,8 +13,8 @@ service, and saying so is more useful than promising a turnaround nobody is on c
 The app is a reader for a public timetable. It has no accounts, no payments and no
 server-side personal data. What it keeps is in that browser's own storage and never
 leaves the device: favourites, recent stops, the last four trips as typed, the language,
-the theme and the trip in progress. `PRIVACY.md` lists every key, and `pnpm test` holds
-that list to the code.
+the theme and the trip in progress. `PRIVACY.md` lists every key, and `audit:browser` holds
+that list to what the app writes, screen by screen.
 
 So the interesting surface is small:
 
@@ -75,5 +75,5 @@ and a new one stops the install until somebody decides. CI installs with
 anything. Every action is pinned to a commit, with its version beside it, and the one job
 that holds a deploy token runs an exact Deno and an exact `@deno/deploy`, in the
 `deno-deploy` environment: that is where the token belongs, and Settings → Environments
-lets only `main` deploy from it. `pnpm test` fails if any of that comes loose in the
-workflows.
+lets only `main` deploy from it. `pnpm run check:policy` fails if any of that comes loose
+in the workflows.

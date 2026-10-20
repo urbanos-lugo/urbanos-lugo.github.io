@@ -25,24 +25,25 @@ Tailwind 4 + MapLibre, TypeScript throughout, pnpm, Node >= 22.
 **Package manager is pnpm, always.** `bun.lock` and `package-lock.json` are gitignored
 leftovers; CI installs with `--frozen-lockfile` from `pnpm-lock.yaml`.
 
-**The four gates.** `.github/workflows/ci.yml` runs these on every push but main's; it
+**The five gates.** `.github/workflows/ci.yml` runs these on every push but main's; it
 also rebuilds the dataset, which must change nothing, runs the suite again against
 the build, and audits the built app in a browser against WCAG 2.2 A and AA
 (`audit:browser`, offline: other hosts refused, API fixtures, clock pinned), and
-`pnpm test` holds that list. Nothing reaches main without them: a GitHub
+`pnpm run check:policy` holds that list. Nothing reaches main without them: a GitHub
 ruleset lets main take only a commit whose `checks` job passed (push develop, wait for its
 green, then main), neither branch takes a force-push or a deletion, and `check-source.yml`
-asks GitHub every Monday that this still holds. A change is not done until all four are
+asks GitHub every Monday that this still holds. A change is not done until all five are
 green:
 
 ```
 pnpm run lint          # tsc --noEmit
-pnpm test              # tools/test.ts — prints "N checks passed" (258 as of this writing)
+pnpm test              # tools/test.ts — prints "N checks passed"
+pnpm run check:policy  # tools/checkPolicy.ts — pins, triggers, network tools, documents, lockfile
 pnpm run check:deep    # invariant + planner sweeps over the whole dataset, ~20s
 pnpm run build         # vite build + esbuild of the server bundle
 ```
 
-All four are offline and deterministic; re-run them as often as you like. The parser
+All five are offline and deterministic; re-run them as often as you like. The parser
 check that used to ride inside `check:deep` and fetch two live pages is now
 `pnpm run check:parsers`: by hand, once, or weekly in `check-source.yml`.
 
@@ -102,6 +103,15 @@ The whole suite is one file: `tools/test.ts`, plain `assert`, no framework, run 
 Leave a check behind for logic you add or fix, in that style. Never delete, relax or
 comment out an existing check to get to green — if one fails, the code is what's wrong.
 
+**Only two kinds of check.** End-to-end (the server spawned and asked over HTTP, the worker
+bundle run with no Node, the built app driven by `audit:browser`) and business logic:
+formatters, the planner's logic ladder, parsers, proofs over the dataset. Write a check
+only if it would actually fail when the code is broken in a way that matters; everything
+else is noise. No check that reads a source file, stylesheet, workflow or document and
+matches its text with a regex. The number of checks is not a goal. What only a file can
+show — what the workflows pin and run, what the documents name — is repository policy,
+and lives in `tools/checkPolicy.ts`, not in the suite.
+
 `pnpm run check:deep` is the other half: two sweeps over the full dataset that `pnpm
 test` cannot reach. Run it before claiming a data or planner change works.
 
@@ -138,7 +148,7 @@ So the rule is asymmetric. A change to how something works, or to a figure, goes
 `README.md` **only**. A change to what the summaries actually carry — that the app is not
 official, that no time in it is a measurement, the counts they quote, the links they
 offer — goes in **all three**, because those are the things a reader is owed whatever
-language they read in. `pnpm test` checks exactly that much and no more.
+language they read in.
 
 `PRIVACY.md`, `DATA.md` and `NOTICE.md` are the same kind of promise: if a change alters
 what leaves the device, where a file comes from, or who is owed credit, they are wrong
@@ -170,10 +180,10 @@ Overpass API — servers this project does not own and has no agreement with.
 
 They are run by hand, or on a schedule — weekly in `.github/workflows/check-source.yml`,
 and `fetchAlerts.ts` before each hourly build in `deploy-pages.yml` — and their answers
-are committed so a rebuild costs nothing; `pnpm test` fails if any other workflow runs
-one. Do not put any of them in a loop, a watch, a retry or a per-turn check — including
-an automated loop of your own, such as a `/goal` condition that re-runs one of them every
-turn. One accidental loop is hundreds of requests against somebody else's site.
+are committed so a rebuild costs nothing; `pnpm run check:policy` fails if any other
+workflow runs one. Do not put any of them in a loop, a watch, a retry or a per-turn
+check — including an automated loop of your own, such as a `/goal` condition that re-runs
+one of them every turn. One accidental loop is hundreds of requests against somebody else's site.
 
 </important>
 
@@ -211,7 +221,7 @@ there until you have looked.
   again. Run its server on a port
   nobody else uses — 3001 (`pnpm dev`) and 3002 (the browser tools' default) are the
   shared ones; the tools take `BASE=http://localhost:<port>`. Bring the branch back by
-  rebasing onto whatever `develop` has become, and run the four gates on the result.
+  rebasing onto whatever `develop` has become, and run the five gates on the result.
 - **Staging next to someone else's edits:** never `git add` a whole file another session
   also changed. Stage only your hunks — apply your edits to `HEAD`'s copy of the file and
   `git apply --cached` the difference — and commit their finished work as its own commit,

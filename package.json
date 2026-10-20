@@ -31,6 +31,7 @@
     "test": "tsx tools/test.ts",
     "check:deep": "tsx tools/stressInvariants.ts && tsx tools/stressPlanner.ts",
     "check:parsers": "tsx tools/checkParsersUnchanged.ts",
+    "check:policy": "tsx tools/checkPolicy.ts",
     "measure:engine": "tsx tools/stressEngine.ts",
     "measure:parsers": "tsx tools/stressParsers.ts",
     "stress:http": "tsx tools/stressHttp.ts",

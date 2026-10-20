@@ -126,6 +126,7 @@ anyone anything.
 
 ## Changing this
 
-The facts above are checkable and the checks are in `pnpm test`. If a future version
+The facts above are checkable and the checks are in `pnpm test`, `pnpm run check:policy`
+and `pnpm run audit:browser`. If a future version
 sends something new anywhere, this file is wrong until it is updated, and that is a bug
 worth reporting like any other.

@@ -787,13 +787,14 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   ├── auditBrowser.ts             WCAG 2.2 A e AA estado por estado: axe-core, sondas propias e Tab
 │   ├── fullAudit.ts                informe de calidade de datos
 │   ├── lib.ts                      o que cada ferramenta levaba repetido: raíz, JSON, estatísticas
+│   ├── checkPolicy.ts              política do repositorio: fixacións, disparadores, documentos
 │   └── test.ts                     comprobacións executables
 ├── .github/workflows/
 │   ├── deploy-pages.yml            publica en Pages: push, por calendario e a man
 │   ├── deploy-worker.yml           publica a API en Deno Deploy, se hai token
 │   ├── check-source.yml            luns: reconcile + xeometría + tarifas + analizadores
 │   ├── measure.yml                 luns: measure:browser, audit:browser e stress:network, como artefacto
-│   └── ci.yml                      en cada push: lint, test, check:deep, build e audit:browser
+│   └── ci.yml                      en cada push: lint, test, check:policy, check:deep, build e audit:browser
 ├── worker/                         a API que Pages non pode servir (opcional)
 ├── design/                         artboards do redeseño (.dc.html), canvas.json, e as notas: o que se decidiu
 │                                   (DECIDIDO.md), o rexistro de probas, a auditoría SEO e as notas de fontes
@@ -1195,8 +1196,10 @@ dous sitios, porque o despregue real é GitHub Pages e un aloxamento estático n
 cabeceiras: **dentro da páxina**, inxectada ao construír, e **como cabeceira** para quen
 o hospede el mesmo. Inxéctase ao construír e non no HTML fonte porque en `vite dev`
 bloqueaba o websocket de recarga en quente, e ensanchar a política de produción para
-admitir un socket de desenvolvemento sería facelo ao revés. `pnpm test` comproba que
-`script-src` segue sendo só `'self'` e que ningunha orixe permitida sobra.
+admitir un socket de desenvolvemento sería facelo ao revés. `pnpm test` comproba que o
+único script en liña da páxina construída é o que admite o hash, `audit:browser` que a
+política que serve o servidor rexeita un script inxectado e `eval`, e `pnpm run
+check:policy` que as orixes permitidas son exactamente as que lista `PRIVACY.md`.
 
 **Límite de peticións.** 120 peticións por minuto e enderezo, 30 se son de planificación,
 que é a única chamada que custa decenas de milisegundos. Devolve `429` con `Retry-After`.
@@ -1223,10 +1226,11 @@ Este axuste estivo mal dúas veces, e as dúas fallou no `install` e non nas pro
 campo `pnpm` de `package.json`, que pnpm 10 deixou de ler; despois chamouse
 `onlyBuiltDependencies`, e pnpm 11 renomeouno a `allowBuilds`. Poñer o nome vello non dá
 erro nin aviso: a instalación simplemente para con `ERR_PNPM_IGNORED_BUILDS`, que é como se
-atopou o segundo —no primeiro despregue do repositorio—. Hai unha comprobación en
-`pnpm test` que esixe que **o nome coincida co maior de pnpm fixado**, que `esbuild` teña
-unha decisión escrita, que sexa `true` ou `false` e non o marcador que pnpm escribe soa, e
-que non quede unha copia vella en `package.json` contando outra cousa.
+atopou o segundo —no primeiro despregue do repositorio—. A instalación bloqueada de CI
+é a comprobación: sen o axuste, co nome vello ou co marcador que pnpm escribe el só no
+canto de `true` ou `false`, `pnpm install --frozen-lockfile` para con ese erro. Probado
+nas tres. Nunha máquina con `ignore-scripts` na configuración global de pnpm non para,
+porque alí non corre ningún script.
 
 **Versións das dependencias.** `pnpm-workspace.yaml` fixa tamén `qs`, `fast-uri` e
 `brace-expansion` por riba do seu aviso de seguridade. `qs` é con quen express analiza a
@@ -1270,7 +1274,7 @@ mapa e os seus filtros son diálogos modais: Escape pecha, o foco entra ao abrir
 ao que os abriu ao pechar, e **Tab non sae deles**. Saía: `aria-modal` esconde a páxina
 ao lector de pantalla, non ao tabulador, e co menú aberto catorce pulsacións deixaban o
 foco no botón do QR detrás do caixón. Todo pasa por un só hook, `useDialog`, e
-`pnpm test` reclama o envoltorio por nome. Ao calcular unha ruta, o foco vai á resposta
+`audit:browser` percorre o menú con Tab nos dous sentidos e péchao con Escape. Ao calcular unha ruta, o foco vai á resposta
 —as tres cifras, ou a frase que di que non hai— en lugar de caer ao principio do
 documento cando o formulario se prega debaixo do botón.
 
@@ -1278,8 +1282,7 @@ As filas da lista de liñas e as suxestións do planificador son botóns, non `d
 clic —chegaron a selo, e a pestana Liñas enteira non se abría sen rato—, e a sonda de
 accesibilidade marca `cursor: pointer` sobre calquera cousa que non sexa interactiva. Os
 tres mapas levan nome e controis no idioma da interface, porque o contedor de Leaflet é
-unha parada de tabulación cos seus botóns en inglés se ninguén llos traduce; `pnpm test`
-esíxello a calquera ficheiro que chame a `L.map(`.
+unha parada de tabulación cos seus botóns en inglés se ninguén llos traduce.
 
 **Contraste.** A insignia dunha liña é texto branco sobre a cor da liña a 10 px, e o número
 que leva é o único que hai que ler dun golpe de vista. Cinco das vinte e catro non chegaban
@@ -1366,12 +1369,12 @@ de pantalla de verdade, hai un guión para seguir a man:
 | 1.1.1 Contido non textual | A | Cumpre | As iconas van `aria-hidden` ao lado do seu texto, os botóns só de icona levan nome e os buses do mapa son imaxes co seu. O mapa base é un gráfico e o que di (paradas, liñas, horas) está en texto. axe e `audit:browser`. |
 | 1.2.1, 1.2.2, 1.2.3 Multimedia gravada | A | Non aplica | Non hai son nin vídeo gravados. A cámara do lector QR é un visor mudo da cámara propia. |
 | 1.2.4, 1.2.5 Multimedia en directo e audiodescrición | AA | Non aplica | Non hai son nin vídeo, en directo nin gravado, que subtitular ou describir. |
-| 1.3.1 Información e relacións | A | Arranxado | A frecha entre orixe e destino das rutas recentes calaba: agora le «ata». As paradas da páxina dunha liña tiñan un nome que tapaba o «~ estimado». axe, `audit:browser`, `pnpm test`. |
+| 1.3.1 Información e relacións | A | Arranxado | A frecha entre orixe e destino das rutas recentes calaba: agora le «ata». As paradas da páxina dunha liña tiñan un nome que tapaba o «~ estimado». axe, `audit:browser`. |
 | 1.3.2 Secuencia significativa | A | Arranxado | Na folla do mapa do teléfono os filtros debuxábanse enriba e líanse despois; sobre o mapa, o aviso dos buses ía antes das liñas debuxadas enriba del. `audit:browser` compara a orde do tabulador co sitio de cada cousa. |
 | 1.3.3 Características sensoriais | A | Arranxado | Tres baleiros dicían «preme a estrela», e un lector de pantalla di «Engadir a gardadas». Agora din as dúas cousas. `pnpm test`. |
 | 1.3.4 Orientación | AA | Cumpre | `audit:browser` mide cada estado co teléfono deitado. |
 | 1.3.5 Identificar o propósito dos campos | AA | Non aplica | Ningún campo pide datos de quen usa a app: son busca, código do poste e lugares dunha viaxe. |
-| 1.4.1 Uso da cor | A | Cumpre | A liña leva sempre o número; oficial e estimado levan palabra e «~», e o estimado trazo descontinuo; o premido leva `aria-pressed` e recheo. `pnpm test`. |
+| 1.4.1 Uso da cor | A | Cumpre | A liña leva sempre o número; oficial e estimado levan palabra e «~», e o estimado trazo descontinuo; o premido leva `aria-pressed` e recheo. `pnpm test` e `audit:browser`. |
 | 1.4.2 Control do son | A | Cumpre | O único son é o aviso da alarma, 1,2 s, por baixo dos 3 do criterio. |
 | 1.4.3 Contraste (mínimo) | AA | Arranxado | O × dos globos do mapa estaba en 4,19:1 en escuro. `audit:browser` mide cada texto en cada estado e tema; o máis xusto queda en 4,50:1. |
 | 1.4.4 Cambio do tamaño do texto | AA | Arranxado | 147 textos cortados (`line-clamp`, `truncate`) ao 200 %; a pantalla da viaxe, 11 px máis ancha ca o seu desprazamento; e xa no bus, a fila dos minutos, a hora e «HORARIO OFICIAL» saía 106 px da tarxeta. No escritorio mídese co zoom do navegador; no teléfono, co texto só. |
@@ -1384,7 +1387,7 @@ de pantalla de verdade, hai un guión para seguir a man:
 | 2.1.2 Sen trampas para o teclado | A | Cumpre | Os diálogos reteñen o foco a propósito e pechan con Escape. `audit:browser`, en cada un. |
 | 2.1.4 Atallos de teclado | A | Cumpre | Non hai atallos dunha tecla; as do mapa (frechas, + e −) só van co mapa enfocado. |
 | 2.2.1 Tempo axustable | A | Cumpre | Non hai límites de tempo. |
-| 2.2.2 Pausar, deter, ocultar | A | Arranxado | O latexo da seguinte parada en «Vou nesta» repetíase mentres duraba a viaxe, e a páxina non tiña como paralo (`prefers-reduced-motion` non conta). Agora late dúas veces, uns 4 s, cada vez que cambia a seguinte parada, e queda quieto. Os buses do mapa empezan ocultos e ocúltanse cun botón; os indicadores de espera rematan coa espera. `pnpm test`. |
+| 2.2.2 Pausar, deter, ocultar | A | Arranxado | O latexo da seguinte parada en «Vou nesta» repetíase mentres duraba a viaxe, e a páxina non tiña como paralo (`prefers-reduced-motion` non conta). Agora late dúas veces, uns 4 s, cada vez que cambia a seguinte parada, e queda quieto. Os buses do mapa empezan ocultos e ocúltanse cun botón; os indicadores de espera rematan coa espera. `audit:browser`. |
 | 2.3.1 Tres escintileos | A | Cumpre | Nada escintila: o único bucle é un anel que medra cada 2 s. |
 | 2.4.1 Saltar bloques | A | Cumpre | Ligazón «Ir ao contido» e rexións. axe. |
 | 2.4.2 Titulado das páxinas | A | Cumpre | Cada pantalla, parada e liña ten o seu título. `audit:browser`. |
@@ -1468,8 +1471,8 @@ o idioma como parámetro en lugar de lelo dunha variable global. E as datas fór
 `Intl` no idioma de quen le: os avisos gárdanse como instante ISO porque unha soa
 descarga serve a todo o mundo.
 
-`pnpm test` comproba que os tres dicionarios teñen exactamente a mesma forma, que ningún
-valor está baleiro, e que planificar o mesmo traxecto en tres idiomas dá tres textos
+`pnpm run lint` non compila se os tres dicionarios non teñen exactamente a mesma forma, e
+`pnpm test` comproba que ningún valor está baleiro e que planificar o mesmo traxecto en tres idiomas dá tres textos
 distintos — se non, o motor está ignorando o idioma.
 
 ---
@@ -1711,7 +1714,7 @@ Agrupa os postes duplicados, resolve os identificadores oficiais, asigna zonas e
 pnpm test
 ```
 
-258 comprobacións con asercións sobre o que xa estivo mal algunha vez: unicidade de
+Comprobacións con asercións sobre o que xa estivo mal algunha vez: unicidade de
 códigos, coherencia entre `stop.lines` e os itinerarios, xeometría que segue as rúas,
 tramos non máis curtos ca a liña recta, ventás de servizo nocturnas, monotonía das horas
 de paso, flota baleira fóra de servizo, puntos de interese preto da rede, traxectos
@@ -1721,8 +1724,8 @@ paradas sen andar para atrás, soe unha vez por tramo e pregunte —non adiviñe
 perdeu o bus.
 
 Cada unha naceu dun fallo real, e o comentario de arriba di cal. Que dous postes non
-compartan punto (nove liñas publicábanse como dezaoito paradas); que a conta de códigos
-QR da cabeceira sexa a de postes que teñen un de verdade; que un nome que o operador
+compartan punto (nove liñas publicábanse como dezaoito paradas); que a rede siga tendo
+417 paradas, 24 liñas e 271 postes cun código impreso; que un nome que o operador
 aínda imprime siga sendo buscable despois de fusionar; que un trazado feito coa ruta
 dun coche o diga; e que ningún traxecto propoña coller o bus para unha soa parada.
 
