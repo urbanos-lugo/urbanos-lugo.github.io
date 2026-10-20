@@ -47,6 +47,7 @@
     "fonts:import": "tsx tools/importFonts.ts",
     "measure:browser": "tsx tools/stressBrowser.ts",
     "audit:browser": "tsx tools/auditBrowser.ts",
+    "audit:journeys": "tsx tools/journeys.ts",
     "visual:shoot": "tsx tools/visualDiff.ts shoot",
     "visual:compare": "tsx tools/visualDiff.ts compare"
   },

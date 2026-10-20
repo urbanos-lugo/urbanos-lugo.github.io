@@ -800,6 +800,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │                               lenta no navegador, planificador e invariantes
 │   ├── auditBrowser.ts             WCAG 2.2 A e AA estado por estado: axe-core, sondas propias e Tab
 │   ├── visualDiff.ts               fotografa eses estados en dúas builds e compara píxel a píxel
+│   ├── journeys.ts                 cada tarefa por cada entrada, co dedo: toques, alcance, teclado e volver
 │   ├── fullAudit.ts                informe de calidade de datos
 │   ├── lib.ts                      o que cada ferramenta levaba repetido: raíz, JSON, estatísticas
 │   ├── checkPolicy.ts              política do repositorio: fixacións, disparadores, documentos, vocabulario visual
@@ -1887,6 +1888,7 @@ pnpm lint
 pnpm build && PORT=3002 pnpm start   # noutra terminal
 pnpm run measure:browser             # start | board | second | map | typing | planner | session | ride
 pnpm run audit:browser               # light | dark
+pnpm run audit:journeys              # cada tarefa por cada entrada, nun teléfono pequeno e nun grande
 pnpm run stress:network              # a API morta, con erro, lenta; e sen rede
 BASE=http://localhost:3002 pnpm run visual:shoot antes/   # cada estado, fotografado
 pnpm run visual:compare antes/ despois/ diferenzas/       # cada píxel que se moveu entre dúas builds
@@ -1898,6 +1900,20 @@ en galego, castelán e inglés, e outra vez nun teléfono de 320 px e co texto a
 `visual:compare` compara dúas tandas cadro a cadro e escribe unha folla con cada píxel que
 cambiou; unha tanda pode compararse con varias da build de antes, porque unha conta atrás en
 segundos non dá dúas fotos iguais. Fotografar dúas veces a mesma build ten que saír limpo.
+
+`audit:journeys` fai cada tarefa da app por cada xeito de chegar a ela —en frío, a app
+instalada, a busca, o mapa, o QR do poste, unha ligazón compartida, o teléfono bloqueado e
+volto a abrir— nun Android pequeno (360 × 640) e no iPhone máis grande (430 × 932), con toques
+de verdade. Conta toques, teclas, desprazamentos, escollas, pantallas e o que tarda a app en
+responder a cada paso; mide onde cae o dedo (o cuarto de arriba da pantalla é difícil cunha
+man), o tamaño do que toca e se algo o tapa ou se move xusto antes do toque; e cun teclado
+sobre o 41 % de abaixo da pantalla, se o campo e o que vén despois quedan á vista. Despois
+volve: o atrás do sistema ten que desfacer a viaxe pantalla a pantalla, pechando primeiro o
+que está enriba e co desprazamento e os campos como estaban, e só a última pulsación sae da
+app; a app instalada, que non ten o botón do navegador, vólvese cos seus propios controis. Unha
+recarga ten que caer na mesma pantalla, e un teléfono bloqueado dúas horas ten que amosar a
+hora de agora ao espertar. `JOURNEYS=full` engade castelán, inglés e o texto ao 200 %;
+`JOURNEY_SHOTS=cartafol`, unha foto de cada paso.
 
 O que `pnpm test` non pode ver: un Chromium real, dirixido por `tools/cdp.ts`, acelerado
 6× e con rede «Slow 4G», contra o sitio construído. `measure:browser` mide o que custa

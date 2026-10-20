@@ -86,9 +86,12 @@ const KINDS = {
   size: 'house bar: text under 12 px',
   target44: 'house bar: target under 44 px',
   room: 'house bar: under 48 px left between the bars',
+  flow: 'a task that cannot be finished: a step missing, covered or moving, or a screen with no way on (journeys.ts)',
+  back: 'back, reload and coming back to a locked phone: where they land (journeys.ts)',
+  thumb: 'house bar: a journey’s tap in the top quarter, or a field or its next step under the keyboard (journeys.ts)',
 } as const;
-type Kind = keyof typeof KINDS;
-const HOUSE: Kind[] = ['size', 'target44', 'room'];
+export type Kind = keyof typeof KINDS;
+const HOUSE: Kind[] = ['size', 'target44', 'room', 'thumb'];
 
 export interface Finding {
   kind: Kind;
@@ -112,21 +115,45 @@ const NIGHT = new Date(2026, 8, 29, 3, 0).getTime(); // the same day before the 
  */
 const PREPARE = `(() => {
   const at = location.hash.indexOf('#audit=');
-  if (at < 0) return;
-  const set = JSON.parse(decodeURIComponent(location.hash.slice(at + 7)));
-  history.replaceState(history.state, '', location.pathname + location.search);
+  let set;
+  if (at >= 0) {
+    set = JSON.parse(decodeURIComponent(location.hash.slice(at + 7)));
+    history.replaceState(history.state, '', location.pathname + location.search);
+    try { localStorage.clear(); sessionStorage.clear(); for (const [k, v] of Object.entries(set.stored)) localStorage.setItem(k, v); } catch (e) {}
+  } else if (window.name.startsWith('audit:')) {
+    // A reload of a prepared page, which is what journeys.ts measures: the clock goes on from
+    // where the page left it, carried in the tab's name, and what the page stored is left alone.
+    set = JSON.parse(window.name.slice(6));
+    if (!set.frozen) set.clock += Date.now() - set.realAt;
+  } else return;
   const Real = Date;
   let offset = set.clock - Real.now();
   let later = 0;
+  // Written on every change of the clock, since a reload does not wait for pagehide.
+  const keep = () => { window.name = 'audit:' + JSON.stringify({ ...set, stored: {}, clock: set.frozen ? set.clock + later : Real.now() + offset, realAt: Real.now() }); };
   // A setup can move the clock on: the ride asks whether the bus was caught only once its
   // departure has gone by, and the pulse of the next stop exists only on the bus.
-  window.__auditLater = (ms) => { offset += ms; later += ms; };
+  window.__auditLater = (ms) => { offset += ms; later += ms; keep(); };
+  // A phone locked for a while (journeys.ts): the page hidden, the time away gone by, the page
+  // shown again. Its timers carry on where they were, as on an iPhone, whose timers run on a
+  // clock that stops while the phone sleeps: only what the page does on being shown is new.
+  window.__auditLock = (ms) => {
+    Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+    Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+    offset += ms;
+    later += ms;
+    keep();
+    delete document.visibilityState;
+    delete document.hidden;
+    document.dispatchEvent(new Event('visibilitychange'));
+  };
   // Frozen, the clock does not tick at all: the buses on the map stand still, so two runs
   // photograph the same frame (visualDiff.ts).
   const now = () => (set.frozen ? set.clock + later : Real.now() + offset);
   class Pinned extends Real { constructor(...a) { if (a.length) super(...a); else super(now()); } static now() { return now(); } }
   window.Date = Pinned;
-  try { localStorage.clear(); sessionStorage.clear(); for (const [k, v] of Object.entries(set.stored)) localStorage.setItem(k, v); } catch (e) {}
+  keep();
   const where = set.geo === 'granted' ? { coords: { latitude: set.at[0], longitude: set.at[1], accuracy: 12 }, timestamp: Real.now() } : null;
   const answer = (ok, fail) => setTimeout(() => (where ? ok(where) : fail && fail({ code: 1, message: 'denied' })), 60);
   // Counted: PRIVACY.md says the position is asked for only where the reader asks for it.
@@ -641,7 +668,7 @@ async function axe(page: Session): Promise<{ findings: Finding[]; passed: number
 /* ------------------------------------------------------------------------------------- */
 
 /** One key, down and up, through the browser's own focus handling. */
-async function press(page: Session, key: string, code: number, modifiers = 0): Promise<void> {
+export async function press(page: Session, key: string, code: number, modifiers = 0): Promise<void> {
   const event = { key, code: key, windowsVirtualKeyCode: code, nativeVirtualKeyCode: code, modifiers };
   await page.send('Input.dispatchKeyEvent', { type: 'keyDown', ...event });
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...event });
@@ -839,7 +866,7 @@ async function traverse(page: Session, dialog: boolean): Promise<{ findings: Fin
 /* ------------------------------------------------------------------------------------- */
 
 /** In the page before every setup: find a control by what it says, type into a field, wait for something. */
-const REACH = `
+export const REACH = `
   // Shown, not only laid out: the map's sheet is visibility:hidden while closed and keeps its
   // boxes, and its own close button, "Pechar filtros e capas", came before the button that
   // opens it. Pressed instead, it closed a closed sheet, and the sheet was never audited.
@@ -886,7 +913,7 @@ const words = (d: typeof gl) => ({
   operatorSays: d.arrivals.operatorSaysTitle,
 });
 type Words = ReturnType<typeof words>;
-const DICT: Record<Lang, typeof gl> = { gl, es, en };
+export const DICT: Record<Lang, typeof gl> = { gl, es, en };
 
 export interface State {
   screen: 'paradas' | 'linhas' | 'mapa' | 'ruta' | 'avisos' | 'tarifas';
@@ -1830,5 +1857,5 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
 }
 // Under CI a run that audited nothing is a failure, or the gate passes by not looking: one that
 // could not start, and one launched in a way the line above does not recognise, which printed
-// nothing and exited 0. Only the photograph tool, which imports these states, is let off.
-if (!ran && process.env.CI && !/visualDiff\.ts$/.test(process.argv[1] ?? '')) process.exitCode = 1;
+// nothing and exited 0. Only the photograph and journey tools, which import from here, are let off.
+if (!ran && process.env.CI && !/(visualDiff|journeys)\.ts$/.test(process.argv[1] ?? '')) process.exitCode = 1;
