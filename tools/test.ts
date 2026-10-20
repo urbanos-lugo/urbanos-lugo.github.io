@@ -2881,9 +2881,10 @@ ok('a name bound for a map label arrives as text, whatever it contains', () => {
     assert(!/[<>"']/.test(out), `escapeHtml left markup in ${JSON.stringify(out)}`);
     assert(!/&(?!(lt|gt|quot|#39|amp);)/.test(out), `escapeHtml left a bare & in ${JSON.stringify(out)}`);
     assert(decode(out) === value, `escapeHtml lost something: ${JSON.stringify(value)} came back ${JSON.stringify(decode(out))}`);
-    // The line badge takes a colour into an attribute and a number into the element.
+    // The line badge takes a colour into an attribute and a number into the element; its
+    // classes are LineBadge's own, written by the code.
     const badge = badgeHtml(value, value);
-    assert(/^<span style="[^"<>]*">[^<>]*<\/span>$/.test(badge), `a hostile line colour or number broke out of the badge: ${badge}`);
+    assert(/^<span class="[\w .-]*" style="[^"<>]*">[^<>]*<\/span>$/.test(badge), `a hostile line colour or number broke out of the badge: ${badge}`);
   }
   assert(escapeHtml(null) === '' && escapeHtml(undefined) === '', 'a missing value is printed as text');
 });
