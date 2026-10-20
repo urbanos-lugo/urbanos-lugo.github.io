@@ -84,7 +84,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
     <div className={`py-5 px-cap-5 rounded-card border transition-all ${warning ? 'bg-warn/quiet border-warn' : 'bg-surface/quiet border-edge'}`}>
       {source && <span className="caps-label text-ink-3">{source}</span>}
       <div className="mb-2 mt-1 flex flex-wrap items-center justify-between gap-2">
-        <span className={`tag font-black uppercase tracking-caps ${warning ? 'bg-warn text-warn-ink' : 'bg-surface text-accent'}`}>{when}</span>
+        <span className={`tag uppercase tracking-caps ${warning ? 'bg-warn text-warn-ink' : 'bg-surface text-accent'}`}>{when}</span>
         {/* Under the date when both do not fit, rather than a third of the row: "Todas as liñas"
             ran 26 px off the screen at 200% text. */}
         <div className="ml-auto flex flex-wrap items-center gap-1 justify-end">

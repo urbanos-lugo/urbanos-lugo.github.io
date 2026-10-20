@@ -58,7 +58,7 @@ function Fact({ icon: Icon, label, children, title }: { icon: typeof Clock; labe
 function RunningBuses({ count, compact = false }: { count: number; compact?: boolean }) {
   const t = useT();
   return (
-    <span title={t.lines.enRouteHint} className={`flex items-center border border-edge bg-surface text-ink-2 ${compact ? 'shrink-0 gap-0.5 rounded-tag px-1.5 text-label font-bold' : 'tag gap-1'}`}>
+    <span title={t.lines.enRouteHint} className={`flex items-center bg-surface text-ink-2 ${compact ? 'shrink-0 gap-0.5 rounded-tag border border-edge px-1.5 text-label font-bold' : 'tag gap-1'}`}>
       <Bus className={`${compact ? 'h-2.5 w-2.5' : 'h-3 w-3'} text-ink-3`} aria-hidden="true" />
       {compact ? (
         <>
@@ -476,8 +476,8 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                         {/* The stop name is not shortened: it is the only thing on the row a reader has to match against a pole. */}
                         <div className="flex min-w-0 flex-wrap items-center gap-x-2">
                           <span className="min-w-0 break-words font-bold text-body text-ink transition-colors group-hover:text-accent">{stop.name}</span>
-                          {isFirst && <span className="tag shrink-0 px-1.5 bg-surface text-accent">{t.lines.origin}</span>}
-                          {isLast && <span className="tag shrink-0 px-1.5 bg-ink text-bg">{t.lines.destination}</span>}
+                          {isFirst && <span className="tag shrink-0 bg-surface text-accent">{t.lines.origin}</span>}
+                          {isLast && <span className="tag shrink-0 bg-ink text-bg">{t.lines.destination}</span>}
                         </div>
                         <div className="mt-0.5 break-words text-label text-ink-3">
                           {stop.zone}

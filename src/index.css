@@ -685,10 +685,11 @@
   /* A word tag: a short label on a small rounded tile, such as a line's name over its page, a
      category, origin and destination beside a stop, a fare's badge, a notice's date, a bus that
      will not stop here. No display of its own, so an inline tag in a block adds nothing to the
-     line box. The tone (fill and ink), capitals over a block, an edge, the tighter px-1.5 of the
-     tags set beside a name, and another weight are the caller's utilities. Times and line
-     numbers are not tags: they are the time chips and LineBadge. */
-  .tag { border-radius: var(--radius-tag); padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 2); font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-bold); }
+     line box. One box for all of them: bold, 8 px a side, and an edge in no colour, so forced
+     colours draw every tag the same; the padding gives the edge's pixel back, so the box is the
+     one they always had. The tone (fill and ink) and capitals over a block are the caller's
+     utilities. Times and line numbers are not tags: they are the time chips and LineBadge. */
+  .tag { border: var(--default-border-width) solid transparent; border-radius: var(--radius-tag); padding: calc(var(--spacing) * 0.5 - var(--default-border-width)) calc(var(--spacing) * 2 - var(--default-border-width)); font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: var(--font-weight-bold); }
 }
 
 /* Side padding that grows with the type only while the screen has room: never past what the
