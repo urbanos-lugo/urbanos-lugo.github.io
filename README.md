@@ -1044,6 +1044,10 @@ servizo que cruzan a medianoite.
    que calcula `walkRouter.ts` sobre a rede peonil que vai no propio paquete.
    **Mídense todas as opcións que se amosan**,
    non só a aberta, ou compararíaslas por estimacións e logo veríaas cambiar ao abrilas.
+   **E mídense antes de amosar a resposta**, cun segundo de marxe para a primeira carga da
+   rede peonil (se tarda máis, sae coa estimación e corríxese ao chegar): pintada coa liña
+   recta, a resposta cambiaba un instante despois de bus de cabeza, e «Vou nesta» baixaba
+   de diante dos tempos a debaixo deles, onde o dedo ía tocar.
    E, medidas, ordénanse outra vez coa mesma regra: a orde saía da estimación, e o 12 de 52
    minutos ás ~10:54 encabezaba diante do 1.2 de 22 ás ~10:51, porque o paseo do final
    medía 27 minutos onde a estimación dicía 22. Igual na 1.1.0, do 15 de setembro, e na

@@ -486,6 +486,11 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   cumprían: o formulario de Ruta pregábase animado baixo a resposta nova, e o seu primeiro
   cadro, pintado aínda aberto, durou 100–200 ms co traballo de despois da resposta. «Vou
   nesta» subía 259 px baixo o dedo (rolda 42).
+- **A resposta agarda a ter as camiñadas medidas, ata un segundo.** «Calculando» dura un
+  pouco máis a cambio de que a primeira resposta sexa a boa: coa estimación primeiro,
+  cambiaba de bus de cabeza un instante despois, e un toque rápido en «Vou nesta» collía
+  un bus que o paseo medido xa non alcanzaba. Pasado o segundo (a primeira carga da rede
+  peonil, nunha liña lenta) sae coa estimación, como antes.
 
 ## Quedou aberto
 

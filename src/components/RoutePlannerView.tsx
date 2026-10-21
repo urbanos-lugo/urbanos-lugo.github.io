@@ -7,7 +7,7 @@ import { changesNow, pastTimetable, runsUntil, setsOff, underNotice, type Notice
 import { stopById } from '../data/transitData';
 import { resolveLocationQuery, QUICK_DESTINATIONS } from '../utils/places';
 import { dayWord } from '../utils/serviceLabels';
-import { walkHopKey, walkHopsOf, type Hop } from '../services/walkingPath';
+import { fetchWalkingPath, walkHopKey, walkHopsOf, type Hop, type WalkPaths } from '../services/walkingPath';
 import { useRecentRoutes, type RecentRoute } from '../hooks/useStoredList';
 import { useWalkPaths } from '../hooks/useWalkPaths';
 import { useClock } from '../hooks/useClock';
@@ -30,6 +30,21 @@ const DEFAULT_DEST = 'Hospital Lucus Augusti (HULA)';
 const MAX_OPTIONS = 4;
 
 const toPoint = (r: { name: string; lat: number; lng: number } | null) => (r ? { name: r.name, lat: r.lat, lng: r.lng } : undefined);
+
+/** How long an answer waits for its walks to be measured before it shows on straight lines. */
+const WALKS_WAIT_MS = 1000;
+
+/**
+ * Every walked hop of these plans, routed on the device before the answer shows, or none if
+ * the walking network takes longer than WALKS_WAIT_MS to come (its first load, on a slow line).
+ */
+async function measureWalks(plans: RoutePlanResult[], ends: Endpoints): Promise<WalkPaths> {
+  const hops = new Map<string, Hop>();
+  for (const plan of plans) for (const hop of walkHopsOf(plan, ends.origin, ends.destination)) hops.set(walkHopKey(hop[0], hop[1]), hop);
+  const all = Promise.all([...hops].map(async ([key, [a, b]]) => [key, await fetchWalkingPath(a, b)] as const));
+  const done = await Promise.race([all, new Promise<null>((resolve) => setTimeout(() => resolve(null), WALKS_WAIT_MS))]);
+  return done ? Object.fromEntries(done) : {};
+}
 /** The moment a question is planned from, as planTrips reads it: now, or today at the time asked to leave. */
 const plannedFrom = (opts: { departAt?: number }): Date => {
   const at = new Date();
@@ -165,7 +180,10 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     for (const option of shownOptions) for (const hop of walkHopsOf(option, endpoints.origin, endpoints.destination)) seen.set(walkHopKey(hop[0], hop[1]), hop);
     return [...seen.values()];
   }, [shownOptions, endpoints]);
-  const walkPaths = useWalkPaths(allWalkHops);
+  /** The walks measured before the answer showed; the hook routes any the screen asks for after. */
+  const [walksFirst, setWalksFirst] = useState<WalkPaths>({});
+  const walksRouted = useWalkPaths(allWalkHops);
+  const walkPaths = useMemo(() => ({ ...walksFirst, ...walksRouted }), [walksFirst, walksRouted]);
 
   /**
    * The options worth offering. "Todo a pé" is built from the straight line and ranked
@@ -237,13 +255,19 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     // screen. A second tap meanwhile is the same question asked twice, and is dropped.
     calculatingRef.current = true;
     setCalculating(true);
-    afterPaint(() => {
+    afterPaint(async () => {
       try {
         setGpsRefused(false);
         const opts = { ...timeOptions(time.mode, time.at), userLocation: gps };
         askedRef.current = { orig, dest, opts };
         replannedRef.current = false;
         const plans = underNotice(changes, plannedFrom(opts), (skipsStop) => planTrips(orig, dest, { ...opts, lang, skipsStop }));
+        const ends = { origin: toPoint(resolveLocationQuery(orig, gps)), destination: toPoint(resolveLocationQuery(dest, gps)) };
+        // The walks measured before the answer shows. Shown on straight lines, it changed a moment
+        // later when they came: its headline bus, and «Vou nesta» from the top of the answer to
+        // below the times, under the finger about to tap it. Only the options shown, whose walks
+        // are all the ranking reads: a busy question's 82 plans were 33 hops, its four were 3.
+        setWalksFirst(await measureWalks(plans.slice(0, MAX_OPTIONS), ends));
         setPlanOptions(plans);
         setChosenOption(null);
         setQuestions((n) => n + 1);
@@ -254,7 +278,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
           onAnswer(lastTrip.current, inPlace);
         }
         if (plans.length) rememberRoute({ from: orig.trim(), to: dest.trim() });
-        setEndpoints({ origin: toPoint(resolveLocationQuery(orig, gps)), destination: toPoint(resolveLocationQuery(dest, gps)) });
+        setEndpoints(ends);
         setActiveInput(null);
       } finally {
         calculatingRef.current = false;
