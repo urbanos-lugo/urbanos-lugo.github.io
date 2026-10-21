@@ -112,11 +112,33 @@ export function useTabRoute(initial: Tab, lang: PathLang, scroller: RefObject<HT
   // a layer closing over the same screen: the scroll kept meanwhile went to the layer's entry.
   // Before, the box kept whatever it had: a line opened from far down the list opened 1,618 px
   // down its own page, with its back link off the top of the screen.
+  // A screen come back to is still settling for a moment -- the planner's form unfolding while
+  // its answer goes, which at 200 % text moved the scroll 75 px off where it was set -- so the
+  // scroll is held there for a second, and let go the moment a finger, a wheel or a key moves
+  // anything: a reader who scrolls at once takes over at once.
   const shown = useRef<Screen | null>(popped ? null : screen);
   useLayoutEffect(() => {
     if (shown.current && sameScreen(shown.current, screen)) return;
     shown.current = screen;
-    if (scroller.current) scroller.current.scrollTop = popped ? Number(window.history.state?.scroll ?? 0) : 0;
+    const box = scroller.current;
+    if (!box) return;
+    const want = popped ? Number(window.history.state?.scroll ?? 0) : 0;
+    box.scrollTop = want;
+    if (!popped) return;
+    let frame = 0;
+    const end = performance.now() + 1000;
+    const letGo = () => {
+      cancelAnimationFrame(frame);
+      for (const kind of ['pointerdown', 'wheel', 'keydown'] as const) box.removeEventListener(kind, letGo);
+    };
+    for (const kind of ['pointerdown', 'wheel', 'keydown'] as const) box.addEventListener(kind, letGo, { passive: true });
+    const hold = () => {
+      if (performance.now() > end) return letGo();
+      if (Math.abs(box.scrollTop - want) > 1) box.scrollTop = want;
+      frame = requestAnimationFrame(hold);
+    };
+    frame = requestAnimationFrame(hold);
+    return letGo;
   }, [screen, popped]);
 
   // The opening tab and a change of language replace the address rather than add a history
