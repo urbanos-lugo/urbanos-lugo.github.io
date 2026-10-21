@@ -213,6 +213,14 @@ o mapa, nomes incluídos, e non colle ningún toque. Ía no mesmo lenzo cás par
 debaixo segundo o que se repintase despois, e tocar a parada onde estabas abría un globo
 coa precisión, que o círculo xa debuxa.
 
+**Un dedo non é un punteiro.** Nun ecrán táctil cada parada e cada liña responden ata
+12 px alén do seu bordo: unha parada a zoom 16, ata 20 px do seu centro, e a escollida ata
+23. Antes un toque que fallaba o punto por uns píxeles caía na liña que pasa por el e abría
+«Liñas por aquí». Medido tocando arredor da parada escollida: a 12, 14 e 18 px, antes as
+liñas e agora a parada; a 21, a parada; a 25, as liñas. Se o toque cae ao alcance de dúas
+paradas ábrese a máis próxima ao dedo, non a debuxada de última, e o nome que o dedo abre
+enriba dunha parada xa non lle colle o toque: só o fai onde hai rato.
+
 O filtro **"preto de min"** amosa todas as liñas a menos de 750 m, cun panel lateral que
 lista cada unha coa distancia á súa parada máis próxima. Antes calculaba as oito liñas
 próximas e logo quedaba só coa primeira, así que dende Avda. Américas 88 vías a 8 e
@@ -1369,7 +1377,9 @@ globo dun bus (22 e 24 px), a caixa de «manter a pantalla acesa» (20 px, dentr
 etiqueta de 44) e, en inglés, o filtro «All» do mapa (35 px de ancho). E de noite, co
 escritorio ao 400 % (320 × 256), as barras e o aviso nocturno deixan 25 px para o contido.
 `audit:browser` lístaos en cada execución sen parar a CI, e ningún texto baixa de 12 px.
-Os pines do mapa (28–32 px) quedan fóra a propósito: un pin de 44 taparía a rúa.
+Os pines do mapa (28–32 px) quedan fóra a propósito: un pin de 44 taparía a rúa. Os puntos
+das paradas tampouco medran, e nun ecrán táctil responden ata 12 px alén do seu bordo: 40 px
+a zoom 16.
 
 **Modo escuro e escala do sistema.** **O tema por defecto é o escuro**, e claro ou automático lémbranse só se se escollen:
 isto lese de pé nun poste, moitas veces xa de noite, e un móbil en claro todo o día

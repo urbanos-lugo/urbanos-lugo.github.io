@@ -155,7 +155,7 @@ const PREPARE = `(() => {
   window.Date = Pinned;
   keep();
   const where = set.geo === 'granted' ? { coords: { latitude: set.at[0], longitude: set.at[1], accuracy: 12 }, timestamp: Real.now() } : null;
-  const answer = (ok, fail) => setTimeout(() => (where ? ok(where) : fail && fail({ code: 1, message: 'denied' })), 60);
+  const answer = (ok, fail) => setTimeout(() => (where ? ok(where) : fail && fail({ code: 1, message: 'denied' })), set.fixMs ?? 60);
   // Counted: PRIVACY.md says the position is asked for only where the reader asks for it.
   window.__auditGeo = 0;
   navigator.geolocation.getCurrentPosition = (ok, fail) => { window.__auditGeo++; answer(ok, fail); };
@@ -173,6 +173,8 @@ interface Prepared {
   geo: 'granted' | 'denied' | 'none';
   at: [number, number];
   frozen?: boolean;
+  /** How long a fix takes, in ms: a GPS's first can take seconds, and some code has to wait for one. */
+  fixMs?: number;
 }
 
 /** The keys PRIVACY.md says the app keeps on the device, by store: what a state leaves there is held to these. */

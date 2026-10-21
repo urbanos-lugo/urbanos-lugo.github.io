@@ -58,6 +58,15 @@ const LOCKED_MS = 2 * 60 * 60_000;
 const busiest = [...BUS_STOPS].sort((a, b) => b.lines.length - a.lines.length);
 const SCANNED = busiest.find((s) => s.officialToken === 'uilP') ?? busiest[0];
 const HOME = busiest[0];
+/**
+ * Two poles across a street, 15 to 25 m apart: at zoom 16 each lies inside the other's reach
+ * for a finger. The first of the dataset's order is drawn first, under its partner.
+ */
+const ACROSS = (() => {
+  const apart = (a: (typeof BUS_STOPS)[number], b: (typeof BUS_STOPS)[number]) => Math.hypot((a.lat - b.lat) * 111_320, (a.lng - b.lng) * 81_400);
+  for (const [i, a] of BUS_STOPS.entries()) for (const b of BUS_STOPS.slice(i + 1)) if (apart(a, b) > 15 && apart(a, b) < 25) return a;
+  throw new Error('no two poles across a street in the dataset');
+})();
 /** The last line of the list, which a reader scrolls to. */
 const FAR_LINE = BUS_LINES[BUS_LINES.length - 1];
 const REGULAR = {
@@ -80,8 +89,10 @@ type Step =
   /** Tap the field, empty it if asked (each character a key), type, and see what comes next above the keyboard. */
   | { type: string; text: string | { gl: string; es?: string; en?: string }; clear?: boolean; next?: string; wait?: string }
   | { enter: true; wait?: string }
-  /** A stop's dot on the map, the one nearest the middle: found on Leaflet's canvas by its colour, as the eye finds it. */
-  | { tapMap: 'stop'; wait?: string }
+  /** A stop's dot on the map, or the reader's own, the one nearest the middle: found on Leaflet's canvas by its colour, as the eye finds it. */
+  | { tapMap: 'stop' | 'me'; wait?: string }
+  /** A point this far from the middle of the map, in px: a finger that aims at what the map was opened on and lands a little off it. */
+  | { tapAt: [number, number]; wait?: string }
   | { wait: string; note?: string };
 
 interface Start {
@@ -90,6 +101,10 @@ interface Start {
   stored?: Record<string, string>;
   geo?: 'granted' | 'denied';
   at?: [number, number];
+  /** The first fix this long after it is asked for, as a GPS gives it, not in the audit's 60 ms. */
+  fixMs?: number;
+  /** Motion as most phones have it: every other journey asks for reduced motion, which steadies the pictures and hid a label that took a tap. */
+  motion?: true;
   night?: boolean;
 }
 
@@ -430,6 +445,69 @@ export const JOURNEYS: Journey[] = [
     steps: [tab('T.nav.map'), { tap: `labelled(T.map.myLocation)`, wait: `!labelled(T.map.locating)` }],
     answer: `[...document.querySelectorAll('[role=alert]')].find((e) => shown(e) && e.textContent.trim())`,
   },
+  {
+    task: 'the map, where am I',
+    entry: 'map tab, location allowed, at the stop',
+    // 30 m north of the pole, a fix a phone gives in a street. The dot for the position has to
+    // be there, and a tap on it is the stop's, the one thing there to open: the map opened
+    // with no dot at all, and the dot, under the stops or over them as they were last redrawn,
+    // took a tap for a popup of its own when it was over.
+    start: { geo: 'granted', at: [HOME.lat + 30 / 111_320, HOME.lng] },
+    steps: [
+      tab('T.nav.map'),
+      { tap: `labelled(T.map.stopFollowing) ? null : labelled(T.map.myLocation)`, optional: true, wait: `labelled(T.map.stopFollowing)` },
+      { wait: `labelled(T.map.stopFollowing) && new Promise((r) => setTimeout(() => r(true), 900))`, note: 'the map flies to the position' },
+      { tapMap: 'me', wait: `css('[role=dialog][aria-modal=true]')` },
+    ],
+    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === ${JSON.stringify(HOME.name)})`,
+  },
+  {
+    task: 'the map, where am I',
+    entry: 'map tab during a ride',
+    // The ride already reads the position, and a reader joining that watch is handed its last
+    // fix at once: before the map had re-rendered with its instance, and that fix, the only
+    // one a phone standing still gives, drew nothing.
+    start: { geo: 'granted', at: [HOME.lat + 30 / 111_320, HOME.lng] },
+    steps: [
+      tab('T.nav.plan'),
+      { tap: `all().filter(shown).find((b) => b.getAttribute('aria-pressed') !== null && b.textContent.trim() === 'Campus USC')`, wait: answerFigure },
+      { tap: `all().filter(shown).find((b) => b.textContent.trim() === T.companion.start)`, wait: `document.querySelector('main ol')`, stack: 'collapse' },
+      tab('T.nav.map'),
+      { tap: `labelled(T.map.stopFollowing) ? null : labelled(T.map.myLocation)`, optional: true, wait: `labelled(T.map.stopFollowing)` },
+      { wait: `labelled(T.map.stopFollowing) && new Promise((r) => setTimeout(() => r(true), 900))`, note: 'the map flies to the position' },
+      { tapMap: 'me', wait: `css('[role=dialog][aria-modal=true]')` },
+    ],
+    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === ${JSON.stringify(HOME.name)})`,
+  },
+  {
+    task: 'the map, where am I',
+    entry: 'map tab, location allowed, at one of two poles across a street',
+    // Standing at the pole drawn first: the finger lands on it and inside its partner's reach
+    // too, and Leaflet hands such a tap to whichever was drawn last, the other side's.
+    start: { geo: 'granted', at: [ACROSS.lat, ACROSS.lng] },
+    steps: [
+      tab('T.nav.map'),
+      { tap: `labelled(T.map.stopFollowing) ? null : labelled(T.map.myLocation)`, optional: true, wait: `labelled(T.map.stopFollowing)` },
+      { wait: `labelled(T.map.stopFollowing) && new Promise((r) => setTimeout(() => r(true), 900))`, note: 'the map flies to the position' },
+      { tapMap: 'me', wait: `css('[role=dialog][aria-modal=true]')` },
+    ],
+    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === ${JSON.stringify(ACROSS.name)})`,
+  },
+  {
+    task: 'a stop on the map',
+    entry: 'board, location allowed, a kilometre away',
+    // The map opens on the stop asked for, and a finger that misses it by 18 px still opens
+    // it. Once the position drew, its first fix took the map a kilometre from the stop; the
+    // miss opened the lines there; and with a reach, the stop's name, opened above it by the
+    // finger, took the tap for those lines.
+    start: { stored: REGULAR, geo: 'granted', at: [HOME.lat + 1000 / 111_320, HOME.lng], fixMs: 1500, motion: true },
+    steps: [
+      { tap: `[...document.querySelectorAll('main ul li button')].find(shown)`, wait: board },
+      { tap: `labelled(T.arrivals.map)`, stack: 'push', wait: `css('.leaflet-container') && new Promise((r) => setTimeout(() => r(true), 3000))` },
+      { tapAt: [0, -18], wait: `css('[role=dialog][aria-modal=true]')` },
+    ],
+    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === ${JSON.stringify(HOME.name)})`,
+  },
 
   /* --- Be told, keep, share --- */
   {
@@ -587,25 +665,26 @@ const LOCATE = `async function (T, expr, keyboard) {${HELP}
 }`;
 
 /**
- * The stop dot nearest the middle of the map, in CSS pixels: a disc of the stop colour on
- * Leaflet's canvas, clear of the chips along the top and the buttons along the bottom.
+ * The dots nearest the middle of the map, in CSS pixels: discs of a colour on Leaflet's
+ * canvas, a stop's or the reader's own, clear of the chips along the top and the buttons
+ * along the bottom.
  */
-export const STOP_DOT = `(() => {
+const dotsOf = (token: '--c-map-stop' | '--c-map-me') => `(() => {
   const map = [...document.querySelectorAll('.leaflet-container')].find((e) => e.getBoundingClientRect().width > 250);
-  const canvas = map && map.querySelector('.leaflet-overlay-pane canvas');
-  if (!canvas) return null;
+  // The reader's position has a pane of its own, over the canvas the stops are drawn on; it was drawn on that one.
+  const canvases = map ? [...map.querySelectorAll('.leaflet-overlay-pane canvas, .leaflet-reader-pane canvas')] : [];
+  if (!canvases.length) return [];
   const probe = document.createElement('canvas').getContext('2d');
-  probe.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--c-map-stop').trim();
+  probe.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('${token}').trim();
   probe.fillRect(0, 0, 1, 1);
   const [fr, fg, fb] = probe.getImageData(0, 0, 1, 1).data;
   // The part of the map on screen: turned sideways, the map is a card taller than the gap between the bars.
-  const box = canvas.getBoundingClientRect(), whole = map.getBoundingClientRect(), view = document.querySelector('main').getBoundingClientRect();
+  const whole = map.getBoundingClientRect(), view = document.querySelector('main').getBoundingClientRect();
   const area = { left: whole.left, right: whole.right, top: Math.max(whole.top, view.top), bottom: Math.min(whole.bottom, view.bottom) };
   area.width = area.right - area.left;
   area.height = area.bottom - area.top;
-  const k = canvas.width / box.width;
-  const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
-  const isStop = (x, y) => { const cx = Math.round((x - box.left) * k), cy = Math.round((y - box.top) * k); if (cx < 0 || cy < 0 || cx >= canvas.width || cy >= canvas.height) return false; const i = (cy * canvas.width + cx) * 4; return data[i + 3] > 200 && Math.abs(data[i] - fr) < 14 && Math.abs(data[i + 1] - fg) < 14 && Math.abs(data[i + 2] - fb) < 14; };
+  const read = canvases.map((canvas) => { const box = canvas.getBoundingClientRect(); return { canvas, box, k: canvas.width / box.width, data: canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data }; });
+  const isStop = (x, y) => read.some(({ canvas, box, k, data }) => { const cx = Math.round((x - box.left) * k), cy = Math.round((y - box.top) * k); if (cx < 0 || cy < 0 || cx >= canvas.width || cy >= canvas.height) return false; const i = (cy * canvas.width + cx) * 4; return data[i + 3] > 200 && Math.abs(data[i] - fr) < 14 && Math.abs(data[i + 1] - fg) < 14 && Math.abs(data[i + 2] - fb) < 14; });
   const mid = { x: area.left + area.width / 2, y: area.top + area.height / 2 };
   const found = [];
   // Clear of the chips and the buttons, which take a fixed share of a short map turned sideways.
@@ -619,6 +698,7 @@ export const STOP_DOT = `(() => {
   }
   return found.sort((a, b) => a.d - b.d).slice(0, 4).map(({ x, y }) => ({ x, y }));
 })()`;
+export const STOP_DOT = dotsOf('--c-map-stop');
 
 /** What is at the point the finger lands, and where the found element is now. */
 const AT_POINT = `function (x, y) {
@@ -733,12 +813,13 @@ async function open(w: Worker, j: Journey, phone: Phone, lang: Lang, theme: 'lig
   const metrics = PHONES[phone];
   await page.send('Emulation.setDeviceMetricsOverride', held.turned ? { ...metrics, width: metrics.height, height: metrics.width } : metrics);
   await page.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
-  await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: j.start.motion ? 'no-preference' : 'reduce' }] });
   const prepared = {
     clock: j.start.night ? NIGHT : DAY,
     stored: { ...(j.start.stored ?? {}), 'urbanos-lugo-lang': lang, 'urbanos-lugo-theme': theme },
     geo: j.start.geo ?? 'none',
     at: j.start.at ?? [43.0125, -7.5558],
+    fixMs: j.start.fixMs,
   };
   await page.goto('about:blank');
   await page.evaluate(`window.name = ''`);
@@ -885,11 +966,16 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     } else if ('enter' in step) {
       await press(page, 'Enter', 13);
       run.keys++;
+    } else if ('tapAt' in step) {
+      const at = await page.evaluate<{ x: number; y: number }>(`(() => { const m = [...document.querySelectorAll('.leaflet-container')].find((e) => e.getBoundingClientRect().width > 250).getBoundingClientRect(); return { x: m.left + m.width / 2 + ${step.tapAt[0]}, y: m.top + m.height / 2 + ${step.tapAt[1]} }; })()`);
+      run.zones[at.y < H * 0.25 ? 'hard' : at.y < H * 0.5 ? 'stretch' : 'easy']++;
+      await touch(page, at.x, at.y);
+      run.taps++;
     } else if ('tapMap' in step) {
       // The dots nearest the middle, one at a time, as a finger tries the next when one does not answer.
-      const dots = await page.evaluate<{ x: number; y: number }[]>(STOP_DOT);
+      const dots = await page.evaluate<{ x: number; y: number }[]>(step.tapMap === 'me' ? dotsOf('--c-map-me') : STOP_DOT);
       if (!dots.length) {
-        flow(`step ${i + 1}: no stop on the part of the map on screen`);
+        flow(`step ${i + 1}: no ${step.tapMap === 'me' ? "dot for the reader's position" : 'stop'} on the part of the map on screen`);
         break;
       }
       for (const [n, box] of dots.entries()) {
@@ -898,7 +984,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
         await touch(page, box.x, box.y);
         run.taps++;
         if ((await stepWait(page, T, step.wait, 900)).ok) break;
-        if (n === 0) thumb(`the stop dot nearest the middle of the map did not answer a tap`);
+        if (n === 0) thumb(`the ${step.tapMap === 'me' ? "reader's own dot" : 'stop dot nearest the middle of the map'} did not answer a tap`);
       }
       // Turned sideways at zoom 16 the names drawn beside the dots share their colour, and the
       // finder takes letters for dots; a stop tapped there does open (round 42, by hand).

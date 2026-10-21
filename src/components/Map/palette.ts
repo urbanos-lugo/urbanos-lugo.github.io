@@ -67,6 +67,12 @@ export const DRAW = {
   stopRadius: { overview: 4, z14: 5, z15: 6, z16: 7, nearby: 6, centre: 8, selected: 9 },
   stopRing: 2,
   selectedRing: 4,
+  /**
+   * How far past its edge a dot or a line answers a finger: a stop at zoom 16 is a 40 px
+   * target. Leaflet's own is none, and a tap a few px off a dot landed on its route and
+   * opened the lines there instead of the stop.
+   */
+  touchReach: 12,
   /** The reader's position, and the circle of its accuracy around it. */
   me: { radius: 8, ring: 3, fill: 0.95, accuracyRing: 1, accuracyStroke: 0.35, accuracyFill: 0.12 },
   /** The point a small map is about, drawn as filled as the reader's own. */

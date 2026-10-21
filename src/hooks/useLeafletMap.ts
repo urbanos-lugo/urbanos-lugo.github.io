@@ -40,8 +40,10 @@ export function useLeafletMap(containerRef: RefObject<HTMLDivElement | null>, { 
       zoom,
       zoomControl: false,
       scrollWheelZoom,
-      // Stops and routes are vector layers; one canvas beats hundreds of DOM nodes.
+      // Stops and routes are vector layers; one canvas beats hundreds of DOM nodes. A finger
+      // gets a reach past each one's edge that a mouse pointer does not need.
       preferCanvas: true,
+      renderer: L.canvas({ tolerance: window.matchMedia('(pointer: coarse)').matches ? DRAW.touchReach : 0 }),
       // The basemap layer has no maxZoom to give; without this the map zooms past any data.
       maxZoom: 19,
     });
@@ -123,7 +125,9 @@ function hoverableTooltips(map: L.Map): () => void {
     open = tooltip;
     const owner = (tooltip as unknown as { _source?: TooltipOwner })._source;
     const label = tooltip.getElement();
-    if (!owner || !label || tooltip.options.permanent) return;
+    // Not where nothing hovers: the label a tap opens over its stop took that tap, and the
+    // map under it answered with the lines there instead of the stop.
+    if (!owner || !label || tooltip.options.permanent || !window.matchMedia('(hover: hover)').matches) return;
     label.style.pointerEvents = 'auto';
     if (owner.hoverable) return;
     owner.hoverable = true;

@@ -96,10 +96,14 @@ export function StopLayer({ map, stops, visibleLineIds, selectedStop, showStops,
           { direction: 'top', offset: [0, DRAW.tooltip.lift], opacity: DRAW.tooltip.opacity, className: 'stop-hover-tooltip' },
         );
         // Claim the click: the route layer answers map clicks within twenty pixels of a
-        // line, and Leaflet runs layer handlers before the map's own.
+        // line, and Leaflet runs layer handlers before the map's own. The stop is the one
+        // nearest the finger: with a finger's reach two dots' circles overlap, and Leaflet
+        // hands the tap to whichever was drawn last.
         marker.on('click', (e: L.LeafletMouseEvent) => {
           (e.originalEvent as MouseEvent & { _stopClaimed?: boolean })._stopClaimed = true;
-          onTapStopRef.current(stop);
+          const finger = map.mouseEventToContainerPoint(e.originalEvent);
+          const away = (id: string) => map.latLngToContainerPoint(markersRef.current[id].getLatLng()).distanceTo(finger);
+          onTapStopRef.current(placed[Object.keys(placed).reduce((a, b) => (away(b) < away(a) ? b : a))]);
         });
         placed[stop.id] = stop;
         group.addLayer(marker);

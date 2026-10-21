@@ -474,6 +474,10 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - **A posición é información, non un control.** Debúxase nun panel propio por riba do
   lenzo, dos nomes e das frechas, e non colle toques; xa non abre o globo da precisión,
   que o círculo debuxa.
+- **Un dedo ten 12 px de alcance alén do bordo** de cada punto e liña; un rato, ningún. Ao
+  alcance de dúas paradas, a máis próxima ao dedo. As etiquetas que se abren ao pasar por
+  riba só collen o punteiro onde o hai (`hover: hover`): 1.4.13 é para iso, e nun teléfono
+  a etiqueta collía o toque da parada que nomeaba.
 
 ## Quedou aberto
 
