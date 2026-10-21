@@ -121,9 +121,16 @@ export default function App() {
     writeString(LANG_KEY, lang);
   }, [lang, activeTab]);
 
-  /** A tab from the bar, the menu or the search: what was last open on it, as a step of its own. */
+  /**
+   * A tab from the bar, the menu or the search: what was last open on it, as a step of its own.
+   * The tab already on screen, tapped again, goes to its first screen, and from there to its
+   * top, as a phone's own tab bars do: the way back from a board or a line was a link in the
+   * top corner, the furthest place from a thumb. Not the ride, which is the tab's screen.
+   */
   const goToTab = (tab: Tab) => {
-    if (tab !== activeTab) go({ ...(lastOn.current[tab] ?? { tab }), over: false });
+    if (tab !== activeTab) return go({ ...(lastOn.current[tab] ?? { tab }), over: false });
+    if ((screen.stop || screen.line || screen.trip) && !screen.ride) return screen.over ? window.history.back() : go({ tab }, true);
+    mainRef.current?.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   };
   /**
    * A stop's board or a line's page. Opened from its own tab's list it goes over the list, and

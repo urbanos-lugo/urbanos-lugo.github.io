@@ -1541,6 +1541,13 @@ estando no poste escanear a pegatina é o camiño máis curto que hai entre "est
 "estes son os meus tempos"). Catro destinos abaixo, ao alcance do polgar, de 60 px de
 alto. Lista ou detalle, nunca os dous apertados.
 
+O atrás do sistema —o botón do navegador, o xesto de Android— pecha primeiro o que está
+enriba (o menú, os favoritos, o lector do QR, as follas do mapa, as filas da busca), sae
+dunha parada, dunha liña ou dunha resposta antes de saír da pestana, e devolve cada
+pantalla co desprazamento e os campos como se deixaron; unha recarga cae na mesma pantalla.
+Cada pestana garda o que se deixou nela, e tocar outra vez a pestana na que se está leva á
+súa primeira pantalla, sen ir á esquina de arriba polo «volver».
+
 Non hai que rolar para facer o que se veu facer. O **mapa** vai primeiro e ocupa 62vh,
 coa fila de filtros asomando por debaixo: antes a barra lateral apilábase enriba e a
 pestana do mapa abría con 751 px de paneis e ningún mapa. Na **ruta**, o resumo —minutos,
