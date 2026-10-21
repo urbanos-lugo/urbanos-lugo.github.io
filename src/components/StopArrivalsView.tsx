@@ -12,6 +12,7 @@ import { LOCALE, useLang, useT } from '../i18n';
 import { newIssueUrl } from '../project';
 import { clockDriftFromTimetable, deviceTimeZone } from '../utils/clock';
 import { useOperatorTimes } from '../hooks/useOperatorTimes';
+import { onShown } from '../hooks/useClock';
 import { Approx, Provenance } from './ui/Provenance';
 import { LineBadge, lineTint } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
@@ -189,13 +190,18 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const lateLater = lateHere.filter((l) => !l.now);
   const skipsHere = (lineNumber: string) => closedHere.lines.includes(lineNumber);
 
-  // Recomputed every 15 s because the minutes count down against the wall clock; nothing is fetched, so no "last updated".
+  // Recomputed every 15 s because the minutes count down against the wall clock, and the moment
+  // the phone is woken; nothing is fetched, so no "last updated".
   useEffect(() => {
     const read = () => setArrivals(getArrivalsForStop(selectedStop.id, boardMoment()).arrivals);
     read();
     if (atTime) return; // a named time does not move
     const interval = setInterval(read, 15000);
-    return () => clearInterval(interval);
+    const unshown = onShown(read);
+    return () => {
+      clearInterval(interval);
+      unshown();
+    };
   }, [selectedStop.id, atTime]);
 
   /** Lines that pass close by but do not call here: with a long wait, two minutes' walk can be the answer. */
