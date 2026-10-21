@@ -8,7 +8,7 @@ import { useT } from '../i18n';
 import { LineBadge } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
 import { CountBadge } from './ui/CountBadge';
-import { IconButton } from './ui/controls';
+import { IconButton, asTyped } from './ui/controls';
 import { NameStack } from './ui/NameStack';
 import { asideSections, navSections, type Tab } from './navSections';
 import { useBackLayer } from '../hooks/useBackLayer';
@@ -128,6 +128,10 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
+            // The keyboard's search key puts the keyboard away, and the rows it covered with it.
+            {...asTyped}
+            enterKeyHint="search"
+            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
             maxLength={MAX_QUERY_LENGTH}
             placeholder={t.search.placeholder}
             aria-label={t.search.placeholder}

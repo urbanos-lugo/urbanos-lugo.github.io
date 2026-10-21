@@ -350,6 +350,13 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     },
     onPick: pick(role),
     onLeave: () => setActiveInput((current) => (current === role ? null : current)),
+    // The keyboard's key does what it says: the origin's "next" goes to the destination, the
+    // destination's "go" asks, where the button may be under the keyboard.
+    onEnter: () => {
+      setActiveInput(null);
+      if (role === 'origin') document.getElementById('input-dest-query')?.focus();
+      else calculate();
+    },
   });
 
   /** "Vou nesta": not for a walk, nor once the service is over; at headline size within ten minutes of the bus. */

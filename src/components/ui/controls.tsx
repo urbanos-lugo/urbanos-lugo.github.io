@@ -63,6 +63,13 @@ export function Scrim({ label, onClose, className }: { label: string; onClose: (
 }
 
 /**
+ * A field for a stop, a street, a line or a pole's code, which is no word in the keyboard's
+ * dictionary: left as typed, not corrected into one nor given a capital, and with none of the
+ * browser's own history laid over the app's suggestions. The field adds its return key.
+ */
+export const asTyped = { autoComplete: 'off', autoCorrect: 'off', autoCapitalize: 'off', spellCheck: false } as const;
+
+/**
  * A time to ask about, with its words in front: the planner's "depart at" or "arrive by"
  * (with the clock icon) and the board's "at another time". The field goes under the words
  * when both do not fit; the box around it is the caller's.

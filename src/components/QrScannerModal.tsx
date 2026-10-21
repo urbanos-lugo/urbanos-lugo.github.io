@@ -6,7 +6,7 @@ import { useT } from '../i18n';
 import { BusStop } from '../types';
 import { BUS_STOPS } from '../data/transitData';
 import { findStop } from '../utils/places';
-import { CloseButton, Notice } from './ui/controls';
+import { CloseButton, Notice, asTyped } from './ui/controls';
 import { DialogTitle } from './ui/DialogTitle';
 import { SectionLabel } from './ui/SectionLabel';
 
@@ -169,6 +169,8 @@ export function QrScannerModal({ isOpen, onClose, onSelectStop }: QrScannerModal
               setErrorMsg('');
             }}
             onKeyDown={(e) => e.key === 'Enter' && lookup()}
+            {...asTyped}
+            enterKeyHint="go"
             maxLength={MAX_QUERY_LENGTH}
             placeholder={t.qr.placeholder}
             // A name that stays when the example text goes, and the error said and tied to the

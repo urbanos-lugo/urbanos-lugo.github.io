@@ -9,7 +9,7 @@ import { getScheduledBuses } from '../utils/vehicles';
 import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDuration, type ScheduledRun } from '../utils/schedule';
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
-import { BackButton, ChoiceChip, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented } from './ui/controls';
+import { BackButton, ChoiceChip, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented, asTyped } from './ui/controls';
 import { Pane } from './ui/Pane';
 import { SectionTitle } from './ui/SectionTitle';
 import { Approx } from './ui/Provenance';
@@ -152,6 +152,9 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
               maxLength={MAX_QUERY_LENGTH}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              {...asTyped}
+              enterKeyHint="search"
+              onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
               placeholder={t.lines.searchLines}
               aria-label={t.lines.searchLines}
               className="field"

@@ -3,6 +3,7 @@ import { useT } from '../../i18n';
 import { MAX_QUERY_LENGTH } from '../../utils/searchUtils';
 import { rankLandmarks, rankStops } from '../../utils/places';
 import { PoleCode } from '../ui/PoleCode';
+import { asTyped } from '../ui/controls';
 
 /** One row of the origin/destination autocomplete: a real stop, or a named place. */
 export interface Suggestion {
@@ -40,6 +41,8 @@ interface PlaceFieldProps {
   onPick: (name: string) => void;
   /** The focus went somewhere outside this field and its rows. */
   onLeave: () => void;
+  /** The keyboard's own key: on to the destination from the origin, and the trip asked from the destination. */
+  onEnter: () => void;
   /** The origin's GPS button, or the destination's clear button. */
   trailing: { kind: 'gps'; locating: boolean; onClick: () => void } | { kind: 'clear'; onClick: () => void } | null;
 }
@@ -49,7 +52,7 @@ interface PlaceFieldProps {
  * control that fills or empties it, and the rows that open under it. The label is for a
  * screen reader; the placeholder already carries "street, place or stop".
  */
-export function PlaceField({ id, role, value, display, placeholder, label, suggestions, open, onChange, onFocus, onPick, onLeave, trailing }: PlaceFieldProps) {
+export function PlaceField({ id, role, value, display, placeholder, label, suggestions, open, onChange, onFocus, onPick, onLeave, onEnter, trailing }: PlaceFieldProps) {
   const t = useT();
   const first = role === 'origin';
   return (
@@ -75,6 +78,13 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
         value={display ?? value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
+        {...asTyped}
+        enterKeyHint={first ? 'next' : 'go'}
+        onKeyDown={(e) => {
+          if (e.key !== 'Enter') return;
+          e.preventDefault();
+          onEnter();
+        }}
         placeholder={placeholder}
         className={`anim-fade h-12 w-full bg-transparent pl-11 pr-12 text-body font-semibold text-ink placeholder:text-ink-3 focus:outline-hidden focus:ring-strong focus:ring-accent ${first ? 'focus:rounded-t-card' : 'focus:rounded-b-card'}`}
       />
