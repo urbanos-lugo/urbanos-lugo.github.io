@@ -37,6 +37,8 @@ interface LinesViewProps {
   /** What those notices change, read out of their words: this line's part shows when it holds today. */
   changes?: NoticeChanges | null;
   onOpenAlerts?: () => void;
+  /** False while another tab is on screen: the lines stay mounted, and their clock stops. */
+  visible?: boolean;
 }
 
 /** One fact about the line: an icon, a label and the value. */
@@ -74,14 +76,14 @@ function RunningBuses({ count, compact = false }: { count: number; compact?: boo
   );
 }
 
-export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelectStop, onViewLineOnMap, favoriteLineIds = [], onToggleFavoriteLine, notices = [], changes = null, onOpenAlerts }: LinesViewProps) {
+export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelectStop, onViewLineOnMap, favoriteLineIds = [], onToggleFavoriteLine, notices = [], changes = null, onOpenAlerts, visible = true }: LinesViewProps) {
   const t = useT();
   const lang = useLang();
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [directionIndex, setDirectionIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   /** "Which run is on the road now" is a function of the time, so it follows the clock. */
-  const now = useClock(TICK_MS);
+  const now = useClock(visible ? TICK_MS : null);
   const buses = useMemo(() => getScheduledBuses(now), [now]);
 
   const currentLine = selectedLine || BUS_LINES[0];

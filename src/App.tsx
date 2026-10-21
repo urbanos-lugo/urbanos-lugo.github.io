@@ -72,6 +72,13 @@ export default function App() {
    * style download every time — but nothing before the first: it is a lazy chunk.
    */
   const [mapEverOpened, setMapEverOpened] = useState(false);
+  /**
+   * The stops, the lines and the planner stay mounted too once opened, behind `hidden`, so a
+   * tab is as it was left: they were torn down at every change of tab, and with them an alarm
+   * set on a board, a warning on a departure, a planned trip and the lines' filter.
+   */
+  const opened = useRef(new Set<Tab>());
+  opened.current.add(activeTab);
   useEffect(() => {
     if (activeTab === 'map') setMapEverOpened(true);
   }, [activeTab]);
@@ -101,7 +108,7 @@ export default function App() {
   const noticeChanges = useMemo(() => readNoticeChanges(operatorNotices, now.getFullYear()), [alerts.data, alerts.snapshotAt, now]);
   // A festival night the notice extends: the timetable says nothing runs, and the banner must not.
   const runningTonight = isOutOfService ? (changesNow(noticeChanges, now)?.lines ?? []).filter((change) => runsAt(change, now)) : [];
-  /** The ride in progress, above the tabs: the planner is unmounted the moment the reader looks at the map. */
+  /** The ride in progress, above the tabs: it goes on whatever screen the reader looks at. */
   const companion = useTripCompanion(lang);
 
   const screenTitle = ({ stops: t.nav.stops, lines: t.nav.lines, map: t.nav.map, plan: t.nav.plan, info: t.menu.alerts, fares: t.menu.fares } satisfies Record<Tab, string>)[activeTab];
@@ -250,7 +257,8 @@ export default function App() {
               <h1 className="sr-only">{screenTitle}</h1>
 
               {/* Below lg the two panes take turns; from lg up the saved stops stay beside the board. */}
-              {activeTab === 'stops' && (
+              {opened.current.has('stops') && (
+                <div className={activeTab === 'stops' ? 'contents' : 'hidden'}>
                 <div className="page h-full lg:grid lg:grid-cols-12 lg:gap-6 lg:px-6 lg:pt-4">
                   <Pane side="list" shown={!boardStop}>
                     <StopHome favoriteStopIds={favoriteStopIds} favoriteLineIds={favoriteLineIds} onSelectLine={openLine} recentStopIds={recentStopIds} onClearRecent={clearRecentStops} onSelectStop={selectStop} onOpenQrScanner={() => setIsQrModalOpen(true)} />
@@ -271,10 +279,13 @@ export default function App() {
                     />
                   </Pane>
                 </div>
+                </div>
               )}
 
-              {activeTab === 'lines' && (
+              {opened.current.has('lines') && (
+                <div className={activeTab === 'lines' ? 'contents' : 'hidden'}>
                 <LinesView
+                  visible={activeTab === 'lines'}
                   selectedLine={BUS_LINES.find((l) => l.id === screen.line) ?? selectedLine}
                   lineOpen={!!screen.line}
                   onOpenLine={openLine}
@@ -287,6 +298,7 @@ export default function App() {
                   changes={noticeChanges}
                   onOpenAlerts={openAlerts}
                 />
+                </div>
               )}
 
               {mapEverOpened && (
@@ -303,10 +315,11 @@ export default function App() {
                 </div>
               )}
 
-              {activeTab === 'plan' &&
-                (companion.trip ? (
-                  <TripCompanionView companion={companion} />
-                ) : (
+              {/* The planner stays under the ride, with its answer, for when the ride is over. */}
+              {opened.current.has('plan') && (
+                <div className={activeTab === 'plan' ? 'contents' : 'hidden'}>
+                {companion.trip && <TripCompanionView companion={companion} />}
+                <div className={companion.trip ? 'hidden' : 'contents'}>
                   <RoutePlannerView
                     onSelectStop={selectStop}
                     onSelectLine={openLine}
@@ -326,7 +339,9 @@ export default function App() {
                     onEditTrip={() => (screen.over ? window.history.back() : go({ tab: 'plan' }, true))}
                     onShowAnswer={(trip) => go({ tab: 'plan', trip, over: true })}
                   />
-                ))}
+                </div>
+                </div>
+              )}
               {activeTab === 'info' && <AlertsView alerts={alerts} />}
               {activeTab === 'fares' && <FaresView />}
             </ErrorBoundary>
