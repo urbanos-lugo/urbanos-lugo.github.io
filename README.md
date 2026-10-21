@@ -1948,7 +1948,8 @@ instalada, a busca, o mapa, o QR do poste, unha ligazón compartida, o teléfono
 volto a abrir— nun Android pequeno (360 × 640) e no iPhone máis grande (430 × 932), con toques
 de verdade. Conta toques, teclas, desprazamentos, escollas, pantallas e o que tarda a app en
 responder a cada paso; mide onde cae o dedo (o cuarto de arriba da pantalla é difícil cunha
-man), o tamaño do que toca e se algo o tapa ou se move xusto antes do toque; e cun teclado
+man), o tamaño do que toca, se algo o tapa ou se move xusto antes do toque, e se se pintou
+noutro sitio antes de quedar quieto (cadro a cadro, pola súa posición na páxina); e cun teclado
 sobre o 41 % de abaixo da pantalla, se o campo e o que vén despois quedan á vista. Despois
 volve: o atrás do sistema ten que desfacer a viaxe pantalla a pantalla, pechando primeiro o
 que está enriba e co desprazamento e os campos como estaban, e só a última pulsación sae da

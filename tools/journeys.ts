@@ -647,6 +647,10 @@ const HELP = `${REACH}
 const LOCATE = `async function (T, expr, keyboard) {${HELP}
   const el = await (async () => (${'${expr}'}))();
   if (!el || el === true) return null;
+  // An entrance that is still running on it or around it, as the eye waits for it to land: a
+  // rise moves the box 6 px, and its first frame is drawn at the start even under reduced motion.
+  const arriving = () => { for (let n = el; n; n = n.parentElement) for (const a of n.getAnimations()) { const end = a.effect && a.effect.getComputedTiming().endTime; if (a.playState === 'running' && Number.isFinite(end)) return true; } return false; };
+  for (const until = performance.now() + 1500; arriving() && performance.now() < until; ) await pause(50);
   // Every box between it and the screen that scrolls: a list inside a sheet scrolls, and so does the sheet.
   const scrollers = [];
   for (let n = el.parentElement; n; n = n.parentElement) { const o = getComputedStyle(n).overflowY; if (/(auto|scroll)/.test(o) && n.scrollHeight > n.clientHeight + 1) scrollers.push(n); }
@@ -709,6 +713,45 @@ const AT_POINT = `function (x, y) {
   const who = hit ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().replace(/\\s+/g, ' ').slice(0, 40) : 'nothing';
   return { x: r.left + r.width / 2, y: r.top + r.height / 2, covered: ok ? null : who };
 }`;
+
+/**
+ * Where each control a tap brought is laid out in every frame drawn after it: its offset in
+ * the page, which neither a transform nor a scroll moves. A control first drawn in one place
+ * and then settled in another jumped under the eye, however short the first frame was; the
+ * check of the tap itself, a quarter of a second, saw a frame of 100 ms only by luck. Controls
+ * on screen before the tap are left out: a screen opening moves what it covers.
+ */
+const FRAMES = `(() => {
+  const label = (el) => (el.getAttribute('aria-label') || el.textContent || el.id || el.tagName).trim().replace(/\\s+/g, ' ').slice(0, 40);
+  const shown = () => {
+    const by = new Map();
+    for (const el of document.querySelectorAll('button, a[href], input, summary, [role=button], [role=link]')) {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      const l = label(el);
+      // Two controls saying the same are not told apart: neither is followed.
+      by.set(l, by.has(l) ? null : el);
+    }
+    return by;
+  };
+  let round = 0;
+  window.__laidOut = (el) => { let x = 0, y = 0; for (let n = el; n; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; } return [x, y]; };
+  window.__watchFrames = () => {
+    const mine = ++round, before = new Set(shown().keys()), drawn = new Map(), until = performance.now() + 4000;
+    window.__drawn = drawn;
+    const frame = () => {
+      if (mine !== round || performance.now() > until) return;
+      for (const [l, el] of shown()) {
+        if (!el || before.has(l)) continue;
+        const [x, y] = window.__laidOut(el), seen = drawn.get(l) || [], last = seen[seen.length - 1];
+        if (!last || last[0] !== x || last[1] !== y) seen.push([x, y]);
+        drawn.set(l, seen);
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  };
+})()`;
 
 /** A field's keyboard: its attributes, and where it and the next thing land with a keyboard over the bottom of the screen. */
 const KEYS = `function (keyboard, wanted) {
@@ -888,6 +931,8 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     if (now.gone) return null;
     if (Math.hypot(now.x - at.x, now.y - at.y) > 4) flow(`"${at.label}" moved ${Math.round(Math.hypot(now.x - at.x, now.y - at.y))} px between being seen and being tapped`);
     if (now.covered) flow(`"${at.label}" is under "${now.covered}" where the finger lands`);
+    const drewElsewhere = await page.evaluate<number>(`(() => { const el = window.__jt, seen = window.__drawn && window.__drawn.get(${JSON.stringify(at.label)}); if (!el || !seen || !window.__laidOut) return 0; const [x, y] = window.__laidOut(el); return Math.round(Math.max(...seen.map(([sx, sy]) => Math.hypot(sx - x, sy - y)))); })()`);
+    if (drewElsewhere > 4) flow(`"${at.label}" was drawn ${drewElsewhere} px from where it came to rest, before the finger got to it`);
     const zone = now.y < H * 0.25 ? 'hard' : now.y < H * 0.5 ? 'stretch' : 'easy';
     run.zones[zone]++;
     if (zone === 'hard') thumb(`"${at.label}" is tapped in the top quarter of the screen, at ${Math.round(now.y)} of ${H} px`);
@@ -896,6 +941,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     if (process.env.SCROLL_LOG) await page.evaluate(`(() => { const m = document.querySelector('main'); window.__sl = []; const t0 = performance.now(); if (!window.__slOn) { window.__slOn = 1; m.addEventListener('scroll', () => window.__sl.push(Math.round(performance.now() - t0) + 'ms ' + Math.round(m.scrollTop) + ' active=' + (document.activeElement && (document.activeElement.id || document.activeElement.tagName + '.' + String(document.activeElement.className).slice(0, 30)))), { passive: true }); } })()`);
     // Where the screen was scrolled when the finger left it, the reach for this tap included.
     scrolledAtTap = await page.evaluate<number>(`Math.round(document.querySelector('main').scrollTop)`);
+    await page.evaluate(`window.__watchFrames && window.__watchFrames()`);
     await touch(page, now.x, now.y);
     run.taps++;
     return at.label;
@@ -947,6 +993,8 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
         run.keys++;
         await sleep(40);
       }
+      // Rows that move while letters go in are the typing's; what moves after the last one is not.
+      await page.evaluate(`window.__watchFrames && window.__watchFrames()`);
       // What was typed is what the field holds, in a field the eye can read it in.
       const held = await page.evaluate<{ value: string; width: number }>(`({ value: window.__jt.value, width: Math.round(window.__jt.getBoundingClientRect().width) })`);
       if (!held.value.includes(text)) flow(`typing "${text}" into "${tapped}" gives "${held.value}"`);
@@ -964,6 +1012,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
         if (a.autocomplete !== 'off') thumb(`the field "${tapped}" lets the browser lay its own history over the app's suggestions (autocomplete "${a.autocomplete || 'default'}")`);
       }
     } else if ('enter' in step) {
+      await page.evaluate(`window.__watchFrames && window.__watchFrames()`);
       await press(page, 'Enter', 13);
       run.keys++;
     } else if ('tapAt' in step) {
@@ -1196,6 +1245,7 @@ export async function journeys(browser: Browser, passes: Pass[] = CORE): Promise
     Array.from({ length: Math.min(Number(process.env.AUDIT_PAGES ?? 4), todo.length) }, async () => {
       const w = await worker(browser);
       await w.page.onNewDocument(PROBE_SOURCE);
+      await w.page.onNewDocument(FRAMES);
       // Where the screen was when the app left it: the scroll at each step it adds to the history.
       await w.page.onNewDocument(`(() => { const push = history.pushState.bind(history); history.pushState = (s, t, u) => { const m = document.querySelector('main'); window.__leftAt = m ? Math.round(m.scrollTop) : null; push(s, t, u); }; })()`);
       const cpu = Number(process.env.JOURNEY_CPU ?? 1);
