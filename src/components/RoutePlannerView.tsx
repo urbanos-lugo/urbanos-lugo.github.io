@@ -475,9 +475,16 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 )}
               </div>
 
-              <button onClick={() => calculate()} aria-busy={calculating} className="btn btn-primary btn-lg mt-2 w-full">
-                {calculating ? (
-                  <span>
+              {/* The button keeps the size of its words while «Calculando» stands over them: at 200 %
+                  text "Calcular ruta" took two lines and «Calculando» one, and at the tap everything
+                  under the finger moved up a line, the shortcut just tapped with it. */}
+              <button onClick={() => calculate()} aria-busy={calculating} className="btn btn-primary btn-lg relative mt-2 w-full">
+                <span className={`flex items-center gap-2 ${calculating ? 'invisible' : ''}`}>
+                  <span>{t.planner.calculate}</span>
+                  <ArrowRight className="h-4.5 w-4.5 stroke-bold" aria-hidden="true" />
+                </span>
+                {calculating && (
+                  <span className="absolute inset-0 flex items-center justify-center">
                     {t.planner.calculating}
                     <span className="calc-dots" aria-hidden="true">
                       <span>.</span>
@@ -485,11 +492,6 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                       <span>.</span>
                     </span>
                   </span>
-                ) : (
-                  <>
-                    <span>{t.planner.calculate}</span>
-                    <ArrowRight className="h-4.5 w-4.5 stroke-bold" aria-hidden="true" />
-                  </>
                 )}
               </button>
             </div>
