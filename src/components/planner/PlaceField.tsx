@@ -1,4 +1,5 @@
 import { LocateFixed, MapPin, X } from 'lucide-react';
+import { useRef } from 'react';
 import { useT } from '../../i18n';
 import { MAX_QUERY_LENGTH } from '../../utils/searchUtils';
 import { rankLandmarks, rankStops } from '../../utils/places';
@@ -55,6 +56,8 @@ interface PlaceFieldProps {
 export function PlaceField({ id, role, value, display, placeholder, label, suggestions, open, onChange, onFocus, onPick, onLeave, onEnter, trailing }: PlaceFieldProps) {
   const t = useT();
   const first = role === 'origin';
+  /** The focus has just come in: the tap that brought it would put the caret down and undo the selection. */
+  const arriving = useRef(false);
   return (
     // The rows go when the Tab key takes the focus past them: left open, they lay over the
     // time and the calculate button, and the focus went on behind them (WCAG 2.4.11). Only a
@@ -77,7 +80,18 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
         type="text"
         value={display ?? value}
         onChange={(e) => onChange(e.target.value)}
-        onFocus={onFocus}
+        // Coming in, the place is selected, so what is typed replaces it: a field holding a
+        // place -- the planner opens on one, and a pick fills one -- took a backspace per letter
+        // first, 46 for the two it opens with. A second tap puts the caret down to edit.
+        onFocus={(e) => {
+          onFocus();
+          arriving.current = true;
+          e.currentTarget.select();
+        }}
+        onClick={(e) => {
+          if (arriving.current) e.currentTarget.select();
+          arriving.current = false;
+        }}
         {...asTyped}
         enterKeyHint={first ? 'next' : 'go'}
         onKeyDown={(e) => {
