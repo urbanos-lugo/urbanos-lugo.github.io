@@ -120,9 +120,10 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
       {open && suggestions.length > 0 && (
         <div className="anim-drop absolute left-0 right-0 top-full mt-1 bg-bg border border-edge rounded-control shadow-float z-dropdown divide-y divide-line max-h-suggestions-max overflow-y-auto">
           {suggestions.map((sug) => (
-            <button key={sug.id} type="button" onClick={() => onPick(sug.name)} className="w-full p-2.5 text-label hover:bg-surface cursor-pointer flex items-center justify-between gap-2 transition-colors text-left">
+            <button key={sug.id} type="button" onClick={() => onPick(sug.name)} className="w-full min-h-tap p-2.5 text-label hover:bg-surface cursor-pointer flex items-center justify-between gap-2 transition-colors text-left">
               {/* The name whole, on two lines when it needs them: cut, two poles of one street were
-                  the same row at 320 px and every row an ellipsis at 200 %. */}
+                  the same row at 320 px and every row an ellipsis at 200 %. And 44 px at least, like
+                  every row a thumb picks from: at 36 they were the smallest thing a trip is asked with. */}
               <div className="flex min-w-0 items-center gap-2">
                 <MapPin className={`w-3.5 h-3.5 shrink-0 ${first ? 'text-accent' : 'text-warn-ink'}`} />
                 <span className="min-w-0 break-words font-bold text-ink">

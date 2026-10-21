@@ -1349,7 +1349,7 @@ pasaron de **84 de 400 elementos a 0**, e `pnpm test` xa non deixa entrar unha c
 **Obxectivos táctiles e tipografía.** WCAG 2.2 pide 24 px ou espazo arredor (2.5.8), e
 cúmpreo todo o que se toca: `audit:browser` mídeo en cada estado. A barra desta casa é
 máis alta, 44 px, e non chega a todo. Por debaixo quedan as ligazóns da atribución do
-mapa (14 px, dentro dunha liña de texto), as suxestións do planificador (36–41 px), o
+mapa (14 px, dentro dunha liña de texto), o
 campo da hora do planificador e a súa etiqueta (32 px), o botón da liña e o × dentro do
 globo dun bus (22 e 24 px), a caixa de «manter a pantalla acesa» (20 px, dentro dunha
 etiqueta de 44) e, en inglés, o filtro «All» do mapa (35 px de ancho). E de noite, co
