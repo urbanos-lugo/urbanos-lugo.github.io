@@ -1740,6 +1740,10 @@ async function siteDataRefused(): Promise<Finding[]> {
 
 // Imported by visualDiff.ts for its states; run, it audits.
 let ran = false;
+// The run, not awaited at the top: the journeys are imported from inside it and import this
+// file, and with the run awaited here this file never finished loading, so that import waited
+// for the run that waited for it. audit:browser stopped at the journeys, the browser idle.
+let audit: Promise<unknown> = Promise.resolve();
 if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
   const quick = process.argv[2] === 'quick';
   const PASSES: Pass[] = quick
@@ -1753,7 +1757,7 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
   const PAGES = Number(process.env.AUDIT_PAGES ?? 4);
 
   const started = Date.now();
-  await withBrowser(async (browser) => {
+  audit = withBrowser(async (browser) => {
     ran = true;
     // For an edit loop: AUDIT_STATES and AUDIT_PASSES take a pattern for the state ("ruta/hora")
     // and the pass ("desktop"); the sequences after the states run whatever these say.
@@ -1797,6 +1801,9 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
     await sequence('reduced motion', () => motion(browser));
     await sequence('site data refused', () => siteDataRefused());
     await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
+    // Imported here and not at the top: journeys.ts builds its page helpers from this file's,
+    // which do not exist yet while this file is still being read.
+    await sequence('journeys: every task through every way in, by touch, on two phones, and back', async () => (await (await import('./journeys')).journeys(browser)).flatMap((run) => run.findings));
 
     // 3.2.3 and 2.4.2, across the states of a pass: the navigation is the same in the same
     // order everywhere, and each screen has a title of its own.
@@ -1860,4 +1867,11 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
 // Under CI a run that audited nothing is a failure, or the gate passes by not looking: one that
 // could not start, and one launched in a way the line above does not recognise, which printed
 // nothing and exited 0. Only the photograph and journey tools, which import from here, are let off.
-if (!ran && process.env.CI && !/(visualDiff|journeys)\.ts$/.test(process.argv[1] ?? '')) process.exitCode = 1;
+void audit
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  })
+  .finally(() => {
+    if (!ran && process.env.CI && !/(visualDiff|journeys)\.ts$/.test(process.argv[1] ?? '')) process.exitCode = 1;
+  });

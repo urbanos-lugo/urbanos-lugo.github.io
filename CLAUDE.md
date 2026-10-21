@@ -56,7 +56,10 @@ Offline, cheap, safe to run any time: `pnpm run data:build` (reshape `data/` int
 `pnpm run diagrams`. With a built server on 3002 (`pnpm build && PORT=3002 pnpm start`):
 `pnpm run measure:browser` and `pnpm run audit:browser`, which `.github/workflows/measure.yml`
 also runs weekly and keeps as an artifact (`audit:browser` is a CI gate too, see above;
-`AUDIT_STATES` / `AUDIT_PASSES` narrow a run, e.g. `AUDIT_STATES=ruta/hora`). A change
+`AUDIT_STATES` / `AUDIT_PASSES` narrow a run, e.g. `AUDIT_STATES=ruta/hora`). Inside it,
+and alone as `pnpm run audit:journeys`, every task through every way in on two phones, by
+touch, and the way back (`JOURNEYS=<pattern>` narrows, `JOURNEYS=full` adds the other
+languages, large text, the phone turned and offline; `JOURNEY_SHOTS=<dir>` photographs). A change
 that should not move a pixel is proved with `pnpm run visual:shoot <dir>` on the build
 before and after (each on its own port, `BASE=`), then `pnpm run visual:compare <before>
 <after> <out>`; about 27 minutes a shoot, and nothing else heavy running meanwhile.

@@ -220,6 +220,10 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    Chrome/Edge 111, Firefox 114, Safari e iOS 16.4. Do que está por riba do chan xa se
    protexe o código: `AbortSignal.timeout?.`, `wakeLock` só se existe, `vibrate?.`, mapa
    ráster sen WebGL2. O que queda é a proba nun iPhone real, coa lista de abaixo.*
+   *Desde o 21 de outubro de 2026 a proba ten guión: `design/PROBA-no-telefono.md`, media
+   hora nun iPhone e noutra nun Android, co que a emulación da rolda 42 non alcanza (o
+   xesto de atrás de cada sistema, un teclado de verdade, o bloqueo, a app instalada, as
+   zonas seguras, a letra do sistema e o mapa co dedo e co GPS).*
 2. **Volver mirar os buscadores** nunhas semanas, cousa do dono: en Search Console, que
    «Páxinas» amose as seis; en Bing Webmaster, que o escaneo do sitio xa non avise de
    «H1 tag missing» (arranxado o 16 de setembro cun `<h1>` estático en cada copia).

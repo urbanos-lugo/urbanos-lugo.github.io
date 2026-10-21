@@ -170,9 +170,10 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
     'pnpm run data:build && git diff --exit-code --stat -- src/data', 'pnpm run build', 'pnpm test',
     'PORT=3002 node dist-server/server.cjs > server.log 2>&1 &\nfor i in $(seq 1 30); do curl -sf http://localhost:3002/ > /dev/null && break; sleep 1; done\npnpm run audit:browser',
   ], 'ci.yml no longer runs the gates, this check, the dataset rebuild, the suite against the build and the browser audit, in that order');
-  // The audit is a gate only if a finding fails it and a run that never started fails it too.
+  // The audit is a gate only if a finding fails it and a run that never started fails it too:
+  // the guard waits for the run (`.finally`), which is not awaited at the top of its module.
   const audit = read('tools/auditBrowser.ts');
-  assert(/if \(gated\.length\) process\.exitCode = 1;/.test(audit) && /^if \(!ran && process\.env\.CI\b/m.test(audit), 'the browser audit passes CI with findings, or without running');
+  assert(/if \(gated\.length\) process\.exitCode = 1;/.test(audit) && /\.finally\(\(\) => \{\s*if \(!ran && process\.env\.CI\b/.test(audit), 'the browser audit passes CI with findings, or without running');
   // And that last line stands outside the condition that decides whether the file runs as the
   // audit: inside it, a launch the condition did not recognise printed nothing and exited 0.
   assert(/^let ran = false;$/m.test(audit) && /^if \(process\.argv\[1\] && \/auditBrowser\\\.ts\$\/\.test\(process\.argv\[1\]\)\) \{$/m.test(audit), 'the audit’s CI safety net is back inside the condition it guards');

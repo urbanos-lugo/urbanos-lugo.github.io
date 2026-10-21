@@ -1945,8 +1945,9 @@ volve: o atrás do sistema ten que desfacer a viaxe pantalla a pantalla, pechand
 que está enriba e co desprazamento e os campos como estaban, e só a última pulsación sae da
 app; a app instalada, que non ten o botón do navegador, vólvese cos seus propios controis. Unha
 recarga ten que caer na mesma pantalla, e un teléfono bloqueado dúas horas ten que amosar a
-hora de agora ao espertar. `JOURNEYS=full` engade castelán, inglés e o texto ao 200 %;
-`JOURNEY_SHOTS=cartafol`, unha foto de cada paso.
+hora de agora ao espertar. As dúas pasadas de base van tamén dentro de `audit:browser`, e
+con el na porta de CI. `JOURNEYS=full` engade castelán, inglés, o texto ao 200 %, o
+teléfono de lado e sen rede; `JOURNEY_SHOTS=cartafol`, unha foto de cada paso.
 
 O que `pnpm test` non pode ver: un Chromium real, dirixido por `tools/cdp.ts`, acelerado
 6× e con rede «Slow 4G», contra o sitio construído. `measure:browser` mide o que custa
