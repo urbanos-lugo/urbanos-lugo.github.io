@@ -137,17 +137,24 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
             aria-label={t.search.placeholder}
             className="h-full min-w-0 flex-1 bg-transparent text-body text-ink outline-hidden placeholder:text-ink-3"
           />
-          {q.length > 0 && (
+          {/* While something is typed, the way to clear it takes the place of the saved stops and
+              the scanner, which come back with an empty box. All three beside the words left the
+              words 74 px of a 360 px phone, and with the text at 200 % none: the field was 0 px
+              wide, and each letter went in before the last. */}
+          {q.length > 0 ? (
             <button onClick={choose(() => {})} className="flex h-tap-bar w-tap-bar shrink-0 items-center justify-center text-ink-3" aria-label={t.search.clear}>
               <X className="h-4.5 w-4.5" aria-hidden="true" />
             </button>
+          ) : (
+            <>
+              <button onClick={onOpenFavorites} className="ml-auto flex h-tap-bar w-tap-bar shrink-0 items-center justify-center border-l border-line text-ink-2" aria-label={t.favourites.title} title={t.favourites.title}>
+                <Star className={`h-4.5 w-4.5 stroke-filled ${savedCount > 0 ? 'text-warn-ink' : ''}`} fill={savedCount > 0 ? 'currentColor' : 'none'} aria-hidden="true" />
+              </button>
+              <button onClick={onOpenQrScanner} className="flex h-tap-bar w-tap-bar shrink-0 items-center justify-center border-l border-line text-ink-2" aria-label={t.search.qr} title={t.search.qr}>
+                <QrCode className="h-4.5 w-4.5" aria-hidden="true" />
+              </button>
+            </>
           )}
-          <button onClick={onOpenFavorites} className="ml-auto flex h-tap-bar w-tap-bar shrink-0 items-center justify-center border-l border-line text-ink-2" aria-label={t.favourites.title} title={t.favourites.title}>
-            <Star className={`h-4.5 w-4.5 stroke-filled ${savedCount > 0 ? 'text-warn-ink' : ''}`} fill={savedCount > 0 ? 'currentColor' : 'none'} aria-hidden="true" />
-          </button>
-          <button onClick={onOpenQrScanner} className="flex h-tap-bar w-tap-bar shrink-0 items-center justify-center border-l border-line text-ink-2" aria-label={t.search.qr} title={t.search.qr}>
-            <QrCode className="h-4.5 w-4.5" aria-hidden="true" />
-          </button>
         </div>
         {/* The same badge as the drawer row: the count was only inside the drawer, so on a phone it existed for whoever opened the menu. */}
         <IconButton bar icon={Menu} onClick={onOpenMenu} label={alertCount > 0 ? `${t.menu.open}. ${t.menu.alerts}: ${alertCount}` : t.menu.open} className="relative shrink-0 lg:hidden">
