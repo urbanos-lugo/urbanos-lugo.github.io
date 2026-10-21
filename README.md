@@ -1583,7 +1583,11 @@ súa primeira pantalla, sen ir á esquina de arriba polo «volver».
 
 Non hai que rolar para facer o que se veu facer. O **mapa** vai primeiro e ocupa 62vh,
 coa fila de filtros asomando por debaixo: antes a barra lateral apilábase enriba e a
-pestana do mapa abría con 751 px de paneis e ningún mapa. Na **ruta**, o resumo —minutos,
+pestana do mapa abría con 751 px de paneis e ningún mapa. Iso é nunha tableta; nun
+teléfono o mapa enche o oco entre as barras, tamén de lado. Co teléfono de lado collía a
+tarxeta da tableta, porque só se miraba o ancho: 378 px de mapa nunha pantalla de 222, co
+botón de localizarse 157 px por debaixo do bordo e o zoom 150. A tarxeta vai agora onde
+cabe, polo menos 640 × 576 px. Na **ruta**, o resumo —minutos,
 saída, chegada— vai antes das alternativas e do mapa; ao responder, o formulario prégase
 a unha liña co traxecto e os destinos rápidos retíranse, porque son para escoller, non
 para ler unha resposta. A pantalla abre cun traxecto de exemplo xa calculado, que en

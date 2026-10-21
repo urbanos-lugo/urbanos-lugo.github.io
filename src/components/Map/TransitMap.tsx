@@ -195,8 +195,8 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
 
   return (
     // No page padding on a phone: the map is the screen there, edge to edge.
-    <div className="page map-gutter h-full sm:h-auto">
-      <div className="h-full sm:h-auto grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+    <div className="page map-gutter h-full card:h-auto">
+      <div className="h-full card:h-auto grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {sheetOpen && <Scrim label={t.map.closeControls} onClose={closeSheet} className="fixed z-map-overlay lg:hidden" />}
 
         <MapControls
@@ -220,9 +220,9 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
           onOpenLine={onOpenLine}
         />
 
-        <div className="h-full sm:h-auto order-1 lg:order-none lg:col-span-8">
-          {/* The map is the screen on a phone; the card, the border and the fixed height come back at `lg`. */}
-          <div className="h-map-viewport relative z-0 w-full overflow-hidden bg-surface sm:rounded-card sm:border sm:border-edge sm:shadow-raised">
+        <div className="h-full card:h-auto order-1 lg:order-none lg:col-span-8">
+          {/* The map is the screen on a phone, upright or turned; the card, the border and the fixed height come back where one fits. */}
+          <div className="h-map-viewport relative z-0 w-full overflow-hidden bg-surface card:rounded-card card:border card:border-edge card:shadow-raised">
             <div ref={containerRef} className="w-full h-full" />
 
             {/* The scope, not the one line picked out of it: the layer keeps the rest faint underneath. The stops narrow to the pick: 417 dots is clutter. */}

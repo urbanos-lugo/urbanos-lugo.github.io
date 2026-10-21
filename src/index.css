@@ -27,6 +27,10 @@
  * ------------------------------------------------------------------------ */
 
 @custom-variant dark (&:where(.dark, .dark *));
+/* Room for the map as a card: as wide as `sm` and tall enough to hold it. A phone turned
+   sideways is as wide as a small tablet and not half as tall, and the card, 380 px at the
+   least, ran below the fold with the reader's dot, the zoom and the locate button. */
+@custom-variant card (@media (width >= 40rem) and (height >= 36rem));
 
 :root {
   /* surfaces */
@@ -598,7 +602,7 @@
      The map is full-bleed on a phone and framed from sm. */
   .page-gutter { padding-inline: min(calc(var(--spacing) * 3.5), calc(var(--cap-step) * 3.5)); @variant lg { padding-inline: calc(var(--spacing) * 6); } }
   .page-bleed { margin-inline: calc(-1 * min(calc(var(--spacing) * 3.5), calc(var(--cap-step) * 3.5))); padding-inline: min(calc(var(--spacing) * 3.5), calc(var(--cap-step) * 3.5)); @variant lg { margin-inline: calc(-1 * calc(var(--spacing) * 6)); padding-inline: calc(var(--spacing) * 6); } }
-  .map-gutter { @variant sm { padding: calc(var(--spacing) * 5) calc(var(--spacing) * 6); } @variant lg { padding-inline: calc(var(--spacing) * 8); } }
+  .map-gutter { @variant card { padding: calc(var(--spacing) * 5) calc(var(--spacing) * 6); } @variant lg { padding-inline: calc(var(--spacing) * 8); } }
 
   /* A row of choice chips that scrolls sideways without a bar; where it wraps instead is each
      row's own (a breakpoint at the call). */
@@ -771,13 +775,12 @@
    * resolve against — `display: contents` on the wrapper between them generates no box, so
    * it does not interrupt it.
    *
-   * It stops at `sm`, where the map goes back to being a card in a two-column page.
+   * It stops where there is room for a card (`card`, above): wide and tall. Wide alone, a
+   * phone turned sideways got the card, taller than the screen.
    */
   .h-map-viewport {
     height: 100%;
-  }
-  @media (min-width: 40rem) {
-    .h-map-viewport {
+    @variant card {
       height: var(--spacing-map-tablet);
       min-height: var(--spacing-map-tablet-min);
     }
