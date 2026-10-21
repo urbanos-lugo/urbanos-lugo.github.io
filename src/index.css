@@ -77,11 +77,12 @@
 
   /* The map's own colours. Leaflet bakes a colour into a layer when it makes the layer, so
      Map/palette.ts reads these off <html> once per theme. The names written beside the dots
-     are the app's ink, haloed in its ground. The accent stays off the map: several lines
-     are red, and a red marker would vanish on its own line (DECIDIDO, 27 August). */
+     are the app's ink, haloed in its ground, and the stop chosen is a ring of that ink: blue
+     is the reader's position alone. The accent stays off the map: several lines are red,
+     and a red marker would vanish on its own line (DECIDIDO, 27 August). */
   --c-map-stop: #4d4541;
   --c-map-ring: #ffffff;
-  --c-map-selected: #0c72cb;
+  --c-map-selected: var(--c-ink);
   --c-map-name: var(--c-ink);
   --c-map-halo: var(--c-bg);
   --c-map-me: #08569a;
@@ -122,7 +123,6 @@
 
   --c-map-stop: #b9b3af;
   --c-map-ring: #191514;
-  --c-map-selected: #57a8ff;
   --c-map-me: #82bcfc;
   --c-map-walk: #d0c9c7;
   --c-map-walk-guess: #9e9694;

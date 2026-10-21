@@ -204,6 +204,10 @@ preto. Ata a rolda 42 o botón dicía «Deixar de seguirme» sobre un mapa sen p
 centrar: o seguimento arrancaba antes de que o mapa existise e non o volvía mirar. Aberto
 desde «Ver no mapa» dunha parada, en cambio, o mapa queda nesa parada: é o que pediches.
 
+**A parada escollida é un anel de tinta** arredor do fondo, a tinta que na app quere dicir
+«escollido», e o azul do mapa é só o punto da túa posición. Antes eran dous discos azuis de
+9 e 8 px que, xunto a un poste, se montaban un enriba do outro e só os separaba o ton.
+
 O filtro **"preto de min"** amosa todas as liñas a menos de 750 m, cun panel lateral que
 lista cada unha coa distancia á súa parada máis próxima. Antes calculaba as oito liñas
 próximas e logo quedaba só coa primeira, así que dende Avda. Américas 88 vías a 8 e

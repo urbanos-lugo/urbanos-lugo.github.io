@@ -41,7 +41,7 @@ de afirmar. Cada decisión de abaixo se tomou contra unha cifra, non contra un g
   transicións conxeladas: sen iso saen falsos negativos de 1,4:1.
 - **O acento non aparece no mapa.** Varias liñas son vermellas; un marcador vermello
   desaparecería xusto na ruta que marca. `stopSelected` e o punto de posición quedan
-  azuis por iso.
+  azuis por iso. *Ata o 21 de outubro: a parada escollida pasou a tinta (abaixo).*
 - **O filete dos bordos queda en 1,37:1**, por baixo do que pediría a norma para o
   contorno dun control. Subilo cambia o peso visual de toda a app e non se pediu. Segue
   aberto, a propósito.
@@ -462,6 +462,15 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   dous flotan sobre o mapa. Os cantos non: unha barra de dous botóns non é un círculo.
 - **Os favoritos baleiros quedan coa tarxeta descontinua** das outras pantallas baleiras.
 - **A paleta do mapa base segue fóra dos tokens** (8 e 9 de setembro, arriba).
+
+## O punto da parada e o da posición — 21 de outubro de 2026
+
+- **A parada escollida é un anel de tinta arredor do fondo**, coma unha estación nun plano
+  de metro; o azul do mapa é só a posición do lector. Eran dous discos azuis, de 9 e 8 px,
+  co mesmo filete branco: xunto a un poste montábanse un sobre o outro e só os separaba o
+  ton (as fotos, na rolda 42). Segue sen vermello, pola razón do 27 de agosto, e a tinta é
+  a do 20 de outubro: di «escollido» sen pedir prestado ningún significado. Tamén a parada
+  do mapa pequeno, que antes era o mesmo disco azul ca o lector.
 
 ## Quedou aberto
 

@@ -6,8 +6,11 @@ import type L from 'leaflet';
  * `var(--c-ink)` in a layer's options would freeze to whatever it meant at that moment; the
  * map asks again for each palette, and each answer is kept.
  *
- * The greys are the app's neutrals and the blues its official blue. The accent red stays
- * off the map: several route lines are red and a red marker would vanish on its own line.
+ * The greys are the app's neutrals. Blue is the reader's position and nothing else: the stop
+ * chosen is a ring of the app's ink round the ground, as a station is drawn. Both were blue
+ * discs, 9 and 8 px, and standing at a pole the two lay one over the other with only their
+ * shade to tell them apart. The accent red stays off the map: several route lines are red
+ * and a red marker would vanish on its own line.
  * Stop discs are 8.4:1 over their ground — crisp, but no longer shouting over the route,
  * which at 1.9–3.9:1 is the shape the map is for.
  */
@@ -63,7 +66,7 @@ export const DRAW = {
   /** A stop's dot: by zoom on the network map, the ride's calls, the small map's stops and its centre, and the one chosen. */
   stopRadius: { overview: 4, z14: 5, z15: 6, z16: 7, nearby: 6, centre: 8, selected: 9 },
   stopRing: 2,
-  selectedRing: 3,
+  selectedRing: 4,
   /** The reader's position, and the circle of its accuracy around it. */
   me: { radius: 8, ring: 3, fill: 0.95, accuracyRing: 1, accuracyStroke: 0.35, accuracyFill: 0.12 },
   /** The point a small map is about, drawn as filled as the reader's own. */
@@ -86,12 +89,12 @@ export const DRAW = {
   busesOver: 1000,
 } as const;
 
-/** The Leaflet options for a stop dot, the same pair on every map so a stop looks like a stop wherever it is drawn. */
+/** The Leaflet options for a stop dot, the same pair on every map so a stop looks like a stop wherever it is drawn; the one chosen turned inside out. */
 export const stopDotStyle = (colors: MapColors, radius: number, selected = false): L.CircleMarkerOptions => ({
   radius: selected ? DRAW.stopRadius.selected : radius,
-  color: colors.stopStroke,
+  color: selected ? colors.stopSelected : colors.stopStroke,
   weight: selected ? DRAW.selectedRing : DRAW.stopRing,
-  fillColor: selected ? colors.stopSelected : colors.stopFill,
+  fillColor: selected ? colors.stopStroke : colors.stopFill,
   fillOpacity: 1,
 });
 
