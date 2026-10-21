@@ -27,7 +27,6 @@ import { PATHS, isCrawler, pickLang, type Tab } from './routes';
 import { pageHead } from './seo';
 import { networkAtRest } from './utils/arrivals';
 import { dayWord } from './utils/serviceLabels';
-import { findStop } from './utils/places';
 import { readString, writeString } from './utils/storage';
 import { sectionedNotices } from './utils/operatorNotices';
 import { changesNow, latestRun, readNoticeChanges, runsAt } from './utils/noticeChanges';
@@ -57,8 +56,8 @@ export default function App() {
   /** What was last open on each tab, so the bar goes back to it, as the stops tab always did with its board. */
   const lastOn = useRef<Partial<Record<Tab, Screen>>>({});
   lastOn.current[activeTab] = screen;
-  // The board needs a stop from the first render, so it opens on the busiest interchange.
-  const [selectedStop, setSelectedStop] = useState<BusStop>(() => [...BUS_STOPS].sort((a, b) => b.lines.length - a.lines.length)[0]);
+  // The board needs a stop from the first render: the one the entry or the link names, else the busiest interchange.
+  const [selectedStop, setSelectedStop] = useState<BusStop>(() => (screen.stop && stopById(screen.stop)) || [...BUS_STOPS].sort((a, b) => b.lines.length - a.lines.length)[0]);
   /** The map must not draw that default as chosen: a big blue dot on a stop nobody picked. */
   const [stopWasChosen, setStopWasChosen] = useState(false);
   /** What the reader asked the map to show, so it can stop guessing between its stop and its line. */
@@ -165,22 +164,6 @@ export default function App() {
     go({ tab: 'map' });
   };
   const openAlerts = () => go({ tab: 'info' });
-
-  // Direct QR links (`?parada=xRiq`, `?stop=101`) and shared lines (`?linea=`), resolved the way
-  // the scanner resolves them, in place of the entry they arrived on: as a step of their own
-  // they left the first back press on a screen nobody had seen, the stops tab under a line.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const stopParam = params.get('parada') || params.get('stop') || params.get('qr') || params.get('ps');
-    const lineParam = params.get('linea') || params.get('line');
-    const stop = stopParam && findStop(stopParam);
-    const line = lineParam && BUS_LINES.find((l) => l.id.toLowerCase() === lineParam.toLowerCase() || l.number.toLowerCase() === lineParam.toLowerCase());
-    if (stop) setSelectedStop(stop);
-    if (line) {
-      setSelectedLine(line);
-      go({ tab: 'lines', line: line.id }, true);
-    } else if (stop) go({ tab: 'stops', stop: stop.id, qr: true }, true);
-  }, []);
 
   // The ride is above the tabs, and the planner's entries under it are no screens any more: back
   // from the ride goes to wherever the reader was before the planner, not onto the ride again.
@@ -331,7 +314,7 @@ export default function App() {
                     }}
                     changes={noticeChanges}
                     onOpenAlerts={openAlerts}
-                    answerShown={!!screen.trip}
+                    answerShown={screen.trip}
                     onAnswer={(trip, inPlace) => {
                       const replace = inPlace || sideBySide() || !!screen.trip;
                       go({ tab: 'plan', trip, over: screen.trip ? screen.over : !replace }, replace);

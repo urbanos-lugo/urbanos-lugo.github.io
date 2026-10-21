@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type RefObject } from 'react';
 import { PATHS, parsePath, pathFor, type PathLang, type Tab } from '../routes';
+import { screenFromLink } from '../utils/links';
 
 /**
  * The screen on show, in the history, so the back gesture moves between screens instead of
@@ -39,8 +40,12 @@ const tabFromLocation = (): Tab | null => parsePath(afterBase()).tab;
 /** The language the address names, or null at a bare address, which is Galician's. */
 export const langFromLocation = (): PathLang | null => parsePath(afterBase()).lang;
 
-/** The search string is carried across so `?parada=` survives moving between tabs; the trailing slash is the address the build writes. */
-const urlForTab = (tab: Tab, lang: PathLang): string => `${BASE}${pathFor(lang, PATHS[tab])}${window.location.search}`;
+/**
+ * A tab's address, with the trailing slash the build writes. The search string only for the
+ * entry a link arrived on: carried to every tab, a `?parada=` followed the reader to the map,
+ * and a reload there went back to the pole's board.
+ */
+const urlForTab = (tab: Tab, lang: PathLang, search = ''): string => `${BASE}${pathFor(lang, PATHS[tab])}${search}`;
 
 /**
  * Whether the list and what it opens stand side by side, from `lg` (--breakpoint-lg in
@@ -72,7 +77,19 @@ const sameScreen = (a: Screen, b: Screen): boolean =>
  * another. `scroller` is the box the screens scroll in, whose scroll is each entry's too.
  */
 export function useTabRoute(initial: Tab, lang: PathLang, scroller: RefObject<HTMLElement | null>): [Screen, (next: Screen, replace?: boolean) => void, boolean] {
-  const [{ screen, popped }, setRoute] = useState<{ screen: Screen; popped: boolean }>(() => ({ screen: { tab: tabFromLocation() ?? initial }, popped: false }));
+  // The entry's own screen, when it has one: a reload, and a tab the phone threw away and gave
+  // back, land where the reader was. They landed on the tab's first screen, a board on the
+  // saved stops and a line on the list. Otherwise what the link names, or the tab.
+  const [{ screen, popped }, setRoute] = useState<{ screen: Screen; popped: boolean }>(() =>
+    isScreen(window.history.state) ? { screen: window.history.state, popped: true } : { screen: screenFromLink(window.location.search) ?? { tab: tabFromLocation() ?? initial }, popped: false },
+  );
+  // Written into the entry it was read from, so a reload of a link's entry is a reload too. A
+  // reload with a drawer's step on top leaves the drawer shut, and its step is taken back, or
+  // the next back press would land on the same screen again.
+  useEffect(() => {
+    if (!isScreen(window.history.state)) window.history.replaceState({ ...screen }, '');
+    else if ((window.history.state as { layer?: string }).layer) window.history.back();
+  }, []);
 
   // The scroll, kept in the entry a moment after it stops, so back brings it back. One write
   // per pause: Safari refuses more than a hundred replaceState calls in ten seconds.
@@ -95,9 +112,9 @@ export function useTabRoute(initial: Tab, lang: PathLang, scroller: RefObject<HT
   // a layer closing over the same screen: the scroll kept meanwhile went to the layer's entry.
   // Before, the box kept whatever it had: a line opened from far down the list opened 1,618 px
   // down its own page, with its back link off the top of the screen.
-  const shown = useRef(screen);
+  const shown = useRef<Screen | null>(popped ? null : screen);
   useLayoutEffect(() => {
-    if (sameScreen(shown.current, screen)) return;
+    if (shown.current && sameScreen(shown.current, screen)) return;
     shown.current = screen;
     if (scroller.current) scroller.current.scrollTop = popped ? Number(window.history.state?.scroll ?? 0) : 0;
   }, [screen, popped]);
@@ -108,7 +125,7 @@ export function useTabRoute(initial: Tab, lang: PathLang, scroller: RefObject<HT
   // brought in line the same way. What else the entry holds stays: the language is chosen in
   // the menu, whose step is the entry.
   useEffect(() => {
-    if (window.location.pathname !== `${BASE}${pathFor(lang, PATHS[screen.tab])}`) window.history.replaceState({ ...window.history.state, tab: screen.tab }, '', urlForTab(screen.tab, lang));
+    if (window.location.pathname !== `${BASE}${pathFor(lang, PATHS[screen.tab])}`) window.history.replaceState({ ...window.history.state, tab: screen.tab }, '', urlForTab(screen.tab, lang, window.location.search));
   }, [screen.tab, lang]);
 
   useEffect(() => {

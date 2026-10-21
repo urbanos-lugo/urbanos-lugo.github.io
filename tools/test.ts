@@ -37,6 +37,7 @@ import { readOperatorTimes } from '../src/hooks/useOperatorTimes';
 import { noticeLink } from '../src/utils/operatorNotices';
 import { changesNow, matchStop, noticeOver, pastTimetable, readNoticeChanges, runsAt, runsUntil, serviceDay, setsOff, stopSkipper, underNotice } from '../src/utils/noticeChanges';
 import { escapeHtml, plainText } from '../src/utils/html';
+import { screenFromLink } from '../src/utils/links';
 import { badgeHtml } from '../src/components/Map/popupHtml';
 import { STORAGE_KEYS, readJson, readString, writeJson, writeString } from '../src/utils/storage';
 import { LANG_PREFIX, PATHS, SLUGS, isCrawler, parsePath, pathFor, pickLang } from '../src/routes';
@@ -2317,6 +2318,21 @@ ok('the shortcut past the time-zone database agrees with it at every change of t
     }
   }
   assert(compared > 10_000, `compared ${compared} instants, which is too few to have crossed every change`);
+});
+
+ok('a link opens the screen it names, as the entry it arrived on, and nothing for a name of nothing', () => {
+  // The links were read by an effect after the first render, which pushed a second step over
+  // the first: back from a shared line went to the stops tab, a screen nobody had seen. They
+  // are read before the first render now, into the entry itself (useTabRoute), by this; that
+  // it is one step is the journeys' to hold (audit:journeys).
+  const pole = BUS_STOPS.find((s) => s.officialToken)!;
+  assert.deepStrictEqual(screenFromLink(`?parada=${pole.officialToken}`), { tab: 'stops', stop: pole.id, qr: true });
+  assert.deepStrictEqual(screenFromLink(`?stop=${pole.id}`), { tab: 'stops', stop: pole.id, qr: true });
+  const line = BUS_LINES[BUS_LINES.length - 1];
+  assert.deepStrictEqual(screenFromLink(`?linea=${line.number}`), { tab: 'lines', line: line.id });
+  assert.deepStrictEqual(screenFromLink(`?line=${line.id.toUpperCase()}`), { tab: 'lines', line: line.id });
+  assert.deepStrictEqual(screenFromLink(`?parada=${pole.id}&linea=${line.number}`), { tab: 'lines', line: line.id });
+  for (const search of ['', '?parada=ZZZZ', '?linea=99.9', '?q=catedral']) assert.strictEqual(screenFromLink(search), null, `"${search}" opens something`);
 });
 
 ok('a code that names no stop resolves to nothing, not to somebody else', () => {

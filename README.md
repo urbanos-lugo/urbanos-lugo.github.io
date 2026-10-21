@@ -741,6 +741,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   ├── planner.ts              o planificador: directo, un transbordo, a pé, e a orde entre eles
 │   │   ├── vehicles.ts             onde van os autobuses, derivado do cadro horario
 │   │   ├── places.ts               camiñada estimada, lugares, resolver o que se escribe, paradas preto
+│   │   ├── links.ts                o que abre unha ligazón: ?parada= e ?linea=
 │   │   ├── serviceLabels.ts        días, frecuencia e sentido no idioma da IU
 │   │   ├── geo.ts                  a única Haversine
 │   │   ├── tripProgress.ts         que parada pasei, contra o GPS; e a máquina da viaxe

@@ -65,8 +65,8 @@ interface RoutePlannerViewProps {
   /** What the operator's notice changes: a stop it closes is never boarded or left, and a trip on a changed line says so. */
   changes?: NoticeChanges | null;
   onOpenAlerts?: () => void;
-  /** The answer is the screen; below lg it is folded over the form. */
-  answerShown: boolean;
+  /** The answer is the screen, to this question; below lg it is folded over the form. */
+  answerShown: Trip | undefined;
   /**
    * A question answered, folding the form: the answer becomes the screen, over the form, or in
    * its place when the form was never on screen (a place picked in the search box).
@@ -220,16 +220,16 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     setChosenOption(null);
   }, [planResult, shown?.reachable, lang]);
 
-  const timeOptions = () => {
-    const [h, m] = timeValue.split(':').map(Number);
+  const timeOptions = (mode = timeMode, at = timeValue) => {
+    const [h, m] = at.split(':').map(Number);
     const minutes = (h || 0) * 60 + (m || 0);
-    return timeMode === 'depart' ? { departAt: minutes } : timeMode === 'arrive' ? { arriveBy: minutes } : {};
+    return mode === 'depart' ? { departAt: minutes } : mode === 'arrive' ? { arriveBy: minutes } : {};
   };
 
   const [questions, setQuestions] = useState(0);
   const [calculating, setCalculating] = useState(false);
   const calculatingRef = useRef(false);
-  const calculate = (orig = originQuery, dest = destQuery, gps = userLocation, fold = true, inPlace = false) => {
+  const calculate = (orig = originQuery, dest = destQuery, gps = userLocation, fold = true, inPlace = false, time = { mode: timeMode, at: timeValue }) => {
     if (!orig.trim() || !dest.trim() || calculatingRef.current) return;
     // The plan runs on this thread, and "arrive by" holds it for seconds on a slow phone
     // (5.0-6.4 s at 6x CPU), where the tap showed nothing until the answer. So the button
@@ -240,7 +240,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     afterPaint(() => {
       try {
         setGpsRefused(false);
-        const opts = { ...timeOptions(), userLocation: gps };
+        const opts = { ...timeOptions(time.mode, time.at), userLocation: gps };
         askedRef.current = { orig, dest, opts };
         replannedRef.current = false;
         const plans = underNotice(changes, plannedFrom(opts), (skipsStop) => planTrips(orig, dest, { ...opts, lang, skipsStop }));
@@ -250,7 +250,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
         if (fold) {
           setFolding(true);
           ask();
-          lastTrip.current = { from: orig.trim(), to: dest.trim(), mode: timeMode, at: timeValue };
+          lastTrip.current = { from: orig.trim(), to: dest.trim(), mode: time.mode, at: time.at };
           onAnswer(lastTrip.current, inPlace);
         }
         if (plans.length) rememberRoute({ from: orig.trim(), to: dest.trim() });
@@ -262,6 +262,20 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
       }
     });
   };
+
+  // A reload, or a tab given back by the phone, lands on the answer it left: the question is the
+  // entry's, asked again, for now if it was for now. Not from a GPS origin, which would ask for
+  // the position nobody pressed for: the fields come back, and the screen is the form.
+  useEffect(() => {
+    if (!answerShown) return;
+    const { from, to, mode, at } = answerShown;
+    setOriginQuery(from);
+    setDestQuery(to);
+    setTimeMode(mode);
+    setTimeValue(at);
+    if (from === 'my_location' || to === 'my_location') onEditTrip();
+    else calculate(from, to, undefined, true, false, { mode, at });
+  }, []);
 
   // A place chosen in the search box arrives as the destination, already planned from whatever origin is set.
   useEffect(() => {
