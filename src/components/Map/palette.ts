@@ -83,8 +83,8 @@ export const DRAW = {
   fit: { network: 40, nearby: 28, trip: 28, tripTop: 56, follow: 40 },
   /** The stop names written beside the dots: size, weight, gap from the dot's ring, halo, and the screen edge they keep off. */
   names: { size: 12, weight: 600, gap: 5, halo: 3, edge: 4 },
-  /** Panes over Leaflet's overlay canvas (400): the stop names, then the routes' arrows, under the markers (600). */
-  pane: { names: 420, arrows: 450 },
+  /** Panes over Leaflet's overlay canvas (400): the stop names, then the routes' arrows, then the reader's position, under the markers (600). */
+  pane: { names: 420, arrows: 450, reader: 460 },
   /** Buses over every other marker. */
   busesOver: 1000,
 } as const;
@@ -98,7 +98,14 @@ export const stopDotStyle = (colors: MapColors, radius: number, selected = false
   fillOpacity: 1,
 });
 
-/** The reader's own position. */
+/**
+ * The pane the reader's position is drawn in, which every map has (useLeafletMap): over all
+ * the canvas holds, since in it a stop layer redrawn after the dot painted the stops over it,
+ * and the reader was on top or underneath depending on what had changed last.
+ */
+export const READER_PANE = 'reader';
+
+/** The reader's own position: information, not a thing to tap, which on the map took the tap of the stop the reader stood at. */
 export const userDotStyle = (colors: MapColors): L.CircleMarkerOptions => ({
   radius: DRAW.me.radius,
   fillColor: colors.userFill,
@@ -106,4 +113,6 @@ export const userDotStyle = (colors: MapColors): L.CircleMarkerOptions => ({
   weight: DRAW.me.ring,
   opacity: 1,
   fillOpacity: DRAW.me.fill,
+  interactive: false,
+  pane: READER_PANE,
 });

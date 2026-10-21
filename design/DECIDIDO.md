@@ -471,6 +471,9 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   ton (as fotos, na rolda 42). Segue sen vermello, pola razón do 27 de agosto, e a tinta é
   a do 20 de outubro: di «escollido» sen pedir prestado ningún significado. Tamén a parada
   do mapa pequeno, que antes era o mesmo disco azul ca o lector.
+- **A posición é información, non un control.** Debúxase nun panel propio por riba do
+  lenzo, dos nomes e das frechas, e non colle toques; xa non abre o globo da precisión,
+  que o círculo debuxa.
 
 ## Quedou aberto
 

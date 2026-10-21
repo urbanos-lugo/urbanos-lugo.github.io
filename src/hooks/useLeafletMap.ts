@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type RefObject } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { createBasemap, type BasemapLayer } from '../components/Map/basemap';
+import { DRAW, READER_PANE } from '../components/Map/palette';
 import { useIsDark } from './useIsDark';
 import { useT } from '../i18n';
 
@@ -45,6 +46,9 @@ export function useLeafletMap(containerRef: RefObject<HTMLDivElement | null>, { 
       maxZoom: 19,
     });
     L.control.zoom({ position: 'bottomright' }).addTo(instance);
+    const reader = instance.createPane(READER_PANE);
+    reader.style.zIndex = String(DRAW.pane.reader);
+    reader.style.pointerEvents = 'none';
     tilesRef.current = createBasemap(isDark).addTo(instance) as BasemapLayer;
     setMap(instance);
     const unhover = hoverableTooltips(instance);

@@ -317,7 +317,6 @@ export const es: Dict = {
     expandLines: 'Ver todas las líneas de una vez',
     collapseLines: 'Mostrar las líneas en una fila',
     geolocationUnavailable: 'La geolocalización no está disponible.',
-    yourPositionAccurate: (metres: number) => `Tu posición, con precisión de ±${metres} m`,
     stopFollowing: 'Dejar de seguirme',
     outOfArea: 'No hay ninguna parada cerca de ti. Esta web solo cubre la red urbana de Lugo.',
     stopsCount: (total: number, withQr: number) =>

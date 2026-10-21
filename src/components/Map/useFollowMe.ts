@@ -4,8 +4,7 @@ import { getDistanceMeters } from '../../utils/geo';
 import { getNearbyStops, NEARBY_STOP_LIMIT_METRES } from '../../utils/places';
 import { subscribePosition } from '../../services/stopAlarm';
 import { useT } from '../../i18n';
-import { DRAW, mapColors, userDotStyle } from './palette';
-import { POPUP_CLEAR_OF_CONTROLS } from './popupHtml';
+import { DRAW, READER_PANE, mapColors, userDotStyle } from './palette';
 
 /** The map gave up on a first fix after eight seconds and said so; the shared watch waits twenty, for the ride. */
 const FIRST_FIX_MS = 8000;
@@ -48,10 +47,10 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
       map.panTo(at, { animate: true });
     }
     if (accuracyRef.current) accuracyRef.current.setLatLng(at).setRadius(fix.accuracy);
-    else accuracyRef.current = L.circle(at, { radius: fix.accuracy, color: colors.userStroke, fillColor: colors.userFill, weight: DRAW.me.accuracyRing, opacity: DRAW.me.accuracyStroke, fillOpacity: DRAW.me.accuracyFill, interactive: false }).addTo(map);
+    else accuracyRef.current = L.circle(at, { radius: fix.accuracy, color: colors.userStroke, fillColor: colors.userFill, weight: DRAW.me.accuracyRing, opacity: DRAW.me.accuracyStroke, fillOpacity: DRAW.me.accuracyFill, interactive: false, pane: READER_PANE }).addTo(map);
+    // No popup of its accuracy: the circle draws it, and the dot is not a thing to tap.
     if (markerRef.current) markerRef.current.setLatLng(at);
     else markerRef.current = L.circleMarker(at, userDotStyle(colors)).addTo(map);
-    markerRef.current.bindPopup(t.map.yourPositionAccurate(Math.round(fix.accuracy)), POPUP_CLEAR_OF_CONTROLS);
   };
   const drawRef = useRef(draw);
   drawRef.current = draw;

@@ -195,7 +195,7 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
     }
     const at: [number, number] = [position.lat, position.lng];
     if (positionRef.current) positionRef.current.setLatLng(at);
-    else positionRef.current = L.circleMarker(at, { ...userDotStyle(colors), interactive: false }).addTo(map);
+    else positionRef.current = L.circleMarker(at, userDotStyle(colors)).addTo(map);
     map.panInside(at, { padding: [DRAW.fit.follow, DRAW.fit.follow] });
   }, [map, position?.lat, position?.lng, colors]);
 
