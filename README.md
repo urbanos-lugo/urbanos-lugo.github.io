@@ -1407,7 +1407,12 @@ cortaban nomes: 326 textos na `develop` de antes da rolda, 0 despois.
 ao que pertencen (o menú pola dereita, a ficha de parada e a barra da viaxe por abaixo),
 os despregables abren coa frecha xirando, o control Próximas/Por liña leva un pulgar que
 esvara, e a estrela, a campá e o tick confírmanse unha vez ao activalos. Todo en CSS,
-só `opacity` e `transform`, e só de entrada: pechar segue sendo instantáneo. Cada un dura
+só `opacity` e `transform`, e só de entrada: pechar segue sendo instantáneo, tamén nos
+bloques que se pregan (o formulario de Ruta, «N opcións máis», o mapa da viaxe, o aviso
+nocturno). Ata a rolda 42 pregábanse animados, e o navegador pinta o primeiro cadro dunha
+transición no seu comezo: ao responder, a resposta saía un cadro debaixo do formulario aínda
+aberto, o traballo de despois alongaba ese cadro 100–200 ms, e «Vou nesta» subía 259 px
+baixo o dedo. Cada un dura
 entre 120 e 240 ms, tamén as confirmacións (o anel arredor de «Vou nesta» agarda 300 ms
 antes de saír), e só un se repite: os puntos de «Calculando» mentres calcula. A marca da
 seguinte parada en «Vou nesta» late dúas veces cada vez que cambia, e queda quieta. Á parte van os indicadores de espera, que duran o que dura

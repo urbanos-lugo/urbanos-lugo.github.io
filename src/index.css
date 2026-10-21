@@ -524,8 +524,12 @@
      <main>). The explicit column is the second guard for the same thing. */
   .fold { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr; transition: grid-template-rows var(--transition-duration-panel) var(--ease-enter); }
   .fold > * { overflow: hidden; min-height: 0; min-width: 0; transition: visibility var(--transition-duration-panel); }
-  .fold-closed { grid-template-rows: 0fr; }
-  .fold-closed > * { visibility: hidden; }
+  /* Closed at once, opened with the panel's motion: only entrances move (DECIDIDO). Closing
+     moved too, and Chrome paints a transition's first frame at its start, however short: the
+     planner's form folding under a new answer was painted open for the 100–200 ms the work
+     after an answer held the next frame, and «Vou nesta» jumped 259 px under the finger. */
+  .fold-closed { grid-template-rows: 0fr; transition: none; }
+  .fold-closed > * { visibility: hidden; transition: none; }
   /* The planner's form: clipped only while it moves, so the suggestion lists under its
      fields can hang past the card's edge the rest of the time. */
   .fold-clear:not(.fold-closed):not(.fold-moving) > * { overflow: visible; }

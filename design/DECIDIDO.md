@@ -479,6 +479,14 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   riba só collen o punteiro onde o hai (`hover: hover`): 1.4.13 é para iso, e nun teléfono
   a etiqueta collía o toque da parada que nomeaba.
 
+## A resposta de Ruta, quieta ao chegar — 21 de outubro de 2026
+
+- **Os bloques que se pregan péchanse ao instante** e ábrense co movemento do panel. É a
+  regra de arriba, «só de entrada» (O movemento, 20 de setembro), que os pregados non
+  cumprían: o formulario de Ruta pregábase animado baixo a resposta nova, e o seu primeiro
+  cadro, pintado aínda aberto, durou 100–200 ms co traballo de despois da resposta. «Vou
+  nesta» subía 259 px baixo o dedo (rolda 42).
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).
