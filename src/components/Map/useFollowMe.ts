@@ -30,6 +30,32 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
   const lastFixRef = useRef<[number, number] | null>(null);
   const onMovedRef = useRef(onMoved);
   onMovedRef.current = onMoved;
+  /** The last fix, and whether the map has centred on one since the watch began. */
+  const fixRef = useRef<{ lat: number; lng: number; accuracy: number; centred: boolean } | null>(null);
+
+  // Drawn with the map of now, when a fix comes and when the map does: the map opening on the
+  // lines near a reader who had allowed the position started the watch from its first render,
+  // before the map existed, and the button said "stop following" over a map with no dot on
+  // it that never centred. A fix that came before the map waits for it.
+  const draw = () => {
+    const fix = fixRef.current;
+    if (!map || !fix) return;
+    const at: [number, number] = [fix.lat, fix.lng];
+    if (!fix.centred) {
+      map.setView(at, 16, { animate: true });
+      fix.centred = true;
+    } else if (!map.getBounds().pad(-0.15).contains(at)) {
+      map.panTo(at, { animate: true });
+    }
+    if (accuracyRef.current) accuracyRef.current.setLatLng(at).setRadius(fix.accuracy);
+    else accuracyRef.current = L.circle(at, { radius: fix.accuracy, color: colors.userStroke, fillColor: colors.userFill, weight: DRAW.me.accuracyRing, opacity: DRAW.me.accuracyStroke, fillOpacity: DRAW.me.accuracyFill, interactive: false }).addTo(map);
+    if (markerRef.current) markerRef.current.setLatLng(at);
+    else markerRef.current = L.circleMarker(at, userDotStyle(colors)).addTo(map);
+    markerRef.current.bindPopup(t.map.yourPositionAccurate(Math.round(fix.accuracy)), POPUP_CLEAR_OF_CONTROLS);
+  };
+  const drawRef = useRef(draw);
+  drawRef.current = draw;
+  useEffect(() => drawRef.current(), [map]);
 
   const stop = useCallback(() => {
     unsubscribeRef.current?.();
@@ -41,6 +67,7 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
     markerRef.current = null;
     accuracyRef.current = null;
     lastFixRef.current = null;
+    fixRef.current = null;
     setIsFollowing(false);
   }, []);
 
@@ -48,7 +75,6 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
     if (!navigator.geolocation) return setError(t.map.geolocationUnavailable);
     setIsLocating(true);
     setError(null);
-    let centred = false;
     // Refused, unavailable or no fix in time: say so, rather than measure "near me" from the centre of Lugo.
     const refused = () => {
       stop();
@@ -67,19 +93,8 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
         setError(t.map.outOfArea);
         return;
       }
-      if (map) {
-        if (!centred) {
-          map.setView([lat, lng], 16, { animate: true });
-          centred = true;
-        } else if (!map.getBounds().pad(-0.15).contains([lat, lng])) {
-          map.panTo([lat, lng], { animate: true });
-        }
-        if (accuracyRef.current) accuracyRef.current.setLatLng([lat, lng]).setRadius(accuracy);
-        else accuracyRef.current = L.circle([lat, lng], { radius: accuracy, color: colors.userStroke, fillColor: colors.userFill, weight: DRAW.me.accuracyRing, opacity: DRAW.me.accuracyStroke, fillOpacity: DRAW.me.accuracyFill, interactive: false }).addTo(map);
-        if (markerRef.current) markerRef.current.setLatLng([lat, lng]);
-        else markerRef.current = L.circleMarker([lat, lng], userDotStyle(colors)).addTo(map);
-        markerRef.current.bindPopup(t.map.yourPositionAccurate(Math.round(accuracy)), POPUP_CLEAR_OF_CONTROLS);
-      }
+      fixRef.current = { lat, lng, accuracy, centred: fixRef.current?.centred ?? false };
+      drawRef.current();
       // Fifty metres is about when a different stop starts being the closest one.
       const last = lastFixRef.current;
       if (!last || getDistanceMeters(last[0], last[1], lat, lng) > 50) {
@@ -87,7 +102,7 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
         onMovedRef.current(lat, lng);
       }
     }, refused);
-  }, [map, colors, stop, t]);
+  }, [stop, t]);
 
   // A watch outlives the screen unless somebody stops it, and this one is reading the GPS.
   useEffect(() => stop, [stop]);

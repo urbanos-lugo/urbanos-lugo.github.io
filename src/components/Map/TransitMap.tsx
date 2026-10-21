@@ -175,9 +175,10 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
 
   // Open on the lines near you — only for someone who has already agreed to be located,
   // since asking the instant a screen loads is the prompt everybody refuses. Once per page
-  // load, not per mount: coming back after choosing a line must not throw that away.
+  // load, not per mount: coming back after choosing a line must not throw that away. Not when
+  // the map opens on a stop asked for: the first fix would take the map from it to the reader.
   useEffect(() => {
-    if (openedOnNearby || !navigator.permissions?.query) return;
+    if (openedOnNearby || selectedStop || !navigator.permissions?.query) return;
     navigator.permissions
       .query({ name: 'geolocation' as PermissionName })
       .then((status) => {

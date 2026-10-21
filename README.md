@@ -199,6 +199,11 @@ nega a facer coas horas. E o mapa centra no primeiro arreglo e despois queda ond
 deixes —un que se recentra cada poucos segundos non se pode mover, e movelo é como miras
 a parada á que vas—, agás cando o punto se ía saír da vista.
 
+Se xa deixaches que a app te localice, **o mapa ábrese sobre ti**, coas liñas que tes
+preto. Ata a rolda 42 o botón dicía «Deixar de seguirme» sobre un mapa sen punto e sen
+centrar: o seguimento arrancaba antes de que o mapa existise e non o volvía mirar. Aberto
+desde «Ver no mapa» dunha parada, en cambio, o mapa queda nesa parada: é o que pediches.
+
 O filtro **"preto de min"** amosa todas as liñas a menos de 750 m, cun panel lateral que
 lista cada unha coa distancia á súa parada máis próxima. Antes calculaba as oito liñas
 próximas e logo quedaba só coa primeira, así que dende Avda. Américas 88 vías a 8 e
