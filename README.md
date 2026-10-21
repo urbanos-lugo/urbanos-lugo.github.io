@@ -723,7 +723,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   ├── walkingPath.ts          onde camiña un plan; a ruta faina walkRouter
 │   │   └── apiUrl.ts               onde pedir `/api/…`: co servidor ao lado ou co worker
 │   ├── hooks/
-│   │   ├── useTabRoute.ts          a pantalla no historial: a pestana no enderezo, o aberto nela no estado
+│   │   ├── useTabRoute.ts          a pantalla no historial: a pestana no enderezo, o aberto nela e o desprazamento no estado
 │   │   ├── useServiceAlerts.ts     avisos, ou a instantánea coa súa data
 │   │   ├── useOperatorTimes.ts     os minutos do operador, se hai servidor
 │   │   ├── useTheme.ts             clara / escura / automática

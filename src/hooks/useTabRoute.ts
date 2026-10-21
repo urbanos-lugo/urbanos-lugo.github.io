@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type MouseEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type RefObject } from 'react';
 import { PATHS, parsePath, pathFor, type PathLang, type Tab } from '../routes';
 
 /**
@@ -63,9 +63,44 @@ export function tabLink(tab: Tab, go: (tab: Tab) => void, lang: PathLang) {
   };
 }
 
-/** The screen, how it was last reached (`popped` when by back or forward), and the way to another. */
-export function useTabRoute(initial: Tab, lang: PathLang): [Screen, (next: Screen, replace?: boolean) => void, boolean] {
+/** The same screen: what is open on the same tab, whatever else the entry holds (its scroll, a layer over it). */
+const sameScreen = (a: Screen, b: Screen): boolean =>
+  a.tab === b.tab && a.stop === b.stop && !!a.qr === !!b.qr && a.line === b.line && !!a.ride === !!b.ride && JSON.stringify(a.trip) === JSON.stringify(b.trip);
+
+/**
+ * The screen, how it was last reached (`popped` when by back or forward), and the way to
+ * another. `scroller` is the box the screens scroll in, whose scroll is each entry's too.
+ */
+export function useTabRoute(initial: Tab, lang: PathLang, scroller: RefObject<HTMLElement | null>): [Screen, (next: Screen, replace?: boolean) => void, boolean] {
   const [{ screen, popped }, setRoute] = useState<{ screen: Screen; popped: boolean }>(() => ({ screen: { tab: tabFromLocation() ?? initial }, popped: false }));
+
+  // The scroll, kept in the entry a moment after it stops, so back brings it back. One write
+  // per pause: Safari refuses more than a hundred replaceState calls in ten seconds.
+  useEffect(() => {
+    const box = scroller.current;
+    if (!box) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const keep = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => window.history.replaceState({ ...window.history.state, scroll: box.scrollTop }, ''), 200);
+    };
+    box.addEventListener('scroll', keep, { passive: true });
+    return () => {
+      box.removeEventListener('scroll', keep);
+      clearTimeout(timer);
+    };
+  }, [scroller]);
+
+  // A screen opens at its top, and one come back to by back or forward where it was left. Not
+  // a layer closing over the same screen: the scroll kept meanwhile went to the layer's entry.
+  // Before, the box kept whatever it had: a line opened from far down the list opened 1,618 px
+  // down its own page, with its back link off the top of the screen.
+  const shown = useRef(screen);
+  useLayoutEffect(() => {
+    if (sameScreen(shown.current, screen)) return;
+    shown.current = screen;
+    if (scroller.current) scroller.current.scrollTop = popped ? Number(window.history.state?.scroll ?? 0) : 0;
+  }, [screen, popped]);
 
   // The opening tab and a change of language replace the address rather than add a history
   // entry, so the first back press still leaves the site; a back press onto an address in
@@ -87,10 +122,13 @@ export function useTabRoute(initial: Tab, lang: PathLang): [Screen, (next: Scree
   // to the screen under them, not to them again.
   const go = useCallback(
     (next: Screen, replace = false) => {
-      window.history[replace || window.history.state?.layer ? 'replaceState' : 'pushState'](next, '', urlForTab(next.tab, lang));
+      const layer = !!window.history.state?.layer;
+      // The scroll of the screen being left, now, not when the pause after the last scroll ends.
+      if (!replace && !layer && scroller.current) window.history.replaceState({ ...window.history.state, scroll: scroller.current.scrollTop }, '');
+      window.history[replace || layer ? 'replaceState' : 'pushState'](next, '', urlForTab(next.tab, lang));
       setRoute({ screen: next, popped: false });
     },
-    [lang],
+    [lang, scroller],
   );
 
   return [screen, go, popped];

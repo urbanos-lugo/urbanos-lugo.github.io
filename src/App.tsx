@@ -51,7 +51,8 @@ export default function App() {
   const [lang, setLang] = useState<Lang>(initialLang);
   // The open tab lives in the address bar, with the language, and what is open on it in the
   // history's entry, so the back gesture moves between screens and steps out of a board first.
-  const [screen, go, popped] = useTabRoute('stops', lang);
+  const mainRef = useRef<HTMLElement>(null);
+  const [screen, go, popped] = useTabRoute('stops', lang, mainRef);
   const activeTab = screen.tab;
   /** What was last open on each tab, so the bar goes back to it, as the stops tab always did with its board. */
   const lastOn = useRef<Partial<Record<Tab, Screen>>>({});
@@ -243,7 +244,7 @@ export default function App() {
               Under the ride's bar, which is stuck to its foot, the height of the bar stays free
               when the focus scrolls something into view: the keep-awake switch took the focus
               entirely behind it (WCAG 2.4.11). */}
-          <main id="contido" className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto has-[.trip-bar]:scroll-pb-20">
+          <main ref={mainRef} id="contido" className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto has-[.trip-bar]:scroll-pb-20">
             <ErrorBoundary t={t} resetKey={activeTab}>
               {/* One heading for the page, naming what is on screen: correct in both the one-pane and the two-pane layout. */}
               <h1 className="sr-only">{screenTitle}</h1>
