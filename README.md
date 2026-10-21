@@ -729,7 +729,8 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   ├── useTheme.ts             clara / escura / automática
 │   │   ├── useStoredList.ts        gardadas, últimas paradas e últimas rutas: unha lista no dispositivo
 │   │   ├── useTripCompanion.ts     a viaxe en curso, por riba das pestanas
-│   │   ├── useDialog.ts            Escape, foco atrapado e foco devolto
+│   │   ├── useDialog.ts            Escape e o atrás pechan, foco atrapado e foco devolto
+│   │   ├── useBackLayer.ts         o que se pon enriba é un paso no historial: o atrás pécha o primeiro
 │   │   ├── useIsDark.ts            se a paleta escura está activa agora mesmo
 │   │   ├── useClock.ts             o reloxo, relido cada N segundos: os minutos móvense, nada se descarga
 │   │   ├── useWalkPaths.ts         o camiño a pé real de cada tramo, calculado no dispositivo

@@ -27,7 +27,7 @@ Xestos que fan falta, nos dous:
 | Activar | dobre toque | dobre toque |
 | Ler desde o principio | deslizar dous dedos cara arriba | menú de TalkBack › Ler desde o principio |
 | Ir por títulos, ligazóns, controis | rotor (xirar dous dedos) e logo deslizar arriba/abaixo | controis de lectura, e logo deslizar arriba/abaixo |
-| Saír dun diálogo | xesto de escape: dous dedos en zigzag | o botón «Pechar» do diálogo (o xesto «atrás» é o do navegador e sae da páxina) |
+| Saír dun diálogo | xesto de escape: dous dedos en zigzag | o botón «Pechar» do diálogo, ou o xesto «atrás», que pecha o diálogo e non sae da páxina |
 
 Antes de empezar: o teléfono en galego ou non, dá igual; a app en galego desde o menú.
 

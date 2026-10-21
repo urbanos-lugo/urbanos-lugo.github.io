@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react';
+import { useBackLayer } from './useBackLayer';
 
 /**
  * The keyboard half of an overlay: Escape closes, focus moves in on open, Tab wraps
  * inside, and focus returns to the opener on close. Without the trap, `aria-modal` hid
  * the page from a screen reader while the keyboard walked straight out into it.
  * The container still needs `role="dialog"` and `aria-modal="true"` in the markup.
+ * And the phone's half: the back gesture closes it, as Escape does, before it leaves the
+ * screen under it. With the menu open it changed the tab behind the menu and left it open.
  */
 export function useDialog(open: boolean, onClose: () => void) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -16,6 +19,7 @@ export function useDialog(open: boolean, onClose: () => void) {
   // control: in the map's stop sheet the keyboard lost its place every three seconds (2.4.3).
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+  useBackLayer(open, () => onCloseRef.current());
 
   useEffect(() => {
     if (!open) return;

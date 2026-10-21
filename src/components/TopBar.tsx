@@ -11,6 +11,7 @@ import { CountBadge } from './ui/CountBadge';
 import { IconButton } from './ui/controls';
 import { NameStack } from './ui/NameStack';
 import { asideSections, navSections, type Tab } from './navSections';
+import { useBackLayer } from '../hooks/useBackLayer';
 
 interface TopBarProps {
   onSelectStop: (stop: BusStop) => void;
@@ -84,6 +85,8 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
   }, [open]);
 
   const q = query.trim();
+  // The rows lie over the screen like a sheet, and the back gesture puts them away the same way.
+  useBackLayer(open && q.length > 0, () => setOpen(false));
   // The letter paints before the list does: the rows are built from a deferred copy of the query, at low priority.
   const dq = useDeferredValue(q);
   const { stops, lines, places } = useMemo(() => searchAll(dq), [dq]);

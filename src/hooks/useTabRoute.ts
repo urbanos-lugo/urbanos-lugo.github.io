@@ -44,8 +44,9 @@ export function useTabRoute(initial: Tab, lang: PathLang): [Tab, (tab: Tab) => v
   // entry, so the first back press still leaves the site; a back press onto an address in
   // the language the reader has since left, or a tab's word from another language, is
   // brought in line the same way.
+  // What else the entry holds stays: the language is chosen in the menu, whose step is the entry.
   useEffect(() => {
-    if (window.location.pathname !== `${BASE}${pathFor(lang, PATHS[tab])}`) window.history.replaceState({ tab }, '', urlForTab(tab, lang));
+    if (window.location.pathname !== `${BASE}${pathFor(lang, PATHS[tab])}`) window.history.replaceState({ ...window.history.state, tab }, '', urlForTab(tab, lang));
   }, [tab, lang]);
 
   useEffect(() => {
@@ -54,10 +55,12 @@ export function useTabRoute(initial: Tab, lang: PathLang): [Tab, (tab: Tab) => v
     return () => window.removeEventListener('popstate', onPop);
   }, [initial]);
 
-  // Compared against the address bar and pushed outside the state updater, which React may run twice.
+  // Compared against the address bar and pushed outside the state updater, which React may run
+  // twice. Gone to from a drawer, a dialog or the search's rows, the screen takes their step
+  // (useBackLayer): back from it goes to the screen under them, not to them again.
   const go = useCallback(
     (next: Tab) => {
-      if (tabFromLocation() !== next) window.history.pushState({ tab: next }, '', urlForTab(next, lang));
+      if (tabFromLocation() !== next) window.history[window.history.state?.layer ? 'replaceState' : 'pushState']({ tab: next }, '', urlForTab(next, lang));
       setTab(next);
     },
     [lang],
