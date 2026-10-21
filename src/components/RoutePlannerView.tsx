@@ -12,6 +12,7 @@ import { useRecentRoutes, type RecentRoute } from '../hooks/useStoredList';
 import { useWalkPaths } from '../hooks/useWalkPaths';
 import { useClock } from '../hooks/useClock';
 import { boardingIsNow, type TripPlace } from '../utils/tripProgress';
+import type { Screen } from '../hooks/useTabRoute';
 import { SectionLabel } from './ui/SectionLabel';
 import { EmptyState } from './ui/EmptyState';
 import { Figure } from './ui/Figure';
@@ -43,17 +44,16 @@ const clockNow = () => {
 };
 
 /**
- * The question, the form and the answer as one state with two moves: answering folds the
- * form to a one-line summary on a phone (found or not — the "no route" sentence lives in
- * the answer column), and `answered` counts the questions so focus moves to the answer.
+ * Whether a question has been answered, and `answered` counting them so focus moves to the
+ * answer. Whether the form is folded to a one-line summary over it, on a phone, is the
+ * history's: the answer is a screen over the form, and back unfolds it (App.tsx).
  */
 interface Asking {
-  formOpen: boolean;
   asked: boolean;
   answered: number;
 }
-const asking = (state: Asking, action: 'answer' | 'toggleForm'): Asking =>
-  action === 'answer' ? { formOpen: false, asked: true, answered: state.answered + 1 } : { ...state, formOpen: !state.formOpen };
+const asking = (state: Asking): Asking => ({ asked: true, answered: state.answered + 1 });
+type Trip = NonNullable<Screen['trip']>;
 
 interface RoutePlannerViewProps {
   onSelectStop: (stop: BusStop) => void;
@@ -65,9 +65,20 @@ interface RoutePlannerViewProps {
   /** What the operator's notice changes: a stop it closes is never boarded or left, and a trip on a changed line says so. */
   changes?: NoticeChanges | null;
   onOpenAlerts?: () => void;
+  /** The answer is the screen; below lg it is folded over the form. */
+  answerShown: boolean;
+  /**
+   * A question answered, folding the form: the answer becomes the screen, over the form, or in
+   * its place when the form was never on screen (a place picked in the search box).
+   */
+  onAnswer: (trip: Trip, inPlace: boolean) => void;
+  /** Back to the form from the answer. */
+  onEditTrip: () => void;
+  /** Back to the answer from the form, unasked again. */
+  onShowAnswer: (trip: Trip) => void;
 }
 
-export function RoutePlannerView({ onSelectStop, onSelectLine, destinationRequest, onStartTrip, changes = null, onOpenAlerts }: RoutePlannerViewProps) {
+export function RoutePlannerView({ onSelectStop, onSelectLine, destinationRequest, onStartTrip, changes = null, onOpenAlerts, answerShown, onAnswer, onEditTrip, onShowAnswer }: RoutePlannerViewProps) {
   const t = useT();
   const lang = useLang();
   const [originQuery, setOriginQuery] = useState(DEFAULT_ORIGIN);
@@ -89,7 +100,10 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
   useEffect(() => {
     if (recentRoutes.length) setCleared((was) => (was.length ? [] : was));
   }, [recentRoutes]);
-  const [{ formOpen, asked, answered }, ask] = useReducer(asking, { formOpen: true, asked: false, answered: 0 });
+  const [{ asked, answered }, ask] = useReducer(asking, { asked: false, answered: 0 });
+  const formOpen = !answerShown;
+  /** The last question answered, for the row that goes back to its answer. */
+  const lastTrip = useRef<Trip | null>(null);
 
   // Close the autocomplete when a click lands anywhere outside the two fields: on the click,
   // when the finger lifts, rather than on mousedown and touchstart (WCAG 2.5.2), and every
@@ -215,7 +229,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
   const [questions, setQuestions] = useState(0);
   const [calculating, setCalculating] = useState(false);
   const calculatingRef = useRef(false);
-  const calculate = (orig = originQuery, dest = destQuery, gps = userLocation, fold = true) => {
+  const calculate = (orig = originQuery, dest = destQuery, gps = userLocation, fold = true, inPlace = false) => {
     if (!orig.trim() || !dest.trim() || calculatingRef.current) return;
     // The plan runs on this thread, and "arrive by" holds it for seconds on a slow phone
     // (5.0-6.4 s at 6x CPU), where the tap showed nothing until the answer. So the button
@@ -235,7 +249,9 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
         setQuestions((n) => n + 1);
         if (fold) {
           setFolding(true);
-          ask('answer');
+          ask();
+          lastTrip.current = { from: orig.trim(), to: dest.trim(), mode: timeMode, at: timeValue };
+          onAnswer(lastTrip.current, inPlace);
         }
         if (plans.length) rememberRoute({ from: orig.trim(), to: dest.trim() });
         setEndpoints({ origin: toPoint(resolveLocationQuery(orig, gps)), destination: toPoint(resolveLocationQuery(dest, gps)) });
@@ -251,7 +267,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
   useEffect(() => {
     if (!destinationRequest) return;
     setDestQuery(destinationRequest.query);
-    calculate(originQuery, destinationRequest.query);
+    calculate(originQuery, destinationRequest.query, userLocation, true, true);
   }, [destinationRequest?.nonce]);
 
   // Inverting must not fold the form under the finger that pressed it.
@@ -336,6 +352,12 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     </button>
   );
   const folded = asked && !formOpen;
+  // Folded and unfolded by back and forward too, not only by the row: clipped while it moves.
+  const wasFolded = useRef(folded);
+  useEffect(() => {
+    if (wasFolded.current !== folded) setFolding(true);
+    wasFolded.current = folded;
+  }, [folded]);
 
   return (
     <div className="page page-gutter py-4">
@@ -349,7 +371,8 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
               type="button"
               onClick={() => {
                 setFolding(true);
-                ask('toggleForm');
+                if (!formOpen) onEditTrip();
+                else if (lastTrip.current) onShowAnswer(lastTrip.current);
               }}
               aria-expanded={formOpen}
               className="flex min-h-tap w-full scroll-mt-4 flex-wrap items-center gap-x-2 text-left lg:hidden"

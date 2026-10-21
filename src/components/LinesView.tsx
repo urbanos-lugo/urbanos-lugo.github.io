@@ -23,9 +23,11 @@ const TICK_MS = 3000;
 
 interface LinesViewProps {
   selectedLine: BusLine | null;
-  /** Bumped whenever somebody asked for a line, as opposed to for this tab. */
-  lineRequest?: number;
-  onSelectLine: (line: BusLine) => void;
+  /** A line's page is the screen, rather than the list: below lg the two take turns. */
+  lineOpen: boolean;
+  onOpenLine: (line: BusLine) => void;
+  /** Back to the list from a line's page. */
+  onBack: () => void;
   onSelectStop: (stop: BusStop) => void;
   onViewLineOnMap: (line: BusLine) => void;
   favoriteLineIds?: string[];
@@ -72,26 +74,19 @@ function RunningBuses({ count, compact = false }: { count: number; compact?: boo
   );
 }
 
-export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelectStop, onViewLineOnMap, favoriteLineIds = [], onToggleFavoriteLine, notices = [], changes = null, onOpenAlerts }: LinesViewProps) {
+export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelectStop, onViewLineOnMap, favoriteLineIds = [], onToggleFavoriteLine, notices = [], changes = null, onOpenAlerts }: LinesViewProps) {
   const t = useT();
   const lang = useLang();
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [directionIndex, setDirectionIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  /** Below lg the two columns are one screen at a time: list, then the line. */
-  const [showDetail, setShowDetail] = useState(false);
   /** "Which run is on the road now" is a function of the time, so it follows the clock. */
   const now = useClock(TICK_MS);
   const buses = useMemo(() => getScheduledBuses(now), [now]);
 
   const currentLine = selectedLine || BUS_LINES[0];
-
-  // A line picked somewhere else opens here — only below lg, where the columns take turns.
-  useEffect(() => {
-    if (!lineRequest) return;
-    setDirectionIndex(0);
-    setShowDetail(true);
-  }, [lineRequest]);
+  // Each line opens on its first direction, wherever it was opened from.
+  useEffect(() => setDirectionIndex(0), [currentLine.id]);
 
   const query = searchQuery.trim();
   const visibleLines = BUS_LINES.filter(
@@ -133,7 +128,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
   return (
     <div className="page page-gutter h-full py-4 lg:pb-0">
       <div className="lg:grid lg:h-full lg:grid-cols-12 lg:gap-6">
-        <Pane side="list" shown={!showDetail} className="space-y-4 lg:pb-4">
+        <Pane side="list" shown={!lineOpen} className="space-y-4 lg:pb-4">
           <div className="card space-y-4 py-4 px-cap-4 lg:p-5">
             <div>
               <SectionTitle icon={Route} small subtitle={t.lines.subtitle}>
@@ -174,11 +169,7 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
                     type="button"
                     id={`line-card-${line.id}`}
                     aria-current={isCurrent ? 'true' : undefined}
-                    onClick={() => {
-                      onSelectLine(line);
-                      setDirectionIndex(0);
-                      setShowDetail(true);
-                    }}
+                    onClick={() => onOpenLine(line)}
                     style={lineTint(line.color)}
                     className={`line-row tint tint-strong w-full justify-between cursor-pointer transition-all text-left ${isCurrent ? 'border-accent shadow-hair' : 'tint-edge'}`}
                   >
@@ -221,8 +212,8 @@ export function LinesView({ selectedLine, lineRequest = 0, onSelectLine, onSelec
           </div>
         </Pane>
 
-        <Pane side="detail" shown={showDetail} className="space-y-4 lg:pb-4">
-          <BackButton label={t.lines.backToLines} onClick={() => setShowDetail(false)} />
+        <Pane side="detail" shown={lineOpen} className="space-y-4 lg:pb-4">
+          <BackButton label={t.lines.backToLines} onClick={onBack} />
 
           <div className="card space-y-4 py-6 px-cap-6">
             <div className="flex flex-col justify-between gap-4 border-b border-line pb-5 2xl:flex-row 2xl:items-center">

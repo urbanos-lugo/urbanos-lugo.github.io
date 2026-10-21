@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { Moon } from 'lucide-react';
 import { CloseButton } from './components/ui/controls';
 import { StopArrivalsView } from './components/StopArrivalsView';
@@ -17,12 +17,12 @@ import { MenuDrawer } from './components/MenuDrawer';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useTripCompanion } from './hooks/useTripCompanion';
 import { useFavourites, useRecentStops } from './hooks/useStoredList';
-import { langFromLocation, useTabRoute } from './hooks/useTabRoute';
+import { langFromLocation, sideBySide, useTabRoute, type Screen } from './hooks/useTabRoute';
 import { useServiceAlerts } from './hooks/useServiceAlerts';
 import { useTheme } from './hooks/useTheme';
 import { useClock } from './hooks/useClock';
 import { Lang, LangContext, translations } from './i18n';
-import { BUS_STOPS, BUS_LINES } from './data/transitData';
+import { BUS_STOPS, BUS_LINES, stopById } from './data/transitData';
 import { PATHS, isCrawler, pickLang, type Tab } from './routes';
 import { pageHead } from './seo';
 import { networkAtRest } from './utils/arrivals';
@@ -49,8 +49,13 @@ const lineIds = new Set(BUS_LINES.map((l) => l.id));
 
 export default function App() {
   const [lang, setLang] = useState<Lang>(initialLang);
-  // The open tab lives in the address bar, with the language, so the back gesture moves between screens.
-  const [activeTab, setActiveTab] = useTabRoute('stops', lang);
+  // The open tab lives in the address bar, with the language, and what is open on it in the
+  // history's entry, so the back gesture moves between screens and steps out of a board first.
+  const [screen, go, popped] = useTabRoute('stops', lang);
+  const activeTab = screen.tab;
+  /** What was last open on each tab, so the bar goes back to it, as the stops tab always did with its board. */
+  const lastOn = useRef<Partial<Record<Tab, Screen>>>({});
+  lastOn.current[activeTab] = screen;
   // The board needs a stop from the first render, so it opens on the busiest interchange.
   const [selectedStop, setSelectedStop] = useState<BusStop>(() => [...BUS_STOPS].sort((a, b) => b.lines.length - a.lines.length)[0]);
   /** The map must not draw that default as chosen: a big blue dot on a stop nobody picked. */
@@ -59,12 +64,7 @@ export default function App() {
   const [mapFocus, setMapFocus] = useState<'stop' | 'line'>('line');
   /** No line until somebody opens one; the map started with 1.1 drawn over a choice nobody had made. */
   const [selectedLine, setSelectedLine] = useState<BusLine | null>(null);
-  /**
-   * Asking for a line, rather than for the list of lines. A counter, so asking for the same
-   * line twice is still two asks; zero means nobody asked and the list is what should show.
-   */
-  const [lineRequest, setLineRequest] = useState(0);
-  /** A place chosen in the search box, on its way to the planner as a destination. Same counter trick. */
+  /** A place chosen in the search box, on its way to the planner as a destination. A counter, so asking for the same place twice is two asks. */
   const [placeRequest, setPlaceRequest] = useState<{ query: string; nonce: number } | null>(null);
   /**
    * The map stays mounted between visits — a remount was a fresh WebGL context and a fresh
@@ -76,9 +76,7 @@ export default function App() {
   }, [activeTab]);
 
   // The stops tab opens on the saved-stops home; choosing a stop anywhere switches it to that stop's board.
-  const [showStopBoard, setShowStopBoard] = useState(false);
-  /** Set when a `?parada=` link or the scanner opened the board, i.e. somebody scanned that pole. */
-  const [qrStopId, setQrStopId] = useState<string | null>(null);
+  const boardStop = screen.stop ? stopById(screen.stop) : undefined;
   const [recentStopIds, rememberStop, clearRecentStops] = useRecentStops();
   const [favoriteStopIds, toggleFavoriteStop] = useFavourites('urbanos_lugo_fav_stops', stopIds);
   const [favoriteLineIds, toggleFavoriteLine] = useFavourites('urbanos_lugo_fav_lines', lineIds);
@@ -116,52 +114,71 @@ export default function App() {
     writeString(LANG_KEY, lang);
   }, [lang, activeTab]);
 
+  /** A tab from the bar, the menu or the search: what was last open on it, as a step of its own. */
+  const goToTab = (tab: Tab) => {
+    if (tab !== activeTab) go({ ...(lastOn.current[tab] ?? { tab }), over: false });
+  };
+  /**
+   * A stop's board or a line's page. Opened from its own tab's list it goes over the list, and
+   * the way back is the history's; from anywhere else it is a step of its own. Side by side,
+   * where the list stays on screen, it replaces what was open rather than add a step.
+   */
+  const openOnTab = (next: Screen) => {
+    if (activeTab !== next.tab) return go(next);
+    const side = sideBySide();
+    go({ ...next, over: !side && !screen.stop && !screen.line }, side);
+  };
+  /** Back to the list: the history's way if the board or the line was put over it. */
+  const backToList = (tab: Tab) => (screen.over ? window.history.back() : go({ tab }, true));
   const openLine = (line: BusLine) => {
     setSelectedLine(line);
-    setLineRequest((n) => n + 1);
-    setActiveTab('lines');
-  };
-  /** The nav asks for a tab, not for a line, so Líneas opens on its list. */
-  const goToTab = (tab: Tab) => {
-    if (tab === 'lines') setLineRequest(0);
-    setActiveTab(tab);
+    openOnTab({ tab: 'lines', line: line.id });
   };
   /** `viaQr`: the reader got here off the sticker on that pole. Cleared on every other route in. */
   const selectStop = (stop: BusStop, viaQr = false) => {
     setSelectedStop(stop);
     setStopWasChosen(true);
     rememberStop(stop.id);
-    setShowStopBoard(true);
-    setActiveTab('stops');
-    setQrStopId(viaQr ? stop.id : null);
+    openOnTab({ tab: 'stops', stop: stop.id, ...(viaQr ? { qr: true } : {}) });
   };
+  // Leaving the board un-chooses the stop for the map too, by the app's back or the system's.
+  useEffect(() => {
+    if (activeTab === 'stops' && !boardStop) setStopWasChosen(false);
+  }, [activeTab, boardStop]);
   const viewStopOnMap = (stop: BusStop) => {
     setSelectedStop(stop);
     setStopWasChosen(true);
     setMapFocus('stop');
-    setActiveTab('map');
+    go({ tab: 'map' });
   };
   const viewLineOnMap = (line: BusLine) => {
     setSelectedLine(line);
     setMapFocus('line');
-    setActiveTab('map');
+    go({ tab: 'map' });
   };
+  const openAlerts = () => go({ tab: 'info' });
 
-  // Direct QR links (`?parada=xRiq`, `?stop=101`) and shared lines (`?linea=`), resolved the way the scanner resolves them.
+  // Direct QR links (`?parada=xRiq`, `?stop=101`) and shared lines (`?linea=`), resolved the way
+  // the scanner resolves them, in place of the entry they arrived on: as a step of their own
+  // they left the first back press on a screen nobody had seen, the stops tab under a line.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const stopParam = params.get('parada') || params.get('stop') || params.get('qr') || params.get('ps');
     const lineParam = params.get('linea') || params.get('line');
     const stop = stopParam && findStop(stopParam);
-    if (stop) {
-      setSelectedStop(stop);
-      setShowStopBoard(true);
-      setActiveTab('stops');
-      setQrStopId(stop.id);
-    }
     const line = lineParam && BUS_LINES.find((l) => l.id.toLowerCase() === lineParam.toLowerCase() || l.number.toLowerCase() === lineParam.toLowerCase());
-    if (line) openLine(line);
+    if (stop) setSelectedStop(stop);
+    if (line) {
+      setSelectedLine(line);
+      go({ tab: 'lines', line: line.id }, true);
+    } else if (stop) go({ tab: 'stops', stop: stop.id, qr: true }, true);
   }, []);
+
+  // The ride is above the tabs, and the planner's entries under it are no screens any more: back
+  // from the ride goes to wherever the reader was before the planner, not onto the ride again.
+  useEffect(() => {
+    if (popped && companion.trip && activeTab === 'plan' && !screen.ride) window.history.back();
+  }, [screen, popped]);
 
   return (
     <LangContext.Provider value={lang}>
@@ -179,7 +196,7 @@ export default function App() {
             onSelectLine={openLine}
             onSelectPlace={(query) => {
               setPlaceRequest((prev) => ({ query, nonce: (prev?.nonce ?? 0) + 1 }));
-              setActiveTab('plan');
+              go({ tab: 'plan' });
             }}
             onOpenQrScanner={() => setIsQrModalOpen(true)}
             onOpenMenu={() => setIsMenuOpen(true)}
@@ -192,7 +209,7 @@ export default function App() {
             <div className={`fold ${isNightBannerDismissed ? 'fold-closed' : ''}`}>
               <div>
             <div className="flex items-center gap-1 border-b border-line bg-surface pl-3.5 pr-1">
-              <button onClick={() => setActiveTab('info')} className="flex min-w-0 flex-1 items-center gap-3 py-2 text-left">
+              <button onClick={openAlerts} className="flex min-w-0 flex-1 items-center gap-3 py-2 text-left">
                 <Moon className="h-4.5 w-4.5 shrink-0 text-ink-2" aria-hidden="true" />
                 <span className="min-w-0 flex-1">
                   {/* Both lines wrap rather than cut: the time is the end of the sentence, and with the
@@ -234,33 +251,41 @@ export default function App() {
               {/* Below lg the two panes take turns; from lg up the saved stops stay beside the board. */}
               {activeTab === 'stops' && (
                 <div className="page h-full lg:grid lg:grid-cols-12 lg:gap-6 lg:px-6 lg:pt-4">
-                  <Pane side="list" shown={!showStopBoard}>
+                  <Pane side="list" shown={!boardStop}>
                     <StopHome favoriteStopIds={favoriteStopIds} favoriteLineIds={favoriteLineIds} onSelectLine={openLine} recentStopIds={recentStopIds} onClearRecent={clearRecentStops} onSelectStop={selectStop} onOpenQrScanner={() => setIsQrModalOpen(true)} />
                   </Pane>
-                  <Pane side="detail" shown={showStopBoard}>
+                  <Pane side="detail" shown={!!boardStop}>
                     <StopArrivalsView
-                      selectedStop={selectedStop}
+                      selectedStop={boardStop ?? selectedStop}
                       onSelectLine={openLine}
                       onViewOnMap={viewStopOnMap}
                       onSelectStop={selectStop}
-                      // Leaving the board un-chooses the stop for the map too.
-                      onBack={() => {
-                        setShowStopBoard(false);
-                        setStopWasChosen(false);
-                      }}
-                      isFavorite={favoriteStopIds.includes(selectedStop.id)}
+                      onBack={() => backToList('stops')}
+                      isFavorite={favoriteStopIds.includes((boardStop ?? selectedStop).id)}
                       onToggleFavorite={toggleFavoriteStop}
-                      viaQr={qrStopId === selectedStop.id}
+                      viaQr={!!screen.qr && !!boardStop}
                       notices={operatorNotices}
                       changes={noticeChanges}
-                      onOpenAlerts={() => setActiveTab('info')}
+                      onOpenAlerts={openAlerts}
                     />
                   </Pane>
                 </div>
               )}
 
               {activeTab === 'lines' && (
-                <LinesView selectedLine={selectedLine} lineRequest={lineRequest} onSelectLine={setSelectedLine} onSelectStop={selectStop} onViewLineOnMap={viewLineOnMap} favoriteLineIds={favoriteLineIds} onToggleFavoriteLine={toggleFavoriteLine} notices={operatorNotices} changes={noticeChanges} onOpenAlerts={() => setActiveTab('info')} />
+                <LinesView
+                  selectedLine={BUS_LINES.find((l) => l.id === screen.line) ?? selectedLine}
+                  lineOpen={!!screen.line}
+                  onOpenLine={openLine}
+                  onBack={() => backToList('lines')}
+                  onSelectStop={selectStop}
+                  onViewLineOnMap={viewLineOnMap}
+                  favoriteLineIds={favoriteLineIds}
+                  onToggleFavoriteLine={toggleFavoriteLine}
+                  notices={operatorNotices}
+                  changes={noticeChanges}
+                  onOpenAlerts={openAlerts}
+                />
               )}
 
               {mapEverOpened && (
@@ -277,7 +302,30 @@ export default function App() {
                 </div>
               )}
 
-              {activeTab === 'plan' && (companion.trip ? <TripCompanionView companion={companion} /> : <RoutePlannerView onSelectStop={selectStop} onSelectLine={openLine} destinationRequest={placeRequest} onStartTrip={companion.start} changes={noticeChanges} onOpenAlerts={() => setActiveTab('info')} />)}
+              {activeTab === 'plan' &&
+                (companion.trip ? (
+                  <TripCompanionView companion={companion} />
+                ) : (
+                  <RoutePlannerView
+                    onSelectStop={selectStop}
+                    onSelectLine={openLine}
+                    destinationRequest={placeRequest}
+                    // The ride takes the answer's place in the history: back from it leaves the planner.
+                    onStartTrip={(...trip) => {
+                      companion.start(...trip);
+                      go({ ...screen, ride: true }, true);
+                    }}
+                    changes={noticeChanges}
+                    onOpenAlerts={openAlerts}
+                    answerShown={!!screen.trip}
+                    onAnswer={(trip, inPlace) => {
+                      const replace = inPlace || sideBySide() || !!screen.trip;
+                      go({ tab: 'plan', trip, over: screen.trip ? screen.over : !replace }, replace);
+                    }}
+                    onEditTrip={() => (screen.over ? window.history.back() : go({ tab: 'plan' }, true))}
+                    onShowAnswer={(trip) => go({ tab: 'plan', trip, over: true })}
+                  />
+                ))}
               {activeTab === 'info' && <AlertsView alerts={alerts} />}
               {activeTab === 'fares' && <FaresView />}
             </ErrorBoundary>
@@ -286,7 +334,7 @@ export default function App() {
           <BottomNav activeTab={activeTab} setActiveTab={goToTab} tripActive={companion.trip !== null} />
         </div>
 
-        <MenuDrawer open={isMenuOpen} onClose={() => setIsMenuOpen(false)} onOpenTab={setActiveTab} alertCount={alerts.announcedIncidents} setLang={setLang} theme={theme} setTheme={setTheme} />
+        <MenuDrawer open={isMenuOpen} onClose={() => setIsMenuOpen(false)} onOpenTab={goToTab} alertCount={alerts.announcedIncidents} setLang={setLang} theme={theme} setTheme={setTheme} />
         <FavoritesDrawer
           isOpen={isFavoritesOpen}
           onClose={() => setIsFavoritesOpen(false)}
