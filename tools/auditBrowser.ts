@@ -1444,7 +1444,9 @@ async function mapPointer(browser: Browser): Promise<Finding[]> {
   // then one click on an empty part of the map, and the map has to have moved.
   await page.call(`async function (T) {${REACH} for (const t of [T.stopsLayer, T.routesLayer]) { const b = [...document.querySelectorAll('button[aria-pressed="true"]')].find((x) => x.textContent.trim() === t); if (b) b.click(); await pause(300); } }`, T);
   await sleep(600);
-  const pane = `getComputedStyle(document.querySelector('.leaflet-map-pane')).transform`;
+  // The pane of the map clicked: a screen left for another tab stays in the page, hidden, and
+  // the board's small map came first in it, a pane with no transform that never moved.
+  const pane = `getComputedStyle([...document.querySelectorAll('.leaflet-container')].find((e) => e.getBoundingClientRect().width > 300).querySelector('.leaflet-map-pane')).transform`;
   const before = await page.evaluate<string>(pane);
   await mouse(page, 'mouseMoved', box.x + 70, box.y + box.h - 90);
   await mouse(page, 'mousePressed', box.x + 70, box.y + box.h - 90);
