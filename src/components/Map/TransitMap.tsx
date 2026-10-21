@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import { LocateFixed, SlidersHorizontal } from 'lucide-react';
-import { CloseButton, Scrim } from '../ui/controls';
+import { CloseButton, Notice, Scrim } from '../ui/controls';
 import { useT } from '../../i18n';
 import { BusStop, BusLine } from '../../types';
 import { BUS_STOPS, BUS_LINES, LUGO_CENTER, lineById, poleCode } from '../../data/transitData';
@@ -281,6 +281,18 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                   <span className="text-label font-semibold">~ {t.map.busesEstimatedNotice}</span>
                   <CloseButton label={t.map.hideBuses} title={t.map.hideBuses} onClick={() => setLayers((l) => ({ ...l, buses: false }))} round />
                 </p>
+              </div>
+            )}
+
+            {/* A position refused, unavailable or out of the network, said where the button was
+                pressed. On a phone it was said only in the sheet, which is closed then, and the
+                press looked like nothing at all. From lg up the sidebar says it. */}
+            {follow.error && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-20 z-map-alert px-3 lg:hidden">
+                <Notice role="alert" className="pointer-events-auto flex items-center gap-1 py-1 pr-1 shadow-raised">
+                  <span className="min-w-0 flex-1">{follow.error}</span>
+                  <CloseButton label={t.map.closePopup} onClick={() => follow.setError(null)} />
+                </Notice>
               </div>
             )}
 

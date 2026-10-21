@@ -408,6 +408,7 @@
   --z-index-dropdown: 30;    /* a field's suggestions over the form */
   --z-index-map-float: 400;  /* a control floating on a map, level with Leaflet's overlay pane */
   --z-index-map-chips: 401;  /* the line chips, over the buses' notice that follows them */
+  --z-index-map-alert: 402;  /* why the locate button found nothing, over the chips it can grow under at 200 % text */
   --z-index-map-overlay: 500; /* the scrim under the map's controls sheet */
   --z-index-map-sheet: 520;  /* the stop sheet, inside the map's card */
   --z-index-nav: 1200;       /* the bottom bar */
