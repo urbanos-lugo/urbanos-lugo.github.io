@@ -1050,6 +1050,11 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
       break;
     }
     run.worstMs = Math.max(run.worstMs, await interaction());
+    // A screen still at work is not yet the step's screen: a planner field's pick plans from an
+    // effect, after the step's own wait may already have passed, and the answer then waits for
+    // its walks (up to a second). Idle twice, a tenth of a second apart, before it is looked at.
+    const settled = await stepWait(page, T, `!document.querySelector('[aria-busy="true"]') && new Promise((r) => setTimeout(() => r(!document.querySelector('[aria-busy="true"]')), 100))`, 3000);
+    run.appMs += settled.ms;
     await sleep(200);
     const after = await snap();
     if (process.env.SCROLL_LOG) console.log('    scrolls after step', i + 1, await page.evaluate('JSON.stringify(window.__sl || [])'));
