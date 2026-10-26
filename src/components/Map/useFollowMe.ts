@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
+import type L from 'leaflet';
 import { getDistanceMeters } from '../../utils/geo';
 import { getNearbyStops, NEARBY_STOP_LIMIT_METRES } from '../../utils/places';
 import { subscribePosition } from '../../services/stopAlarm';
+import { requestHeadingPermission } from '../../services/heading';
 import { useT } from '../../i18n';
-import { DRAW, READER_PANE, mapColors, userDotStyle } from './palette';
+import { mapColors } from './palette';
+import { readerMark, type ReaderMark } from './reader';
 
 /** The map gave up on a first fix after eight seconds and said so; the shared watch waits twenty, for the ride. */
 const FIRST_FIX_MS = 8000;
@@ -21,8 +23,7 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
   const [isLocating, setIsLocating] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const markerRef = useRef<L.CircleMarker | null>(null);
-  const accuracyRef = useRef<L.Circle | null>(null);
+  const readerRef = useRef<ReaderMark | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const firstFixTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   /** Where `onMoved` last fired, so walking a few metres does not redo the nearby list. */
@@ -46,11 +47,8 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
     } else if (!map.getBounds().pad(-0.15).contains(at)) {
       map.panTo(at, { animate: true });
     }
-    if (accuracyRef.current) accuracyRef.current.setLatLng(at).setRadius(fix.accuracy);
-    else accuracyRef.current = L.circle(at, { radius: fix.accuracy, color: colors.userStroke, fillColor: colors.userFill, weight: DRAW.me.accuracyRing, opacity: DRAW.me.accuracyStroke, fillOpacity: DRAW.me.accuracyFill, interactive: false, pane: READER_PANE }).addTo(map);
     // No popup of its accuracy: the circle draws it, and the dot is not a thing to tap.
-    if (markerRef.current) markerRef.current.setLatLng(at);
-    else markerRef.current = L.circleMarker(at, userDotStyle(colors)).addTo(map);
+    (readerRef.current ??= readerMark(map, colors)).place(at, fix.accuracy);
   };
   const drawRef = useRef(draw);
   drawRef.current = draw;
@@ -61,10 +59,8 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
     unsubscribeRef.current = null;
     if (firstFixTimerRef.current !== null) clearTimeout(firstFixTimerRef.current);
     firstFixTimerRef.current = null;
-    markerRef.current?.remove();
-    accuracyRef.current?.remove();
-    markerRef.current = null;
-    accuracyRef.current = null;
+    readerRef.current?.remove();
+    readerRef.current = null;
     lastFixRef.current = null;
     fixRef.current = null;
     setIsFollowing(false);
@@ -72,6 +68,7 @@ export function useFollowMe(map: L.Map | null, colors: ReturnType<typeof mapColo
 
   const start = useCallback(() => {
     if (!navigator.geolocation) return setError(t.map.geolocationUnavailable);
+    requestHeadingPermission();
     setIsLocating(true);
     setError(null);
     // Refused, unavailable or no fix in time: say so, rather than measure "near me" from the centre of Lugo.

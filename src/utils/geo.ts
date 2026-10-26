@@ -17,3 +17,35 @@ export function metresBetween(lat1: number, lon1: number, lat2: number, lon2: nu
 /** The same, rounded to the metre. */
 export const getDistanceMeters = (lat1: number, lon1: number, lat2: number, lon2: number): number =>
   Math.round(metresBetween(lat1, lon1, lat2, lon2));
+
+/** What a device orientation event carries, as far as a heading needs it; iOS adds its own two fields. */
+export interface OrientationReading {
+  alpha: number | null;
+  absolute?: boolean;
+  webkitCompassHeading?: number;
+  webkitCompassAccuracy?: number;
+}
+
+/**
+ * Which way the top of the screen faces, in degrees clockwise from north, or null when the
+ * reading is not tied to north. iOS hands over the compass heading itself (and -1 as its
+ * accuracy while the compass needs calibrating); elsewhere an absolute reading's alpha turns
+ * the other way. The screen's own rotation is added: turned sideways, the top of the screen
+ * is what was the phone's side.
+ */
+export function headingFromOrientation(reading: OrientationReading, screenAngle: number): number | null {
+  let heading: number;
+  if (typeof reading.webkitCompassHeading === 'number' && Number.isFinite(reading.webkitCompassHeading)) {
+    if ((reading.webkitCompassAccuracy ?? 0) < 0) return null;
+    heading = reading.webkitCompassHeading;
+  } else if (reading.absolute && typeof reading.alpha === 'number' && Number.isFinite(reading.alpha)) {
+    heading = 360 - reading.alpha;
+  } else return null;
+  return (((heading + screenAngle) % 360) + 360) % 360;
+}
+
+/** Part of the way from one heading to another, round the short side: 350° to 10° passes north, not south. */
+export function turnToward(from: number, to: number, share: number): number {
+  const delta = ((((to - from) % 360) + 540) % 360) - 180;
+  return (((from + delta * share) % 360) + 360) % 360;
+}

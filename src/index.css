@@ -244,6 +244,7 @@
   --opacity-struck: 60%;    /* a departure the notice says will not stop here, struck through */
   --opacity-disabled: 50%;  /* a control that cannot be pressed now */
   --opacity-attention: 55%; /* the disc that calls the eye to «Vou nesta» once */
+  --opacity-beam: 65%;      /* the fan of the way the phone faces, under the reader's dot */
 
   /* How much of a line's own colour tints its row (.tint, below): quiet on the board, beside
      the provenance chips; strong in the lists, where the colour has to name the line
@@ -252,6 +253,11 @@
   --tint-quiet-edge: 26%;
   --tint-strong: 40%;
   --tint-strong-edge: 100%;
+
+  /* How wide the fan of the way the phone faces opens (.map-beam-fan): a field of view, about
+     what a reader looking up from the phone takes in, and wide enough not to promise more
+     than a phone's compass knows. */
+  --beam-spread: 70deg;
 
   /* ------------------------------------------------------------------ type */
   --font-sans: 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif;
@@ -327,6 +333,10 @@
   --spacing-map-tablet: 62vh;
   --spacing-map-tablet-min: 380px;
   --spacing-map-desktop: 540px;
+  /* A small map's numbered stop, in the map's pixels (palette.ts's DRAW.stopRadius.rank is
+     half), and the same number on the stop's row in the list, in rem like the row. */
+  --spacing-stop-rank: 24px;
+  --spacing-stop-rank-row: 1.5rem;
 
   /* How tall a panel or a list may grow before it scrolls. */
   --spacing-sheet-max: 78dvh;       /* the map's controls sheet: the map stays visible above */
@@ -664,6 +674,20 @@
      map's own, so nothing moves when it arrives, and the pulse (animate-waiting) stays beside
      it where the waiting indicators are counted. */
   .map-placeholder { @apply w-full rounded-card bg-surface; }
+
+  /* A stop numbered by its distance, on a small map and on its row in the list beside it: the
+     same disc in both places, so the eye goes from the dot to the row without reading a name.
+     The stop dot's own two colours, inside out: its ring is the figure. In the map's pixels on
+     the map (.stop-rank), in rem on the row (.stop-rank-row). The marker's box (.map-rank) is
+     a finger's reach, wider than the disc. */
+  .stop-rank { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: var(--spacing-stop-rank); height: var(--spacing-stop-rank); border: var(--border-width-strong) solid var(--c-map-ring); border-radius: var(--radius-pill); background-color: var(--c-map-stop); color: var(--c-map-ring); font-family: var(--font-sans); font-size: var(--text-map-pin); line-height: var(--text-map-pin--line-height); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
+  .stop-rank-row { width: var(--spacing-stop-rank-row); height: var(--spacing-stop-rank-row); font-size: var(--text-label); line-height: var(--text-label--line-height); }
+  .map-rank { display: grid; place-items: center; }
+  .map-rank .stop-rank { box-shadow: var(--shadow-pin); }
+
+  /* The way the phone faces (reader.ts): a fan of the reader's blue, fading from the dot
+     outward, turned by the compass through --heading. Drawn only once the compass answers. */
+  .map-beam-fan { width: 100%; height: 100%; border-radius: var(--radius-pill); background: conic-gradient(from calc(var(--beam-spread) / -2), var(--c-map-me) 0 var(--beam-spread), transparent 0); mask-image: radial-gradient(closest-side, black 25%, transparent); opacity: var(--opacity-beam); transform: rotate(var(--heading, 0deg)); }
 
   /* A labelled action. Primary is the accent fill; secondary a bordered fill a step off its
      ground (the caller makes it bg-bg where it sits on a tint or on glass); outbound an <a> to

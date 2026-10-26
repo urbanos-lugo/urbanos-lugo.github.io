@@ -1,12 +1,15 @@
 import L from 'leaflet';
 import type { BusStop } from '../../types';
 import { DRAW } from './palette';
+import { placeNames, type NamedDot } from './nameLayout';
 
 /**
  * The stop names written beside the dots, on a canvas of their own. As permanent Leaflet
  * tooltips each was a DOM element laid out on every zoom — `Tooltip._setPosition` was the
  * largest frame on the profile. Text on a canvas costs no layout: `measureText` says how
- * wide a name is, the side is chosen from that, the whole set is painted in one call.
+ * wide a name is, the side is chosen from that, the whole set is painted in one call. A name
+ * that would cover another, or another stop, is left out (nameLayout.ts), in the order the
+ * stops are given: the small maps give theirs nearest first.
  * Not interactive and not read by assistive technology: the dot's hover label and the lists carry the name.
  */
 interface StopNamesOptions extends L.LayerOptions {
@@ -24,6 +27,7 @@ const StopNamesLayer = L.Layer.extend({
   initialize(this: StopNamesInstance, options: StopNamesOptions) {
     L.Util.setOptions(this, options);
     this._stops = [];
+    this._clear = [];
   },
 
   onAdd(this: StopNamesInstance, map: L.Map) {
@@ -46,9 +50,10 @@ const StopNamesLayer = L.Layer.extend({
     L.DomUtil.remove(this._canvas);
   },
 
-  /** The stops whose names may be written; only the ones in view are painted. */
-  setStops(this: StopNamesInstance, stops: BusStop[]) {
+  /** The stops whose names may be written, and points no name may cover; only the ones in view are painted. */
+  setStops(this: StopNamesInstance, stops: BusStop[], keepClear: [number, number][] = []) {
     this._stops = stops;
+    this._clear = keepClear;
     if (this._map) this._draw();
   },
 
@@ -78,19 +83,19 @@ const StopNamesLayer = L.Layer.extend({
     ctx.lineWidth = HALO_PX;
     ctx.strokeStyle = this.options.halo;
     ctx.fillStyle = this.options.ink;
-    const gap = this.options.radius + GAP_PX;
-
-    for (const stop of this._stops) {
-      const p = map.latLngToContainerPoint([stop.lat, stop.lng]);
-      if (p.y < -FONT_PX || p.y > size.y + FONT_PX || p.x < -size.x || p.x > 2 * size.x) continue;
-      const width = ctx.measureText(stop.name).width;
-      // To the right of the dot, unless the name would run off the screen there.
-      const right = p.x + gap + width <= size.x - EDGE_PX;
-      ctx.textAlign = right ? 'left' : 'right';
-      const x = right ? p.x + gap : p.x - gap;
-      ctx.strokeText(stop.name, x, p.y);
-      ctx.fillText(stop.name, x, p.y);
-    }
+    const shown = this._stops
+      .map((stop) => ({ stop, at: map.latLngToContainerPoint([stop.lat, stop.lng]) }))
+      .filter(({ at: p }) => p.y >= -FONT_PX && p.y <= size.y + FONT_PX && p.x >= -size.x && p.x <= 2 * size.x);
+    const dots: NamedDot[] = shown.map(({ stop, at }) => ({ x: at.x, y: at.y, width: ctx.measureText(stop.name).width }));
+    const keepClear = this._clear.map((at) => map.latLngToContainerPoint(at));
+    const places = placeNames(dots, { width: size.x, radius: this.options.radius, gap: GAP_PX, height: FONT_PX + HALO_PX, edge: EDGE_PX, keepClear });
+    shown.forEach(({ stop }, i) => {
+      const place = places[i];
+      if (!place) return;
+      ctx.textAlign = place.align;
+      ctx.strokeText(stop.name, place.x, place.y);
+      ctx.fillText(stop.name, place.x, place.y);
+    });
   },
 });
 
@@ -101,9 +106,10 @@ interface StopNamesInstance {
   _canvas: HTMLCanvasElement;
   _font: string;
   _stops: BusStop[];
+  _clear: [number, number][];
   _draw(): void;
   _hide(): void;
-  setStops(stops: BusStop[]): void;
+  setStops(stops: BusStop[], keepClear?: [number, number][]): void;
   addTo(map: L.Map): this;
   remove(): this;
 }

@@ -65,6 +65,14 @@ Your position is used in the browser to sort stops by distance and to draw a mar
 is **not** sent to this project's server, because there is nothing to send it to: the
 distance arithmetic is `src/utils/geo.ts`, running on your phone.
 
+**The compass.** Where a map draws your position — "stops near me" and "my location" on
+the map — a phone with a compass also shows which way it is facing, as a fan on your dot.
+The reading comes from the phone's own orientation sensor, turns that fan and does nothing
+else, is read only while the map is on the screen, and is never stored or sent
+(`src/services/heading.ts`). On an iPhone, Safari first asks to use "motion and
+orientation", in the same tap that asks for your position; refuse it and the dot is drawn
+without the fan, as before.
+
 **There used to be an exception here, and there is not any more.** Pressing *"see the
 walking path"* sent both ends of each walking leg — one of which can be your GPS position
 — to OpenStreetMap's public pedestrian router at `routing.openstreetmap.de`. That is why

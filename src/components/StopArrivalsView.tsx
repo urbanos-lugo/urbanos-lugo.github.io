@@ -20,6 +20,7 @@ import { BackButton, CloseButton, Disclosure, IconButton, Notice, NoticeDisclosu
 import { SectionLabel } from './ui/SectionLabel';
 import { EmptyState } from './ui/EmptyState';
 import { NameStack } from './ui/NameStack';
+import { StopRank } from './ui/StopRank';
 import { watchForStop, ringAlarm, notify, requestNotificationPermission, ALARM_RADIUS_M, AlarmHandle } from '../services/stopAlarm';
 
 interface StopArrivalsViewProps {
@@ -601,9 +602,10 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         {polesNearby.length > 0 && (
           <Disclosure className="mt-2" summary={t.arrivals.polesNearby} count={polesNearby.length}>
             <ul className="flex flex-col gap-1.5 px-3 pb-3">
-              {polesNearby.map((pole) => (
+              {polesNearby.map((pole, i) => (
                 <li key={pole.id}>
                   <button onClick={() => onSelectStop(pole)} className="flex min-h-tap w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-edge bg-bg px-3 py-2 text-left">
+                    <StopRank n={i + 1} />
                     <NameStack name={pole.name} floor />
                     <PoleCode code={poleCode(pole)} />
                     <span className="tnum shrink-0 text-label text-ink-2">{t.common.walkDistance(pole.walkMeters)}</span>

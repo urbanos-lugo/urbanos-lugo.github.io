@@ -12,6 +12,8 @@ import { LineBadge, lineTint } from './ui/LineBadge';
 import { EmptyState } from './ui/EmptyState';
 import { NameStack } from './ui/NameStack';
 import { Approx } from './ui/Provenance';
+import { StopRank } from './ui/StopRank';
+import { requestHeadingPermission } from '../services/heading';
 
 interface StopHomeProps {
   favoriteStopIds: string[];
@@ -36,12 +38,13 @@ const Heading = ({ icon: Icon, tint, children, action }: { icon: LucideIcon; tin
   </div>
 );
 
-/** A stop as a plain row: the name, the zone and how many lines. */
-function StopRow({ stop, onSelect, trailing }: { stop: BusStop; onSelect: (stop: BusStop) => void; trailing?: ReactNode }) {
+/** A stop as a plain row: the name, the zone and how many lines; near you, its number on the map above. */
+function StopRow({ stop, onSelect, trailing, rank }: { stop: BusStop; onSelect: (stop: BusStop) => void; trailing?: ReactNode; rank?: number }) {
   const t = useT();
   return (
     <li>
       <button onClick={() => onSelect(stop)} className="flex w-full items-center gap-3 rounded-control border border-edge px-cap-3.5 py-3 text-left">
+        {rank !== undefined && <StopRank n={rank} />}
         <NameStack
           name={stop.name}
           hint={
@@ -68,12 +71,15 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
   useClock(30_000); // the boards below recompute on every render, so a tick is enough
 
   const [nearby, setNearby] = useState<NearbyStop[]>([]);
-  const [locatedAt, setLocatedAt] = useState<[number, number] | null>(null);
+  /** Where the phone said it was, and how sure it was, in metres. */
+  const [locatedAt, setLocatedAt] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
 
   const locate = () => {
     if (!navigator.geolocation) return setLocationError(t.stopHome.unavailable);
+    // In the tap, before anything is awaited: iOS asks for the compass only then.
+    requestHeadingPermission();
     setLocating(true);
     setLocationError(null);
     navigator.geolocation.getCurrentPosition(
@@ -81,7 +87,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
         // Within walking distance, not merely nearest: from Madrid the first answer is 423 km away.
         const near = getNearbyStops(pos.coords.latitude, pos.coords.longitude).filter((s) => s.walkMeters <= NEARBY_STOP_LIMIT_METRES);
         setNearby(near.slice(0, 5));
-        setLocatedAt(near.length ? [pos.coords.latitude, pos.coords.longitude] : null);
+        setLocatedAt(near.length ? { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: Math.max(pos.coords.accuracy ?? 0, 0) } : null);
         setLocationError(near.length ? null : t.stopHome.outOfArea);
         setLocating(false);
       },
@@ -244,7 +250,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
         {t.stopHome.near}
       </Heading>
       {locatedAt && (
-        <LazyNearbyMiniMap centre={{ lat: locatedAt[0], lng: locatedAt[1], label: t.stopHome.youAreHere, kind: 'user' }} stops={nearby} onSelectStop={onSelectStop} regionLabel={t.map.nearbyRegion} className="mt-2.5" />
+        <LazyNearbyMiniMap centre={{ ...locatedAt, label: t.stopHome.youAreHere, kind: 'user' }} stops={nearby} onSelectStop={onSelectStop} regionLabel={t.map.nearbyRegion} className="mt-2.5" />
       )}
       {nearby.length === 0 ? (
         <>
@@ -260,10 +266,11 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
         </>
       ) : (
         <ul className="anim-rise mt-2.5 flex flex-col gap-1.5">
-          {nearby.map((stop) => (
+          {nearby.map((stop, i) => (
             <StopRow
               key={stop.id}
               stop={stop}
+              rank={i + 1}
               onSelect={onSelectStop}
               trailing={
                 <span className="tnum shrink-0 text-right">

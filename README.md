@@ -153,6 +153,13 @@ e gardala case ninguén, e a segunda visita non debería custar escribir outra v
 debaixo, **preto de min**, que precisa permiso de localización e non inventa distancias
 se llo negas.
 
+O mapa pequeno de **preto de min**, e o dos postes arredor dunha parada no seu taboleiro,
+**numera cada parada pola súa distancia**, co mesmo número na súa fila da lista, e escribe
+o nome ao carón. Eran puntos grises iguais, cos nomes en etiquetas que só abre un rato: nun
+teléfono non había maneira de saber que punto era que fila. O teu punto leva o círculo da
+precisión e, nun teléfono con compás, cara a onde miras (no mapa da rede, abaixo); e un
+camiño a pé, polas beirarrúas e calculado no dispositivo, chega ata a parada máis próxima.
+
 ### Mapa da rede
 Leaflet cunha capa vectorial de MapLibre GL sobre teselas de OpenFreeMap; nun dispositivo
 sen WebGL2 —ou cando o navegador perde o contexto WebGL e non o devolve en cinco
@@ -203,6 +210,17 @@ edificio, onde pode errar centos de metros: a mesma clase de afirmación que est
 nega a facer coas horas. E o mapa centra no primeiro arreglo e despois queda onde o
 deixes —un que se recentra cada poucos segundos non se pode mover, e movelo é como miras
 a parada á que vas—, agás cando o punto se ía saír da vista.
+
+**E cara a onde miras.** Nun teléfono con compás, o punto leva un abano que xira coa
+brúxula: di que lado da rúa tes diante antes de dar un paso, que o punto só non dicía. O
+compás só se le mentres o mapa está na pantalla; no iPhone, Safari pide permiso no mesmo
+toque que a posición, e sen compás ou sen permiso o punto vai só, coma antes. O mapa
+aínda non xira: Leaflet non o fai, e xiralo pide debuxalo con MapLibre.
+
+**Os nomes das paradas non se pisan.** Desde o zoom 16 escríbense á dereita do punto, á
+esquerda, enriba ou debaixo, onde non tapen outro nome, outra parada nin a túa posición; o
+que non colle non se escribe. Antes ían sempre á dereita: dúas paradas a cada lado dunha
+rúa escribían un nome enriba do outro, e non se lía ningún.
 
 Se xa deixaches que a app te localice, **o mapa ábrese sobre ti**, coas liñas que tes
 preto. Ata a rolda 42 o botón dicía «Deixar de seguirme» sobre un mapa sen punto e sen
@@ -681,6 +699,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   │   ├── LineChips.tsx       a tira de fichas de liña sobre o mapa, no móbil
 │   │   │   ├── MapControls.tsx     o panel lateral / a folla de controis, un só marcado
 │   │   │   ├── useFollowMe.ts      seguir o móbil no mapa: o punto, o círculo, o reloxo
+│   │   │   ├── reader.ts           ti no mapa: o punto, o círculo da precisión e cara a onde miras
 │   │   │   ├── RouteLayer.tsx      polilinas de percorrido
 │   │   │   ├── RouteMap.tsx        mapa dun traxecto planificado
 │   │   │   ├── StopLayer.tsx       marcadores de parada
@@ -689,6 +708,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   │   ├── LazyNearbyMiniMap.tsx  o minimapa, e nada del ata que está en pantalla
 │   │   │   ├── StopSheet.tsx       a parada aberta onde a tocaches, co seu taboleiro
 │   │   │   ├── StopNames.ts        os nomes das paradas, nun canvas propio
+│   │   │   ├── nameLayout.ts       onde vai cada nome sen tapar outro, outra parada nin a ti
 │   │   │   ├── basemap.ts          o mapa de fondo, debaixo de todo o demais
 │   │   │   ├── palette.ts          as cores do mapa, lidas dos tokens de index.css, e DRAW, os seus tamaños
 │   │   │   └── popupHtml.ts        os anacos de HTML dos popups de Leaflet, escapados
@@ -711,6 +731,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   │   ├── SectionTitle.tsx    o título dunha sección ou dunha tarxeta
 │   │   │   ├── NameStack.tsx       un nome e, debaixo, a liña que di cal ou onde
 │   │   │   ├── PoleCode.tsx        o código impreso no poste
+│   │   │   ├── StopRank.tsx        o número dunha parada pola súa distancia, o mesmo no mapa pequeno
 │   │   │   ├── CountBadge.tsx      a conta de avisos
 │   │   │   ├── Figure.tsx          o número grande dunha pantalla, coa súa unidade
 │   │   │   ├── EmptyState.tsx      o que se amosa onde iría unha lista ou unha resposta
@@ -747,6 +768,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   ├── operatorTimes.ts        os minutos do operador detrás do QR
 │   │   ├── readCapped.ts           teito de 512 KB en cada lectura de fóra
 │   │   ├── stopAlarm.ts            alarma de proximidade á parada
+│   │   ├── heading.ts              o compás do teléfono, só mentres un mapa te debuxa
 │   │   ├── walkingPath.ts          onde camiña un plan; a ruta faina walkRouter
 │   │   └── apiUrl.ts               onde pedir `/api/…`: co servidor ao lado ou co worker
 │   ├── hooks/

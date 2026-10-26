@@ -63,8 +63,12 @@ export const mapColors = (isDark: boolean): MapColors => {
  * the map's HTML markers included.
  */
 export const DRAW = {
-  /** A stop's dot: by zoom on the network map, the ride's calls, the small map's stops and its centre, and the one chosen. */
-  stopRadius: { overview: 4, z14: 5, z15: 6, z16: 7, nearby: 6, centre: 8, selected: 9 },
+  /**
+   * A stop's dot: by zoom on the network map, the ride's calls, the small map's centre, and the
+   * one chosen. `rank` is half a small map's numbered disc, --spacing-stop-rank in index.css,
+   * so a name written beside it clears it.
+   */
+  stopRadius: { overview: 4, z14: 5, z15: 6, z16: 7, rank: 12, centre: 8, selected: 9 },
   stopRing: 2,
   selectedRing: 4,
   /**
@@ -73,26 +77,32 @@ export const DRAW = {
    * opened the lines there instead of the stop.
    */
   touchReach: 12,
-  /** The reader's position, and the circle of its accuracy around it. */
-  me: { radius: 8, ring: 3, fill: 0.95, accuracyRing: 1, accuracyStroke: 0.35, accuracyFill: 0.12 },
+  /**
+   * The reader's position, the circle of its accuracy around it, and the fan of the way the
+   * phone faces: its box, and the share of the way it turns toward each new reading of the
+   * compass, which jitters a few degrees from one reading to the next.
+   */
+  me: { radius: 8, ring: 3, fill: 0.95, accuracyRing: 1, accuracyStroke: 0.35, accuracyFill: 0.12, beam: 96, turn: 0.3 },
   /** The point a small map is about, drawn as filled as the reader's own. */
   centreFill: 0.95,
   /** A line on the network map: faded behind the lines chosen, as the network, as a line chosen; the volta dashed. */
   route: { muted: 2, network: 3.5, subject: 5, mutedOpacity: 0.35, networkOpacity: 0.7, subjectOpacity: 0.95, returnDash: '10 7' },
   /** A planned trip: its bus legs, its walks (routed, or the straight stand-in), and everything not the leg being made. */
   trip: { leg: 4, legNow: 6, legOpacity: 0.95, walk: 4, walkDash: '1 7', walkOpacity: 0.9, walkGuess: 3, walkGuessDash: '4 6', walkGuessOpacity: 0.8, faint: 0.25 },
-  /** The HTML markers' boxes: a route's arrow, a trip's A, B and boarding pins, a bus. */
-  icon: { arrow: 16, pin: 28, bus: 46 },
+  /** The HTML markers' boxes: a route's arrow, a trip's A, B and boarding pins, a bus, and a small map's numbered stop (its disc inside a box a finger can hit). */
+  icon: { arrow: 16, pin: 28, bus: 46, rank: 36 },
   /** A hover label's lift off its dot (a small dot's less), and its opacity. */
   tooltip: { lift: -8, liftSmall: -6, opacity: 0.95 },
   /** Room a map leaves around what it frames: the network's selection, the small map, a trip (more at the top, under its chip), the reader followed. */
   fit: { network: 40, nearby: 28, trip: 28, tripTop: 56, follow: 40 },
   /** The stop names written beside the dots: size, weight, gap from the dot's ring, halo, and the screen edge they keep off. */
   names: { size: 12, weight: 600, gap: 5, halo: 3, edge: 4 },
-  /** Panes over Leaflet's overlay canvas (400): the stop names, then the routes' arrows, then the reader's position, under the markers (600). */
-  pane: { names: 420, arrows: 450, reader: 460 },
+  /** Panes over Leaflet's overlay canvas (400): the stop names, then the routes' arrows, then the way the reader faces and the reader's position, under the markers (600). */
+  pane: { names: 420, arrows: 450, beam: 455, reader: 460 },
   /** Buses over every other marker. */
   busesOver: 1000,
+  /** On a small map, a nearer numbered stop over a farther one where the two touch: each place in the order lifts it this much. */
+  rankOver: 100,
 } as const;
 
 /** The Leaflet options for a stop dot, the same pair on every map so a stop looks like a stop wherever it is drawn; the one chosen turned inside out. */
@@ -110,6 +120,8 @@ export const stopDotStyle = (colors: MapColors, radius: number, selected = false
  * and the reader was on top or underneath depending on what had changed last.
  */
 export const READER_PANE = 'reader';
+/** Under the reader's pane: the fan of the way the phone faces, which the dot sits on. */
+export const BEAM_PANE = 'readerBeam';
 
 /** The reader's own position: information, not a thing to tap, which on the map took the tap of the stop the reader stood at. */
 export const userDotStyle = (colors: MapColors): L.CircleMarkerOptions => ({

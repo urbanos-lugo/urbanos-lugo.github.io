@@ -1002,7 +1002,18 @@ export const STATES: State[] = [
     screen: 'paradas',
     name: 'preto',
     geo: 'granted',
-    setup: `if (!press(seeText(T.locate))) return 'no locate button'; if (!(await until(() => document.querySelectorAll('main ul li').length > 2))) return 'no nearby list'; await pause(1500); return true;`,
+    setup: `if (!press(seeText(T.locate))) return 'no locate button'; if (!(await until(() => document.querySelectorAll('main ul li').length > 2))) return 'no nearby list';
+      if (!(await until(() => document.querySelector('main .map-rank')))) return 'the small map drew no stop'; await pause(1500); return true;`,
+    // On a phone nothing tied a dot to its row: five grey dots alike, their names in labels only
+    // a mouse opens. Each stop carries its place by distance, the same on the map and the list.
+    expect: `const shown = (sel) => [...document.querySelectorAll(sel)].filter((e) => e.getClientRects().length).map((e) => e.textContent.trim());
+      const onMap = shown('main .map-rank'), onList = shown('main .stop-rank-row'), out = [];
+      for (const map of [...document.querySelectorAll('main .leaflet-container')].filter((m) => m.getClientRects().length)) {
+        const own = [...map.querySelectorAll('.map-rank')].map((e) => e.textContent.trim());
+        if (own.join(' ') !== own.map((_, i) => i + 1).join(' ')) out.push('the stops on a small map are numbered ' + own.join(' ') + ', not 1 to ' + own.length + ' by distance');
+      }
+      if (onMap.join(' ') !== onList.join(' ')) out.push('the small map numbers its stops ' + onMap.join(' ') + ' and the list ' + onList.join(' ') + ': a dot and its row must carry the same number');
+      return out;`,
     promise: `return ${NEAR_LIST} ? [] : ['the stops near a position given show no walk, so the refusal below proves nothing'];`,
   },
   {

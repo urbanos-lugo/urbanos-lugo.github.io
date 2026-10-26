@@ -44,7 +44,8 @@ import { LANG_PREFIX, PATHS, SLUGS, isCrawler, parsePath, pathFor, pickLang } fr
 import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src/services/walkingPath';
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
 import { routeOnFoot } from '../src/utils/walkRouter';
-import { metresBetween } from '../src/utils/geo';
+import { headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
+import { placeNames } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
 import { HOLIDAY_YEARS, buildRuns, dayKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
 import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
@@ -4131,6 +4132,60 @@ ok('a board row keeps its key while the buses ahead of it leave', () => {
   const after = rowKeys([row('L6', '09:20'), row('L6', '09:20'), row('L2', '09:31')]);
   assert.deepEqual(after, before.slice(1), 'a departure changes the keys of the rows after it');
   assert.equal(new Set(before).size, before.length, 'two runs of a line at the same minute share a key');
+});
+
+ok('the fan on the reader points where the top of the screen faces, and nowhere without a compass', () => {
+  // The heading comes three ways: iOS's own compass field, Android's absolute reading (whose
+  // alpha turns the other way round), and a relative reading, tied to wherever the phone was
+  // when the page opened, which would point the fan anywhere and must draw nothing.
+  assert.equal(headingFromOrientation({ alpha: 12, webkitCompassHeading: 90 }, 0), 90, 'iOS heading');
+  assert.equal(headingFromOrientation({ alpha: 12, webkitCompassHeading: 90, webkitCompassAccuracy: -1 }, 0), null, 'iOS says -1 while its compass needs calibrating');
+  assert.equal(headingFromOrientation({ alpha: 300, absolute: true }, 0), 60, 'an absolute alpha of 300 is a heading of 60');
+  assert.equal(headingFromOrientation({ alpha: 300, absolute: false }, 0), null, 'a relative reading is not tied to north');
+  assert.equal(headingFromOrientation({ alpha: null, absolute: true }, 0), null, 'a desktop answers with no alpha at all');
+  // Turned sideways, the top of the screen is what was the phone's side.
+  assert.equal(headingFromOrientation({ alpha: 60, absolute: true }, 90), 30, 'landscape adds the screen angle, round past north');
+  // Easing toward a new reading: the short way round north, and settling exactly. The first
+  // version measured what was left as 359.9 − 0.1 and kept a frame loop running forever.
+  assert.equal(turnToward(350, 10, 0.5), 0, '350° to 10° passes north');
+  assert.equal(turnToward(10, 350, 0.5), 0, '10° to 350° passes north');
+  assert(Math.abs(turnToward(359.9, 0.1, 1) - 0.1) < 1e-9, 'a full step lands on the reading');
+  for (let from = 0; from < 360; from += 37) for (let to = 0; to < 360; to += 41) {
+    const step = turnToward(from, to, 0.3);
+    assert(step >= 0 && step < 360, `${from}→${to} gave ${step}`);
+  }
+});
+
+ok('a name on a map never covers another name, another stop or the reader', () => {
+  // Seen on the small "near me" map: the names were written to the right of each dot whatever
+  // was there, two stops across a road wrote one name over the other, and the nearest stop's
+  // name ran straight through the reader's dot.
+  const view = { width: 375, radius: 12, gap: 5, height: 15, edge: 4 };
+  const boxOf = (d: { width: number }, p: { x: number; y: number; align: string }) => {
+    const left = p.align === 'left' ? p.x : p.align === 'right' ? p.x - d.width : p.x - d.width / 2;
+    return { left, right: left + d.width, top: p.y - view.height / 2, bottom: p.y + view.height / 2 };
+  };
+  const overlap = (a: { left: number; right: number; top: number; bottom: number }, b: typeof a) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  const around = (p: { x: number; y: number }) => ({ left: p.x - view.radius, right: p.x + view.radius, top: p.y - view.radius, bottom: p.y + view.radius });
+  // A dozen stops on a 240 px small map, in a fixed scatter, and the reader among them. Half
+  // of them finding room is the floor: a layout that writes nothing would also cover nothing.
+  const dots = Array.from({ length: 12 }, (_, i) => ({ x: (i * 97) % 375, y: (i * 61) % 240, width: 40 + ((i * 53) % 120) }));
+  const reader = { x: 180, y: 120 };
+  const places = placeNames(dots, { ...view, keepClear: [reader] });
+  const written = places.flatMap((p, i) => (p ? [{ i, box: boxOf(dots[i], p) }] : []));
+  assert(written.length >= dots.length / 2, `only ${written.length} of ${dots.length} names found room`);
+  for (const a of written) {
+    assert(!overlap(a.box, around(reader)), `stop ${a.i}'s name covers the reader`);
+    for (const [j, d] of dots.entries()) if (j !== a.i) assert(!overlap(a.box, around(d)), `stop ${a.i}'s name covers stop ${j}`);
+    for (const b of written) if (b.i > a.i) assert(!overlap(a.box, b.box), `the names of stops ${a.i} and ${b.i} overlap`);
+  }
+  // The first stop given is the nearest, and with room on its right its name goes there.
+  assert.deepEqual(placeNames([{ x: 100, y: 100, width: 80 }], view)[0], { x: 117, y: 100, align: 'left' });
+  // Its neighbour across the road, ten pixels on, finds another side rather than writing over it.
+  const pair = placeNames([{ x: 100, y: 100, width: 80 }, { x: 110, y: 100, width: 80 }], view);
+  assert(pair[1] === null || !overlap(boxOf({ width: 80 }, pair[1]), boxOf({ width: 80 }, pair[0]!)), 'two neighbours wrote one name over the other');
+  // Against the right edge, the name goes left, as it always has.
+  assert.equal(placeNames([{ x: 360, y: 100, width: 80 }], view)[0]?.align, 'right');
 });
 
 ok('no check reached the network', () => {

@@ -348,6 +348,13 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    cambiar: ver que Chrome e que GL de software trae cada imaxe e comparalos; na rolda 28
    un Chrome novo xa moveu esta medida. A rama de proba é `ubuntu-26` (o seu único commit
    cambia as seis liñas `runs-on` e o check). 24.04 ten soporte de GitHub para anos.
+8. **Os mapas, debuxados con MapLibre, para que xiren.** Decidido o 26 de outubro de 2026
+   (DECIDIDO): xirar con dous dedos e unha brúxula para volver ao norte. Con Leaflet non hai
+   maneira limpa: `leaflet-rotate` é GPL-3 e a app MIT, e a capa MapLibre de debaixo non
+   segue o xiro. Son os catro mapas (rede, Ruta, o pequeno e a ficha da parada) e as súas
+   capas: paradas, nomes, liñas coas frechas, buses, o lector. MapLibre debuxa os nomes con
+   colisións, o que fai `nameLayout.ts` a man. O que hai que decidir antes: que fai un
+   teléfono sen WebGL2, que hoxe cae ás teselas ráster de OSM con Leaflet.
 
 ### Lista para o iPhone
 
@@ -361,7 +368,11 @@ Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e 
    campo. Abrir unha parada; premer **copiar ligazón** e pegala en Notas: ten `?parada=`.
 4. **Mapa**: debuxa (é MapLibre, WebGL2); pinza e xiro van fluídos; os nomes das paradas
    lense; a folla de controis sobe desde abaixo e non queda tapada pola barra de inicio
-   (é onde `100dvh` e as zonas seguras rompen).
+   (é onde `100dvh` e as zonas seguras rompen). En Paradas, **«Buscar preto de min»**:
+   Safari pregunta pola localización e polo movemento e a orientación; aceptando as dúas, o
+   punto leva un abano que xira ao virar o teléfono e apunta cara a onde miras de verdade
+   (comparar coa rúa), e cada número do mapa é o da súa fila. Negando a orientación, o
+   punto vai só e nada máis cambia. Só un iPhone pode probar esa pregunta.
 5. Xirar o teléfono a horizontal e volver: nada queda cortado.
 6. **Ruta**: calcular Praza Maior → HULA; ao calcular, a pantalla vai á resposta. Premer
    **Vou nesta**: pide o GPS, e a pantalla non se apaga durante un minuto (a *wake lock*,

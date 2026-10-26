@@ -511,6 +511,29 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   un bus que o paseo medido xa non alcanzaba. Pasado o segundo (a primeira carga da rede
   peonil, nunha liña lenta) sae coa estimación, como antes.
 
+## O mapa nun teléfono: números, nomes e cara a onde miras — 26 de outubro de 2026
+
+- **Nada do mapa se le só pasando o rato.** Nun teléfono non hai rato: unha etiqueta que
+  abre o punteiro é, alí, unha etiqueta que non existe. O mapa pequeno de «preto de min»
+  eran cinco puntos grises iguais e unha lista debaixo, sen nada que dixese que punto era
+  que fila. Regra desde hoxe: o que fai falta para usar un mapa está debuxado nel.
+- **Cada parada leva o seu número pola distancia**, o mesmo no mapa e na súa fila: un disco
+  coas dúas cores do punto de parada, do revés, para que se lea como a mesma parada. Non é
+  numeración de sección: a orde é a información. A máis próxima vai por riba se dúas se
+  tocan. No taboleiro, os postes arredor levan o mesmo.
+- **Os nomes non se pisan.** Á dereita do punto, á esquerda, enriba ou debaixo, onde non
+  tapen outro nome, outra parada nin a posición do lector; o que non colle non se escribe, e
+  gañan os primeiros, que no mapa pequeno son os máis próximos. Vale tamén para o mapa da
+  rede, onde dúas paradas a cada lado dunha rúa escribían un nome sobre o outro.
+- **O lector leva cara a onde mira**: un abano do azul do lector, de 70°, que esvae desde o
+  punto e xira co compás. Sen compás, sen permiso ou nun escritorio, non hai abano e nada
+  máis cambia. O compás só se le mentres o mapa está na pantalla. No mapa pequeno o lector
+  leva tamén o círculo da precisión, coma no grande.
+- **O mapa non xira con Leaflet.** O único complemento que o fai (`leaflet-rotate`) é GPL-3,
+  e a app é MIT; e o mapa base, MapLibre por baixo de Leaflet, non segue un xiro. Xirar con
+  dous dedos e unha brúxula para volver ao norte piden debuxar os mapas con MapLibre
+  directamente: rolda propia, decidida o 26 de outubro.
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).
