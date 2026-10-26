@@ -3434,3 +3434,250 @@ documento e case o seu texto cunha expresión regular. O número de checks non �
   `linesByNumber`; que as filas do taboleiro usen `rowKeys`; e que `pushState` quede fóra
   do actualizador de estado. Cada un é un fallo que xa pasou; se volve, un check de
   extremo a extremo no navegador é o sitio.
+
+## Rolda 42: o teléfono nunha man, tarefa por tarefa — do 20 ao 26 de outubro de 2026
+
+Pedido: a mellor experiencia posible nun teléfono, revisando a app enteira e non unha
+mostra. Cada tarefa pola que se abre, por cada entrada (en frío, instalada, a busca, o
+mapa, o QR dun poste, unha ligazón compartida, volver despois de bloquear o teléfono), nun
+teléfono pequeno e nun grande, medindo toques, teclas, escollas, pantallas e tempo; o
+polgar, o teclado, volver atrás e a coherencia. Despois, que un toque no mapa sexa limpo e
+que o punto dunha parada non se confunda co da posición; e, visto nun teléfono, que a barra
+de abaixo non quede nunca solta do bordo ao saír e volver. Rama `mobile-review`, desde
+7c333ff, sen publicar.
+
+### Como se mediu
+
+- `tools/journeys.ts` (`pnpm run audit:journeys`, e desde esta rolda tamén dentro de
+  `audit:browser`): 43 percorridos, cada tarefa por cada entrada, nun Android de 360 × 640
+  e nun iPhone de 430 × 932, con toques de verdade por CDP. O teclado é o 41 % de abaixo da
+  pantalla, o reloxo está fixado e o API sérvese desde os fixtures de `audit:browser`, sen
+  rede allea. Conta toques, teclas, desprazamentos, escollas, pantallas e o que tarda a
+  app. Mide cada toque: o tamaño, se algo o tapa, se se move xusto antes e se o control se
+  pintou noutro sitio antes de quedar quieto (cadro a cadro, pola súa posición na páxina).
+  Despois volve atrás co xesto do sistema e cos controis da app, e compara cada paso coa
+  pantalla de antes, o seu desprazamento e os seus campos. Onde a tarefa o pide, hai polo
+  medio un bloqueo de dúas horas, unha recarga ou outra lapela.
+- **O que ten que cumprirse** (`flow`, `back`) é porta; o listón da casa (`thumb`: 44 px,
+  o cuarto de arriba da pantalla) infórmase sen parala. Dúas pasadas de base, pequeno gl
+  claro e grande gl escuro, e a matriz enteira con es, en, texto ao 200 %, de lado e sen
+  rede.
+- **Cada commit contra o mesmo arnés.** O `src` de cada commit da rama, construído e
+  servido, cos percorridos do final, nas dúas pasadas de base. O que un commit quita é o
+  que arranxou; o que aparece despois del é o seguinte paso que ese percorrido xa podía
+  dar.
+- **Cada arranxo, quitado só, ten que facer fallar un percorrido**: reconstruído sen el, e
+  o percorrido que o garda, mirado.
+- Para o que a emulación non proba, `design/PROBA-no-telefono.md`: media hora nun iPhone e
+  noutra nun Android.
+- **`measure:browser`, as dúas builds.** Todo igual de lado a lado agás o planificador, que
+  pasou do orzamento nas dúas: nesta máquina, estes días, 7c333ff deu de 1,19 a 2,10 s
+  saíndo agora e de 10,2 a 13,4 s chegando ás 17:00 en tres voltas (orzamentos de 1 e 9 s),
+  e a rama o mesmo arredor. Con ese ruído non se mide un cambio de décimas, así que o que
+  engade agardar polas camiñadas mediuse aparte, en Node: para a pregunta de
+  `measure:browser` saíndo agora, as catro opcións que se amosan son 3 tramos a pé, 2,2 ms
+  a velocidade normal. A primeira versión media as camiñadas dos 82 plans, 33 tramos e
+  27,9 ms, e corrixiuse antes de rematar.
+- **Ao final, sobre a rama:** lint, `pnpm test` (154 checks), `check:policy` (22), `check:deep`
+  e o build en verde; `audit:browser` enteiro, cos percorridos dentro, 0 achados de WCAG 2.2
+  A e AA en 242 medicións de 162 estados, en 700 s; a matriz enteira, 0 achados que teñan que
+  cumprirse.
+
+### Atopado e arranxado
+
+Os achados que teñen que cumprirse, nas dúas pasadas de base, co arnés do final contra o
+`src` de cada commit: 94 en 7c333ff; 83, 58, 46, 40, 31, 24, 24, 19, 17, 17, 16, 19, 17, 19,
+10, 15, 6 e 2 ao longo da rama; 0 ao final. As subidas son tres achados intermitentes, os
+tres arranxados ao final (abaixo).
+
+- **Atrás pecha o que está enriba** (`useBackLayer`). Co menú aberto, o xesto de atrás
+  movía a pestana de debaixo e deixaba o menú; cos favoritos, o lector QR, a ficha do mapa
+  ou as filas da busca, saía da pantalla de debaixo. 94 → 83.
+- **Atrás sae dun taboleiro, dunha liña e dunha resposta antes de deixar a pestana**
+  (`useTabRoute`). Eran estado da páxina e non pasos do historial: desde un taboleiro
+  aberto na portada, atrás saía da app. Un enlace compartido abre no sitio da entrada á
+  que chega, non como un segundo paso. 83 → 58.
+- **Cada pantalla abre no seu principio, e atrás devólvea onde quedou.** As pantallas
+  comparten unha caixa de desprazamento: unha liña aberta desde o fondo da lista abría
+  1.618 px abaixo, co «Volver» fóra da pantalla, e un taboleiro desde as paradas preto,
+  435 px abaixo. 58 → 46.
+- **Unha pestana queda como se deixou.** Desmontábanse en cada cambio de pestana: o aviso
+  ao chegar e o dunha saída paraban sen dicir nada ao mirar o mapa, e a viaxe planificada
+  perdíase. 46 → 40.
+- **Recargar volve á pantalla que se deixou, e o `?parada=` dunha ligazón queda na
+  entrada á que chegou.** Recargar abría o primeiro de cada pestana, e o `?parada=` ía con
+  todas: recargar no mapa volvía ao taboleiro do poste. Un check garda o que abre cada
+  ligazón (`screenFromLink`), probado rompéndoo de tres xeitos. 40 → 31.
+- **Os minutos son os de agora ao espertar o teléfono.** Desbloqueado tras dúas horas,
+  o taboleiro amosou a hora do bloqueo 13 s, e a portada máis de 20. 31 → 24.
+- **O mapa di nun teléfono que non te atopa.** A frase ía no panel dos controis, pechado
+  nun teléfono; agora vai no mapa, por riba dos botóns.
+- **O teclado trae a tecla de cada campo e a tecla fai o que di**, e ningún campo corrixe
+  nin capitaliza un nome de parada. Unha viaxe escrita coas teclas do teclado: 2 toques,
+  onde escollendo suxestións son 6. 24 → 19.
+- **Un lugar nun campo do planificador substitúese escribindo**: eran 46 borrados para os
+  dous de saída. A viaxe escrita enteira, 17 teclas onde eran 63. 19 → 17.
+- **Tocar a pestana que xa está volve ao seu primeiro, e despois arriba.** O «Volver» do
+  taboleiro e da liña está no cuarto de arriba (109 px nos dous teléfonos); a pestana, na
+  metade fácil.
+- **Mentres se escribe na busca, o X ocupa o sitio da estrela e do QR.** Co texto ao
+  200 % o campo quedaba en 0 px e cada letra entraba antes da anterior: «sindicatos»
+  saía «sotacidnsi», tamén en 7c333ff.
+- **Atrás a unha pantalla que aínda se asenta suxeita o desprazamento un segundo.** Ao
+  200 %, volver ao formulario do planificador quedaba 23–75 px fóra.
+- **«Calcular ruta» garda o tamaño mentres di «Calculando»**: ao 200 % encollía unha
+  liña e o de debaixo subía baixo o dedo.
+- **As suxestións do planificador, filas de 44 px**: eran de 36 a 41.
+- **O mapa debuxa o lector que di seguir.** Coa posición xa permitida, o botón dicía
+  «Deixar de seguirme» sobre un mapa sen punto e sen centrar: o seguimento arrancaba co
+  mapa do primeiro render, que aínda non existía. E un arreglo que chega antes ca o mapa
+  (a viaxe xa le a posición e dállo ao instante) agarda por el. Un mapa aberto desde «Ver
+  no mapa» queda na parada pedida. 19 → 10.
+- **A parada escollida é un anel de tinta; o azul do mapa é só o lector.** Eran dous
+  discos azuis de 9 e 8 px co mesmo filete: xunto a un poste montábanse e só os separaba o
+  ton. Tamén no mapa pequeno do taboleiro. Fotos nos dous temas.
+- **O punto do lector vai por riba de todo e non colle toques.** Compartía lenzo coas
+  paradas: enriba ou debaixo segundo o último repintado, e enriba collía o toque da parada
+  onde estabas cun globo da precisión. 15 → 6.
+- **Un dedo ten 12 px de alcance, e ábrese a parada máis próxima.** Tocar 12, 14 e 18 px
+  arredor da parada escollida abría «Liñas por aquí»; agora a parada, e a 21 tamén (25,
+  as liñas). Dous postes fronte a fronte: abría o debuxado de último. E a etiqueta que o
+  dedo abre enriba dunha parada collía o toque (só se vía con movemento: todos os
+  percorridos pedían movemento reducido). 6 → 2.
+- **Os pregados péchanse ao instante.** O formulario de Ruta pregábase animado baixo a
+  resposta nova; Chrome pinta o primeiro cadro dunha transición no seu comezo, e o
+  traballo de despois da resposta alongaba ese cadro 100–200 ms: «Vou nesta» pintábase
+  253–259 px máis abaixo e subía baixo o dedo. Era tamén o achado de atrás intermitente
+  das viaxes: o arnés fotografaba a pantalla nese cadro.
+- **A resposta sae coas camiñadas xa medidas** (ata un segundo de espera). Coa estimación
+  primeiro, a medida cambiaba o bus de cabeza un instante despois e «Vou nesta» baixaba
+  59–60 px: un toque rápido collía un bus que o paseo xa non alcanzaba.
+- **O arnés ve un control pintado nun sitio e asentado noutro** (cadro a cadro, pola súa
+  posición na páxina), e agarda a que remate unha entrada antes de medir: así os dous
+  arranxos de antes fan fallar dúas viaxes en cada execución (3 de 3), onde antes só os
+  collía a sorte. 2 → 0.
+- **O mapa é unha tarxeta só onde cabe.** Desde 640 px de ancho collía a tarxeta da
+  tableta, 62 % do alto e polo menos 380 px, mirando só o ancho: de lado, un teléfono de
+  640 × 360 tiña 378 px de mapa nunha pantalla de 222, co botón de localizarse 157 px por
+  debaixo do bordo e o zoom 150 (no de 932 × 430, 87 e 80). A tarxeta pide agora 640 × 576
+  (a variante `card`); por debaixo o mapa enche o oco entre as barras. De pé e na tableta
+  de 768 × 1024, igual ca antes. Nos tres percorridos que tocan o punto propio de lado, o
+  punto non estaba na parte vista do mapa en ningunha execución.
+- **A barra de abaixo, pegada ao bordo da pantalla.** Nun teléfono viuse solta por riba do
+  bordo ao saír da app e volver. A carcasa era unha columna de 100dvh no fluxo da páxina,
+  coa barra ao pé, así que a barra quedaba onde acabase a columna: unha páxina que o
+  teclado deixa desprazada, ou unha unidade de viewport co valor vello ao espertar,
+  sóltana. A emulación non fai ningunha das dúas soa; desprazando a páxina a man, 120 px
+  de desprazamento deixaban a barra 120 px por riba do bordo, nos tres tamaños, tamén en
+  7c333ff. Agora a carcasa vai fixada aos catro bordos da pantalla; ningunha pantalla
+  principal cambia (os dous teléfonos, 200 % e de lado). `audit:browser` garda o caso, e o
+  guión de `PROBA-no-telefono.md` pídeo nun teléfono de verdade.
+
+**A matriz enteira** (43 percorridos × 7 pasadas, 300 execucións, co arnés do final):
+
+| | 7c333ff | a rama |
+| :--- | ---: | ---: |
+| execucións que chegan á súa resposta | 272 | 300 |
+| achados que teñen que cumprirse (`flow` + `back`) | 331 (112 + 219) | 0 |
+| listón da casa (`thumb`) | 425 | 222 |
+| toques | 638 | 662 |
+| teclas | 964 | 572 |
+| desprazamentos | 307 | 308 |
+
+Máis toques porque agora rematan os percorridos que antes paraban a medio camiño. Os 0 da
+rama son en cada unha das sete pasadas.
+
+### Mirado e descartado
+
+- **«Ver no mapa» movíase 21 px antes do toque** só no percorrido que vai con movemento
+  normal: o taboleiro entra subindo, e o arnés tocaba no medio. Era do arnés; agora agarda
+  a que remate a entrada. Igual os 6 px da subida da resposta, que tamén se pinta no seu
+  comezo co movemento reducido.
+- **O atrás intermitente das viaxes** («volve ao formulario, non ás paradas») saía da
+  mesma causa ca o salto de «Vou nesta»: o arnés fotografaba a resposta pintada debaixo
+  do formulario aberto. Co pregado instantáneo non volveu nas pasadas de base.
+- **A tarxeta do mapa de lado** quedara como proposta na primeira metade da rolda; ao
+  esconder tamén o punto propio, arranxouse (arriba).
+- **Os 12 px de alcance, e non os 22 dun dedo enteiro.** Na vista xeral a capa deixa 24 px
+  entre puntos (`SPREAD_PX`); con 22 px de alcance arredor de cada un, o centro quedaría
+  cuberto enteiro, sen sitio para un toque que abra «Liñas por aquí» ou mova o mapa. É
+  conta, non medida.
+- **O globo da precisión do punto propio** quitouse, non se moveu: o círculo di o mesmo, e
+  calquera toque sobre o punto é o da parada onde estás.
+- **Que unha ligazón compartida con `?parada=` amose os minutos do operador** coma o QR
+  dun poste: segue así. Quen comparte a ligazón comparte o que viu; é unha pregunta de
+  criterio, e queda no informe como proposta.
+- **O cuarto de arriba da pantalla, fóra do polgar**: 184 dos 223 achados do listón da
+  casa que quedan na matriz son toques alí. A primeira fila da portada (42), o buscador
+  (35, nos tres idiomas), o menú (12), o campo de orixe (10), o QR (5). Baixar a barra é
+  cambiar o esqueleto da app; a pestana repetida e as teclas do teclado xa levan o máis
+  frecuente á metade de abaixo. Proposta no informe. Os outros son sobre todo a resposta
+  que empeza por debaixo do bordo (30), co texto ao 200 % e de lado.
+- **O caixón de favoritos repite a portada.** Dúas portas ao mesmo desde calquera
+  pestana; queda.
+- **As filas do taboleiro corren cando sae un bus**, ao refrescar cada 15 s: visto na
+  primeira metade da rolda, sen medir canto. É o que di a lista (as próximas saídas).
+  Proposta no informe: non movelas mentres hai un dedo enriba.
+
+### Erros nosos durante esta rolda
+
+- **A resposta que agarda polas camiñadas media as de todos os plans**, 82 nunha pregunta
+  concorrida, cando a clasificación só le as catro que se amosan: 33 tramos onde bastaban
+  3. `measure:browser` deu esa versión por riba do orzamento, aínda que co ruído desta
+  máquina tampouco 7c333ff o cumpría; corrixido ás catro.
+
+- **O commit que meteu os percorridos en `audit:browser` deixouno colgado para sempre.** A
+  carreira do audit esperaba no nivel superior do módulo (`await withBrowser`), así que o
+  módulo non remataba de cargar mentres corría; os percorridos impórtanse desde dentro da
+  carreira e importan ese mesmo módulo, e esa importación esperaba pola carreira que
+  esperaba por ela. Parábase nos percorridos co navegador quieto, e en CI sería unha porta
+  que nunca acaba. Non se correra o audit enteiro despois dese commit: saíu ao corrielo
+  para medir. Arranxado no propio commit: a carreira xa non se agarda no nivel superior.
+  A garda de CI que vén despois dela pasou a agardala nun `.finally`, e `check:policy`, que
+  a buscaba ao principio dunha liña, deixou de atopala; o patrón busca agora a garda nese
+  `.finally`, e quitándoa segue fallando.
+- **Manter montadas as pantallas das pestanas rompeu a proba de 2.5.7 de `audit:browser`.**
+  Lía o primeiro panel de mapa da páxina, e desde ese commit o mapa pequeno do taboleiro
+  segue nela, agochado, e vén primeiro: sen transformación, nunca se movía, e a proba
+  daba «un clic no mapa non o move» en 2 de 3 execucións, mentres o mapa clicado si se
+  movía. Agora le o panel do mapa que clica: 3 de 3.
+- O arnés miraba a pantalla 200 ms despois da espera de cada paso, e escoller un lugar no
+  planificador planifica desde un efecto, despois de que a espera xa pasara: coas
+  camiñadas medidas antes da resposta, a foto do arnés collía ás veces o formulario e a
+  súa pila de volver quedaba mal. Agora agarda a que a pantalla deixe de traballar
+  (`aria-busy`) dúas veces seguidas.
+
+- A primeira proba dos puntos supuxo o mapa centrado no lector, e estaba na parada: as
+  distancias dos toques saían 8 px movidas. Refeita medindo o poste no propio lenzo.
+- Unha expresión dos percorridos (`map tab (location…`) non casaba co nome real
+  (`map tab, location…`): unha volta de mordidas correu sen dous dos percorridos e deu
+  por boa unha reversión que non mordera. Repetida co nome bo.
+- A primeira corrección do punto do lector (ler o mapa nunha referencia) deixaba fóra o
+  arreglo que chega antes ca o mapa; saíu ao probar a garda, que só mordía nun teléfono.
+- Todos os percorridos pedían movemento reducido, e iso agochaba que a etiqueta dunha
+  parada collía o toque. Agora un percorrido vai con movemento normal.
+- Dúas veces un guión escrito nun heredoc perdeu as escapadas (`\n` saíu como salto).
+- Unha frase dun commit («a tamaño normal non se move nada») e outra («medio segundo»)
+  non estaban medidas ou xa non eran certas: reescritas antes de rematar.
+
+### Queda
+
+- **Probar nun iPhone e nun Android de verdade**, co guión `design/PROBA-no-telefono.md`
+  (seis apartados, media hora cada un). Cousa do dono.
+- **Subir a rama.** `mobile-review` non está en `origin`; develop e main, cando o dono o
+  diga.
+- **Tres achados intermitentes vistos durante a rolda**, cada un nunha execución de 300 ou
+  menos, fóra das pasadas de base e con catro páxinas á vez. Na matriz enteira final,
+  ningún; quedan apuntados porque ningún se explicou de todo.
+  - De lado, no teléfono pequeno, o percorrido nos dous postes fronte a fronte atopa o
+    mapa sen centrar no lector: o poste queda arriba, baixo as fichas das liñas. Non se
+    repite ao instrumentar o mapa para ver quen o move.
+  - Atrás desde a resposta dunha viaxe volve ao formulario cando o arnés esperaba as
+    paradas: a súa foto despois do paso viu o formulario. Polo menos un caso era o arnés
+    mirando antes de tempo, arranxado (`aria-busy`); se había outro, non volveu saír.
+  - Atrás desde a viaxe en curso, ao 200 %, queda na mesma pantalla. Ese atrás son dous
+    pasos do historial: a entrada do formulario que queda debaixo da resposta, e o atrás
+    que a app dá por si cando chega a ela. O arnés colleu o cadro entre os dous; unha
+    persoa ve un instante a viaxe antes da portada.
+- As propostas de criterio (arriba): a barra de arriba, a ligazón con minutos do
+  operador, as filas do taboleiro.
