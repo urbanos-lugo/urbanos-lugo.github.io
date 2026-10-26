@@ -1706,6 +1706,31 @@ async function promises(browser: Browser): Promise<Finding[]> {
 }
 
 /**
+ * The bottom bar where the screen ends, whatever the page itself does. On a phone it was seen
+ * loose above the bottom after leaving the app and coming back: the shell was a column in the
+ * page's flow, and a page left scrolled, as a phone's keyboard can leave it, carried the bar
+ * up with it, 120 px for 120 px.
+ */
+async function pinnedBar(browser: Browser): Promise<Finding[]> {
+  const { page } = await worker(browser);
+  await page.send('Emulation.setDeviceMetricsOverride', PHONE);
+  await page.goto(`${BASE}/`);
+  await page.waitFor(`document.querySelector('nav a')`);
+  const gap = await page.evaluate<number | null>(`(() => {
+    const bar = [...document.querySelectorAll('nav')].find((n) => n.getClientRects().length && getComputedStyle(n).position === 'sticky');
+    if (!bar) return null;
+    const tall = document.createElement('div');
+    tall.style.height = '2000px';
+    document.body.appendChild(tall);
+    window.scrollTo(0, 120);
+    return Math.round(innerHeight - bar.getBoundingClientRect().bottom);
+  })()`);
+  await page.close();
+  if (gap === null) return [{ kind: 'reach', where: 'barra de abaixo', detail: 'no bottom bar on a phone, so its place was not tested' }];
+  return gap > 1 ? [{ kind: 'flow', where: 'barra de abaixo', detail: `with the page itself scrolled 120 px, the bottom bar is ${gap} px above the bottom of the screen` }] : [];
+}
+
+/**
  * The app with site data refused -- Chrome's "don't allow sites to save data", which some
  * readers turn on and some webviews ship with. Reading `window.localStorage` then throws,
  * and one read left outside a try blanked the whole page. A browser of its own, because the
@@ -1802,6 +1827,7 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
     await sequence('forced colours', () => forced(browser));
     await sequence('reduced motion', () => motion(browser));
     await sequence('site data refused', () => siteDataRefused());
+    await sequence('the bottom bar where the screen ends, with the page itself scrolled', () => pinnedBar(browser));
     await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
     // Imported here and not at the top: journeys.ts builds its page helpers from this file's,
     // which do not exist yet while this file is still being read.

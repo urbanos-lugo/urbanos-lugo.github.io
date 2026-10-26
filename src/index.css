@@ -738,24 +738,16 @@
      on screen — most obvious switching to the Mapa tab, where it reads as the map
      resizing rather than loading. Measured at rgb(221,221,221) on a dark ground. */
   /**
-   * The app shell fills the screen, on a phone too.
-   *
-   * `dvh` is the small-viewport unit that accounts for the browser chrome sliding in and
-   * out; `vh` is the old one that does not. Both are declared, in that order, so a
-   * browser that does not know dvh keeps a full-height shell instead of dropping the
-   * declaration and collapsing to auto height, which unpins the bottom bar.
-   *
-   * A rule rather than `h-screen h-[100dvh]`: two height utilities on one element are
-   * ordered by the framework's output and not by the order they are written, and this
-   * only works if vh comes first.
+   * The app shell fills the screen, on a phone too: pinned to the screen's four edges, so
+   * the bottom bar is where the screen ends. It was a column 100dvh tall in the page's flow,
+   * and that bar sat wherever the column ended: on a phone it was seen loose above the
+   * bottom after leaving the app and coming back, as when a phone keeps a viewport unit's
+   * old value on waking or leaves the page scrolled after its keyboard. Pinned, neither
+   * the unit nor the page's own scroll has a say; only `main` scrolls.
    */
   .h-viewport {
-    height: 100vh;
-  }
-  @supports (height: 100dvh) {
-    .h-viewport {
-      height: 100dvh;
-    }
+    position: fixed;
+    inset: 0;
   }
 
   /**
