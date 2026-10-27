@@ -3010,8 +3010,9 @@ await okAsync('every request to somebody else’s site has a deadline, says who 
     globalThis.fetch = realFetch;
     console.log = realLog;
   }
-  const hosts = sent.map(({ url }) => new URL(url).host);
-  assert(hosts.includes('buslugo.com') && hosts.some((h) => h.includes('concellodelugo.gal')) && sent.length >= 3, `the services asked ${hosts.join(', ')}, so this did not see all three requests`);
+  // The hosts themselves, compared whole: a substring would also take buslugo.com.example.
+  const hosts = new Set(sent.map(({ url }) => new URL(url).host));
+  assert(hosts.has('buslugo.com') && hosts.has('concellodelugo.gal') && sent.length >= 3, `the services asked ${[...hosts].join(', ')}, so this did not see all three requests`);
   for (const { url, init } of sent) {
     assert(init?.signal instanceof AbortSignal, `${url} is asked with no deadline`);
     assert(init.redirect === 'error', `${url} follows redirects (${init.redirect ?? 'the default, follow'})`);

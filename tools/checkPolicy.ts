@@ -551,7 +551,7 @@ await okAsync('every colour, size, space, corner, edge, shadow, layer, duration 
   const GOVERNED = /^(color|background(-color)?|border(-[a-z]+)*-(color|width|radius)|border-width|border-radius|outline(-width|-offset|-color)?|box-shadow|--tw-(shadow|inset-shadow|drop-shadow|ring-offset-width|backdrop-blur|blur)|filter|backdrop-filter|z-index|opacity|transition-duration|transition-timing-function|transition-delay|animation(-duration|-delay)?|font-size|line-height|letter-spacing|font-weight|font-family|width|height|min-width|min-height|max-width|max-height|padding(-[a-z]+)*|margin(-[a-z]+)*|gap|row-gap|column-gap|top|right|bottom|left|inset(-[a-z]+)*|--tw-translate-[xy]|text-underline-offset|stroke-width|fill|stroke|grid-template-columns|aspect-ratio|scroll-margin(-[a-z]+)*|--tw-leading|--tw-tracking|--tw-font-weight|--tw-space-[xy]-reverse)$/;
   const KEYWORD = /^(0|0px|auto|none|inherit|initial|unset|currentcolor|transparent|100%|1|normal|max-content|min-content|fit-content|100vw|100vh|100dvh|0 0 #0000|calc\(\d+ \/ \d+ \* 100%\)|calc\(calc\(\d+ \/ \d+ \* 100%\) \* -1\)|repeat\(\d+, minmax\(0, 1fr\)\))$/;
   const plumbing = (value: string) => value.replace(/var\(--tw-[\w-]+,?\)/g, '').replace(/[\s,]/g, '') === '';
-  const themeHas = (namespace: string, name: string) => new RegExp(`^\\s*--${namespace}-${name.replace(/[.]/g, '\\.')}:`, 'm').test(css);
+  const themeHas = (namespace: string, name: string) => new RegExp(`^\\s*--${namespace}-${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}:`, 'm').test(css);
   for (const [, selector, body] of utilities.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     if (/\.sr-only/.test(selector)) continue;
     for (const decl of body.split(';')) {
