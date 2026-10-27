@@ -4,7 +4,7 @@ import { useT } from '../../i18n';
 import { MAX_QUERY_LENGTH } from '../../utils/searchUtils';
 import { rankLandmarks, rankStops } from '../../utils/places';
 import { PoleCode } from '../ui/PoleCode';
-import { asTyped } from '../ui/controls';
+import { asTyped, walkRows } from '../ui/controls';
 
 /** One row of the origin/destination autocomplete: a real stop, or a named place. */
 export interface Suggestion {
@@ -58,6 +58,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
   const first = role === 'origin';
   /** The focus has just come in: the tap that brought it would put the caret down and undo the selection. */
   const arriving = useRef(false);
+  const rowsRef = useRef<HTMLDivElement>(null);
   return (
     // The rows go when the Tab key takes the focus past them: left open, they lay over the
     // time and the calculate button, and the focus went on behind them (WCAG 2.4.11). Only a
@@ -95,7 +96,7 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
         {...asTyped}
         enterKeyHint={first ? 'next' : 'go'}
         onKeyDown={(e) => {
-          if (e.key !== 'Enter') return;
+          if (e.key !== 'Enter') return walkRows(e, e.currentTarget, rowsRef.current);
           e.preventDefault();
           onEnter();
         }}
@@ -118,7 +119,11 @@ export function PlaceField({ id, role, value, display, placeholder, label, sugge
         </button>
       )}
       {open && suggestions.length > 0 && (
-        <div className="anim-drop absolute left-0 right-0 top-full mt-1 bg-bg border border-edge rounded-control shadow-float z-dropdown divide-y divide-line max-h-suggestions-max overflow-y-auto">
+        <div
+          ref={rowsRef}
+          onKeyDown={(e) => walkRows(e, document.getElementById(id), rowsRef.current)}
+          className="anim-drop absolute left-0 right-0 top-full mt-1 bg-bg border border-edge rounded-control shadow-float z-dropdown divide-y divide-line max-h-suggestions-max overflow-y-auto"
+        >
           {suggestions.map((sug) => (
             <button key={sug.id} type="button" onClick={() => onPick(sug.name)} className="w-full min-h-tap p-2.5 text-label hover:bg-surface cursor-pointer flex items-center justify-between gap-2 transition-colors text-left">
               {/* The name whole, on two lines when it needs them: cut, two poles of one street were

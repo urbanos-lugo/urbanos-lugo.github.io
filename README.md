@@ -1598,8 +1598,10 @@ Non é un deseño estirado: son dous caparazóns sobre o mesmo código.
 
 **Móbil.** Buscador único arriba (paradas, liñas e rúas, co escáner QR ao lado, porque
 estando no poste escanear a pegatina é o camiño máis curto que hai entre "estou aquí" e
-"estes son os meus tempos"). Catro destinos abaixo, ao alcance do polgar, de 60 px de
-alto. Lista ou detalle, nunca os dous apertados.
+"estes son os meus tempos"). A tecla «Buscar» do teclado abre a fila de arriba: «hula» e a
+tecla levan ao taboleiro cun toque e sen escoller nada; cun teclado físico, ↓ e ↑ percorren
+as filas, aquí e nos dous campos de Ruta. Catro destinos abaixo, ao alcance do polgar, de
+60 px de alto. Lista ou detalle, nunca os dous apertados.
 
 O atrás do sistema —o botón do navegador, o xesto de Android— pecha primeiro o que está
 enriba (o menú, os favoritos, o lector do QR, as follas do mapa, as filas da busca), sae

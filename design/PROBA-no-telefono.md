@@ -58,8 +58,9 @@ Chrome › Instalar a app. Abrila desde a icona.
 
 ## 4. O teclado
 
-1. No buscador, a tecla de abaixo á dereita di «Buscar» (ou unha lupa) e garda o teclado
-   deixando as filas á vista.
+1. No buscador, a tecla de abaixo á dereita di «Buscar» (ou unha lupa). Escribir «hula» e
+   premela abre a fila de arriba da lista; cunhas letras que non dan nada, garda o teclado e
+   deixa á vista o «non hai resultados».
 2. No lector do QR, a tecla di «Ir» e abre a parada; escribir «uilP» non o corrixe nin lle
    pon maiúscula.
 3. En Ruta, tocar a orixe: queda seleccionada e o que se escribe substitúea. A tecla di

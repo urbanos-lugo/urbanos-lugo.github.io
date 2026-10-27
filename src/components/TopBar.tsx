@@ -8,7 +8,7 @@ import { useT } from '../i18n';
 import { LineBadge } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
 import { CountBadge } from './ui/CountBadge';
-import { IconButton, asTyped } from './ui/controls';
+import { IconButton, asTyped, walkRows } from './ui/controls';
 import { NameStack } from './ui/NameStack';
 import { asideSections, navSections, type Tab } from './navSections';
 import { useBackLayer } from '../hooks/useBackLayer';
@@ -62,6 +62,7 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const boxRef = useRef<HTMLElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   // Tapping anywhere else puts the results away, and so does Escape. The tap counts when the
   // finger lifts (WCAG 2.5.2): on the way down it was an action nobody could take back by
@@ -128,10 +129,17 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
-            // The keyboard's search key puts the keyboard away, and the rows it covered with it.
+            // The keyboard's search key opens the row at the top, the one the eye is already on:
+            // "hula" and the key was the whole search. With no row for the words yet (still
+            // being worked out, or none at all) it puts the keyboard away so the rows show.
             {...asTyped}
             enterKeyHint="search"
-            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+            onKeyDown={(e) => {
+              if (e.key !== 'Enter') return walkRows(e, e.currentTarget, resultsRef.current);
+              const first = settled ? resultsRef.current?.querySelector('button') : null;
+              if (first) first.click();
+              else e.currentTarget.blur();
+            }}
             maxLength={MAX_QUERY_LENGTH}
             placeholder={t.search.placeholder}
             aria-label={t.search.placeholder}
@@ -170,7 +178,11 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
       </span>
 
       {open && q.length > 0 && (
-        <div className="anim-drop absolute inset-x-3.5 top-full z-results mt-1 max-h-results-max overflow-y-auto rounded-card border border-edge bg-bg shadow-float">
+        <div
+          ref={resultsRef}
+          onKeyDown={(e) => walkRows(e, document.getElementById('site-search'), resultsRef.current)}
+          className="anim-drop absolute inset-x-3.5 top-full z-results mt-1 max-h-results-max overflow-y-auto rounded-card border border-edge bg-bg shadow-float"
+        >
           {settled && stops.length === 0 && lines.length === 0 && places.length === 0 && screens.length === 0 && <p className="px-4 py-4 text-body text-ink-3">{t.search.none}</p>}
 
           {stops.length > 0 && <Heading>{t.search.stops}</Heading>}

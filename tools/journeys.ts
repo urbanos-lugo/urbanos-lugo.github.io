@@ -171,6 +171,17 @@ export const JOURNEYS: Journey[] = [
     reload: true,
   },
   {
+    // The keyboard's search key opens the row at the top: the name and the key, nothing to pick.
+    task: 'next bus at a stop',
+    entry: 'search, the keyboard’s key',
+    start: {},
+    steps: [
+      { type: `document.getElementById('site-search')`, text: 'sindicatos', next: `css('header .z-results button')`, wait: `css('header .z-results button')` },
+      { enter: true, wait: board },
+    ],
+    answer: firstDeparture,
+  },
+  {
     task: 'next bus at a stop',
     entry: 'QR, the bar’s button',
     start: {},

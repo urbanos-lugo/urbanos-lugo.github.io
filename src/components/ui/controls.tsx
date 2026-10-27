@@ -1,5 +1,5 @@
 import { ArrowLeft, ChevronDown, Clock, Star, TriangleAlert, X, type LucideIcon } from 'lucide-react';
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
 
 /**
  * A 44 px square bordered button that shows no word, so its label names it. With `on` it is
@@ -68,6 +68,21 @@ export function Scrim({ label, onClose, className }: { label: string; onClose: (
  * browser's own history laid over the app's suggestions. The field adds its return key.
  */
 export const asTyped = { autoComplete: 'off', autoCorrect: 'off', autoCapitalize: 'off', spellCheck: false } as const;
+
+/**
+ * ↓ and ↑ through a field's suggestion rows, for a keyboard: down from the field to the first
+ * row, along the rows, and up from the first one back into the field. Without it the rows were
+ * reached by Tab alone, one at a time.
+ */
+export function walkRows(event: KeyboardEvent<HTMLElement>, field: HTMLElement | null, rows: HTMLElement | null): void {
+  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+  const all = [...(rows?.querySelectorAll('button') ?? [])];
+  if (!all.length) return;
+  event.preventDefault();
+  const at = all.indexOf(document.activeElement as HTMLButtonElement);
+  const next = event.key === 'ArrowDown' ? Math.min(at + 1, all.length - 1) : at - 1;
+  (next < 0 ? field : all[next])?.focus();
+}
 
 /**
  * A time to ask about, with its words in front: the planner's "depart at" or "arrive by"
