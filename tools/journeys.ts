@@ -721,6 +721,26 @@ const AT_POINT = `function (x, y) {
 }`;
 
 /**
+ * A fold that closes, looked at the moment it does: nothing inside it still to see. Under reduced
+ * motion every element took a 0.01 ms transition, so the fields of a closing fold eased out of
+ * sight on their own, and a page short of frames (CI's runner, four of them at once) kept the
+ * planner's form on screen under its answer, its fields there for a reader and for this harness.
+ */
+const FOLDS = `(() => {
+  window.__foldLeaks = [];
+  const seen = 'input, button, a, h2';
+  new MutationObserver((records) => {
+    for (const r of records) {
+      const el = r.target;
+      if (!el.classList || !el.classList.contains('fold-closed') || (r.oldValue || '').includes('fold-closed')) continue;
+      const inside = [...el.querySelectorAll(seen)];
+      const still = inside.filter((d) => getComputedStyle(d).visibility !== 'hidden');
+      if (still.length) window.__foldLeaks.push(still.length + ' of ' + inside.length);
+    }
+  }).observe(document, { subtree: true, attributes: true, attributeFilter: ['class'], attributeOldValue: true });
+})()`;
+
+/**
  * Where each control a tap brought is laid out in every frame drawn after it: its offset in
  * the page, which neither a transform nor a scroll moves. A control first drawn in one place
  * and then settled in another jumped under the eye, however short the first frame was; the
@@ -864,8 +884,7 @@ async function open(w: Worker, j: Journey, phone: Phone, lang: Lang, theme: 'lig
   await page.send('Emulation.setDeviceMetricsOverride', held.turned ? { ...metrics, width: metrics.height, height: metrics.width } : metrics);
   await page.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
   await page.send('Emulation.setTimezoneOverride', { timezoneId: PHONE_ZONE });
-  await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: j.start.motion ? 'no-preference' : 'reduce' }] });
-  const prepared = {
+  await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: j.start.motion ? 'no-preference' : 'reduce' }] });  const prepared = {
     clock: j.start.night ? NIGHT : DAY,
     stored: { ...(j.start.stored ?? {}), 'urbanos-lugo-lang': lang, 'urbanos-lugo-theme': theme },
     geo: j.start.geo ?? 'none',
@@ -1088,6 +1107,8 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     }
   }
   run.screens = seen.size;
+  const leaks = await page.evaluate<string[]>(`window.__foldLeaks || []`).catch(() => []);
+  if (leaks.length) flow(`a fold closed with what was inside it still on screen until the next frame (${[...new Set(leaks)].join(', ')} of its fields, buttons, links and headings)`);
   if (run.findings.some((f) => f.kind === 'flow' && /never|nothing|no field|no map/.test(f.detail))) return run;
 
   // The answer: on screen, and not under anything.
@@ -1268,6 +1289,7 @@ export async function journeys(browser: Browser, passes: Pass[] = CORE): Promise
       const w = await worker(browser);
       await w.page.onNewDocument(PROBE_SOURCE);
       await w.page.onNewDocument(FRAMES);
+      await w.page.onNewDocument(FOLDS);
       // Where the screen was when the app left it: the scroll at each step it adds to the history.
       await w.page.onNewDocument(`(() => { const push = history.pushState.bind(history); history.pushState = (s, t, u) => { const m = document.querySelector('main'); window.__leftAt = m ? Math.round(m.scrollTop) : null; push(s, t, u); }; })()`);
       const cpu = Number(process.env.JOURNEY_CPU ?? 1);

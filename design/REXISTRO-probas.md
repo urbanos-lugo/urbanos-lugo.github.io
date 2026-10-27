@@ -3680,6 +3680,18 @@ rama son en cada unha das sete pasadas.
     percorrido non viu a resposta como pantalla propia, ou o historial gardou un paso de
     máis; o achado di agora que pantallas viu e cantos pasos da app tiña o historial, para
     que a próxima execución do executor diga cal.
+    Dixo o primeiro. O historial tiña os tres pasos bos, e a pantalla do paso da resposta
+    era a resposta («trip over, form folded») pero co nome do formulario: os seus campos e
+    o seu título seguían visibles dentro do pregado pechado. Co movemento reducido, a regra
+    do final de `index.css` dá a cada elemento unha transición de 0,01 ms, e cada campo ía
+    saíndo por si da visibilidade que herda; o pregado pechábase ao instante, o de dentro ao
+    seguinte cadro, e unha páxina sen cadros (o executor, catro á vez) deixábao visible.
+    Reproducido aquí parando o reloxo das animacións da páxina: o mesmo achado, e con
+    `.fold-closed > * * { transition: none }` a resposta xa leva o seu nome. Os percorridos
+    miran agora cada pregado no instante en que se pecha: na compilación de antes, 20 de 20
+    campos, botóns e títulos seguían visibles en 12 percorridos, co reloxo andando; despois,
+    ningún. Co reloxo parado queda a outra metade: ao volver, o formulario que se abre
+    agarda un cadro para amosar os campos. O executor non o deu nunca.
 - O mesmo día, CodeQL tiña catro alertas abertas. As dúas de `tools/` arranxáronse: un
   host comparado enteiro e non como subcadea, e un nome escapado enteiro dentro dunha
   expresión. As dúas de `csp.ts` son a mesma cadea: `vite.config.ts` escapa cada orixe

@@ -534,6 +534,10 @@
      after an answer held the next frame, and «Vou nesta» jumped 259 px under the finger. */
   .fold-closed { grid-template-rows: 0fr; transition: none; }
   .fold-closed > * { visibility: hidden; transition: none; }
+  /* What is inside goes with it. Under reduced motion every element takes a 0.01 ms transition,
+     so each field eased out of the visibility it inherits on its own, and stayed on screen until
+     the next frame: on a page short of frames, the planner's form under its answer. */
+  .fold-closed > * * { transition: none; }
   /* The planner's form: clipped only while it moves, so the suggestion lists under its
      fields can hang past the card's edge the rest of the time. */
   .fold-clear:not(.fold-closed):not(.fold-moving) > * { overflow: visible; }
