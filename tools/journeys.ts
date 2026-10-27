@@ -51,8 +51,12 @@ const PHONES: Record<Phone, { width: number; height: number; deviceScaleFactor: 
 };
 /** A portrait soft keyboard with its suggestion strip: Gboard on 640 px, the iPhone's on 932. */
 const KEYBOARD = 0.41;
-const DAY = new Date(2026, 8, 29, 9, 12).getTime();
-const NIGHT = new Date(2026, 8, 29, 3, 0).getTime();
+// Lugo's 09:12 and 03:00 (CEST, UTC+2) wherever the run is, on phones set to Lugo's zone. The
+// runner is on UTC: its phones were told above each board that their clock was two hours off,
+// and on the small one the next bus went 29 px below the screen there and nowhere else.
+const PHONE_ZONE = 'Europe/Madrid';
+const DAY = Date.UTC(2026, 8, 29, 7, 12);
+const NIGHT = Date.UTC(2026, 8, 29, 1, 0);
 const LOCKED_MS = 2 * 60 * 60_000;
 
 const busiest = [...BUS_STOPS].sort((a, b) => b.lines.length - a.lines.length);
@@ -856,6 +860,7 @@ async function open(w: Worker, j: Journey, phone: Phone, lang: Lang, theme: 'lig
   const metrics = PHONES[phone];
   await page.send('Emulation.setDeviceMetricsOverride', held.turned ? { ...metrics, width: metrics.height, height: metrics.width } : metrics);
   await page.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+  await page.send('Emulation.setTimezoneOverride', { timezoneId: PHONE_ZONE });
   await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: j.start.motion ? 'no-preference' : 'reduce' }] });
   const prepared = {
     clock: j.start.night ? NIGHT : DAY,
