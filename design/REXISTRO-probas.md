@@ -3721,3 +3721,94 @@ rama son en cada unha das sete pasadas.
     persoa ve un instante a viaxe antes da portada.
 - As propostas de criterio quedaron decididas o 27 de outubro (DECIDIDO.md): as filas do
   taboleiro quedan quietas baixo un dedo, e o resto como estaba.
+
+## Rolda 43: o mapa nun teléfono, e o que quedaba dunha lista de melloras — 26 e 27 de outubro de 2026
+
+Pedido: valorar unha lista de melloras posibles e facer as que pagasen a pena; e que o
+mapa nun teléfono sexa o mellor posible, empezando por «preto de min», onde non se sabía
+onde estabas nin que punto era a parada próxima, e buscando os fallos da mesma clase. Rama
+`mejoras-movil`, sobre `mobile-review` (28066c9), sen publicar.
+
+### A lista, contrastada co código
+
+- Dúas xa estaban feitas na rolda 42: atrás dentro dunha parada, unha liña ou unha viaxe, e
+  a tecla de cada campo.
+- Unha partía dun erro: «dúas follas abertas á vez no mapa». A ficha da parada (capa 520,
+  pegada abaixo e de lado a lado) tapa o botón dos controis (400), e co panel dos controis
+  aberto o veo (500, fixo) tapa o mapa: non se pode tocar unha parada. Lido no código.
+- O lector de QR en JavaScript xa estaba valorado (rolda 1 e rolda 8: a entrada manual
+  admite a ligazón enteira do poste); o filete dos bordos a 1,37:1 segue aberto a propósito.
+- Ao contrastalo, un dato: a liña 59 deste rexistro di que a cámara do iPhone abre
+  `?parada=`. O QR do poste leva a `info.urbanoslugo.com`, así que abre a páxina do
+  operador. Non se probou nun iPhone; queda na lista do iPhone.
+
+### O mapa pequeno, antes e despois
+
+Antes, a 375 px coa posición simulada no Casco Vello: cinco puntos grises de 6 px iguais,
+o punto azul sen círculo, os nomes só en etiquetas que abre un rato, e nada que unise un
+punto coa súa fila. Agora cada parada leva o seu número pola distancia, o mesmo na fila;
+os nomes escríbense onde non tapen outro nome, outra parada nin o lector; o lector leva o
+círculo da precisión e, cun compás, un abano cara a onde mira; e un camiño a pé, calculado
+no dispositivo, chega á parada máis próxima. Igual nos postes arredor dun taboleiro.
+
+- Nomes: a regra vale para todos os mapas. Nun mapa de 240 px con 12 paradas espalladas
+  escríbense 8; con 40, 4, porque cada parada é tamén un obstáculo. Os dous fallos que a
+  provocaron, vistos nas fotos: o nome da parada 1 cruzaba o punto azul, e o disco 2
+  quedaba baixo o 1 (agora a máis próxima vai enriba).
+- O abano: lectura simulada de 60° (alpha 300 absoluto) nos dous temas e no mapa grande.
+  A pregunta de iOS polo movemento e a orientación só a pode probar un iPhone.
+- A garda: o estado «preto» de `audit:browser` compara os números do mapa cos da súa lista.
+  A primeira pasada atopou un fallo propio: ao 200 %, o número estreitaba a fila e «14
+  liñas» saía 5 px. Arranxado deixando que a distancia baixe debaixo do nome.
+
+### O resto
+
+- **A tecla «Buscar»** abre a fila de arriba. `audit:journeys`: o seguinte bus dunha parada
+  polo seu nome e a tecla, 1 toque e ningunha escolla; escollendo a fila, 2 e 1. ↓ e ↑
+  percorren as filas, na busca e en Ruta.
+- **A ficha de liña**: os tres tipos de día, o de hoxe primeiro e tirado do reloxo (antes
+  quedaba o de onte se a pantalla seguía aberta á medianoite); «Pasa por» coas catro zonas
+  con máis paradas (a 1.1: Campus USC · Sur / Ramón Ferreiro · Garabolos · O Ceao); a
+  busca de liñas atopa por zona; e unha ligazón `?linea=` para compartir.
+- **Compartir**: o panel do sistema nunha pantalla táctil, copiar noutro sitio.
+- **O planificador nun *worker***. `measure:browser planner`, CPU a 6×, as dúas builds
+  alternadas e dúas execucións de cada: chegando antes das 17:00, o fío da páxina ocupado
+  7.138 e 8.469 ms (unha tarefa de 6.998 e 8.289) pasa a 383 e 350 ms (183 e 210); saíndo
+  agora, igual. A resposta, 7,3–8,8 s antes e 2,2–2,3 s agora, pero esa parte non se lle
+  debe crer: a ralentización da medida quizais non chega ao *worker*. 44 KB brotli máis.
+
+### As portas
+
+`pnpm test` 158 comprobacións, `check:policy` 22, `check:deep` 1.050 pares e 38.343
+viaxes, a build; despois do rebase sobre 28066c9, as cinco outra vez en verde.
+
+O `audit:browser` enteiro (242 medidas, 162 estados) atopou primeiro catro cousas, todas
+nos percorridos e todas desta rolda:
+
+- **Compartir unha parada** buscaba o botón por «Copiar ligazón», e nun Chrome con panel de
+  compartir chámase «Compartir». O panel do sistema non é unha páxina que se poida mirar:
+  o percorrido responde agora a API no seu bordo e comproba que lle chega a ligazón con
+  `?parada=`.
+- **Atrás desde a viaxe en curso volvía á viaxe**, nos dous teléfonos, en 8 de 14
+  pasadas co *worker* e en 0 de 8 sen el (a build anterior e a de 28066c9). Non era o arnés:
+  ao recargar sobre unha viaxe, Ruta volve preguntar a resposta do historial, e co *worker*
+  a resposta chegaba despois de premer atrás e metíase no historial sobre a pantalla á que
+  se volvera. Unha pregunta que segue fóra cando a pantalla cambia descártase. Atopouno unha
+  sonda temporal no historial (cada `pushState`, `replaceState` e `popstate`, co seu
+  chamador) que o percorrido imprimía.
+- De paso, outro fallo do *worker*, visto no mapa: **o tramo en bus da resposta era unha
+  recta** entre as dúas paradas. As liñas que volvían do *worker* eran copias, e o trazado
+  das rúas escríbese nas liñas da páxina, non nas copias. Agora cada resposta volve coas
+  liñas e as paradas da páxina, e o check do *worker* comproba que son os mesmos obxectos.
+
+Despois dos arranxos, o `audit:browser` enteiro outra vez: 0 achados nos percorridos (nin
+fluxo nin atrás) e 1 de WCAG, o Tab que non chegou a un botón de 72 no escritorio en
+«preto»; dúas pasadas soas dese estado deron 0. Intermitente, coas catro páxinas á vez.
+
+### Queda
+
+- **A rolda de MapLibre** (NOTAS, Pendente 8): xirar o mapa e a brúxula.
+- **Nun iPhone**: a pregunta do compás, o abano apuntando de verdade, o panel de compartir
+  e o que abre a cámara co QR dun poste.
+- O taboleiro «a outra hora» segue lendo o tipo de día de hoxe; na ficha de liña xa se
+  escolle.
