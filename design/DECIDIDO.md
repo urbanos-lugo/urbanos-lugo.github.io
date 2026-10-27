@@ -481,6 +481,23 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   `(hover: hover)`, que un navegador sen rato atopado responde «none» aínda que un rato
   pase polo mapa (o executor de CI, o 26 de outubro).
 
+## O que se decidiu de gusto na rolda 42 — 27 de outubro de 2026
+
+- **O cuarto de arriba da pantalla queda como está.** 184 dos 222 toques difíciles da
+  rolda son alí: a primeira parada gardada, o buscador, o menú, a orixe de Ruta e o QR.
+  Baixar a barra é cambiar o esqueleto da app, e a pestana tocada outra vez e as teclas do
+  teclado xa traen á metade de abaixo os camiños máis frecuentes. Mírase outra vez despois
+  da proba en teléfonos de verdade.
+- **Unha ligazón `?parada=` compartida amosa os minutos do operador**, coma a pegatina do
+  poste: quen a comparte comparte o que viu.
+- **As filas do taboleiro quedan quietas baixo un dedo.** Lese outra vez cada 15 s e ao
+  espertar o teléfono, e un bus que marcha subía todas as filas: os botóns da fila de
+  abaixo chegaban baixo o polgar que ía tocar a de enriba. Cun dedo no taboleiro, a lectura
+  agarda a que se levante; un dedo quieto máis dun refresco está lendo, non indo tocar, e
+  as filas seguen.
+- **O caixón de gardadas repite a portada, e quedan os dous**: a portada é a pantalla de
+  Paradas, e o caixón ábrese desde calquera pestana.
+
 ## A resposta de Ruta, quieta ao chegar — 21 de outubro de 2026
 
 - **Os bloques que se pregan péchanse ao instante** e ábrense co movemento do panel. É a

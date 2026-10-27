@@ -3659,13 +3659,41 @@ rama son en cada unha das sete pasadas.
 - Dúas veces un guión escrito nun heredoc perdeu as escapadas (`\n` saíu como salto).
 - Unha frase dun commit («a tamaño normal non se move nada») e outra («medio segundo»)
   non estaban medidas ou xa non eran certas: reescritas antes de rematar.
+- **A rama subiu a develop (be69167) e o seu CI saíu vermello**: `audit:browser`, 13
+  achados no executor e 0 nesta máquina; outra vez o mesmo commit, 12. Ningún se mirara
+  antes en Linux:
+  - 8 eran a zona horaria. O executor está en UTC, e o taboleiro dun teléfono noutra zona
+    avisa enriba das filas de que o seu reloxo vai dúas horas atrás: no teléfono pequeno o
+    seguinte bus quedaba 29 e 33 px baixo o bordo. Os mesmos números saen aquí co navegador
+    en UTC. Os teléfonos dos percorridos están agora na zona de Lugo, e o seu día é un
+    instante fixo, as 09:12 de Lugo calquera que sexa a zona da máquina.
+  - 1 era a etiqueta do mapa: só se suxeitaba baixo `(hover: hover)`, e o Chrome sen
+    pantalla de Linux responde «none» mentres un rato cruza o mapa. Agora pregúntase ao
+    punteiro que se moveu de último. Reproducido aquí con emulación táctil: a garda vella
+    dá o mesmo achado, a nova ningún.
+  - 1, o mapa da parada no teléfono grande co inicio a 0 px do bordo, non volveu saír na
+    segunda execución.
+  - 3 volven en cada execución: no teléfono grande, despois de pedir unha viaxe (cun
+    destino rápido, cunha viaxe recente ou coas teclas do teclado), atrás desde o
+    formulario volve ao formulario e non ás paradas. Aquí non saen: nin en UTC, nin coa CPU
+    4 e 8 veces máis lenta, nin no audit enteiro en UTC (0 achados en 242 medidas). Ou o
+    percorrido non viu a resposta como pantalla propia, ou o historial gardou un paso de
+    máis; o achado di agora que pantallas viu e cantos pasos da app tiña o historial, para
+    que a próxima execución do executor diga cal.
+- O mesmo día, CodeQL tiña catro alertas abertas. As dúas de `tools/` arranxáronse: un
+  host comparado enteiro e non como subcadea, e un nome escapado enteiro dentro dunha
+  expresión. As dúas de `csp.ts` son a mesma cadea: `vite.config.ts` escapa cada orixe
+  antes de metela na expresión do service worker, e CodeQL non le ese escape. Pechalas
+  como falso positivo é cousa do dono. As seis de Dependabot (vite, proxy-addr) xa están
+  arranxadas no lockfile de main desde o 7 e o 13 de outubro: a comparación do propio
+  GitHub le 8.3.4 e 2.0.8 nese commit, e o seu grafo de dependencias segue en 8.3.0 e 2.0.7.
 
 ### Queda
 
 - **Probar nun iPhone e nun Android de verdade**, co guión `design/PROBA-no-telefono.md`
   (seis apartados, media hora cada un). Cousa do dono.
-- **Subir a rama.** `mobile-review` non está en `origin`; develop e main, cando o dono o
-  diga.
+- **main.** develop subiu o 26 de outubro (be69167); main, cando o dono o diga e co CI de
+  develop en verde.
 - **Tres achados intermitentes vistos durante a rolda**, cada un nunha execución de 300 ou
   menos, fóra das pasadas de base e con catro páxinas á vez. Na matriz enteira final,
   ningún; quedan apuntados porque ningún se explicou de todo.
@@ -3679,5 +3707,5 @@ rama son en cada unha das sete pasadas.
     pasos do historial: a entrada do formulario que queda debaixo da resposta, e o atrás
     que a app dá por si cando chega a ela. O arnés colleu o cadro entre os dous; unha
     persoa ve un instante a viaxe antes da portada.
-- As propostas de criterio (arriba): a barra de arriba, a ligazón con minutos do
-  operador, as filas do taboleiro.
+- As propostas de criterio quedaron decididas o 27 de outubro (DECIDIDO.md): as filas do
+  taboleiro quedan quietas baixo un dedo, e o resto como estaba.
