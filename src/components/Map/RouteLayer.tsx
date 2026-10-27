@@ -7,8 +7,8 @@ import { directionLabel } from '../../utils/serviceLabels';
 import { BusDirection, BusLine, BusStop } from '../../types';
 import { stopById } from '../../data/transitData';
 import { metresBetween } from '../../utils/geo';
-import { POPUP_CLEAR_OF_CONTROLS, badgeHtml, popupBox, rowButtonClass } from './popupHtml';
 import { DRAW } from './palette';
+import type { RouteHit } from './LinesHereSheet';
 
 interface RouteLayerProps {
   map: L.Map | null;
@@ -18,8 +18,8 @@ interface RouteLayerProps {
   /** The lines lifted out of the network, painted in full over the rest kept faint. */
   emphasisLineIds?: string[];
   showRoutes: boolean;
-  onSelectLine: (line: BusLine) => void;
-  onOpenLine: (line: BusLine) => void;
+  /** The routes under a tap, nearest first, and where the tap was: the map opens its sheet of them. */
+  onLinesHere: (hits: RouteHit[], at: L.LatLng) => void;
 }
 
 /** How close a click has to land, in screen pixels, to count as hitting a route. Nobody aims at 3.5 px. */
@@ -145,34 +145,6 @@ const arrowIcon = (color: string, weight: number, deg: number): L.DivIcon =>
       `<path d="M-4 -6 L3 0 L-4 6" fill="none" stroke="${escapeHtml(color)}" stroke-width="${weight}" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   });
 
-/** The routes under a click, one row per line, with real handlers: a corridor can carry six lines and the reader says which. */
-function linesHerePopup(hits: { line: BusLine; dir: BusDirection }[], lang: Lang, onSelect: (line: BusLine) => void, onOpen: (line: BusLine) => void): HTMLElement {
-  const t = translations(lang);
-  const node = document.createElement('div');
-  node.className = 'font-sans';
-  node.innerHTML = popupBox(
-    `<div class="mb-1.5 caps-label text-ink-3">${escapeHtml(t.map.linesHere)}</div>` + `<div data-rows="1" class="flex flex-col gap-1"></div>`,
-    true,
-  );
-  const byLine = new Map<string, { line: BusLine; dirs: BusDirection[] }>();
-  for (const { line, dir } of hits) byLine.set(line.id, { line, dirs: [...(byLine.get(line.id)?.dirs ?? []), dir] });
-  const rows = node.querySelector('[data-rows]')!;
-  for (const { line, dirs } of byLine.values()) {
-    const where = dirs.length > 1 ? t.map.bothDirections : directionLabel(dirs[0], lang);
-    const row = document.createElement('div');
-    row.className = 'flex items-stretch gap-1';
-    row.innerHTML =
-      `<button type="button" data-draw="1" title="${escapeHtml(t.map.drawRoute)}" class="${rowButtonClass} min-h-tap flex-1 px-2">` +
-      `${badgeHtml(line.color, line.number)}<span class="text-label text-ink-2">${escapeHtml(where)}</span></button>` +
-      `<button type="button" data-open="1" title="${escapeHtml(t.map.openLineInfo)}" aria-label="${escapeHtml(t.map.openLineInfo)}: ${escapeHtml(line.number)}" ` +
-      `class="min-h-tap w-tap cursor-pointer text-body text-accent">&rarr;</button>`;
-    row.querySelector('button[data-draw]')?.addEventListener('click', () => onSelect(line));
-    row.querySelector('button[data-open]')?.addEventListener('click', () => onOpen(line));
-    rows.appendChild(row);
-  }
-  return node;
-}
-
 interface Drawn {
   line: BusLine;
   dir: BusDirection;
@@ -187,14 +159,12 @@ interface Arrowed {
   poles: BusStop[];
 }
 
-export function RouteLayer({ map, lines, visibleLineIds, emphasisLineIds = [], showRoutes, onSelectLine, onOpenLine }: RouteLayerProps) {
+export function RouteLayer({ map, lines, visibleLineIds, emphasisLineIds = [], showRoutes, onLinesHere }: RouteLayerProps) {
   const lang = useLang();
   const zoom = useMapZoom(map);
-  // Held in refs so a fresh arrow from the parent does not redraw the map on every tick.
-  const onSelectLineRef = useRef(onSelectLine);
-  onSelectLineRef.current = onSelectLine;
-  const onOpenLineRef = useRef(onOpenLine);
-  onOpenLineRef.current = onOpenLine;
+  // Held in a ref so a fresh arrow from the parent does not redraw the map on every tick.
+  const onLinesHereRef = useRef(onLinesHere);
+  onLinesHereRef.current = onLinesHere;
   const zoomForDrawing = Math.round(zoom);
 
   useEffect(() => {
@@ -297,10 +267,9 @@ export function RouteLayer({ map, lines, visibleLineIds, emphasisLineIds = [], s
         .filter((h) => h.d <= HIT_PX)
         .sort((a, b) => a.d - b.d);
       if (!hits.length) return;
-      L.popup({ closeButton: true, className: 'transit-map-popup', ...POPUP_CLEAR_OF_CONTROLS })
-        .setLatLng(e.latlng)
-        .setContent(linesHerePopup(hits, lang, onSelectLineRef.current, onOpenLineRef.current))
-        .openOn(map);
+      // Claimed like a stop's tap: the map does not slide away from the finger under the sheet it opens.
+      if (e.originalEvent) (e.originalEvent as MouseEvent & { _stopClaimed?: boolean })._stopClaimed = true;
+      onLinesHereRef.current(hits, e.latlng);
     };
     map.on('click', openLinesHere);
     placeArrows();

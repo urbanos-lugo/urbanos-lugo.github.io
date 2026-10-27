@@ -191,7 +191,17 @@ e a 5.2 cara a Avda. Américas), que se desvía por onde o bus non pasa. Eses tr
 ficha da liña, deixando claro que as paradas e as horas seguen a ser as oficiais: o que
 é inferido é a forma entre elas.
 
-Desde o globo dunha parada podes deixar no mapa **só as liñas que pasan por aí** — as
+**O que se toca no mapa abre unha folla desde abaixo, a mesma para todo.** Unha parada, a
+súa: o nome, o código, as próximas saídas, o taboleiro enteiro. Unha liña, «Liñas por
+aquí»: as que pasan onde tocaches, a máis próxima ao dedo primeiro, cunha frase que di que
+é a lista; escoller unha pecha a folla, debúxaa por riba das outras e encádraa enteira,
+coma desde as fichas de arriba, e a frecha abre a súa páxina. Até o 27 de outubro de 2026
+unha liña abría un globo de Leaflet, que no centro listaba once liñas en 578 px e se metía
+baixo a barra de busca; ao escoller quedaba aberto e o mapa non encadraba nada. O que se
+tocou sobe por riba da folla cando quedaría debaixo, para que o anel da parada se vexa, e
+mentres hai folla o zoom apártase: flotaba sobre os seus dous botóns.
+
+Desde a folla dunha parada podes deixar no mapa **só as liñas que pasan por aí** — as
 que paran nese poste e as que pasan a menos de 400 m a pé. A pregunta é da parada, así
 que se fai desde a parada; como filtro solto nunha fila de zonas non se entendía e
 respondía pola parada equivocada. Redúcelle a lista a algo máis pequeno nas 417
@@ -717,7 +727,9 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   │   ├── VehicleLayer.tsx    marcadores de vehículo
 │   │   │   ├── NearbyMiniMap.tsx   as poucas paradas arredor de ti, debuxadas
 │   │   │   ├── LazyNearbyMiniMap.tsx  o minimapa, e nada del ata que está en pantalla
+│   │   │   ├── MapSheet.tsx        a folla que abre un toque no mapa, a mesma para unha parada ou unha liña
 │   │   │   ├── StopSheet.tsx       a parada aberta onde a tocaches, co seu taboleiro
+│   │   │   ├── LinesHereSheet.tsx  «Liñas por aquí»: as que pasan onde tocaches
 │   │   │   ├── StopNames.ts        os nomes das paradas, nun canvas propio
 │   │   │   ├── nameLayout.ts       onde vai cada nome sen tapar outro, outra parada nin a ti
 │   │   │   ├── basemap.ts          o mapa de fondo, debaixo de todo o demais

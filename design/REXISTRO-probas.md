@@ -3805,6 +3805,25 @@ Despois dos arranxos, o `audit:browser` enteiro outra vez: 0 achados nos percorr
 fluxo nin atrás) e 1 de WCAG, o Tab que non chegou a un botón de 72 no escritorio en
 «preto»; dúas pasadas soas dese estado deron 0. Intermitente, coas catro páxinas á vez.
 
+### Tocar unha liña ou unha parada no mapa da rede, nun teléfono — 27 de outubro
+
+Preguntouse se o mapa do teléfono se entende ao tocar unha liña ou unha parada. Mirado a
+375 px, cos toques mandados ao lenzo do mapa no punto dunha liña ou dunha parada (os
+toques do panel caían desprazados coa súa escala):
+
+- Unha liña nun corredor do centro abría «Liñas por aquí» cun globo de once liñas, 578 px,
+  co título e as seis primeiras baixo a barra de busca e as fichas; o mesmo toque movía o
+  mapa ao centro e levaba o globo máis arriba.
+- Escollida unha liña nel, o globo quedaba aberto sobre o mapa e o mapa non a encadraba.
+- A parada tocada podía quedar baixo a súa propia folla, co seu anel tapado.
+- O zoom de Leaflet flotaba sobre os dous botóns da folla da parada.
+
+Agora unha liña abre unha folla igual ca a da parada (`MapSheet`, a casca das dúas), con
+quince liñas no mesmo punto, a máis próxima primeiro e a frase que di que lista é;
+escoller unha pecha a folla e encadra a liña (comprobado coa 5.1). O punto tocado subiu de
+412 a 192 px por riba da folla; unha parada a 485 px, a 217, coa folla en 322. Co zoom
+`visibility: hidden` mentres hai folla.
+
 ### Queda
 
 - **A rolda de MapLibre** (NOTAS, Pendente 8): xirar o mapa e a brúxula.

@@ -93,8 +93,12 @@ export const DRAW = {
   icon: { arrow: 16, pin: 28, bus: 46, rank: 36 },
   /** A hover label's lift off its dot (a small dot's less), and its opacity. */
   tooltip: { lift: -8, liftSmall: -6, opacity: 0.95 },
-  /** Room a map leaves around what it frames: the network's selection, the small map, a trip (more at the top, under its chip), the reader followed. */
-  fit: { network: 40, nearby: 28, trip: 28, tripTop: 56, follow: 40 },
+  /**
+   * Room a map leaves around what it frames: the network's selection, the small map, a trip
+   * (more at the top, under its chip), the reader followed; and, for what a tap opened a sheet
+   * over, the room kept under the line chips and above the sheet.
+   */
+  fit: { network: 40, nearby: 28, trip: 28, tripTop: 56, follow: 40, sheetTop: 64, sheetGap: 24 },
   /** The stop names written beside the dots: size, weight, gap from the dot's ring, halo, and the screen edge they keep off. */
   names: { size: 12, weight: 600, gap: 5, halo: 3, edge: 4 },
   /** Panes over Leaflet's overlay canvas (400): the stop names, then the routes' arrows, then the way the reader faces and the reader's position, under the markers (600). */

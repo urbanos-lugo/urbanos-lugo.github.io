@@ -16,6 +16,7 @@ import { DRAW, mapColors } from './palette';
 import { RouteLayer } from './RouteLayer';
 import { StopLayer } from './StopLayer';
 import { StopSheet } from './StopSheet';
+import { LinesHereSheet, type RouteHit } from './LinesHereSheet';
 import { VehicleLayer } from './VehicleLayer';
 import { LineChips } from './LineChips';
 import { AROUND_STOP_RADIUS_M, MapControls, NEARBY_RADIUS_M, type Layer, type Preset } from './MapControls';
@@ -83,6 +84,8 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
   const [aroundStop, setAroundStop] = useState<BusStop | null>(null);
   /** The stop whose board is open over the map. */
   const [tappedStop, setTappedStop] = useState<BusStop | null>(null);
+  /** The routes under a tap on the map, and where it was: their sheet is open. */
+  const [linesHere, setLinesHere] = useState<{ hits: RouteHit[]; at: L.LatLng } | null>(null);
   /** The controls pulled up over the map; only means anything below `lg`. */
   const [sheetOpen, setSheetOpen] = useState(false);
   const closeSheet = useCallback(() => setSheetOpen(false), []);
@@ -165,6 +168,35 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
     if (next === 'nearby' && !nearbyLines.length) follow.start();
   };
 
+  /**
+   * A line chosen from the lines under a tap: the same as choosing it from the chips, drawn over
+   * the rest and framed whole, with the sheet out of the way. It stayed a popup over the map,
+   * and the map stayed where it was, showing whatever part of the line was in view.
+   */
+  const chooseLine = (line: BusLine) => {
+    setLinesHere(null);
+    if (!pickedLineIds.includes(line.id)) {
+      setPickedLineIds([...pickedLineIds, line.id]);
+      onSelectLine(line);
+    }
+    setLayers((l) => ({ ...l, routes: true }));
+    if (map) fitLines(map, [line.id]);
+  };
+
+  /**
+   * What was tapped, moved into sight above the sheet it opened: below it, the sheet spoke of a
+   * stop whose ring nobody could see. Only when it is under the sheet or the chips, and then to
+   * the middle of what the sheet leaves.
+   */
+  const keepAbove = (at: L.LatLngExpression, sheetPx: number) => {
+    if (!map) return;
+    const y = map.latLngToContainerPoint(at).y;
+    const top = DRAW.fit.sheetTop;
+    const bottom = Math.max(top, map.getSize().y - sheetPx - DRAW.fit.sheetGap);
+    if (y >= top && y <= bottom) return;
+    map.panBy([0, y - (top + bottom) / 2], { animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches });
+  };
+
   /** From a stop's own sheet: keep the map, drop every line that does not serve it. */
   const showLinesHere = (stop: BusStop) => {
     setAroundStop(stop);
@@ -222,7 +254,8 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
 
         <div className="h-full card:h-auto order-1 lg:order-none lg:col-span-8">
           {/* The map is the screen on a phone, upright or turned; the card, the border and the fixed height come back where one fits. */}
-          <div className="h-map-viewport relative z-0 w-full overflow-hidden bg-surface card:rounded-card card:border card:border-edge card:shadow-raised">
+          {/* With a sheet up, the zoom bar steps aside: it floated over the sheet's two buttons, and a tap meant for them zoomed the map. */}
+          <div className={`h-map-viewport relative z-0 w-full overflow-hidden bg-surface card:rounded-card card:border card:border-edge card:shadow-raised ${tappedStop || linesHere ? 'map-sheet-up' : ''}`}>
             <div ref={containerRef} className="w-full h-full" />
 
             {/* The scope, not the one line picked out of it: the layer keeps the rest faint underneath. The stops narrow to the pick: 417 dots is clutter. */}
@@ -232,17 +265,27 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
               emphasisLineIds={pickedLineIds}
               lines={BUS_LINES}
               showRoutes={layers.routes}
-              onSelectLine={(line) => {
-                onSelectLine(line);
-                setPickedLineIds((prev) => (prev.includes(line.id) ? prev.filter((x) => x !== line.id) : [...prev, line.id]));
+              onLinesHere={(hits, at) => {
+                setTappedStop(null);
+                setLinesHere({ hits, at });
               }}
-              onOpenLine={onOpenLine}
             />
             {/* The big dot follows what the reader is looking at: the stop whose sheet is open, else the one whose board they came from. */}
-            <StopLayer map={map} visibleLineIds={visibleLineIds} stops={BUS_STOPS} selectedStop={tappedStop ?? selectedStop} showStops={layers.stops} onTapStop={setTappedStop} />
+            <StopLayer
+              map={map}
+              visibleLineIds={visibleLineIds}
+              stops={BUS_STOPS}
+              selectedStop={tappedStop ?? selectedStop}
+              showStops={layers.stops}
+              onTapStop={(stop) => {
+                setLinesHere(null);
+                setTappedStop(stop);
+              }}
+            />
             {tappedStop && (
               <StopSheet
                 stop={tappedStop}
+                onHeight={(px) => keepAbove([tappedStop.lat, tappedStop.lng], px)}
                 onClose={() => setTappedStop(null)}
                 onOpenLine={(line) => {
                   setTappedStop(null);
@@ -255,6 +298,18 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                 onOpenFullBoard={(stop) => {
                   setTappedStop(null);
                   onSelectStop(stop);
+                }}
+              />
+            )}
+            {linesHere && (
+              <LinesHereSheet
+                hits={linesHere.hits}
+                onHeight={(px) => keepAbove(linesHere.at, px)}
+                onClose={() => setLinesHere(null)}
+                onChoose={chooseLine}
+                onOpenLine={(line) => {
+                  setLinesHere(null);
+                  onOpenLine(line);
                 }}
               />
             )}

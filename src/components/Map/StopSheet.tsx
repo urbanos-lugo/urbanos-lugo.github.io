@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { CloseButton } from '../ui/controls';
+import { ChevronRight } from 'lucide-react';
 import { BusStop, BusLine, StopArrival } from '../../types';
 import { lineById, poleCode } from '../../data/transitData';
 import { getArrivalsForStop, rowKeys } from '../../utils/arrivals';
 import { useT } from '../../i18n';
-import { useDialog } from '../../hooks/useDialog';
 import { useClock } from '../../hooks/useClock';
+import { MapSheet } from './MapSheet';
 import { LineBadge } from '../ui/LineBadge';
 import { Approx, Provenance } from '../ui/Provenance';
 
@@ -18,6 +17,8 @@ interface StopSheetProps {
   onShowLinesHere: (stop: BusStop) => void;
   /** The full stop board, with the operator's own minutes and everything else. */
   onOpenFullBoard: (stop: BusStop) => void;
+  /** The sheet's height once drawn (MapSheet). */
+  onHeight?: (px: number) => void;
 }
 
 /** Enough to answer "can I still make it", short enough to not become a page. */
@@ -30,9 +31,8 @@ const REFRESH_MS = 30_000;
  * departures and a way through to the full board. A panel inside the map container, so
  * the same markup is a sheet on a phone and a panel over the map card on a desktop.
  */
-export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFullBoard }: StopSheetProps) {
+export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFullBoard, onHeight }: StopSheetProps) {
   const t = useT();
-  const dialogRef = useDialog(true, onClose);
 
   const now = useClock(REFRESH_MS);
   const arrivals = useMemo(() => getArrivalsForStop(stop.id, now).arrivals.slice(0, SHOWN), [stop.id, now]);
@@ -51,22 +51,23 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
   };
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={stop.name} className="anim-sheet-up absolute inset-x-0 bottom-0 z-map-sheet max-h-stop-sheet-max overflow-y-auto rounded-t-sheet border-t border-edge bg-bg shadow-overlay">
-      <div className="flex items-start justify-between gap-2 px-3.5 pt-3">
-        <div className="min-w-0">
-          <h2 className="break-words text-body font-bold text-ink">{stop.name}</h2>
-          <p className="text-label text-ink-3">
-            {code && (
-              <>
-                {t.map.stopCode}: <b className="tnum text-ink-2">{code}</b> &bull;{' '}
-              </>
-            )}
-            {stop.zone}
-          </p>
-        </div>
-        <CloseButton label={t.map.closeStop} onClick={onClose} icon={ChevronDown} className="-mr-1" />
-      </div>
-
+    <MapSheet
+      label={stop.name}
+      title={stop.name}
+      hint={
+        <>
+          {code && (
+            <>
+              {t.map.stopCode}: <b className="tnum text-ink-2">{code}</b> &bull;{' '}
+            </>
+          )}
+          {stop.zone}
+        </>
+      }
+      closeLabel={t.map.closeStop}
+      onClose={onClose}
+      onHeight={onHeight}
+    >
       <div className="mt-2 border-t border-line">
         {arrivals.length === 0 ? (
           <p className="px-3.5 py-4 text-note text-ink-2">{t.arrivals.noArrivals}</p>
@@ -107,6 +108,6 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
           {t.map.onlyLinesHere}
         </button>
       </div>
-    </div>
+    </MapSheet>
   );
 }

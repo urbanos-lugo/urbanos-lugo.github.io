@@ -533,6 +533,12 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   e a app é MIT; e o mapa base, MapLibre por baixo de Leaflet, non segue un xiro. Xirar con
   dous dedos e unha brúxula para volver ao norte piden debuxar os mapas con MapLibre
   directamente: rolda propia, decidida o 26 de outubro.
+- **Un toque no mapa abre unha folla, a mesma para unha parada ou unha liña** (27 de
+  outubro): «Liñas por aquí» deixa de ser un globo de Leaflet. A folla leva unha frase que di
+  que lista é e en que orde (a máis próxima ao dedo primeiro). Escoller unha liña é o mesmo
+  que escollela nas fichas: pecha a folla, debúxaa por riba e encádraa. O que se tocou sobe
+  por riba da folla se quedaría debaixo; o toque dunha liña, coma o dunha parada, xa non
+  move o mapa ao centro. Con folla, o zoom de Leaflet apártase; a atribución queda.
 
 ## A ficha de liña, o buscador e compartir — 26 de outubro de 2026
 

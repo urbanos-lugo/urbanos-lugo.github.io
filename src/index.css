@@ -877,6 +877,10 @@
   /* The stop names written on the map from zoom 16 in are not tooltips any more: they
      are painted on a canvas of their own, in Map/StopNames.ts, which also says why. */
 
+  /* With a stop's or a line's sheet up (TransitMap), the zoom bar steps aside: it floated over
+     the sheet's buttons, and a tap meant for them zoomed the map. The attribution stays. */
+  .map-sheet-up .leaflet-control-zoom { visibility: hidden; }
+
   /* Leaflet's attribution is required, and at its default 11 px grey on a translucent
      white it fails contrast in both themes. Keep it, make it readable. */
   .leaflet-control-attribution {

@@ -323,7 +323,9 @@ export const gl = {
     aroundStopClear: 'Amosar todas as liñas outra vez',
     linesHere: 'Liñas por aquí',
     bothDirections: 'Nos dous sentidos',
-    drawRoute: 'Debuxar o percorrido',
+    /** Under "Liñas por aquí", what the list is and what a row does. */
+    linesHereHint: 'As que pasan onde tocaches, a máis próxima primeiro. Escolle unha para vela enteira no mapa.',
+    closeLinesHere: 'Pechar as liñas por aquí',
     openLineInfo: 'Ver a ficha completa da liña',
     scheduledBusesCount: 'buses en ruta segundo o horario',
     centerLugo: 'Centrar Lugo',
