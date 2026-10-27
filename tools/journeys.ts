@@ -640,6 +640,11 @@ const HELP = `${REACH}
   const labelled = (t) => all().filter(shown).find((e) => (e.getAttribute('aria-label') || '').toLowerCase().startsWith(t.toLowerCase()));
   const saying = (t) => all().filter(shown).find((e) => ((e.textContent || '').trim() + ' ' + (e.getAttribute('aria-label') || '')).toLowerCase().includes(t.toLowerCase()));
   const css = (sel) => [...document.querySelectorAll(sel)].find(shown);
+  // An entrance still running on it or around it, as the eye waits for it to land: a rise moves the
+  // box 6 px, a sheet comes up from below its own height, and the first frame is drawn at the start
+  // even under reduced motion; on a page short of frames (CI's runner) that frame is all there is.
+  const arriving = (el) => { for (let n = el; n; n = n.parentElement) for (const a of n.getAnimations()) { const end = a.effect && a.effect.getComputedTiming().endTime; if (a.playState === 'running' && Number.isFinite(end)) return true; } return false; };
+  const landed = async (el) => { for (const until = performance.now() + 1500; arriving(el) && performance.now() < until; ) await pause(50); };
   const tabLink = (name) => [...document.querySelectorAll('nav a')].find((a) => shown(a) && a.textContent.trim() === name);
   /** Where the reader is: the tab, the heading, the dialog, the search's rows, the fields shown, the scroll. */
   const screenNow = () => {
@@ -672,10 +677,7 @@ const HELP = `${REACH}
 const LOCATE = `async function (T, expr, keyboard) {${HELP}
   const el = await (async () => (${'${expr}'}))();
   if (!el || el === true) return null;
-  // An entrance that is still running on it or around it, as the eye waits for it to land: a
-  // rise moves the box 6 px, and its first frame is drawn at the start even under reduced motion.
-  const arriving = () => { for (let n = el; n; n = n.parentElement) for (const a of n.getAnimations()) { const end = a.effect && a.effect.getComputedTiming().endTime; if (a.playState === 'running' && Number.isFinite(end)) return true; } return false; };
-  for (const until = performance.now() + 1500; arriving() && performance.now() < until; ) await pause(50);
+  await landed(el);
   // Every box between it and the screen that scrolls: a list inside a sheet scrolls, and so does the sheet.
   const scrollers = [];
   for (let n = el.parentElement; n; n = n.parentElement) { const o = getComputedStyle(n).overflowY; if (/(auto|scroll)/.test(o) && n.scrollHeight > n.clientHeight + 1) scrollers.push(n); }
@@ -903,7 +905,8 @@ async function open(w: Worker, j: Journey, phone: Phone, lang: Lang, theme: 'lig
   await page.send('Emulation.setDeviceMetricsOverride', held.turned ? { ...metrics, width: metrics.height, height: metrics.width } : metrics);
   await page.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
   await page.send('Emulation.setTimezoneOverride', { timezoneId: PHONE_ZONE });
-  await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: j.start.motion ? 'no-preference' : 'reduce' }] });  const prepared = {
+  await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: j.start.motion ? 'no-preference' : 'reduce' }] });
+  const prepared = {
     clock: j.start.night ? NIGHT : DAY,
     stored: { ...(j.start.stored ?? {}), 'urbanos-lugo-lang': lang, 'urbanos-lugo-theme': theme },
     geo: j.start.geo ?? 'none',
@@ -1132,7 +1135,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
 
   // The answer: on screen, and not under anything.
   const answer = await page.call<{ top: number; bottom: number; covered: string | null; outside?: number } | null>(
-    `async function (T) {${HELP} const el = await (async () => (${j.answer}))(); if (!el || el === true) return null; const r = el.getBoundingClientRect(); const main = document.querySelector('main'), m = main.getBoundingClientRect(); if (main.contains(el) && (r.bottom < m.top + 8 || r.top > m.bottom - 8)) return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: null, outside: Math.round(r.top < m.top ? r.top - m.top : r.top - m.bottom) }; const hit = document.elementFromPoint(Math.min(innerWidth - 1, r.left + Math.min(r.width / 2, 20)), Math.min(innerHeight - 1, Math.max(0, r.top + Math.min(r.height / 2, 12)))); return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: !!hit && !el.contains(hit) && !hit.contains(el) ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().replace(/\s+/g, ' ').slice(0, 40) : null }; }`,
+    `async function (T) {${HELP} const el = await (async () => (${j.answer}))(); if (!el || el === true) return null; await landed(el); const r = el.getBoundingClientRect(); const main = document.querySelector('main'), m = main.getBoundingClientRect(); if (main.contains(el) && (r.bottom < m.top + 8 || r.top > m.bottom - 8)) return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: null, outside: Math.round(r.top < m.top ? r.top - m.top : r.top - m.bottom) }; const hit = document.elementFromPoint(Math.min(innerWidth - 1, r.left + Math.min(r.width / 2, 20)), Math.min(innerHeight - 1, Math.max(0, r.top + Math.min(r.height / 2, 12)))); return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: !!hit && !el.contains(hit) && !hit.contains(el) ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().replace(/\s+/g, ' ').slice(0, 40) : null }; }`,
     T,
   );
   if (!answer) flow('the journey ended without its answer on screen');

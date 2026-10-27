@@ -3672,7 +3672,13 @@ rama son en cada unha das sete pasadas.
     punteiro que se moveu de último. Reproducido aquí con emulación táctil: a garda vella
     dá o mesmo achado, a nova ningún.
   - 1, o mapa da parada no teléfono grande co inicio a 0 px do bordo, non volveu saír na
-    segunda execución.
+    segunda execución. Volveu en 66c386a, e é o mesmo mal de cadros: a ficha do mapa sobe
+    desde `translateY(100%)`, pegada ao fondo, e no seu primeiro cadro o seu bordo de arriba
+    é o de abaixo de `main`. Aquí sae igual co reloxo das animacións parado. Unha persoa
+    véa chegar ao cadro seguinte; o arnés medíaa antes. Agora a resposta agarda a que a súa
+    entrada pouse, ata 1,5 s, coma xa agardaban os toques (`landed`, compartido). Con
+    cadros que chegan tarde (reloxo parado e solto aos 400 ms), sen a espera dá o achado do
+    executor e con ela ningún; os 88 percorridos, ningún.
   - 3 volven en cada execución: no teléfono grande, despois de pedir unha viaxe (cun
     destino rápido, cunha viaxe recente ou coas teclas do teclado), atrás desde o
     formulario volve ao formulario e non ás paradas. Aquí non saen: nin en UTC, nin coa CPU
