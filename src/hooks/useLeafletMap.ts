@@ -120,16 +120,25 @@ type TooltipOwner = L.Layer & { closeTooltip(): unknown; hoverable?: true };
  */
 function hoverableTooltips(map: L.Map): () => void {
   let open: L.Tooltip | null = null;
+  // The pointer that moved last, asked of the pointer itself: a desktop browser with no mouse
+  // found answers `(hover: none)` while a mouse crosses the map, and a tap arrives as a mouseover too.
+  let mouse = false;
+  const container = map.getContainer();
+  const pointer = (event: PointerEvent) => {
+    mouse = event.pointerType === 'mouse';
+  };
+  container.addEventListener('pointerdown', pointer, true);
+  container.addEventListener('pointermove', pointer, true);
   map.on('tooltipopen', (event) => {
     const tooltip = (event as L.TooltipEvent).tooltip;
     open = tooltip;
     const owner = (tooltip as unknown as { _source?: TooltipOwner })._source;
     const label = tooltip.getElement();
-    // Not where nothing hovers: the label a tap opens over its stop took that tap, and the
-    // map under it answered with the lines there instead of the stop.
-    if (!owner || !label || tooltip.options.permanent || !window.matchMedia('(hover: hover)').matches) return;
-    label.style.pointerEvents = 'auto';
-    if (owner.hoverable) return;
+    if (!owner || !label || tooltip.options.permanent) return;
+    // Only under a mouse: the label a tap opens over its stop took that tap, and the map under
+    // it answered with the lines there instead of the stop.
+    label.style.pointerEvents = mouse ? 'auto' : '';
+    if (!mouse || owner.hoverable) return;
     owner.hoverable = true;
     let leaving = 0;
     const leave = () => {
@@ -150,7 +159,11 @@ function hoverableTooltips(map: L.Map): () => void {
     if (event.key === 'Escape' && open) map.closeTooltip(open);
   };
   document.addEventListener('keydown', escape);
-  return () => document.removeEventListener('keydown', escape);
+  return () => {
+    document.removeEventListener('keydown', escape);
+    container.removeEventListener('pointerdown', pointer, true);
+    container.removeEventListener('pointermove', pointer, true);
+  };
 }
 
 /** Long enough for the second click of a double click, which zooms, to cancel the pan of the first. */

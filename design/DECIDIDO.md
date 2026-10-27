@@ -476,8 +476,10 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   que o círculo debuxa.
 - **Un dedo ten 12 px de alcance alén do bordo** de cada punto e liña; un rato, ningún. Ao
   alcance de dúas paradas, a máis próxima ao dedo. As etiquetas que se abren ao pasar por
-  riba só collen o punteiro onde o hai (`hover: hover`): 1.4.13 é para iso, e nun teléfono
-  a etiqueta collía o toque da parada que nomeaba.
+  riba só collen o punteiro baixo un rato, o punteiro que se moveu de último: 1.4.13 é para
+  iso, e nun teléfono a etiqueta collía o toque da parada que nomeaba. Preguntábase antes a
+  `(hover: hover)`, que un navegador sen rato atopado responde «none» aínda que un rato
+  pase polo mapa (o executor de CI, o 26 de outubro).
 
 ## A resposta de Ruta, quieta ao chegar — 21 de outubro de 2026
 
