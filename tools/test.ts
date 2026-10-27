@@ -56,7 +56,7 @@ import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
 import { POLE_SEEN_AT_OSM } from './lib';
 import { planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
-import { answerJob } from '../src/utils/plannerJob';
+import { answerJob, rejoin } from '../src/utils/plannerJob';
 import { estimateWalk, getNearbyStops, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
 import { getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
 import { getScheduledBuses } from '../src/utils/vehicles';
@@ -4213,6 +4213,13 @@ ok('the planner answers the same across the worker as on the page', () => {
   const direct = planTrips('Praza Maior', 'HULA', { arriveBy: 10 * 60, lang: 'gl', now });
   assert(direct.length > 0, 'no plan from Praza Maior to the HULA to compare');
   assert.deepEqual(structuredClone(answerJob(job)), direct, 'the answer changed on its way across');
+  // And back on the page it rides the page's own lines and stops, not copies: the streets are
+  // written into the page's lines, and a copied line came without them (rolda 43).
+  const back = rejoin(structuredClone(answerJob(job)));
+  for (const segment of back.flatMap((p) => p.segments)) {
+    if (segment.line) assert(segment.line === BUS_LINES.find((l) => l.id === segment.line!.id), `line ${segment.line.id} came back a copy`);
+    for (const stop of [segment.fromStop, segment.toStop]) if (stop) assert(stop === BUS_STOPS.find((s) => s.id === stop.id), `stop ${stop.id} came back a copy`);
+  }
   // A walk the router measured reaches the planner through the table, as it did as a function.
   const boarding = direct[0].segments.find((s) => s.type === 'bus')?.fromStop;
   assert(boarding, 'the first plan boards no bus');

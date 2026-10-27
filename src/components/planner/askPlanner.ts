@@ -1,5 +1,5 @@
 import type { RoutePlanResult } from '../../types';
-import { answerJob, type PlanJob } from '../../utils/plannerJob';
+import { answerJob, rejoin, type PlanJob } from '../../utils/plannerJob';
 
 /** Rejects the question a newer one replaced, which nobody is waiting for any more. */
 export class Superseded extends Error {}
@@ -21,7 +21,10 @@ function settle(id: number, outcome: { plans?: RoutePlanResult[]; error?: unknow
 function spawn(): Worker | null {
   try {
     const started = new Worker(new URL('./planner.worker.ts', import.meta.url), { type: 'module' });
-    started.onmessage = (event: MessageEvent<{ id: number; plans?: RoutePlanResult[]; error?: string }>) => settle(event.data.id, event.data);
+    started.onmessage = (event: MessageEvent<{ id: number; plans?: RoutePlanResult[]; error?: string }>) => {
+      const { id, plans, error } = event.data;
+      settle(id, plans ? { plans: rejoin(plans) } : { error });
+    };
     started.onerror = (event) => {
       noWorker = true;
       worker = null;

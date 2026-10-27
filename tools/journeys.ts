@@ -553,9 +553,15 @@ export const JOURNEYS: Journey[] = [
     start: { stored: REGULAR },
     steps: [
       { tap: `[...document.querySelectorAll('main ul li button')].find(shown)`, wait: board },
-      { tap: `labelled(T.arrivals.share)`, wait: `labelled(T.arrivals.copied) || [...document.querySelectorAll('main .select-all')].find(shown)` },
+      // "Share" where the browser has a share sheet and a finger, "Copy link" where it has not
+      // (useShareLink). The system's sheet is no page to look at, so the API is answered at its
+      // edge: what reaches it is the link, and the link has to open this stop.
+      {
+        tap: `((navigator.share && (navigator.share = (data) => { window.__shared = data && data.url; return Promise.resolve(); })), labelled(T.arrivals.shareSheet) || labelled(T.arrivals.share))`,
+        wait: `window.__shared || labelled(T.arrivals.copied) || [...document.querySelectorAll('main .select-all')].find(shown)`,
+      },
     ],
-    answer: `labelled(T.arrivals.copied) || [...document.querySelectorAll('main .select-all')].find(shown)`,
+    answer: `(window.__shared && window.__shared.includes('?parada=') && labelled(T.arrivals.shareSheet)) || labelled(T.arrivals.copied) || [...document.querySelectorAll('main .select-all')].find(shown)`,
   },
   {
     task: 'departures at another time',

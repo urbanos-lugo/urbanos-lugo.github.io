@@ -284,6 +284,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
           if (reason instanceof Superseded) return;
           throw reason;
         }
+        if (calculatingRef.current !== question) return; // the screen moved on while it was worked out
         askedRef.current = { orig, dest, opts };
         replannedRef.current = false;
         const ends = { origin: toPoint(resolveLocationQuery(orig, gps)), destination: toPoint(resolveLocationQuery(dest, gps)) };
@@ -329,6 +330,18 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     if (from === 'my_location' || to === 'my_location') onEditTrip();
     else calculate(from, to, undefined, true, false, { mode, at });
   }, []);
+
+  // A question out when the screen changes under it (back, forward, another tab) is dropped: its
+  // answer belongs to a screen no longer there. Worked out in the worker, the answer asked again
+  // on a reload came after a back press, and was put in the history over the screen back went to.
+  const shownFor = useRef(answerShown);
+  useEffect(() => {
+    if (shownFor.current === answerShown) return;
+    shownFor.current = answerShown;
+    if (!calculatingRef.current) return;
+    calculatingRef.current = null;
+    setCalculating(false);
+  }, [answerShown]);
 
   // A place chosen in the search box arrives as the destination, already planned from whatever origin is set.
   useEffect(() => {
