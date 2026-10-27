@@ -3831,7 +3831,8 @@ propiedades do prototipo, que a copia non leva) e sen levar de volta a marca que
 Agora escoita o `click` do DOM en captura, no mesmo evento que len despois as paradas e as
 liñas. Comprobado a 375 px: tocar o texto de «Rúa Castelao 53», lonxe de calquera punto,
 abre a súa folla e o seu anel; no mapa pequeno, o de «Rda. Muralla 56 (Sindicatos)» abre o
-seu taboleiro.
+seu taboleiro. O `audit:browser` enteiro despois (o clic no mapa baleiro segue movéndoo, e
+o do centro abre a folla da parada): 0 achados.
 
 ### Queda
 
