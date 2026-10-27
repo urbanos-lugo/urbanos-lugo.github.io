@@ -478,6 +478,12 @@ export const gl = {
     runOf: (index: number, total: number) => `${index} de ${total} do día`,
     backToNow: 'agora',
     noRunsToday: 'Esta liña non presta servizo hoxe.',
+    /** The timetable's three days, today's chosen to begin with: on a Friday night the question is often Monday. */
+    dayKindsLabel: 'Días do horario',
+    dayKinds: { laborable: 'Laborables', sabado: 'Sábados', domingo: 'Domingos e festivos' },
+    noRunsOnDay: 'Esta liña non presta servizo eses días.',
+    /** Under the operator's name, which gives the two termini: the zones holding most of the line's stops. */
+    passesThrough: (zones: string) => `Pasa por ${zones}`,
     /** Appended when today is a public holiday: a weekday that runs the Sunday timetable. */
     holidayToday: 'Hoxe é festivo: circula o horario de domingo.',
     estimatedHint: 'Hora estimada desde a saída de cabeceira e o tempo de percorrido medido.',
@@ -549,6 +555,8 @@ export const gl = {
     unfav: 'Quitar de gardadas',
     map: 'Ver no mapa',
     share: 'Copiar ligazón',
+    /** On a touch screen the button opens the phone's own share sheet, and says so. */
+    shareSheet: 'Compartir',
     copyFailed: 'Non se puido copiar. Esta é a ligazón:',
     copied: 'Copiada',
     nearbyLinesTitle: 'Outras liñas preto',

@@ -56,7 +56,7 @@ import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
 import { POLE_SEEN_AT_OSM } from './lib';
 import { planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
-import { estimateWalk, getNearbyStops, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS } from '../src/utils/places';
+import { estimateWalk, getNearbyStops, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
 import { getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
 import { getScheduledBuses } from '../src/utils/vehicles';
 import { getDistanceMeters } from '../src/utils/geo';
@@ -4186,6 +4186,21 @@ ok('a name on a map never covers another name, another stop or the reader', () =
   assert(pair[1] === null || !overlap(boxOf({ width: 80 }, pair[1]), boxOf({ width: 80 }, pair[0]!)), 'two neighbours wrote one name over the other');
   // Against the right edge, the name goes left, as it always has.
   assert.equal(placeNames([{ x: 360, y: 100, width: 80 }], view)[0]?.align, 'right');
+});
+
+ok('a line says what it runs through, not only where it ends', () => {
+  // The operator names a line by its two termini: "Opuesto Piscina Pedreiras – Rúa Mercadorías"
+  // for the line the council calls "Campus – Fingoi – O Ceao", which told nobody who did not
+  // already know the last stop's name which neighbourhoods it served.
+  for (const line of BUS_LINES) {
+    const all = lineZones(line).map((z) => z.zone);
+    const main = mainZones(line);
+    assert(main.length >= 1 && main.length <= 4, `${line.number}: ${main.length} zones under its name`);
+    assert(!all.includes('Rural'), `${line.number}: "Rural" is no neighbourhood to run through`);
+    assert.deepEqual(main, all.filter((z) => main.includes(z)), `${line.number}: the zones are not in the order the line meets them`);
+  }
+  const campus = mainZones(BUS_LINES.find((l) => l.number === '1.1')!);
+  assert(campus.includes('Campus USC') && campus.includes('O Ceao'), `1.1 runs through ${campus.join(', ')}`);
 });
 
 ok('no check reached the network', () => {

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
-import { Bus, Calendar, ChevronRight, Clock, MapPin, Route, Star, TriangleAlert } from 'lucide-react';
+import { Bus, Calendar, Check, ChevronRight, Clock, MapPin, Route, Share2, Star, TriangleAlert } from 'lucide-react';
 import { useLang, useT } from '../i18n';
-import { BusLine, BusStop, ServiceAlert } from '../types';
+import { BusLine, BusStop, DayKind, ServiceAlert } from '../types';
+import { lineZones, mainZones } from '../utils/places';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
 import { changesNow, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
 import { BUS_LINES, BUS_STOPS, poleCode, stopById } from '../data/transitData';
@@ -15,6 +16,7 @@ import { SectionTitle } from './ui/SectionTitle';
 import { Approx } from './ui/Provenance';
 import { LineBadge, lineTint } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
+import { useShareLink } from '../hooks/useShareLink';
 
 /** The categories the dataset actually uses, in the order the lines declare them. */
 const CATEGORIES = [...new Set(BUS_LINES.map((l) => l.category))];
@@ -92,28 +94,39 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
 
   const query = searchQuery.trim();
   const visibleLines = BUS_LINES.filter(
-    (line) => (categoryFilter === 'all' || line.category === categoryFilter) && (!query || matchesQuery(line.number, query) || matchesQuery(line.name, query) || matchesQuery(line.description, query)),
+    // A neighbourhood finds the lines with a stop in it: "Fingoi" names none of the lines that serve it.
+    (line) => (categoryFilter === 'all' || line.category === categoryFilter) && (!query || matchesQuery(line.number, query) || matchesQuery(line.name, query) || matchesQuery(line.description, query) || lineZones(line).some(({ zone }) => matchesQuery(zone, query))),
   );
 
   // The selector can point past the end after a line with fewer directions is chosen.
   const directionIdx = currentLine.directions[directionIndex] ? directionIndex : 0;
   const direction = currentLine.directions[directionIdx];
-  const runs = useMemo(() => buildRuns(currentLine, directionIdx, BUS_STOPS, dayKind(new Date())), [currentLine, directionIdx]);
+  // Today's day from the clock, so it turns at midnight: read once, a screen left open on a
+  // Friday night kept the weekday timetable into Saturday until the line was changed.
+  const today = dayKind(now);
+  /** The timetable's day: today's, unless the reader asks about another (on a Friday night, Monday). */
+  const [pickedDay, setPickedDay] = useState<DayKind | null>(null);
+  const day = pickedDay ?? today;
+  const isToday = day === today;
+  const runsToday = useMemo(() => buildRuns(currentLine, directionIdx, BUS_STOPS, today), [currentLine, directionIdx, today]);
+  const runs = useMemo(() => (isToday ? runsToday : buildRuns(currentLine, directionIdx, BUS_STOPS, day)), [isToday, runsToday, currentLine, directionIdx, day]);
 
   /** Set when the reader steps through the timetable by hand; null means "follow the clock". */
   const [pickedRunIndex, setPickedRunIndex] = useState<number | null>(null);
   const currentRunIndex = useMemo(() => {
+    // Another day has no "now": it opens on its first run.
+    if (!isToday) return 0;
     const now = minutesNow();
     const running = runs.findIndex((r) => r.minutesByStopIndex[0] <= now && r.minutesByStopIndex[r.minutesByStopIndex.length - 1] >= now);
     if (running >= 0) return running;
     // Nothing on the road: the next one out, or the last of the day once it is over.
     const next = runs.findIndex((r) => r.minutesByStopIndex[0] >= now);
     return next >= 0 ? next : Math.max(0, runs.length - 1);
-  }, [runs, now]);
+  }, [runs, now, isToday]);
   const runIndex = Math.min(pickedRunIndex ?? currentRunIndex, Math.max(0, runs.length - 1));
   const shownRun = runs[runIndex];
-  // A hand-picked run belongs to the line and direction it was picked in.
-  useEffect(() => setPickedRunIndex(null), [currentLine.id, direction.id]);
+  // A hand-picked run belongs to the line, direction and day it was picked in.
+  useEffect(() => setPickedRunIndex(null), [currentLine.id, direction.id, day]);
 
   const busesOnLine = buses.filter((b) => b.lineId === currentLine.id && (b.direction === direction.id || currentLine.directions.length === 1));
   /**
@@ -125,6 +138,9 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
   const derived = (run: ScheduledRun | undefined, stopIndex: number) => !!run && !run.publishedStopIndices.includes(stopIndex);
   const departures = runs.map((r) => ({ time: formatMinutes(r.minutesByStopIndex[0]), derived: derived(r, 0) }));
   const isSaved = favoriteLineIds.includes(currentLine.id);
+  // The page read `?linea=` from a link and had no way to make one.
+  const link = useShareLink();
+  const shareLine = () => link.share(`${window.location.origin}${window.location.pathname}?linea=${encodeURIComponent(currentLine.number)}`, t.lines.lineLabel(currentLine.number));
   const duration = scheduledDuration(currentLine, directionIdx, BUS_STOPS);
 
   return (
@@ -232,16 +248,33 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
                     {busesOnLine.length > 0 && <RunningBuses count={busesOnLine.length} />}
                   </div>
                   <h2 className="text-emph font-bold text-ink mt-1 break-words">{currentLine.name}</h2>
+                  {/* The operator's name gives the two termini; this says what lies between. */}
+                  <p className="mt-0.5 break-words text-label text-ink-2">{t.lines.passesThrough(mainZones(currentLine).join(' · '))}</p>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
                 {onToggleFavoriteLine && <SaveStar key={currentLine.id} on={isSaved} label={isSaved ? t.lines.unsaveLine : t.lines.saveLine} onToggle={() => onToggleFavoriteLine(currentLine.id)} />}
+                <IconButton
+                  icon={link.copied ? Check : Share2}
+                  label={link.copied ? t.arrivals.copied : link.viaSheet ? t.arrivals.shareSheet : t.arrivals.share}
+                  iconClassName={link.copied ? 'anim-tick-in text-official stroke-bold' : ''}
+                  onClick={shareLine}
+                />
+                <span role="status" className="sr-only">
+                  {link.copied ? t.arrivals.copied : ''}
+                </span>
                 <button id="btn-view-line-map" onClick={() => onViewLineOnMap(currentLine)} className="btn btn-primary">
                   <MapPin className="w-4 h-4" />
                   <span>{t.lines.viewOnMap}</span>
                 </button>
               </div>
             </div>
+
+            {link.failedUrl && (
+              <Notice>
+                {t.arrivals.copyFailed} <span className="tnum block break-all pt-1 text-ink select-all">{link.failedUrl}</span>
+              </Notice>
+            )}
 
             {/* Six facts about one line; the last three belong to the direction and change with the selector. */}
             {/* Columns of at least 6rem, so they follow the text: two on a phone at the default size,
@@ -258,11 +291,11 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
                   last departure of any day: "07:15 - 22:00" for the 7 on a Tuesday, whose first
                   bus is 07:30 -- the 07:15 runs at weekends. */}
               <Fact icon={Bus} label={t.lines.serviceHoursToday}>
-                {runs.length ? (
+                {runsToday.length ? (
                   <>
-                    <Approx on={derived(runs[0], 0)} />
-                    {formatMinutes(runs[0].minutesByStopIndex[0])}–<Approx on={derived(runs[runs.length - 1], 0)} />
-                    {formatMinutes(runs[runs.length - 1].minutesByStopIndex[0])}
+                    <Approx on={derived(runsToday[0], 0)} />
+                    {formatMinutes(runsToday[0].minutesByStopIndex[0])}–<Approx on={derived(runsToday[runsToday.length - 1], 0)} />
+                    {formatMinutes(runsToday[runsToday.length - 1].minutesByStopIndex[0])}
                   </>
                 ) : (
                   <span className="font-sans font-semibold">{t.lines.notToday}</span>
@@ -346,6 +379,14 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
             <SectionTitle icon={Clock} small as="h3" className="mb-2">
               {t.lines.scheduleTable} &mdash; {direction.origin} ({departures.length})
             </SectionTitle>
+            <Segmented
+              dense
+              label={t.lines.dayKindsLabel}
+              options={(['laborable', 'sabado', 'domingo'] as const).map((kind) => ({ id: kind, label: t.lines.dayKinds[kind] }))}
+              value={day}
+              onChange={(kind) => setPickedDay(kind === today ? null : kind)}
+              className="mb-3"
+            />
             {/* All of them: two rows of 30 in a box that scrolled on its own hid the rest from a thumb. */}
             <div className="flex flex-wrap gap-1.5">
               {departures.map(({ time, derived: guessed }, idx) => (
@@ -412,7 +453,7 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
                   </div>
                   <div className="text-label text-accent font-semibold">
                     {t.lines.runOf(runIndex + 1, runs.length)}
-                    {runIndex !== currentRunIndex && (
+                    {isToday && runIndex !== currentRunIndex && (
                       <button onClick={() => setPickedRunIndex(null)} className="ml-1.5 underline underline-offset-link font-bold">
                         {t.lines.backToNow}
                       </button>
@@ -425,9 +466,9 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
               </div>
             ) : (
               <div className="inset-panel text-label font-semibold text-ink-2">
-                {t.lines.noRunsToday}
+                {isToday ? t.lines.noRunsToday : t.lines.noRunsOnDay}
                 {/* A weekday-only line on a holiday Monday: without the reason, "does not run today" reads as a mistake. */}
-                {isHoliday(new Date()) && <span className="block mt-1 font-normal">{t.lines.holidayToday}</span>}
+                {isToday && isHoliday(now) && <span className="block mt-1 font-normal">{t.lines.holidayToday}</span>}
               </div>
             )}
 
@@ -438,9 +479,11 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
                 if (!stop) return null;
                 const isFirst = idx === 0;
                 const isLast = idx === direction.stops.length - 1;
-                const busHere = busesOnLine.some((b) => b.nextStopId === stop.id);
+                // Where the timetable puts a bus now, which another day's timetable does not show.
+                const busHere = isToday && busesOnLine.some((b) => b.nextStopId === stop.id);
                 const passingMinutes = shownRun?.minutesByStopIndex[idx];
-                const relativeMinutes = passingMinutes === undefined ? null : Math.round(passingMinutes - minutesNow());
+                // In minutes from now only on today's timetable: on another day's, the time alone.
+                const relativeMinutes = passingMinutes === undefined || !isToday ? null : Math.round(passingMinutes - minutesNow());
                 return (
                   <div
                     key={stop.id}
@@ -498,7 +541,12 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
                           <span>
                             {passingMinutes === undefined ? (
                               <span className="text-ink-3 font-semibold">{t.lines.noService}</span>
-                            ) : relativeMinutes !== null && relativeMinutes < 0 ? (
+                            ) : relativeMinutes === null ? (
+                              <span>
+                                <Approx on={derived(shownRun, idx)} title={t.lines.estimatedHint} />
+                                {formatMinutes(passingMinutes)}
+                              </span>
+                            ) : relativeMinutes < 0 ? (
                               <span className="text-ink-3">
                                 <Approx on={derived(shownRun, idx)} />
                                 {formatMinutes(passingMinutes)} &middot; {t.lines.passed}

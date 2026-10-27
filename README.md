@@ -433,9 +433,20 @@ Seis dos 48 sentidos van e volven pola mesma avenida — na 4.1 a parada 20 e a 
 ### Liñas e horarios
 Ficha de cada liña co seu percorrido en ambos sentidos, cadro horario por tipo de día
 (laborables / sábados / domingos e festivos) e tempo de paso estimado en cada parada. O
-horario da ficha é o de **hoxe**, lido das expedicións de hoxe: poñía a primeira e a
-última saída de calquera día, «07:15 - 22:00» para a 7 nun martes cuxo primeiro bus sae
-ás 07:30.
+cadro abre no tipo de día de hoxe e os outros dous están a un toque: un venres á noite a
+pregunta adoita ser o luns. Ata o 26 de outubro de 2026 só había o de hoxe, e nin sequera
+cambiaba á medianoite ata cambiar de liña. Noutro día, as paradas levan a hora sen «en X
+min» nin o bus que o horario pon agora. O dato «Horario hoxe» é sempre o de **hoxe**, lido
+das expedicións de hoxe: poñía a primeira e a última saída de calquera día, «07:15 -
+22:00» para a 7 nun martes cuxo primeiro bus sae ás 07:30.
+
+Baixo o nome, que o operador forma coas dúas cabeceiras, vai **por onde pasa**: as catro
+zonas con máis paradas da liña, na orde do percorrido («Pasa por Campus USC · Sur / Ramón
+Ferreiro · Garabolos · O Ceao» na 1.1, que o Concello chama «Campus – Fingoi – O Ceao»).
+Son as zonas do conxunto de datos, non nomes do Concello, e o buscador de liñas atopa
+tamén por elas: «Fingoi» non está no nome de ningunha das liñas que o serven. A ficha
+comparte a súa ligazón (`?linea=`) como o taboleiro a súa (`?parada=`): nun teléfono, co
+panel de compartir do propio sistema; noutro sitio, copiándoa.
 
 ### Códigos QR das marquesiñas
 Escaneo pola cámara usando `BarcodeDetector`, a API nativa do navegador (dispoñible en

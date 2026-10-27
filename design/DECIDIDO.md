@@ -534,6 +534,21 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   dous dedos e unha brúxula para volver ao norte piden debuxar os mapas con MapLibre
   directamente: rolda propia, decidida o 26 de outubro.
 
+## A ficha de liña, o buscador e compartir — 26 de outubro de 2026
+
+- **O cadro horario ten os tres tipos de día**, e abre no de hoxe. Noutro día, as paradas
+  levan só a hora: «en 12 min» e o bus que o horario pon agora son de hoxe. «Horario hoxe»
+  segue sendo de hoxe sempre.
+- **«Pasa por», baixo o nome do operador**, que non se toca: as catro zonas con máis
+  paradas da liña, na orde do percorrido, sen «Rural», que non é un barrio. Son as zonas
+  do conxunto de datos; se un día se adoptan os nomes do Concello (NOTAS, «os nomes de
+  liña»), van aquí.
+- **A tecla «Buscar» abre a fila de arriba.** Gardar o teclado deixaba ao lector escoller
+  a fila que xa estaba mirando. Sen fila (aínda calculando, ou nada atopado), garda o teclado
+  como antes. ↓ e ↑ percorren as filas co teclado físico.
+- **Compartir é o panel do sistema só nunha pantalla táctil.** Nun escritorio o mesmo API
+  abre o diálogo do sistema, e alí o que se quería era copiar. Pechar o panel non di nada.
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).

@@ -13,6 +13,7 @@ import { newIssueUrl } from '../project';
 import { clockDriftFromTimetable, deviceTimeZone } from '../utils/clock';
 import { useOperatorTimes } from '../hooks/useOperatorTimes';
 import { onShown } from '../hooks/useClock';
+import { useShareLink } from '../hooks/useShareLink';
 import { Approx, Provenance } from './ui/Provenance';
 import { LineBadge, lineTint } from './ui/LineBadge';
 import { PoleCode } from './ui/PoleCode';
@@ -86,9 +87,6 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const [view, setView] = useState<'next' | 'byLine'>('next');
   /** A time to read the board at, or '' for now — the question the night before. */
   const [atTime, setAtTime] = useState('');
-  const [copiedLink, setCopiedLink] = useState(false);
-  /** Set when the clipboard refused, so the link is shown instead of "Copied" being claimed. */
-  const [copyFailedUrl, setCopyFailedUrl] = useState<string | null>(null);
 
   /** "Tell me before the bus gets here": one watch per line, checked on the board's own refresh. Fires once. */
   const [watches, setWatches] = useState<Record<string, number>>({});
@@ -278,19 +276,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const soonKeys = rowKeys(soon);
   const beyondCount = arrivals.length - soon.length;
 
-  // `navigator.clipboard` does not exist on a non-secure origin and `writeText` can reject; only say "Copied" if it worked.
-  const copyShareLink = async () => {
-    const url = `${window.location.origin}${window.location.pathname}?parada=${selectedStop.id}`;
-    try {
-      if (!navigator.clipboard) throw new Error('no clipboard on this origin');
-      await navigator.clipboard.writeText(url);
-      setCopyFailedUrl(null);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2500);
-    } catch {
-      setCopyFailedUrl(url);
-    }
-  };
+  const link = useShareLink();
+  const shareStop = () => link.share(`${window.location.origin}${window.location.pathname}?parada=${selectedStop.id}`, selectedStop.name);
 
   /** Minutes, with the tilde carrying "derived" in the figure; overdue is quieter, the least certain thing on the screen. */
   const Minutes = ({ arrival }: { arrival: StopArrival }) => (
@@ -373,14 +360,14 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             }}
           />
           <IconButton
-            icon={copiedLink ? Check : Share2}
-            label={copiedLink ? t.arrivals.copied : t.arrivals.share}
-            iconClassName={copiedLink ? 'anim-tick-in text-official stroke-bold' : ''}
-            onClick={copyShareLink}
+            icon={link.copied ? Check : Share2}
+            label={link.copied ? t.arrivals.copied : link.viaSheet ? t.arrivals.shareSheet : t.arrivals.share}
+            iconClassName={link.copied ? 'anim-tick-in text-official stroke-bold' : ''}
+            onClick={shareStop}
           />
           {/* The tick is the confirmation for the eye; this is the one for the ear. */}
           <span role="status" className="sr-only">
-            {copiedLink ? t.arrivals.copied : ''}
+            {link.copied ? t.arrivals.copied : ''}
           </span>
         </div>
       </header>
@@ -481,9 +468,9 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         </Notice>
       )}
 
-      {copyFailedUrl && (
+      {link.failedUrl && (
         <Notice className="mt-3">
-          {t.arrivals.copyFailed} <span className="tnum block break-all pt-1 text-ink select-all">{copyFailedUrl}</span>
+          {t.arrivals.copyFailed} <span className="tnum block break-all pt-1 text-ink select-all">{link.failedUrl}</span>
         </Notice>
       )}
 

@@ -365,7 +365,8 @@ Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e 
 2. Compartir → **Engadir á pantalla de inicio**. Abrir desde a icona: pantalla completa,
    sen barra de Safari, a icona correcta.
 3. Buscar «catedral» tecleando: as filas aparecen letra a letra sen que o teclado tape o
-   campo. Abrir unha parada; premer **copiar ligazón** e pegala en Notas: ten `?parada=`.
+   campo. Abrir unha parada; premer **Compartir**: sae o panel de compartir do iPhone;
+   copiar desde el e pegar en Notas: ten `?parada=`. O mesmo na ficha dunha liña: `?linea=`.
 4. **Mapa**: debuxa (é MapLibre, WebGL2); pinza e xiro van fluídos; os nomes das paradas
    lense; a folla de controis sobe desde abaixo e non queda tapada pola barra de inicio
    (é onde `100dvh` e as zonas seguras rompen). En Paradas, **«Buscar preto de min»**:

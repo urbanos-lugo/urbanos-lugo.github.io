@@ -2,7 +2,7 @@
  * Where things are: the walking estimate, the landmarks, what somebody typed resolved to
  * a place, and the stops and lines near a point. Pure functions, no React.
  */
-import { BUS_STOPS, lineById } from '../data/transitData';
+import { BUS_STOPS, lineById, stopById } from '../data/transitData';
 import { Lang, translations } from '../i18n/translations';
 import { BusStop, BusLine } from '../types';
 import { matchesQuery, calculateRelevanceScore } from './searchUtils';
@@ -215,4 +215,31 @@ export function getNearbyLines(lat: number, lng: number, radiusMeters = 650): Ne
     }
   }
   return results;
+}
+
+/** Not a neighbourhood: the generator's word for the stops outside the city. */
+const NOT_A_PLACE = 'Rural';
+
+/**
+ * The zones a line's stops lie in, each once, in the order its first direction meets them
+ * (then any only the other direction reaches), with how many of its stops each holds. The
+ * operator names a line by its two termini, which says where it ends and not what it passes:
+ * "Opuesto Piscina Pedreiras – Rúa Mercadorías" for the line the council calls "Campus –
+ * Fingoi – O Ceao". The zones are the dataset's own grouping, not the council's names.
+ */
+export function lineZones(line: BusLine): { zone: string; stops: number }[] {
+  const zones = new Map<string, number>();
+  for (const direction of line.directions)
+    for (const id of direction.stops) {
+      const zone = stopById(id)?.zone;
+      if (zone && zone !== NOT_A_PLACE) zones.set(zone, (zones.get(zone) ?? 0) + 1);
+    }
+  return [...zones].map(([zone, stops]) => ({ zone, stops }));
+}
+
+/** The few zones that hold most of a line's stops, still in the order it reaches them: a line's "runs through". */
+export function mainZones(line: BusLine, limit = 4): string[] {
+  const zones = lineZones(line);
+  const kept = new Set([...zones].sort((a, b) => b.stops - a.stops).slice(0, limit));
+  return zones.filter((z) => kept.has(z)).map((z) => z.zone);
 }
