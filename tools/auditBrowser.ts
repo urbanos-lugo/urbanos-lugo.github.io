@@ -1731,6 +1731,51 @@ async function pinnedBar(browser: Browser): Promise<Finding[]> {
 }
 
 /**
+ * A stop's rows held still under a finger. The board is read again every 15 s and the moment
+ * the phone is woken, and a bus leaving moved every row up: the next row's buttons came under
+ * a thumb on its way down to the row above. With a finger on the board, the rows wait for it.
+ */
+async function heldBoard(browser: Browser): Promise<Finding[]> {
+  const where = 'taboleiro baixo o dedo';
+  const w = await worker(browser);
+  const { page } = w;
+  try {
+    const got = await reach(w, { name: 'phone gl', desktop: false, lang: 'gl', themes: ['light'], deep: false }, { screen: 'paradas', name: 'parada', stored: REGULAR, setup: `${savedBoard} return true;` }, true);
+    if (!got || got.length) return [{ kind: 'reach', where, detail: `the board was not reached${got ? `: ${got.map((f) => f.detail).join('; ')}` : ''}` }];
+    await page.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    // The board: the one list whose every row carries its minutes.
+    const board = `[...document.querySelectorAll('main ul')].find((u) => u.children.length > 1 && [...u.children].every((li) => li.querySelector('.figure')))`;
+    const rows = `[...((${board} ?? {}).children ?? [])].map((li) => li.textContent.replace(/\\s+/g, ' ').trim()).join(' | ')`;
+    // On the first row, on its words and not on a button: the finger lifts at the end, and a tap there does nothing.
+    const at = await page.evaluate<{ x: number; y: number } | null>(`(() => {
+      const list = ${board};
+      const b = list && list.children[0].getBoundingClientRect();
+      if (!b) return null;
+      for (let x = b.left + b.width * 0.35; x < b.right - 8; x += 8) for (const y of [b.top + 18, b.top + b.height / 2]) {
+        const hit = document.elementFromPoint(x, y);
+        if (hit && list.contains(hit) && !hit.closest('button, a, input')) return { x, y };
+      }
+      return null;
+    })()`);
+    const before = await page.evaluate<string>(rows);
+    if (!at || !before) return [{ kind: 'reach', where, detail: 'no rows on the board, or nowhere on them that is not a button' }];
+    await page.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [at] });
+    // Twenty minutes on and the phone woken, which reads the board at once: the first bus has gone.
+    await page.evaluate(`window.__auditLock(20 * 60000)`);
+    await sleep(400);
+    const held = await page.evaluate<string>(rows);
+    await page.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await sleep(400);
+    const after = await page.evaluate<string>(rows);
+    if (held !== before) return [{ kind: 'flow', where, detail: `with a finger on the board, the rows changed under it when the board was read again: "${before.slice(0, 80)}" became "${held.slice(0, 80)}"` }];
+    if (after === before) return [{ kind: 'reach', where, detail: 'twenty minutes on, the finger lifted, the board had not changed, so the hold was not tested' }];
+    return [];
+  } finally {
+    await page.close();
+  }
+}
+
+/**
  * The app with site data refused -- Chrome's "don't allow sites to save data", which some
  * readers turn on and some webviews ship with. Reading `window.localStorage` then throws,
  * and one read left outside a try blanked the whole page. A browser of its own, because the
@@ -1828,6 +1873,7 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
     await sequence('reduced motion', () => motion(browser));
     await sequence('site data refused', () => siteDataRefused());
     await sequence('the bottom bar where the screen ends, with the page itself scrolled', () => pinnedBar(browser));
+    await sequence('a stop’s rows held still under a finger while the board is read again', () => heldBoard(browser));
     await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
     // Imported here and not at the top: journeys.ts builds its page helpers from this file's,
     // which do not exist yet while this file is still being read.

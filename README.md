@@ -113,6 +113,11 @@ agardas por unha en concreto.
 da próxima hora") en lugar de cortarse en silencio. "Por liña" non ten horizonte, porque
 aí a pregunta xa é de planificación.
 
+**Cun dedo enriba, as filas non se moven.** O taboleiro lese outra vez cada 15 segundos e
+ao espertar o teléfono, e un bus que marcha sube todas as filas: os botóns da seguinte
+chegaban baixo o dedo que ía tocar a de enriba. Mentres hai un dedo no taboleiro, a
+lectura agarda a que se levante, ata un refresco.
+
 Nas paradas que non son punto horario publicado —390 das 417— todas as horas son
 estimadas, e o taboleiro explica por que en lugar de deixalo a interpretación.
 

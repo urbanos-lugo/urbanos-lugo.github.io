@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, type CSSProperties } from 'react';
+import { useState, useEffect, useMemo, useRef, type CSSProperties, type TouchEvent } from 'react';
 import { Bell, Check, Clock, Map as MapIcon, Share2 } from 'lucide-react';
 import { BusStop, BusLine, ServiceAlert, StopArrival } from '../types';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
@@ -57,6 +57,8 @@ const NEARBY_LINE_RADIUS_M = 400;
 const NEARBY_LINE_LIMIT = 6;
 /** How far ahead "Próximas" reaches: a bus an hour and a half out is a plan, not a departure. */
 const NEXT_VIEW_HORIZON_MIN = 60;
+/** A finger resting on the board longer than one refresh is reading, not about to tap: the rows go on. */
+const HOLD_MAX_MS = 15_000;
 
 /** Departures for one line and destination, so "when does my line come" needs no reading past the others. */
 interface LineGroup {
@@ -190,10 +192,24 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const lateLater = lateHere.filter((l) => !l.now);
   const skipsHere = (lineNumber: string) => closedHere.lines.includes(lineNumber);
 
+  /** When a finger came down on the board (performance.now, which no clock change moves), or 0. */
+  const fingerSince = useRef(0);
+  /** A refresh that came while the finger was down, run when it lifts. */
+  const waiting = useRef<(() => void) | null>(null);
+
   // Recomputed every 15 s because the minutes count down against the wall clock, and the moment
-  // the phone is woken; nothing is fetched, so no "last updated".
+  // the phone is woken; nothing is fetched, so no "last updated". While a finger is on the board
+  // the rows wait for it to lift: a bus leaving moved every row up, under a thumb about to tap.
   useEffect(() => {
-    const read = () => setArrivals(getArrivalsForStop(selectedStop.id, boardMoment()).arrivals);
+    const read = () => {
+      if (fingerSince.current && performance.now() - fingerSince.current < HOLD_MAX_MS) {
+        waiting.current = read;
+        return;
+      }
+      setArrivals(getArrivalsForStop(selectedStop.id, boardMoment()).arrivals);
+    };
+    // Another stop, or another time asked for, is the reader's own doing: drawn at once.
+    fingerSince.current = 0;
     read();
     if (atTime) return; // a named time does not move
     const interval = setInterval(read, 15000);
@@ -201,8 +217,19 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
     return () => {
       clearInterval(interval);
       unshown();
+      waiting.current = null;
     };
   }, [selectedStop.id, atTime]);
+
+  /** Down, up and cancelled alike: `touches` is what is still on the screen. */
+  const onBoardTouch = (e: TouchEvent) => {
+    fingerSince.current = e.touches.length > 0 ? fingerSince.current || performance.now() : 0;
+    if (fingerSince.current) return;
+    const read = waiting.current;
+    waiting.current = null;
+    read?.();
+  };
+  const holdsUnderFinger = { onTouchStart: onBoardTouch, onTouchEnd: onBoardTouch, onTouchCancel: onBoardTouch };
 
   /** Lines that pass close by but do not call here: with a long wait, two minutes' walk can be the answer. */
   const nearbyLines = useMemo(() => {
@@ -497,7 +524,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           {nextService && <p className="mt-2 text-body font-semibold">{t.arrivals.nextServiceAt(nextService.lineNumber, `${nextService.precision === 'estimated' ? '~' : ''}${nextService.time}`, nextService.destination, dayWord(lang, nextService.daysAhead))}</p>}
         </EmptyState>
       ) : view === 'next' ? (
-        <ul className="anim-fade mt-1">
+        <ul className="anim-fade mt-1" {...holdsUnderFinger}>
           {soon.map((a, idx) => (
             <li key={soonKeys[idx]} className="border-b border-line px-3 py-3.5">
               {/* The destination keeps a floor of 6rem and the minutes wrap under it when both do
@@ -520,7 +547,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           ))}
         </ul>
       ) : (
-        <ul className="anim-fade mt-3 flex flex-col gap-2.5">
+        <ul className="anim-fade mt-3 flex flex-col gap-2.5" {...holdsUnderFinger}>
           {groups.map((g) => (
             <li key={g.key} className="tint tint-edge overflow-hidden rounded-card border" style={lineTint(g.lineColor)}>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3">
