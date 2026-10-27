@@ -643,6 +643,8 @@ const HELP = `${REACH}
       values: fields.map((f) => f.id).map((id) => (document.getElementById(id) || {}).value || '').join('|'),
       scroll: main ? Math.round(main.scrollTop) : 0,
       url: location.pathname + location.search,
+      // For a back finding only: the app's own record of the step, the planner's form folded or not, and work in progress.
+      app: [history.state && history.state.trip ? 'trip' + (history.state.over ? ' over' : '') : 'no trip', document.querySelector('main .fold-clear.fold-closed') ? 'form folded' : 'form open', document.querySelector('[aria-busy="true"]') ? 'busy' : 'idle', [...document.querySelectorAll('main .figure')].filter(shown).length + ' figures'].join(', '),
     };
   };
 `;
@@ -793,8 +795,9 @@ interface Screen {
   values: string;
   scroll: number;
   url: string;
+  app: string;
 }
-const same = (a: Screen, b: Screen) => a.tab.split(':')[0] === b.tab.split(':')[0] && a.heading === b.heading && a.dialog === b.dialog && a.results === b.results && a.fields === b.fields;
+const same =(a: Screen, b: Screen) => a.tab.split(':')[0] === b.tab.split(':')[0] && a.heading === b.heading && a.dialog === b.dialog && a.results === b.results && a.fields === b.fields;
 /** The same place in another language: the tab by its position, and whether a dialog is up. */
 const sameAnyLang = (a: Screen, b: Screen) => a.tab.split(':')[0] === b.tab.split(':')[0] && !!a.dialog === !!b.dialog && a.results === b.results && a.fields === b.fields;
 const layered = (s: Screen) => !!s.dialog || s.results;
@@ -1192,7 +1195,7 @@ async function walkBackSystem(page: Session, stack: Screen[], found: (detail: st
       let first = currentIndex;
       while (first > 0 && entries[first - 1].url.startsWith('http')) first--;
       const landed = await page.evaluate<string>(`JSON.stringify(history.state)`).catch(() => '?');
-      return found(`back from ${current ? name(current) : '?'} lands on ${name(got)}, not ${name(want)} (seen: ${stack.map(name).join(' → ')}; the journey's history held ${currentIndex - first + 1} steps; left ${left}, landed ${landed})`);
+      return found(`back from ${current ? `${name(current)} [${current.app}]` : '?'} lands on ${name(got)} [${got.app}], not ${name(want)} (seen: ${stack.map((s) => `${name(s)} [${s.app}]`).join(' → ')}; the journey's history held ${currentIndex - first + 1} steps; left ${left}, landed ${landed})`);
     }
     // The scroll as it settles, a second and a half: under four pages' load the frames it takes come late.
     for (const end = Date.now() + 1500; Math.abs(got.scroll - want.scroll) > 8 && Date.now() < end; ) {
