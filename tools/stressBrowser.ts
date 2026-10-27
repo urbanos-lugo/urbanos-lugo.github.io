@@ -503,9 +503,11 @@ const fill = (page: Session, index: number, value: string) =>
 
 /**
  * Planning a trip, timed twice: to the tap's own frame, which says «Calculando» before the
- * plan starts, and to the frame with the answer, once the whole plan has run on the main
- * thread. Two questions across the network, one leaving now and one that has to be there
- * by a time three and a half hours ahead, which walks back from the deadline a plan at a time.
+ * plan starts, and to the frame with the answer, the plan worked out in its worker
+ * (askPlanner.ts) since 26 Oct 2026. Two questions across the network, one leaving now and
+ * one that has to be there by a time three and a half hours ahead, which walks back from the
+ * deadline a plan at a time. "Main thread blocked" is the figure the worker is for: arriving
+ * by, 350-383 ms with it against 7.1-8.5 s without, two runs each alternating builds.
  */
 async function planner(browser: Browser): Promise<void> {
   console.log(`\nplanning a trip -- ${CPU_THROTTLE}x CPU, a Wednesday at 13:30, from the tap to «Calculando» and to the painted answer`);

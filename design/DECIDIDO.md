@@ -546,6 +546,11 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - **A tecla «Buscar» abre a fila de arriba.** Gardar o teclado deixaba ao lector escoller
   a fila que xa estaba mirando. Sen fila (aínda calculando, ou nada atopado), garda o teclado
   como antes. ↓ e ↑ percorren as filas co teclado físico.
+- **O planificador calcula nun *worker***, o que o 3 de outubro quedara fóra. Chegando antes
+  a 6× de CPU, o fío da páxina pasa de 7,1–8,5 s ocupado nunha soa tarefa a 350–383 ms, e
+  unha pregunta nova substitúe a que aínda se calcula. Custa 44 KB brotli máis, baixados ao
+  primeiro cálculo: o *worker* leva a súa copia de paradas e liñas. Sen *worker*, calcúlase
+  na páxina coma antes.
 - **Compartir é o panel do sistema só nunha pantalla táctil.** Nun escritorio o mesmo API
   abre o diálogo do sistema, e alí o que se quería era copiar. Pechar o panel non di nada.
 

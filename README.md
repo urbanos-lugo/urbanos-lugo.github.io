@@ -727,6 +727,8 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   │   ├── PlaceField.tsx      o campo de orixe ou destino, coas suxestións
 │   │   │   ├── TripOptions.tsx     as alternativas, en filas comparables
 │   │   │   ├── Itinerary.tsx       paso a paso
+│   │   │   ├── askPlanner.ts       a pregunta ao worker do planificador, e na páxina se non hai worker
+│   │   │   ├── planner.worker.ts   o planificador fóra do fío da páxina
 │   │   │   └── walkCorrection.ts   a aritmética da camiñada medida fronte á estimada
 │   │   ├── ui/
 │   │   │   ├── LineBadge.tsx       a insignia dunha liña, a mesma en todas partes, tamén nos popups
@@ -799,6 +801,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   ├── schedule.ts             calendario e cadro horario
 │   │   ├── arrivals.ts             próximos pasos por parada e seguinte saída dunha liña
 │   │   ├── planner.ts              o planificador: directo, un transbordo, a pé, e a orde entre eles
+│   │   ├── plannerJob.ts           unha pregunta ao planificador como datos, para cruzar ao worker
 │   │   ├── vehicles.ts             onde van os autobuses, derivado do cadro horario
 │   │   ├── places.ts               camiñada estimada, lugares, resolver o que se escribe, paradas preto
 │   │   ├── links.ts                o que abre unha ligazón: ?parada= e ?linea=
@@ -1212,6 +1215,7 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 | Worker do renderizador | 496 KB | 141 KB | 116 KB, ao abrir un mapa |
 | Xeometría viaria | 511 KB | 82 KB | 28 KB, ao abrir un mapa |
 | Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
+| Worker do planificador, coa súa copia de paradas e liñas (27 de outubro) | 232 KB | 54 KB | 44 KB, ao calcular a primeira ruta |
 
 Medido o 20 de outubro de 2026, sobre a 1.4.0 co vocabulario visual da rolda 37, con Vite 8.3
 e MapLibre 6.14; un KB son 1.024 bytes, gzip ao nivel 9 e brotli á calidade 11. Fronte á
@@ -1298,8 +1302,8 @@ desenvolvemento (13 de outubro de 2026). Dependabot revisa semanalmente as depen
 e mais as actions, e CodeQL o código en cada push a `main`.
 
 **Content Security Policy.** `script-src 'self'` máis o hash do script do tema, sen
-`unsafe-inline` nin `unsafe-eval`: ese é o único script en liña, o único worker é o do
-renderizador do mapa e sérvese desde esta orixe, non hai wasm, e o escáner QR usa o
+`unsafe-inline` nin `unsafe-eval`: ese é o único script en liña, os únicos workers son o
+do renderizador do mapa e o do planificador, e sérvense desde esta orixe, non hai wasm, e o escáner QR usa o
 `BarcodeDetector` do navegador en vez dunha librería. As únicas orixes remotas
 permitidas son as que a app usa de verdade — OpenFreeMap polas teselas vectoriais,
 tile.openstreetmap.org polo respaldo ráster, as dúas tamén en `connect-src`: servida como
@@ -2015,13 +2019,16 @@ arrastres (medido: 0 ms de fío bloqueado arrastrando; o traballo é do renderiz
 de cada cadro), teclear no
 buscador e doce voltas entre pestanas; planificar, dende o toque en «Calcular ruta» ata
 «Calculando» e ata a resposta pintada, co reloxo da páxina fixado nun mércores ás 13:30
-(medido co par máis caro: o toque responde en 56–72 ms, por debaixo dos 0,2 s que son un
-INP «bo», porque o botón pinta «Calculando» antes de que o plan colla o fío; a resposta
-chega en 0,9–1,0 s saíndo agora e 10,3–12,2 s chegando antes das 17:00, onde a build
-anterior, a mesma tarde, tardaba 0,85–1,0 e 8,6–9,4 s: os tres puntos que botan mentres
-calcula seguen movéndose co fío ocupado, e a 6× iso cóbralle ao plan 1–3 s, que con
-movemento reducido non paga; o 30 de setembro esta mesma máquina daba 5,0–6,4 s, e 12,4
-antes de que o planificador lembrase o que non cambia); e un minuto de «Vou nesta» cun fix de GPS por
+(medido co par máis caro: o toque responde en 56–104 ms, por debaixo dos 0,2 s que son un
+INP «bo», porque o botón pinta «Calculando» antes de que empece o plan. Desde o 26 de
+outubro de 2026 o plan faise nun *worker*, fóra do fío da páxina: chegando antes das 17:00,
+o fío principal queda ocupado 350–383 ms en total, a tarefa máis longa 183–210 ms, onde a
+build anterior, a mesma tarde e alternándoas, ocupábao 7,1–8,5 s nunha soa tarefa de
+7,0–8,3 s, sen responder a nada mentres; a resposta chega en 2,2–2,3 s fronte a 7,3–8,8 s,
+pero esa diferenza pode ser en parte da medida, que fai 6× máis lento o fío da páxina e
+quizais non o do *worker*: nun teléfono lento de verdade o *worker* tamén é lento. Saíndo
+agora, 0,85–0,88 s fronte a 0,6–1,2 s. O 30 de setembro esta mesma máquina daba 5,0–6,4 s
+chegando antes, e 12,4 antes de que o planificador lembrase o que non cambia); e un minuto de «Vou nesta» cun fix de GPS por
 segundo, contado polo propio navegador (medido: 1,8 s de fío principal por minuto a 6×;
 eran 45 s mentres o latexo da seguinte parada foi unha sombra, que se repinta en cada
 cadro, e non un disco que medra e se esvae, que o compositor move só). Cada cifra compárase co orzamento que ten escrito

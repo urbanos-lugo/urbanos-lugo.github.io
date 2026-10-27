@@ -56,6 +56,7 @@ import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
 import { POLE_SEEN_AT_OSM } from './lib';
 import { planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
+import { answerJob } from '../src/utils/plannerJob';
 import { estimateWalk, getNearbyStops, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
 import { getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
 import { getScheduledBuses } from '../src/utils/vehicles';
@@ -4201,6 +4202,24 @@ ok('a line says what it runs through, not only where it ends', () => {
   }
   const campus = mainZones(BUS_LINES.find((l) => l.number === '1.1')!);
   assert(campus.includes('Campus USC') && campus.includes('O Ceao'), `1.1 runs through ${campus.join(', ')}`);
+});
+
+ok('the planner answers the same across the worker as on the page', () => {
+  // "Arrive by" held the page for 5 to 10 s on a slow phone, so the question crosses to a
+  // worker as data: the page's clock as a number (a worker's own clock is one the browser
+  // audits cannot pin), the measured walks as a table, and the answer cloned back.
+  const now = new Date(2026, 8, 29, 9, 12);
+  const job = { from: 'Praza Maior', to: 'HULA', opts: { arriveBy: 10 * 60 }, lang: 'gl' as const, now: now.getTime(), plannedFrom: now.getTime(), changes: null };
+  const direct = planTrips('Praza Maior', 'HULA', { arriveBy: 10 * 60, lang: 'gl', now });
+  assert(direct.length > 0, 'no plan from Praza Maior to the HULA to compare');
+  assert.deepEqual(structuredClone(answerJob(job)), direct, 'the answer changed on its way across');
+  // A walk the router measured reaches the planner through the table, as it did as a function.
+  const boarding = direct[0].segments.find((s) => s.type === 'bus')?.fromStop;
+  assert(boarding, 'the first plan boards no bus');
+  const measured = { [boarding.id]: 25 };
+  const viaTable = answerJob({ ...job, measured });
+  assert.deepEqual(viaTable, planTrips('Praza Maior', 'HULA', { arriveBy: 10 * 60, lang: 'gl', now, measuredWalkToStop: (id) => measured[id] }));
+  assert.notDeepEqual(viaTable, direct, 'a 25-minute walk to the first stop changed nothing: the table never reached the planner');
 });
 
 ok('no check reached the network', () => {

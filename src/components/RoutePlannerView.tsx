@@ -3,6 +3,8 @@ import { Navigation, MapPin, ArrowDownUp, Clock, Bus, Footprints, AlertCircle, A
 import { useLang, useT } from '../i18n';
 import { BusStop, BusLine, RoutePlanResult } from '../types';
 import { planTrips } from '../utils/planner';
+import type { PlanJob } from '../utils/plannerJob';
+import { askPlanner, Superseded } from './planner/askPlanner';
 import { changesNow, pastTimetable, runsUntil, setsOff, underNotice, type NoticeChanges } from '../utils/noticeChanges';
 import { stopById } from '../data/transitData';
 import { resolveLocationQuery, QUICK_DESTINATIONS } from '../utils/places';
@@ -232,11 +234,26 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
       if (boarding && path) known.set(boarding.id, path.minutes);
     }
     const { orig, dest, opts } = askedRef.current;
-    const again = underNotice(changes, plannedFrom(opts), (skipsStop) => planTrips(orig, dest, { ...opts, lang, measuredWalkToStop: (id) => known.get(id), skipsStop }));
-    if (!again.length) return; // nothing better at the later time: keep what is on screen, marked
-    setPlanOptions(again);
-    setChosenOption(null);
+    askPlanner(jobFor(orig, dest, opts, Object.fromEntries(known)))
+      .then((again) => {
+        if (!again.length) return; // nothing better at the later time: keep what is on screen, marked
+        setPlanOptions(again);
+        setChosenOption(null);
+      })
+      .catch(() => {}); // a new question came first, and its answer is the one that counts
   }, [planResult, shown?.reachable, lang]);
+
+  /** A question as it goes to the planner (askPlanner.ts): the page's clock and the notice with it. */
+  const jobFor = (orig: string, dest: string, opts: PlanJob['opts'], measured?: Record<string, number>): PlanJob => ({
+    from: orig,
+    to: dest,
+    opts,
+    lang,
+    now: Date.now(),
+    plannedFrom: plannedFrom(opts).getTime(),
+    changes,
+    measured,
+  });
 
   const timeOptions = (mode = timeMode, at = timeValue) => {
     const [h, m] = at.split(':').map(Number);
@@ -246,28 +263,37 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
 
   const [questions, setQuestions] = useState(0);
   const [calculating, setCalculating] = useState(false);
-  const calculatingRef = useRef(false);
+  /** The question being worked out, so the same one asked again is dropped and another replaces it. */
+  const calculatingRef = useRef<string | null>(null);
   const calculate = (orig = originQuery, dest = destQuery, gps = userLocation, fold = true, inPlace = false, time = { mode: timeMode, at: timeValue }) => {
-    if (!orig.trim() || !dest.trim() || calculatingRef.current) return;
-    // The plan runs on this thread, and "arrive by" holds it for seconds on a slow phone
-    // (5.0-6.4 s at 6x CPU), where the tap showed nothing until the answer. So the button
-    // says «Calculando» in a frame of its own, and the plan starts once that frame is on
-    // screen. A second tap meanwhile is the same question asked twice, and is dropped.
-    calculatingRef.current = true;
+    const question = JSON.stringify([orig, dest, gps, time]);
+    if (!orig.trim() || !dest.trim() || calculatingRef.current === question) return;
+    // "Arrive by" takes seconds on a slow phone (5.0-6.4 s at 6x CPU). It is worked out off the
+    // page's thread (askPlanner.ts), so the page stays usable meanwhile and a changed question
+    // replaces the one still running. The button says «Calculando» in a frame of its own first.
+    calculatingRef.current = question;
     setCalculating(true);
     afterPaint(async () => {
       try {
         setGpsRefused(false);
         const opts = { ...timeOptions(time.mode, time.at), userLocation: gps };
+        let plans: RoutePlanResult[];
+        try {
+          plans = await askPlanner(jobFor(orig, dest, opts));
+        } catch (reason) {
+          if (reason instanceof Superseded) return;
+          throw reason;
+        }
         askedRef.current = { orig, dest, opts };
         replannedRef.current = false;
-        const plans = underNotice(changes, plannedFrom(opts), (skipsStop) => planTrips(orig, dest, { ...opts, lang, skipsStop }));
         const ends = { origin: toPoint(resolveLocationQuery(orig, gps)), destination: toPoint(resolveLocationQuery(dest, gps)) };
         // The walks measured before the answer shows. Shown on straight lines, it changed a moment
         // later when they came: its headline bus, and «Vou nesta» from the top of the answer to
         // below the times, under the finger about to tap it. Only the options shown, whose walks
         // are all the ranking reads: a busy question's 82 plans were 33 hops, its four were 3.
-        setWalksFirst(await measureWalks(plans.slice(0, MAX_OPTIONS), ends));
+        const walks = await measureWalks(plans.slice(0, MAX_OPTIONS), ends);
+        if (calculatingRef.current !== question) return; // replaced while its walks were measured
+        setWalksFirst(walks);
         setPlanOptions(plans);
         setChosenOption(null);
         setQuestions((n) => n + 1);
@@ -281,8 +307,11 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
         setEndpoints(ends);
         setActiveInput(null);
       } finally {
-        calculatingRef.current = false;
-        setCalculating(false);
+        // Only the question still asked: one replaced by another leaves «Calculando» to it.
+        if (calculatingRef.current === question) {
+          calculatingRef.current = null;
+          setCalculating(false);
+        }
       }
     });
   };
