@@ -73,6 +73,8 @@ const ACROSS = (() => {
 })();
 /** The last line of the list, which a reader scrolls to. */
 const FAR_LINE = BUS_LINES[BUS_LINES.length - 1];
+/** The names the steps look for, handed to the page inside T, its argument: code built from data is what CodeQL flags. */
+const AT = { home: HOME.name, farLine: FAR_LINE.name, line0: BUS_LINES[0].name, line0Number: BUS_LINES[0].number, across: ACROSS.name };
 const REGULAR = {
   urbanos_lugo_fav_stops: JSON.stringify([busiest[0].id, busiest[1].id]),
   urbanos_lugo_fav_lines: JSON.stringify([BUS_LINES[0].id]),
@@ -165,7 +167,7 @@ export const JOURNEYS: Journey[] = [
     start: {},
     steps: [
       { type: `document.getElementById('site-search')`, text: 'sindicatos', next: `css('header .z-results button')`, wait: `css('header .z-results button')` },
-      { tap: `[...document.querySelectorAll('header .z-results button')].find((b) => shown(b) && b.textContent.includes(${JSON.stringify(HOME.name)}))`, options: `[...document.querySelectorAll('header .z-results button')].filter(shown)`, wait: board },
+      { tap: `[...document.querySelectorAll('header .z-results button')].find((b) => shown(b) && b.textContent.includes(T.at.home))`, options: `[...document.querySelectorAll('header .z-results button')].filter(shown)`, wait: board },
     ],
     answer: firstDeparture,
     reload: true,
@@ -307,7 +309,7 @@ export const JOURNEYS: Journey[] = [
     start: {},
     steps: [
       { type: `document.getElementById('site-search')`, text: FAR_LINE.number, next: `css('header .z-results button')`, wait: `css('header .z-results button')` },
-      { tap: `[...document.querySelectorAll('header .z-results button')].find((b) => shown(b) && b.textContent.includes(${JSON.stringify(FAR_LINE.name)}))`, options: `[...document.querySelectorAll('header .z-results button')].filter(shown)`, wait: lineHeading },
+      { tap: `[...document.querySelectorAll('header .z-results button')].find((b) => shown(b) && b.textContent.includes(T.at.farLine))`, options: `[...document.querySelectorAll('header .z-results button')].filter(shown)`, wait: lineHeading },
     ],
     answer: lineHeading,
   },
@@ -347,7 +349,7 @@ export const JOURNEYS: Journey[] = [
     steps: [
       tab('T.nav.map'),
       { tap: `saying(T.map.controls)`, wait: `css('[role=dialog][aria-modal=true]')` },
-      { tap: `labelled(T.map.openLineInfo + ': ' + ${JSON.stringify(BUS_LINES[0].number)})`, wait: lineHeading },
+      { tap: `labelled(T.map.openLineInfo + ': ' + T.at.line0Number)`, wait: lineHeading },
     ],
     answer: lineHeading,
   },
@@ -449,7 +451,7 @@ export const JOURNEYS: Journey[] = [
     steps: [
       tab('T.nav.map'),
       { tap: `saying(T.map.controls)`, wait: `css('[role=dialog][aria-modal=true]')` },
-      { tap: `[...document.querySelectorAll('[role=dialog] button[aria-pressed]')].find((b) => shown(b) && b.textContent.includes(${JSON.stringify(BUS_LINES[0].name)}))`, options: `[...document.querySelectorAll('[role=dialog] button[aria-pressed]')].filter(shown)`, wait: `!css('[role=dialog][aria-modal=true]')` },
+      { tap: `[...document.querySelectorAll('[role=dialog] button[aria-pressed]')].find((b) => shown(b) && b.textContent.includes(T.at.line0))`, options: `[...document.querySelectorAll('[role=dialog] button[aria-pressed]')].filter(shown)`, wait: `!css('[role=dialog][aria-modal=true]')` },
     ],
     answer: `css('.leaflet-container')`,
   },
@@ -474,7 +476,7 @@ export const JOURNEYS: Journey[] = [
       { wait: `labelled(T.map.stopFollowing) && new Promise((r) => setTimeout(() => r(true), 900))`, note: 'the map flies to the position' },
       { tapMap: 'me', wait: `css('[role=dialog][aria-modal=true]')` },
     ],
-    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === ${JSON.stringify(HOME.name)})`,
+    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === T.at.home)`,
   },
   {
     task: 'the map, where am I',
@@ -492,7 +494,7 @@ export const JOURNEYS: Journey[] = [
       { wait: `labelled(T.map.stopFollowing) && new Promise((r) => setTimeout(() => r(true), 900))`, note: 'the map flies to the position' },
       { tapMap: 'me', wait: `css('[role=dialog][aria-modal=true]')` },
     ],
-    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === ${JSON.stringify(HOME.name)})`,
+    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === T.at.home)`,
   },
   {
     task: 'the map, where am I',
@@ -506,7 +508,7 @@ export const JOURNEYS: Journey[] = [
       { wait: `labelled(T.map.stopFollowing) && new Promise((r) => setTimeout(() => r(true), 900))`, note: 'the map flies to the position' },
       { tapMap: 'me', wait: `css('[role=dialog][aria-modal=true]')` },
     ],
-    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === ${JSON.stringify(ACROSS.name)})`,
+    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === T.at.across)`,
   },
   {
     task: 'a stop on the map',
@@ -521,7 +523,7 @@ export const JOURNEYS: Journey[] = [
       { tap: `labelled(T.arrivals.map)`, stack: 'push', wait: `css('.leaflet-container') && new Promise((r) => setTimeout(() => r(true), 3000))` },
       { tapAt: [0, -18], wait: `css('[role=dialog][aria-modal=true]')` },
     ],
-    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === ${JSON.stringify(HOME.name)})`,
+    answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === T.at.home)`,
   },
 
   /* --- Be told, keep, share --- */
@@ -542,7 +544,7 @@ export const JOURNEYS: Journey[] = [
     start: {},
     steps: [
       { type: `document.getElementById('site-search')`, text: 'sindicatos', wait: `css('header .z-results button')` },
-      { tap: `[...document.querySelectorAll('header .z-results button')].find((b) => shown(b) && b.textContent.includes(${JSON.stringify(HOME.name)}))`, wait: board },
+      { tap: `[...document.querySelectorAll('header .z-results button')].find((b) => shown(b) && b.textContent.includes(T.at.home))`, wait: board },
       { tap: `labelled(T.arrivals.fav)`, wait: `labelled(T.arrivals.unfav)` },
     ],
     answer: `labelled(T.arrivals.unfav)`,
@@ -932,7 +934,7 @@ async function open(w: Worker, j: Journey, phone: Phone, lang: Lang, theme: 'lig
 
 export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang, opts: { theme?: 'light' | 'dark'; text200?: boolean; back?: boolean } & Held = {}): Promise<Run> {
   const { page } = w;
-  const T = JSON.parse(JSON.stringify(DICT[lang])) as object;
+  const T = { ...JSON.parse(JSON.stringify(DICT[lang])), at: AT } as object;
   const H = opts.turned ? PHONES[phone].width : PHONES[phone].height;
   const where = `${label(j)} · ${phone}${opts.turned ? ' · turned' : ''}${opts.api === 'offline' ? ' · offline' : ''}${opts.text200 ? ' · text 200 %' : ''}${lang === 'gl' ? '' : ` · ${lang}`}`;
   const run: Run = { journey: label(j), phone, lang, variant: [opts.turned && 'turned', opts.api === 'offline' && 'offline', opts.text200 && 'text200'].filter(Boolean).join(','), taps: 0, keys: 0, scrolls: 0, decisions: 0, options: 0, screens: 1, appMs: 0, worstMs: 0, zones: { easy: 0, stretch: 0, hard: 0 }, small: [], answerTop: null, findings: [] };
@@ -975,7 +977,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     if (now.gone) return null;
     if (Math.hypot(now.x - at.x, now.y - at.y) > 4) flow(`"${at.label}" moved ${Math.round(Math.hypot(now.x - at.x, now.y - at.y))} px between being seen and being tapped`);
     if (now.covered) flow(`"${at.label}" is under "${now.covered}" where the finger lands`);
-    const drewElsewhere = await page.evaluate<number>(`(() => { const el = window.__jt, seen = window.__drawn && window.__drawn.get(${JSON.stringify(at.label)}); if (!el || !seen || !window.__laidOut) return 0; const [x, y] = window.__laidOut(el); return Math.round(Math.max(...seen.map(([sx, sy]) => Math.hypot(sx - x, sy - y)))); })()`);
+    const drewElsewhere = await page.call<number>(`function (label) { const el = window.__jt, seen = window.__drawn && window.__drawn.get(label); if (!el || !seen || !window.__laidOut) return 0; const [x, y] = window.__laidOut(el); return Math.round(Math.max(...seen.map(([sx, sy]) => Math.hypot(sx - x, sy - y)))); }`, at.label);
     if (drewElsewhere > 4) flow(`"${at.label}" was drawn ${drewElsewhere} px from where it came to rest, before the finger got to it`);
     const zone = now.y < H * 0.25 ? 'hard' : now.y < H * 0.5 ? 'stretch' : 'easy';
     run.zones[zone]++;
@@ -1146,9 +1148,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
 
   // Away and back: what was set or planned is still there.
   if (j.away) {
-    const T2 = T as Record<string, Record<string, string>>;
-    const tabName = j.away.tab.split('.').reduce<unknown>((o, k) => (o as Record<string, unknown>)?.[k], { T: T2 }) as string;
-    await tapOn(`tabLink(${JSON.stringify(tabName)})`);
+    await tapOn(`tabLink(${j.away.tab})`);
     await sleep(700);
     await page.send('Page.navigateToHistoryEntry', { entryId: await previousEntry(page) }).catch(() => undefined);
     await sleep(900);
