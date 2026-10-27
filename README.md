@@ -1225,15 +1225,16 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 | `index.html` | 5 KB | 2 KB | **2 KB** |
 | **Primeira carga** | **685 KB** | ~187 KB | **~155 KB** |
 | Tipografía | 51 KB | — | 51 KB, en paralelo |
-| Renderizador do mapa, co estilo e a paleta | 1.205 KB | 319 KB | 262 KB, ao abrir un mapa |
-| Estilos do renderizador | 96 KB | 16 KB | 14 KB, ao abrir un mapa |
-| Worker do renderizador | 496 KB | 141 KB | 116 KB, ao abrir un mapa |
+| Renderizador do mapa, co estilo e a paleta | 1.224 KB | 325 KB | 266 KB, ao abrir un mapa |
+| Estilos do renderizador | 84 KB | 16 KB | 13 KB, ao abrir un mapa |
+| Worker do renderizador | 507 KB | 144 KB | 119 KB, ao abrir un mapa |
 | Xeometría viaria | 511 KB | 82 KB | 28 KB, ao abrir un mapa |
 | Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
 | Worker do planificador, coa súa copia de paradas e liñas (27 de outubro) | 232 KB | 54 KB | 44 KB, ao calcular a primeira ruta |
 
 Medido o 20 de outubro de 2026, sobre a 1.4.0 co vocabulario visual da rolda 37, con Vite 8.3
-e MapLibre 6.14; un KB son 1.024 bytes, gzip ao nivel 9 e brotli á calidade 11. Fronte á
+e MapLibre 6.14; as tres filas do renderizador, o 27 de outubro con MapLibre 6.15, e o resto
+igual nese día ao KB. Un KB son 1.024 bytes, gzip ao nivel 9 e brotli á calidade 11. Fronte á
 1.4.0 sen el, a folla de estilos medra 3 KB (os tokens e as clases dos patróns) e o anaco de
 entrada baixa 12 KB (as cadeas de clases que esas clases e compoñentes substitúen). O anaco de
 entrada medra co que leva dentro, as cabeceiras por pestana;
