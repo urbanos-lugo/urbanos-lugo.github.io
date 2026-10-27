@@ -151,7 +151,9 @@ export const JOURNEYS: Journey[] = [
     steps: [{ tap: `[...document.querySelectorAll('main ul li button')].find(shown)`, options: `[...document.querySelectorAll('main ul li button')].filter(shown)`, wait: board }],
     answer: firstDeparture,
     reload: true,
-    lock: { stale: firstDeparture },
+    // The whole first row, with its clock time: two hours on, a frequent line can be "~3" again,
+    // and the minutes alone read as a board that had not moved (CPU four times slower, 27 Oct).
+    lock: { stale: `(${firstDeparture})?.closest('li')` },
   },
   {
     task: 'next bus at a stop',

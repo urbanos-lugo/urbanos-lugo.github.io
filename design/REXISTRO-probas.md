@@ -3679,6 +3679,11 @@ rama son en cada unha das sete pasadas.
     entrada pouse, ata 1,5 s, coma xa agardaban os toques (`landed`, compartido). Con
     cadros que chegan tarde (reloxo parado e solto aos 400 ms), sen a espera dá o achado do
     executor e con ela ningún; os 88 percorridos, ningún.
+  - Os percorridos coa CPU catro veces máis lenta deron outro falso: «espertado tras dúas
+    horas, segue mostrando a hora do bloqueo» na parada gardada, porque só lía os minutos,
+    e dúas horas despois unha liña frecuente volvía estar a «~3». Agora le a fila enteira,
+    coa súa hora de reloxo. Segue mordendo: sen a relectura ao espertar, «a hora do bloqueo
+    durante 13,2 s».
   - 3 volven en cada execución: no teléfono grande, despois de pedir unha viaxe (cun
     destino rápido, cunha viaxe recente ou coas teclas do teclado), atrás desde o
     formulario volve ao formulario e non ás paradas. Aquí non saen: nin en UTC, nin coa CPU
