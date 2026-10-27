@@ -3822,7 +3822,8 @@ Agora unha liña abre unha folla igual ca a da parada (`MapSheet`, a casca das d
 quince liñas no mesmo punto, a máis próxima primeiro e a frase que di que lista é;
 escoller unha pecha a folla e encadra a liña (comprobado coa 5.1). O punto tocado subiu de
 412 a 192 px por riba da folla; unha parada a 485 px, a 217, coa folla en 322. Co zoom
-`visibility: hidden` mentres hai folla.
+`visibility: hidden` mentres hai folla. Despois, o `audit:browser` enteiro (242 medidas,
+162 estados, os percorridos incluídos): 0 achados.
 
 ### Queda
 
