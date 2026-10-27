@@ -1006,13 +1006,21 @@ export const STATES: State[] = [
       if (!(await until(() => document.querySelector('main .map-rank')))) return 'the small map drew no stop'; await pause(1500); return true;`,
     // On a phone nothing tied a dot to its row: five grey dots alike, their names in labels only
     // a mouse opens. Each stop carries its place by distance, the same on the map and the list.
-    expect: `const shown = (sel) => [...document.querySelectorAll(sel)].filter((e) => e.getClientRects().length).map((e) => e.textContent.trim());
-      const onMap = shown('main .map-rank'), onList = shown('main .stop-rank-row'), out = [];
-      for (const map of [...document.querySelectorAll('main .leaflet-container')].filter((m) => m.getClientRects().length)) {
-        const own = [...map.querySelectorAll('.map-rank')].map((e) => e.textContent.trim());
-        if (own.join(' ') !== own.map((_, i) => i + 1).join(' ')) out.push('the stops on a small map are numbered ' + own.join(' ') + ', not 1 to ' + own.length + ' by distance');
+    // Each list against the map of its own section: on a wide screen the list is drawn twice.
+    expect: `const numbers = (root, sel) => [...root.querySelectorAll(sel)].map((e) => e.textContent.trim()).join(' ');
+      const lists = [...document.querySelectorAll('main ul')].filter((u) => u.querySelector('.stop-rank-row') && u.getClientRects().length);
+      const out = [];
+      let compared = 0;
+      for (const list of lists) {
+        const map = list.parentElement.querySelector('.leaflet-container');
+        if (!map) continue;
+        compared++;
+        const onMap = numbers(map, '.map-rank'), onList = numbers(list, '.stop-rank-row');
+        const inOrder = onMap.split(' ').map((_, i) => i + 1).join(' ');
+        if (onMap !== inOrder) out.push('the stops on the small map are numbered ' + onMap + ', not ' + inOrder + ' by distance');
+        if (onMap !== onList) out.push('the small map numbers its stops ' + onMap + ' and its list ' + onList + ': a dot and its row must carry the same number');
       }
-      if (onMap.join(' ') !== onList.join(' ')) out.push('the small map numbers its stops ' + onMap.join(' ') + ' and the list ' + onList.join(' ') + ': a dot and its row must carry the same number');
+      if (!compared) out.push('no list of nearby stops stands beside a drawn map, so their numbers were not compared');
       return out;`,
     promise: `return ${NEAR_LIST} ? [] : ['the stops near a position given show no walk, so the refusal below proves nothing'];`,
   },

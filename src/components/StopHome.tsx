@@ -43,9 +43,12 @@ function StopRow({ stop, onSelect, trailing, rank }: { stop: BusStop; onSelect: 
   const t = useT();
   return (
     <li>
-      <button onClick={() => onSelect(stop)} className="flex w-full items-center gap-3 rounded-control border border-edge px-cap-3.5 py-3 text-left">
+      {/* The name keeps its floor and the walk wraps under it: at 200 % text the number beside
+          it left "14 liñas" 5 px past the row's edge. */}
+      <button onClick={() => onSelect(stop)} className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-edge px-cap-3.5 py-3 text-left">
         {rank !== undefined && <StopRank n={rank} />}
         <NameStack
+          floor
           name={stop.name}
           hint={
             <>
