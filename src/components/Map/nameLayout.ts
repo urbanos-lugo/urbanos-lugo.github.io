@@ -12,11 +12,27 @@ export interface NamePlace {
   align: 'left' | 'right' | 'center';
 }
 
-interface Box {
+export interface Box {
   left: number;
   right: number;
   top: number;
   bottom: number;
+}
+
+/** The box a name takes on the screen, from where it is written and how wide and tall it is. */
+export function nameBox(place: NamePlace, width: number, height: number): Box {
+  const left = place.align === 'left' ? place.x : place.align === 'right' ? place.x - width : place.x - width / 2;
+  return { left, right: left + width, top: place.y - height / 2, bottom: place.y + height / 2 };
+}
+
+/**
+ * Which written name a tap landed on, with `reach` pixels around each for a finger: a name a
+ * dozen pixels tall is a thin target, and it is the thing on the map that says which stop it
+ * is. Names never overlap (placeNames), so the first box that holds the point is the one.
+ */
+export function nameAt<T>(names: { item: T; box: Box }[], x: number, y: number, reach: number): T | null {
+  const hit = names.find(({ box }) => x >= box.left - reach && x <= box.right + reach && y >= box.top - reach && y <= box.bottom + reach);
+  return hit ? hit.item : null;
 }
 
 /**

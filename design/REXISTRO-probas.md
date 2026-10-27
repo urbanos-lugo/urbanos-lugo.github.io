@@ -3825,6 +3825,14 @@ escoller unha pecha a folla e encadra a liña (comprobado coa 5.1). O punto toca
 `visibility: hidden` mentres hai folla. Despois, o `audit:browser` enteiro (242 medidas,
 162 estados, os percorridos incluídos): 0 achados.
 
+Despois, tocar un nome escrito abre a súa parada. O primeiro intento escoitaba o `preclick`
+de Leaflet e non funcionou: ese evento é unha copia do clic, sen as coordenadas (son
+propiedades do prototipo, que a copia non leva) e sen levar de volta a marca que deixaba.
+Agora escoita o `click` do DOM en captura, no mesmo evento que len despois as paradas e as
+liñas. Comprobado a 375 px: tocar o texto de «Rúa Castelao 53», lonxe de calquera punto,
+abre a súa folla e o seu anel; no mapa pequeno, o de «Rda. Muralla 56 (Sindicatos)» abre o
+seu taboleiro.
+
 ### Queda
 
 - **A rolda de MapLibre** (NOTAS, Pendente 8): xirar o mapa e a brúxula.

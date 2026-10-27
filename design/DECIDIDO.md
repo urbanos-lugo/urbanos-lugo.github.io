@@ -539,6 +539,9 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   que escollela nas fichas: pecha a folla, debúxaa por riba e encádraa. O que se tocou sobe
   por riba da folla se quedaría debaixo; o toque dunha liña, coma o dunha parada, xa non
   move o mapa ao centro. Con folla, o zoom de Leaflet apártase; a atribución queda.
+- **Un nome escrito no mapa tócase coma a súa parada**, cos 8 px dun dedo arredor da súa
+  caixa. Gaña ao punto doutra parada que estea ao alcance do dedo: quen toca un nome quere
+  esa parada.
 
 ## A ficha de liña, o buscador e compartir — 26 de outubro de 2026
 

@@ -8,7 +8,7 @@ import { useLeafletMap } from '../../hooks/useLeafletMap';
 import { fetchWalkingPath } from '../../services/walkingPath';
 import { DRAW, mapColors, stopDotStyle } from './palette';
 import { readerMark } from './reader';
-import { stopNamesLayer } from './StopNames';
+import { stopNamesLayer, type TappedEvent } from './StopNames';
 
 export interface NearbyMiniMapProps {
   /** What the map is about: the reader as the browser reported it, or the pole itself — a different claim, drawn as a different thing. */
@@ -58,10 +58,11 @@ export function NearbyMiniMap({ centre, stops, onSelectStop, regionLabel }: Near
       // Not a Tab stop: the list beside the map holds the same stops in the same order, named.
       // Where two touch, the nearer is drawn over the farther.
       const marker = L.marker([stop.lat, stop.lng], { icon: rankIcon(i + 1), keyboard: false, zIndexOffset: (stops.length - i) * DRAW.rankOver }).bindTooltip(`${escapeHtml(stop.name)} · ${escapeHtml(t.common.walkDistance(stop.walkMeters))}`, { direction: 'top', offset: [0, DRAW.tooltip.lift] });
-      marker.on('click', () => onSelectRef.current(stop));
+      // Once per tap: a name that took it already opened its stop.
+      marker.on('click', (e: L.LeafletMouseEvent) => (e.originalEvent as TappedEvent)._nameClaimed || onSelectRef.current(stop));
       group.addLayer(marker);
     });
-    const names = stopNamesLayer({ ink: colors.nameInk, halo: colors.nameHalo, radius: DRAW.stopRadius.rank }).addTo(map);
+    const names = stopNamesLayer({ ink: colors.nameInk, halo: colors.nameHalo, radius: DRAW.stopRadius.rank, onTap: (stop) => onSelectRef.current(stop) }).addTo(map);
     // No name over the point the map is about, the reader or the pole.
     names.setStops(stops, [at]);
     if (stops.length) map.fitBounds(bounds, { padding: [DRAW.fit.nearby, DRAW.fit.nearby], maxZoom: 17 });

@@ -99,8 +99,8 @@ export const DRAW = {
    * over, the room kept under the line chips and above the sheet.
    */
   fit: { network: 40, nearby: 28, trip: 28, tripTop: 56, follow: 40, sheetTop: 64, sheetGap: 24 },
-  /** The stop names written beside the dots: size, weight, gap from the dot's ring, halo, and the screen edge they keep off. */
-  names: { size: 12, weight: 600, gap: 5, halo: 3, edge: 4 },
+  /** The stop names written beside the dots: size, weight, gap from the dot's ring, halo, the screen edge they keep off, and how far round one a tap still takes it. */
+  names: { size: 12, weight: 600, gap: 5, halo: 3, edge: 4, reach: 8 },
   /** Panes over Leaflet's overlay canvas (400): the stop names, then the routes' arrows, then the way the reader faces and the reader's position, under the markers (600). */
   pane: { names: 420, arrows: 450, beam: 455, reader: 460 },
   /** Buses over every other marker. */

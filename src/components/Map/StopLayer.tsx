@@ -6,7 +6,7 @@ import { BusStop } from '../../types';
 import { poleCode } from '../../data/transitData';
 import { useIsDark } from '../../hooks/useIsDark';
 import { DRAW, mapColors, stopDotStyle } from './palette';
-import { stopNamesLayer } from './StopNames';
+import { stopNamesLayer, type TappedEvent } from './StopNames';
 
 interface StopLayerProps {
   map: L.Map | null;
@@ -80,7 +80,7 @@ export function StopLayer({ map, stops, visibleLineIds, selectedStop, showStops,
       }
 
       const placed: Record<string, BusStop> = {};
-      const names = rung.label ? stopNamesLayer({ ink: colors.nameInk, halo: colors.nameHalo, radius: rung.radius }).addTo(map) : null;
+      const names = rung.label ? stopNamesLayer({ ink: colors.nameInk, halo: colors.nameHalo, radius: rung.radius, onTap: (stop) => onTapStopRef.current(stop) }).addTo(map) : null;
 
       // Only the stops in view are built now (one redraw), the rest as a pan brings them
       // within the margin: all 417 at once was the freeze felt when panning after a zoom.
@@ -100,7 +100,9 @@ export function StopLayer({ map, stops, visibleLineIds, selectedStop, showStops,
         // nearest the finger: with a finger's reach two dots' circles overlap, and Leaflet
         // hands the tap to whichever was drawn last.
         marker.on('click', (e: L.LeafletMouseEvent) => {
-          (e.originalEvent as MouseEvent & { _stopClaimed?: boolean })._stopClaimed = true;
+          // A name tapped is the stop it names, even within a finger's reach of another dot.
+          if ((e.originalEvent as TappedEvent)._nameClaimed) return;
+          (e.originalEvent as TappedEvent)._stopClaimed = true;
           const finger = map.mouseEventToContainerPoint(e.originalEvent);
           const away = (id: string) => map.latLngToContainerPoint(markersRef.current[id].getLatLng()).distanceTo(finger);
           onTapStopRef.current(placed[Object.keys(placed).reduce((a, b) => (away(b) < away(a) ? b : a))]);

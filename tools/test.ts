@@ -45,7 +45,7 @@ import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
 import { routeOnFoot } from '../src/utils/walkRouter';
 import { headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
-import { placeNames } from '../src/components/Map/nameLayout';
+import { nameAt, nameBox, placeNames } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
 import { HOLIDAY_YEARS, buildRuns, dayKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
 import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
@@ -4187,6 +4187,24 @@ ok('a name on a map never covers another name, another stop or the reader', () =
   assert(pair[1] === null || !overlap(boxOf({ width: 80 }, pair[1]), boxOf({ width: 80 }, pair[0]!)), 'two neighbours wrote one name over the other');
   // Against the right edge, the name goes left, as it always has.
   assert.equal(placeNames([{ x: 360, y: 100, width: 80 }], view)[0]?.align, 'right');
+});
+
+ok('a tap on a stop name written on the map is a tap on that stop', () => {
+  // From zoom 16 the name is the biggest thing saying which stop a dot is, and a tap on it
+  // went through to the line underneath or slid the map. Every name written answers for its
+  // box and a finger's reach round it, and nothing outside that.
+  const view = { width: 375, radius: 7, gap: 5, height: 15, edge: 4 };
+  const dots = Array.from({ length: 12 }, (_, i) => ({ x: (i * 97) % 375, y: (i * 61) % 240, width: 40 + ((i * 53) % 120) }));
+  const written = placeNames(dots, view).flatMap((place, i) => (place ? [{ item: i, box: nameBox(place, dots[i].width, view.height) }] : []));
+  assert(written.length >= dots.length / 2, `only ${written.length} names written to tap`);
+  const reach = 8;
+  for (const { item, box } of written) {
+    const midY = (box.top + box.bottom) / 2;
+    assert.equal(nameAt(written, (box.left + box.right) / 2, midY, reach), item, `the middle of name ${item} is not name ${item}`);
+    assert.equal(nameAt(written, box.right + reach - 1, midY, reach), item, `just past the end of name ${item}, within a finger's reach, is not name ${item}`);
+  }
+  // Well away from every name, no name.
+  assert.equal(nameAt(written, -50, -50, reach), null);
 });
 
 ok('a line says what it runs through, not only where it ends', () => {

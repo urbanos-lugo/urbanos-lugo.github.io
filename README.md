@@ -230,7 +230,10 @@ aínda non xira: Leaflet non o fai, e xiralo pide debuxalo con MapLibre.
 **Os nomes das paradas non se pisan.** Desde o zoom 16 escríbense á dereita do punto, á
 esquerda, enriba ou debaixo, onde non tapen outro nome, outra parada nin a túa posición; o
 que non colle non se escribe. Antes ían sempre á dereita: dúas paradas a cada lado dunha
-rúa escribían un nome enriba do outro, e non se lía ningún.
+rúa escribían un nome enriba do outro, e non se lía ningún. E **tocar un nome é tocar a súa
+parada**, con 8 px de marxe para o dedo: no mapa da rede abre a súa folla, no pequeno o seu
+taboleiro. O nome é o máis grande que di que parada é un punto, e o toque nel pasaba á liña
+de debaixo ou movía o mapa.
 
 Se xa deixaches que a app te localice, **o mapa ábrese sobre ti**, coas liñas que tes
 preto. Ata a rolda 42 o botón dicía «Deixar de seguirme» sobre un mapa sen punto e sen
