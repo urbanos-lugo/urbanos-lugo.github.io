@@ -1184,7 +1184,8 @@ async function walkBackSystem(page: Session, stack: Screen[], found: (detail: st
     if (process.env.JOURNEY_DEBUG) console.log(`    back ${stack.length - 1 - i}: ${got ? name(got) : '?'} scroll ${got?.scroll}, entry says ${await page.evaluate('JSON.stringify(history.state && history.state.scroll)')}, left at ${stack[i].scroll}`);
     const want = stack[i];
     if (!got) return found(`back from ${current ? name(current) : '?'} broke the page`);
-    if (!alike(got, want)) return found(`back from ${current ? name(current) : '?'} lands on ${name(got)}, not ${name(want)}`);
+    // With the screens the journey saw and the steps the history kept: whether a step was not seen or one too many was kept.
+    if (!alike(got, want)) return found(`back from ${current ? name(current) : '?'} lands on ${name(got)}, not ${name(want)} (seen: ${stack.map(name).join(' → ')}; the history held ${entries.filter((e) => e.url.startsWith('http')).length} of the app's steps)`);
     // The scroll as it settles, a second and a half: under four pages' load the frames it takes come late.
     for (const end = Date.now() + 1500; Math.abs(got.scroll - want.scroll) > 8 && Date.now() < end; ) {
       await sleep(100);
