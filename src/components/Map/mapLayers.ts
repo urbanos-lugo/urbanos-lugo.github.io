@@ -60,7 +60,8 @@ export const HOVER_GRACE_MS = 300;
  * Only for a mouse: under a finger the tap opens the thing itself, and a label would take the tap.
  */
 export function hoverLabels(map: MapLibre) {
-  const popup = new Popup({ closeButton: false, closeOnClick: false, closeOnMove: false, className: 'map-hover-label', maxWidth: 'none' });
+  // Never the focus: a label a pointer raised must not take it from wherever it is (1.4.13).
+  const popup = new Popup({ closeButton: false, closeOnClick: false, closeOnMove: false, focusAfterOpen: false, className: 'map-hover-label', maxWidth: 'none' });
   let leaving = 0;
   let mouse = false;
   const container = map.getContainer();

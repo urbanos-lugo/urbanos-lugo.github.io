@@ -134,8 +134,8 @@ export interface Journey {
   notice?: boolean;
 }
 
-/** A tab of the bar, and what shows that its screen is up: the map arrives as a chunk of its own. */
-const tab = (name: string): Step => ({ tap: `tabLink(${name})`, stack: 'push', wait: name === 'T.nav.map' ? `css('.maplibregl-map canvas.maplibregl-canvas')` : `tabLink(${name}).getAttribute('aria-current') === 'page'` });
+/** A tab of the bar, and what shows that its screen is up: the map arrives as a chunk of its own, and is up once it has drawn (data-idle). */
+const tab = (name: string): Step => ({ tap: `tabLink(${name})`, stack: 'push', wait: name === 'T.nav.map' ? `css('.maplibregl-map[data-idle] canvas.maplibregl-canvas')` : `tabLink(${name}).getAttribute('aria-current') === 'page'` });
 const board = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.closest('header')) && document.querySelector('main ul li .figure')`;
 const firstDeparture = `[...document.querySelectorAll('main ul li .figure')].find(shown)`;
 const lineHeading = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.classList.contains('text-emph'))`;
@@ -523,7 +523,7 @@ export const JOURNEYS: Journey[] = [
     start: { stored: REGULAR, geo: 'granted', at: [HOME.lat + 1000 / 111_320, HOME.lng], fixMs: 1500, motion: true },
     steps: [
       { tap: `[...document.querySelectorAll('main ul li button')].find(shown)`, wait: board },
-      { tap: `labelled(T.arrivals.map)`, stack: 'push', wait: `css('.maplibregl-map canvas.maplibregl-canvas') && new Promise((r) => setTimeout(() => r(true), 3000))` },
+      { tap: `labelled(T.arrivals.map)`, stack: 'push', wait: `css('.maplibregl-map[data-idle] canvas.maplibregl-canvas') && new Promise((r) => setTimeout(() => r(true), 600))` },
       { tapAt: [0, -18], wait: `css('[role=dialog][aria-modal=true]')` },
     ],
     answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === T.at.home)`,

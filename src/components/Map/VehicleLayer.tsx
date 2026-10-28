@@ -137,7 +137,10 @@ export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine
         el.setAttribute('tabindex', '-1');
         // The tap is the bus's: the map neither pans to it nor lists the routes under it.
         el.addEventListener('click', claim);
-        const popup = new Popup({ offset: DRAW.icon.bus / 2, maxWidth: 'none' }).setDOMContent(popupNode(bus, onOpenLineRef.current, lang));
+        // The focus stays where it was: the renderer would move it to the popup's first button
+        // as it opens, so a tap on a bus left a focus ring on its line, and Tab then reached a
+        // button that had been showing it all along (2.4.7). Leaflet's popups never took it.
+        const popup = new Popup({ offset: DRAW.icon.bus / 2, maxWidth: 'none', focusAfterOpen: false }).setDOMContent(popupNode(bus, onOpenLineRef.current, lang));
         popup.on('open', () => {
           onOpenBusRef.current?.();
           keepClear(map, popup);

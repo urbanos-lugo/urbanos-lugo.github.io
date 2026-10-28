@@ -55,7 +55,7 @@
       "id": "mapa",
       "type": "frontend",
       "label": "Mapa MapLibre GL",
-      "sublabel": "capa vectorial de MapLibre GL",
+      "sublabel": "WebGL; xira, co compás",
       "pos": [
         380,
         60
@@ -86,20 +86,6 @@
       "sublabel": "arrivals, planner + schedule",
       "pos": [
         380,
-        380
-      ],
-      "size": [
-        180,
-        64
-      ]
-    },
-    {
-      "id": "foot",
-      "type": "external",
-      "label": "Enrutador a pé de OSM",
-      "sublabel": "routing.openstreetmap.de",
-      "pos": [
-        740,
         380
       ],
       "size": [
@@ -217,13 +203,6 @@
       "label": "teselas"
     },
     {
-      "id": "motor-foot",
-      "from": "motor",
-      "to": "foot",
-      "label": "tramos a pé, baixo demanda",
-      "variant": "dashed"
-    },
-    {
       "id": "spa-express",
       "from": "spa",
       "to": "express",
@@ -266,8 +245,8 @@
       "dot": "amber",
       "title": "Fóra",
       "items": [
-        "Teselas de OpenFreeMap, con OpenStreetMap de reserva",
-        "Enrutador a pé de OSM só se pides ver o paseo",
+        "Teselas de OpenFreeMap; sen WebGL2, un aviso no sitio do mapa",
+        "O camiño a pé calcúlase no dispositivo, sen enrutador de fóra",
         "Ningunha fonte do dataset se chama en execución"
       ]
     }

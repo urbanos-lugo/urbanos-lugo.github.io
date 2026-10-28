@@ -725,7 +725,7 @@ Calde e Santa Comba), que se publican por separado porque son servizos distintos
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/arquitectura-dark.png">
-  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: no navegador, src/data/*.json alimenta o motor de horarios, e este a SPA de React e o mapa de MapLibre, co Service Worker servindo a app sen conexión; a SPA fala cun servidor Express opcional que consulta buslugo.com e o feed de tráfico do Concello; fóra quedan as teselas de OpenFreeMap e o enrutador a pé de OpenStreetMap.">
+  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: no navegador, src/data/*.json alimenta o motor de horarios, e este a SPA de React e o mapa de MapLibre, co Service Worker servindo a app sen conexión; a SPA fala cun servidor Express opcional que consulta buslugo.com e o feed de tráfico do Concello; fóra quedan as teselas de OpenFreeMap.">
 </picture>
 
 O reparto que importa é ese: **todo o cálculo de horas ocorre no navegador**, sobre os
@@ -2049,8 +2049,12 @@ co reloxo da páxina nun mércores ás 13:30 (medido: primeiro pintado 2,7 s e p
 de datos de fusos nun teléfono que xa está no de Lugo); e —o que é cada visita dunha app instalada— en quente, co *service
 worker* xa instalado (medido: 1.360 ms ata o primeiro pintado a 6× na rolda completa, 824 só, 8 de 8 respostas do
 *worker*, 0 KB pola rede fóra dos avisos); abrir o mapa, catro pasos de zoom e catro
-arrastres (medido: 0 ms de fío bloqueado arrastrando; o traballo é do renderizador, dentro
-de cada cadro), teclear no
+arrastres (medido o 28 de outubro con MapLibre só, alternando coa build de Leaflet na mesma
+máquina, dúas voltas cada unha: o primeiro mapa debuxado en 1,74–1,81 s fronte a
+1,72–1,78; o fío ocupado ao abrilo 1,22–1,40 s fronte a 1,42–1,62, e a súa tarefa máis
+longa 348–388 ms fronte a 445–458; arrastrando, 0–18 ms fronte a 0–43, porque o traballo é
+do renderizador, dentro de cada cadro; os catro pasos de zoom varían demasiado nas dúas,
+62–601 ms fronte a 229–719, para dicir máis ca que caben no orzamento de 900), teclear no
 buscador e doce voltas entre pestanas; planificar, dende o toque en «Calcular ruta» ata
 «Calculando» e ata a resposta pintada, co reloxo da páxina fixado nun mércores ás 13:30
 (medido co par máis caro: o toque responde en 56–104 ms, por debaixo dos 0,2 s que son un

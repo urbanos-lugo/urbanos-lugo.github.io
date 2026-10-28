@@ -588,7 +588,8 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - **Unha cousa aberta de cada vez.** Un marcador xa non se queda co toque: o mapa tamén o
   oe. Un bus parado nunha parada abría o seu globo e a folla da parada; agora un toque que
   colleu un bus ou un nome non o responde ninguén máis, e abrir o globo dun bus pecha a
-  folla que houbese.
+  folla que houbese. O globo ábrese sen levar o foco, coma os de Leaflet: o renderizador
+  levaríao ao seu primeiro botón.
 - **As capas fanse unha vez por estilo; despois só cambian os datos.** Refeitas a cada
   render, o reloxo dos buses (cada tres segundos) facía pestanexar liñas e paradas.
 - **As cores do mapa pásanse a hex ao lelas.** O estilo de MapLibre non le `oklch()`, que é

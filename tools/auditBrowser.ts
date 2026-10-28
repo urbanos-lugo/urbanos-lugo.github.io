@@ -1094,13 +1094,20 @@ export const STATES: State[] = [
   },
   { screen: 'mapa', name: 'filtros', phoneOnly: true, dialog: true, setup: `if (!press(seeText(T.controls))) return 'no controls button'; await pause(600); return true;` },
   // A stop opened on the map: the board sends the map to its stop, which is then at the
-  // centre, and a click there on the map's canvas is what a tap on the stop is.
+  // centre, and a click there on the map's canvas is what a tap on the stop is. Once the map
+  // has drawn it (data-idle, held for a moment): after a fixed 2.5 s the throttled phone's
+  // tap came, in three passes of four, before the stops had been processed and drawn.
   {
     screen: 'paradas',
     name: 'mapa ficha',
     stored: REGULAR,
     dialog: true,
-    setup: `${savedBoard} if (!press(byLabel(T.onMap))) return 'no map button'; await pause(2500); return true;`,
+    setup: `${savedBoard} if (!press(byLabel(T.onMap))) return 'no map button';
+      const drawn = () => [...document.querySelectorAll('.maplibregl-map')].some((m) => m.getBoundingClientRect().width > 300 && m.dataset.idle);
+      if (!(await until(drawn, 15000))) return 'the map never finished drawing';
+      await pause(600);
+      if (!(await until(drawn, 5000))) return 'the map never finished drawing';
+      return true;`,
     tap: 'mapCentre',
   },
   { screen: 'ruta', name: 'baleiro' },

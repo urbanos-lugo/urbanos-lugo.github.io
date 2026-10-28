@@ -94,6 +94,11 @@ export function useMapLibre(containerRef: RefObject<HTMLDivElement | null>, { ce
     instance.on('moveend', view);
     // And once on load, so a map nobody has moved yet has a view to compare against.
     instance.once('load', view);
+    // Whether the map has drawn all it was asked to, for the browser audit's taps: a tap on a
+    // stop has to wait for the stop to be there, as an eye would. A fixed pause did, until the
+    // stops took a worker's processing to appear, and on a throttled phone the tap came first.
+    instance.on('idle', () => (el.dataset.idle = 'true'));
+    for (const busy of ['dataloading', 'movestart'] as const) instance.on(busy, () => delete el.dataset.idle);
 
     // WCAG 2.5.7: the map moved only by dragging it, and a drag is the one gesture some hands
     // cannot make. A click or tap on the map brings that spot to the middle, unless a stop, a

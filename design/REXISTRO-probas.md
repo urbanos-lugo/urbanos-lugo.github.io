@@ -3867,3 +3867,123 @@ o do centro abre a folla da parada): 0 achados.
   e o que abre a cámara co QR dun poste.
 - O taboleiro «a outra hora» segue lendo o tipo de día de hoxe; na ficha de liña xa se
   escolle.
+
+## Rolda 44: os mapas con MapLibre só, e o da rede xira — 27 e 28 de outubro de 2026
+
+Pendente 8 das NOTAS. Os tres mapas pasan de Leaflet cunha capa de MapLibre a MapLibre GL
+directamente; Leaflet, a ponte `@maplibre/maplibre-gl-leaflet` e o seu parche saen. O mapa
+da rede xira con dous dedos, co botón dereito ou con Maiúsculas e as frechas, nunca se
+inclina, e leva compás só mentres está xirado; un segundo toque en «A miña localización»
+xira o mapa co teléfono onde hai compás, e o terceiro deixa de seguir. Os mapas pequenos
+quedan co norte arriba. Sen WebGL2, un aviso no sitio do mapa en vez do ráster de OSM, que
+sae da política, do *service worker* e de PRIVACY.md. As decisións, en DECIDIDO.
+
+Feito nunha copia de traballo propia (`../urbanos-maplibre`, rama `maplibre`), mentres
+outra sesión traballaba en develop; levada a 94a1f8f e despois a 0225a30 sen conflitos.
+
+### Atopado e arranxado durante a rolda
+
+Mirado no panel do navegador a 375 px, en escuro e en claro, nos tres mapas:
+
+- **As cores en `oklch()` non as le MapLibre.** O anel da parada escollida no mapa pequeno
+  non se debuxaba, e a consola dicía «color expected». Os neutros da app están escritos así;
+  `palette.ts` pásaos agora a hex pintando un píxel e lendo o que queda, unha vez por paleta.
+- **Cambiar o tema co mapa aberto tiraba a pantalla** («Style is not done loading»): o
+  estilo novo empezaba a cargar e as capas debuxábanse no mesmo *commit*, sobre un estilo
+  sen cargar. `styled` vale agora 0 ata que carga o da paleta nova. Probado alternando o
+  tema dúas veces co mapa do taboleiro aberto: sen erros, e as capas volven.
+- **O encadre de MapLibre é máis axustado**: o zoom non se queda en números enteiros, e o
+  disco 1 do mapa do taboleiro quedou debaixo do zoom, e os pines da ruta sobre a liña da
+  atribución. O encadre deixa agora o ancho da barra de zoom á dereita e a liña da
+  atribución abaixo.
+- **Dúas rexións aniñadas co mesmo nome**: MapLibre xa fai rexión do seu lenzo co nome do
+  mapa, e o contedor tamén a levaba. Queda a do lenzo, que é a parada de tabulación.
+- **O lenzo dos nomes ía por riba dos marcadores**, porque se engadía despois deles; vai
+  agora xusto despois do lenzo do mapa.
+- **O círculo da precisión podía non debuxarse**: agardaba `isStyleLoaded()`, que é falso
+  mentres cargan teselas. Quen o fai xa espera ao estilo; a comprobación saíu.
+- **Un bus parado nunha parada abría dúas cousas**: o seu globo e a folla da parada, e o
+  mapa movíase. Un marcador de Leaflet quedábase co clic; un de MapLibre deixa que o oia o mapa. Un
+  toque que colleu un bus ou un nome xa non o responde ninguén máis, e o globo dun bus pecha
+  a folla que houbese. Probado tocando o bus da 1.4 coa folla «Liñas por aquí» aberta: só
+  queda o globo.
+- **O mapa pestanexaba cada tres segundos cos buses visibles.** O reloxo volvía pintar o mapa, a lista de liñas «preto de min» era un array novo en cada
+  pintado, e liñas e paradas tirábanse e volvíanse facer. Agora a lista garda a identidade
+  mentres non cambia, e as capas fanse unha vez por estilo e só cambian os datos. Medido
+  contando chamadas durante 10 s con 15 e con 5 buses en movemento, en «Todas» e en «preto
+  de min»: 0 capas quitadas ou postas e 0 datos de paradas ou liñas.
+- **`GeoJSON` deixou de existir para TypeScript** ao quitar Leaflet: chegaba polos tipos
+  de Leaflet, e TypeScript xa non mete `@types` por si só. `@types/geojson` vai agora como
+  dependencia propia, nomeada en `vite-env.d.ts`.
+- **A política non vía os números das capas novas**: a regra 5 buscaba os nomes das
+  opcións de Leaflet (`weight`, `radius`…), e os de MapLibre van entre comiñas
+  (`'line-width'`). Recoñece agora as dúas formas. E tomaba por clases os nomes do estilo
+  (`'fill-color'`, `'bottom-right'`).
+- **Zooms**: o mundo de MapLibre mide 512 px a zoom 0 e o de Leaflet 256, así que cada
+  zoom da app baixa un para as mesmas rúas (os nomes, do 16 ao 15; os carrís, os encadres).
+- **O `audit:browser` enteiro deu 8 achados, unha soa causa**: os números do mapa pequeno
+  estaban no documento como 5 4 3 2 1, porque os engadía ao revés para que o máis próximo
+  quedase enriba, e a lista vai de 1 a 5. Agora van en orde e o de enriba faino o
+  `z-index`. A auditoría das paradas despois (71 estados): 0 achados.
+- **O globo dun bus levaba o foco ao abrirse.** A segunda auditoría enteira deu dous achados
+  nun mesmo pase (escritorio, galego, claro): un estado sen alcanzar («no buses layer
+  button»), que alcanzou ao repetilo, e o botón da liña dentro do globo «sen cambio visible
+  ao recibir o foco». Este volveu nun pase do teléfono ao repetir os estados dos buses: dous
+  de tres execucións. A causa: un `Popup` de MapLibre move o foco ao seu primeiro botón
+  cando se abre (`focusAfterOpen`), así que tras o toque nun bus o botón xa levaba o anel, e
+  ao chegar a el co tabulador nada cambiaba. Os de Leaflet non o facían, e un toque non debe
+  levar o foco a ningures. Agora `focusAfterOpen: false` no globo do bus e nas etiquetas
+  ao pasar o rato, que nunca deben coller o foco. Os estados dos buses despois: 0 achados.
+- **A terceira auditoría enteira deu 4 achados nun estado**, «paradas/mapa ficha» en claro:
+  dende o taboleiro, «Ver no mapa» e un clic no centro, onde está a parada, non abría a súa
+  folla. Coa máquina quieta, ese estado só e tres veces: dúas limpas e unha con tres pases
+  de catro fallando. Medido no panel sen frear a CPU, a parada responde a un toque no centro
+  aos 0,5 s de «Ver no mapa» e o mapa está cargado aos 0,75: MapLibre ten que cargar o
+  estilo, procesar as paradas no seu *worker* e debuxalas, onde Leaflet as pintaba no acto.
+  Co teléfono frenado, a pausa fixa de 2,5 s da auditoría acababa ás veces antes, e o clic
+  caía nun mapa sen paradas. Non é cousa da app: ninguén toca unha parada que aínda non ve.
+  O mapa escribe agora `data-idle` cando debuxou todo o que se lle pediu (o `idle` de
+  MapLibre; quítao ao cargar datos ou ao moverse), e a auditoría e os percorridos esperan
+  por el en vez dunha pausa. Despois, coa máquina quieta, ese estado tres veces e a
+  auditoría enteira (242 medidas, 162 estados, os percorridos incluídos, 613 s): 0 achados.
+  A barra da casa, a de sempre: 25 obxectivos baixo 44 px (o × e a liña do globo dun bus,
+  a caixa da pantalla acesa, «All»), 3 estados baixo 48 px entre as barras.
+- **Dúas sesións na mesma máquina.** Unha auditoría enteira da outra sesión, correndo
+  á vez ca as probas desta, tardou 842 s en vez de 640 e empezou a fallar comprobacións
+  de tempo. Desde entón cada carreira pesada (auditoría, percorridos, fotos, medidas)
+  anúnciase e agarda pola outra, e un achado visto mentres a outra corría non conta ata
+  repetilo coa máquina quieta.
+
+### Probas que cambian con el
+
+- A comprobación da ponte (`the renderer's bridge does nothing in a frame…`) marcha coa
+  ponte, que xa non está. Entra unha do círculo da precisión, que pasou a `geo.ts`: a 5, 25
+  e 500 m, cada punto do anel está á distancia da precisión, medida con `metresBetween`.
+  `connect-src` sen orixe de API só admite OpenFreeMap. 159 comprobacións.
+- As sondas do navegador len o DOM novo (`.maplibregl-*`, `data-view` para ver se o mapa
+  se moveu, o lenzo como o que leva o foco). O buscador de paradas de `journeys.ts` lía o
+  lenzo 2D de Leaflet; as paradas van agora dentro do lenzo WebGL, e le unha captura do
+  mapa (`Page.captureScreenshot`), como as atopa o ollo. O punto do lector é un nodo e non
+  se busca. `decodePng` pasou a `tools/png.ts`: importar `visualDiff.ts` executaba a súa CLI.
+  Feito por `implementador` cunha especificación pechada (≈4 min, 50 mil *tokens*) e
+  revisado no *diff*.
+
+### Medidas
+
+- Descarga, na build: o anaco do renderizador baixa de 1.224 a 1.100 KB (266 → 236 KB
+  brotli) e os seus estilos de 84 a 70 KB. A táboa do README, medida enteira de novo.
+- `measure:browser map`, alternando a build de Leaflet (0225a30) e a de MapLibre na mesma
+  máquina, dúas voltas cada unha, a 6× de CPU: primeiro mapa 1,72–1,78 s fronte a
+  1,74–1,81; fío ocupado ao abrilo 1,42–1,62 s fronte a 1,22–1,40, a tarefa máis longa
+  445–458 ms fronte a 348–388; arrastrando 0–43 ms fronte a 0–18; os catro pasos de zoom,
+  229–719 ms fronte a 62–601, demasiado espallados nas dúas para dicir máis ca que caben
+  nos 900 do orzamento. Ningunha das dúas deixa memoria nin escoitas ao entrar e saír do
+  mapa doce veces.
+- As cinco portas: lint, 159 comprobacións, 22 políticas, `check:deep` (1.050 pares,
+  38.343 viaxes) e a build.
+
+### Queda
+
+- **Nun iPhone** (NOTAS, lista do iPhone, punto 4): o xiro con dous dedos, o compás, o
+  mapa xirando co teléfono e a pregunta de Safari polo compás.
+- Subir a rama a develop e a main é cousa do dono.
