@@ -3684,6 +3684,15 @@ rama son en cada unha das sete pasadas.
     e dúas horas despois unha liña frecuente volvía estar a «~3». Agora le a fila enteira,
     coa súa hora de reloxo. Segue mordendo: sen a relectura ao espertar, «a hora do bloqueo
     durante 13,2 s».
+  - O 28 de outubro, cunha auditoría enteira doutra sesión correndo á vez (~40 procesos de
+    Chrome e Node; 842 s en vez de ~640), o percorrido do teclado deu «Tab chegou a 54 de 55»
+    en catro estados de escritorio, sempre o botón «Ver percorrido da liña 1.2», nunha
+    execución de cada dúas. A lista grávase ao comezo, e a fila do taboleiro que se substitúe
+    no refresco de 15 s levaba consigo ese botón: o novo é outro elemento, e o vello quedaba
+    contado como saltado. Agora só conta o que segue na páxina. Segue mordendo: cun control
+    gravado volto `inert`, «Tab chegou a 58 de 59». Cos seis estados tres veces e a
+    auditoría enteira, coa máquina quieta, 0. As probas pesadas entre sesións anúncianse e
+    non se pisan desde entón.
   - 3 volven en cada execución: no teléfono grande, despois de pedir unha viaxe (cun
     destino rápido, cunha viaxe recente ou coas teclas do teclado), atrás desde o
     formulario volve ao formulario e non ás paradas. Aquí non saen: nin en UTC, nin coa CPU

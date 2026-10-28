@@ -834,11 +834,15 @@ async function traverse(page: Session, dialog: boolean): Promise<{ findings: Fin
   }
   if (count && reached.size < count) {
     // The indices go in as an argument, not spliced into the code: CodeQL flagged the splice.
-    const missed = await page.call<string[]>(
-      `(seen) => window.__auditList.filter((el, i) => !seen.includes(i)).slice(0, 6).map((el) => el.tagName.toLowerCase() + ' "' + ((el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 30)) + '"')`,
+    // Only what is still on the page: a stop's row replaced at the board's 15 s refresh, its bus
+    // gone, took its line's button with it, and the new one in its place is another element. The
+    // old one was gone, not skipped, and the walk reported it missed in one run of two under load.
+    const { missed, left, gone } = await page.call<{ missed: string[]; left: number; gone: number }>(
+      `(seen) => { const out = window.__auditList.filter((el, i) => !seen.includes(i)); const left = out.filter((el) => el.isConnected);
+        return { missed: left.slice(0, 6).map((el) => el.tagName.toLowerCase() + ' "' + ((el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 30)) + '"'), left: left.length, gone: out.length - left.length }; }`,
       [...reached],
     );
-    findings.push({ kind: 'keyboard', where: missed.join(', '), detail: `2.1.1: Tab reached ${reached.size} of ${count} focusable controls` });
+    if (left) findings.push({ kind: 'keyboard', where: missed.join(', '), detail: `2.1.1: Tab reached ${reached.size} of ${count - gone} focusable controls` });
   }
   if (dialog && !modal) findings.push({ kind: 'reach', where: 'dialog', detail: 'the dialog had closed before the keyboard reached it' });
   if (dialog && modal) {
