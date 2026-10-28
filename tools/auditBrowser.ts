@@ -590,6 +590,11 @@ const LAYOUT = `async function (how) {
     undo = () => { document.adoptedStyleSheets = document.adoptedStyleSheets.filter((s) => s !== sheet); };
   }
   await new Promise((r) => setTimeout(r, 450));
+  // A pane that enters at the new width slides in, and a transform still running widens what main
+  // can scroll: on a page short of frames (CI's runner, or this machine under another run) the
+  // reflow read 2 or 10 px over, on a different state each time. Read once what moves has landed.
+  const moving = () => document.getAnimations().some((a) => a.playState === 'running' && Number.isFinite(a.effect && a.effect.getComputedTiming().endTime));
+  for (const until = performance.now() + 1500; moving() && performance.now() < until; ) await new Promise((r) => setTimeout(r, 50));
   const applied = how !== 'spacing' || getComputedStyle(document.body).letterSpacing !== 'normal';
   const links = [...document.querySelectorAll('nav a[href]')].filter((a) => a.getBoundingClientRect().width > 0);
   const off = links.filter((a) => { const b = a.getBoundingClientRect(); return b.left < -1 || b.right > innerWidth + 1 || b.bottom > innerHeight + 1; }).length;
@@ -614,6 +619,8 @@ const LAYOUT = `async function (how) {
     applied,
     over: root.scrollWidth - root.clientWidth,
     overMain: main ? main.scrollWidth - main.clientWidth : 0,
+    // What reaches furthest past main's right edge, so an overflow names what overflows.
+    overBy: main ? (() => { const edge = main.getBoundingClientRect().right; let worst = null, far = 1; for (const el of main.querySelectorAll('*')) { const r = el.getBoundingClientRect(); if (r.width && r.right - edge > far) { far = r.right - edge; worst = el; } } return worst ? worst.tagName.toLowerCase() + (worst.classList[0] ? '.' + worst.classList[0] : '') + ' "' + (worst.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 30) + '"' : ''; })() : '',
     mainHeight: main ? main.clientHeight : 0,
     nav: links.length,
     off,
@@ -627,6 +634,7 @@ interface Layout {
   applied: boolean;
   over: number;
   overMain: number;
+  overBy: string;
   mainHeight: number;
   nav: number;
   off: number;
@@ -638,7 +646,7 @@ function layoutFindings(got: Layout, sc: string, condition: string): Finding[] {
   const out: Finding[] = [];
   if (!got.applied) out.push({ kind: 'reach', where: condition, detail: 'the override never reached the page, so this proved nothing' });
   if (got.over > 1) out.push({ kind: 'overflow', where: 'body', detail: `${sc}: ${condition}, the page is ${got.over} px wider than the viewport` });
-  if (got.overMain > 1) out.push({ kind: 'overflow', where: 'main', detail: `${sc}: ${condition}, the screen is ${got.overMain} px wider than its scroller` });
+  if (got.overMain > 1) out.push({ kind: 'overflow', where: got.overBy || 'main', detail: `${sc}: ${condition}, the screen is ${got.overMain} px wider than its scroller` });
   if (got.off > 0) out.push({ kind: 'overflow', where: 'nav', detail: `${sc}: ${condition}, ${got.off} of ${got.nav} navigation links sit off screen` });
   for (const c of got.cut) out.push({ kind: 'cut', where: c.words, detail: `${sc}: ${condition}, ${c.how} (${c.px} px)` });
   return out;

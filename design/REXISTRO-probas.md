@@ -3693,6 +3693,12 @@ rama son en cada unha das sete pasadas.
     gravado volto `inert`, «Tab chegou a 58 de 59». Cos seis estados tres veces e a
     auditoría enteira, coa máquina quieta, 0. As probas pesadas entre sesións anúncianse e
     non se pisan desde entón.
+  - O CI de 9f7904a caeu nun só achado: «a 320 px, a pantalla é 2 px máis ancha ca o seu
+    rolo» (escritorio, parada do QR); aquí, con carga, fora 10 px noutro estado. Ao pasar a
+    320 px entra o panel da parada esvarando, e unha transformación aínda en curso alarga o
+    que `main` pode rolar. Co reloxo das animacións parado no cambio e solto aos 1,2 s, sen
+    esperar dá «24 px», e o culpable, que o achado nomea agora, é ese panel; esperando a que
+    pouse o que se move (ata 1,5 s), 0.
   - 3 volven en cada execución: no teléfono grande, despois de pedir unha viaxe (cun
     destino rápido, cunha viaxe recente ou coas teclas do teclado), atrás desde o
     formulario volve ao formulario e non ás paradas. Aquí non saen: nin en UTC, nin coa CPU
