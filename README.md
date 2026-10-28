@@ -2123,7 +2123,9 @@ enfocar sen quedar atrapado (2.1.1, 2.1.2); nos diálogos, Tab non sae deles, o 
 move só mentres ninguén preme nada, e Escape pecha e devolve o foco ao que os abriu. Un estado
 de diálogo sen o diálogo aberto é un achado: a folla de filtros do mapa pasou así sen
 medirse. E o que un estado non amosa: os rótulos que o mapa amosa ao pasar o
-rato teñen que quedar baixo o punteiro e irse con Escape (1.4.13), o mapa ten que moverse
+rato teñen que quedar baixo o punteiro e irse con Escape (1.4.13), e o dunha capa (un
+percorrido, unha parada) non abre co punteiro enriba dun bus ou dunha ventá: abría sobre o bus e
+levaba o seu clic, e o seu globo non se abría. O mapa ten que moverse
 sen arrastrar (2.5.7), un botón premido ten que verse premido coas cores forzadas do sistema,
 con `prefers-reduced-motion` nada segue animándose, e a app ten que debuxarse co axuste «non
 permitir que os sitios garden datos», que fai que ler `localStorage` lance un erro (a páxina

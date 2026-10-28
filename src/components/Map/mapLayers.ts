@@ -1,4 +1,4 @@
-import { Popup, type GeoJSONSource, type LayerSpecification, type LngLatLike, type Map as MapLibre, type MapMouseEvent } from 'maplibre-gl';
+import { Popup, type GeoJSONSource, type LayerSpecification, type LngLatLike, type Map as MapLibre, type MapLayerMouseEvent, type MapMouseEvent } from 'maplibre-gl';
 import { DRAW } from './palette';
 
 /**
@@ -87,6 +87,19 @@ export function hoverLabels(map: MapLibre) {
     leave() {
       window.clearTimeout(leaving);
       leaving = window.setTimeout(hide, HOVER_GRACE_MS);
+    },
+    /**
+     * For a label a layer raises under the pointer (a route, a stop's dot): only while the
+     * pointer is on the canvas itself. On a marker or a popup over the layer, that is what the
+     * pointer is on: a route's label opened at the pointer over a bus, and the bus's click
+     * landed on the label. On the label itself nothing changes, or it would leave as the
+     * pointer reached it (1.4.13).
+     */
+    fromLayer(e: MapLayerMouseEvent, open: () => void) {
+      const target = e.originalEvent.target;
+      if (target === map.getCanvas()) return open();
+      if (target instanceof Node && popup.getElement()?.contains(target)) return;
+      this.leave();
     },
     remove() {
       hide();

@@ -236,10 +236,11 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
     for (const marker of markers) marker.addTo(map);
 
     // The routed walks, the legs and the calls name themselves under a mouse, as the pins do.
-    const label = (e: MapLayerMouseEvent) => {
-      const text = e.features?.[0]?.properties?.label;
-      if (typeof text === 'string') hover.show(e.lngLat, text);
-    };
+    const label = (e: MapLayerMouseEvent) =>
+      hover.fromLayer(e, () => {
+        const text = e.features?.[0]?.properties?.label;
+        if (typeof text === 'string') hover.show(e.lngLat, text, -DRAW.tooltip.lift);
+      });
     const leave = () => hover.leave();
     for (const id of ['app-walks', 'app-legs', 'app-calls']) {
       map.on('mousemove', id, label);

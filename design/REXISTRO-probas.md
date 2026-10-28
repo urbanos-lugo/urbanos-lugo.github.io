@@ -4046,5 +4046,15 @@ máquina. Os arranxos ata aquí foran comprobación a comprobación: 0fc3d96, 96
 
 ### Queda
 
-- A primeira execución do CI partido: medir o tempo de reloxo e reequilibrar se unha parte
-  queda longa.
+- ~~A primeira execución do CI partido~~: 187 s de reloxo, cando eran de 11 a 14 minutos. As
+  portas tardan 81 s e as partes entre 143 e 177 s, sen nada que reequilibrar. Caeu nun só
+  achado, de verdade, e a súa evidencia dixo cal era á primeira. No escritorio, o rato sobre un
+  bus da liña 12 abría a etiqueta do percorrido que pasa por debaixo, no punteiro e sen
+  separación; a etiqueta quedaba enriba do bus e levaba o seu clic, e o globo do bus non se
+  abría. Pasaría igual a quen use un rato. Saía ás veces porque os buses se moven co reloxo.
+  Arranxado: a etiqueta dunha capa só abre co punteiro no lenzo (`hoverLabels().fromLayer`).
+  Enriba da propia etiqueta non cambia nada (1.4.13). Enriba dun marcador ou dunha ventá,
+  vaise. Os percorridos levan a mesma separación ca as paradas. `mapPointer` pon o rato en ata
+  cinco buses e non admite ningunha etiqueta aberta: co código de antes dá «Liña 2 Sentido
+  Xosé Castiñeira (Froiz)» enriba do bus, e co arranxo 0. As notas de quen escribiu ese
+  código (a sesión de MapLibre) guiaron o deseño.

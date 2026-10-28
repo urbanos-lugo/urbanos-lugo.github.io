@@ -135,10 +135,12 @@ export function RouteLayer({ map, styled, lines, visibleLineIds, emphasisLineIds
 
     // A mouse is told the line and the direction under it.
     const hover = hoverLabels(map);
-    const label = (e: MapLayerMouseEvent) => {
-      const text = e.features?.[0]?.properties.label;
-      if (typeof text === 'string') hover.show(e.lngLat, text);
-    };
+    const label = (e: MapLayerMouseEvent) =>
+      hover.fromLayer(e, () => {
+        const text = e.features?.[0]?.properties.label;
+        // Clear of the pointer: right on it, the label took the click meant for what lay there.
+        if (typeof text === 'string') hover.show(e.lngLat, text, -DRAW.tooltip.lift);
+      });
     const leave = () => hover.leave();
     for (const id of TRACES) {
       map.on('mousemove', id, label);

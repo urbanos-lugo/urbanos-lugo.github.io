@@ -1527,6 +1527,32 @@ async function mapPointer(browser: Browser): Promise<Finding[]> {
     }
   }
 
+  // A bus under a mouse: what a layer under it names must not open over it. Every bus sits on its
+  // route, the route's label opened at the pointer, over the bus, and the bus's click landed on the
+  // label: its popup never opened (CI, 28 Oct). A bus has no hover label of its own, so none at all.
+  await press(page, 'Escape', 27);
+  const buses = await page.call<number>(`async function (T) {${REACH}
+    const b = () => [...document.querySelectorAll('button[aria-pressed]')].find((x) => x.textContent.trim() === T.buses);
+    if (!(await until(b))) return 0;
+    if (b().getAttribute('aria-pressed') !== 'true') { b().click(); await pause(1500); }
+    return document.querySelectorAll('.custom-bus-marker').length; }`, T);
+  if (!buses) at('reach', 'no bus on the map, so a bus under a mouse was not tested');
+  for (let i = 0, tried = 0; i < buses && tried < 5; i++) {
+    // Where the bus is now, read just before the pointer goes there: the buses move with the clock.
+    const at2 = await page.call<{ x: number; y: number } | null>(`function (i) { const m = [...document.querySelectorAll('.maplibregl-map')].find((e) => e.getBoundingClientRect().width > 300).getBoundingClientRect(); const r = document.querySelectorAll('.custom-bus-marker')[i].getBoundingClientRect();
+      return r.left > m.left + 40 && r.right < m.right - 40 && r.top > m.top + 60 && r.bottom < m.bottom - 60 ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; }`, i);
+    if (!at2) continue;
+    tried++;
+    await mouse(page, 'mouseMoved', at2.x - 2, at2.y - 2);
+    await mouse(page, 'mouseMoved', at2.x, at2.y);
+    await sleep(400);
+    const over = await page.evaluate<string | null>(`(() => { const t = [...document.querySelectorAll('.map-hover-label')].find((e) => e.getClientRects().length); return t ? t.textContent.trim().slice(0, 50) : null; })()`);
+    if (over) {
+      at('hover', `a mouse on a bus opens the label of what lies under it, "${over}", over the bus, and the bus's click lands on the label`);
+      break;
+    }
+  }
+
   // The pan. Stops and routes off (the controls are a column beside the map on a desktop),
   // then one click on an empty part of the map, and the map has to have moved.
   await page.call(`async function (T) {${REACH} for (const t of [T.stopsLayer, T.routesLayer]) { const b = [...document.querySelectorAll('button[aria-pressed="true"]')].find((x) => x.textContent.trim() === t); if (b) b.click(); await pause(300); } }`, T);

@@ -99,17 +99,18 @@ export function StopLayer({ map, styled, stops, visibleLineIds, selectedStop, sh
 
     // A mouse is told the stop's code and name.
     const hover = hoverLabels(map);
-    const label = (e: MapLayerMouseEvent) => {
-      const stop = drawnRef.current.get(String(e.features?.[0]?.properties.id));
-      if (!stop) return;
-      const code = poleCode(stop);
-      map.getCanvas().style.cursor = 'pointer';
-      hover.show(
-        [stop.lng, stop.lat],
-        `<div class="font-sans text-label font-semibold text-ink">${code ? `<span class="mr-1 text-accent">${escapeHtml(code)}</span>` : ''}${escapeHtml(stop.name)}</div>`,
-        rungRef.current.radius - DRAW.tooltip.lift,
-      );
-    };
+    const label = (e: MapLayerMouseEvent) =>
+      hover.fromLayer(e, () => {
+        const stop = drawnRef.current.get(String(e.features?.[0]?.properties.id));
+        if (!stop) return;
+        const code = poleCode(stop);
+        map.getCanvas().style.cursor = 'pointer';
+        hover.show(
+          [stop.lng, stop.lat],
+          `<div class="font-sans text-label font-semibold text-ink">${code ? `<span class="mr-1 text-accent">${escapeHtml(code)}</span>` : ''}${escapeHtml(stop.name)}</div>`,
+          rungRef.current.radius - DRAW.tooltip.lift,
+        );
+      });
     const leave = () => {
       map.getCanvas().style.cursor = '';
       hover.leave();
