@@ -40,7 +40,7 @@
  * Exits 1 on any WCAG finding, any state not reached and any check that proved nothing;
  * the 44 px and 12 px bars are this project's own and are printed, not gated.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { BASE, findChromium, launch, PHONE, withBrowser, type Browser, type Session } from './cdp';
 import { sleep } from './lib';
@@ -93,6 +93,29 @@ const KINDS = {
 export type Kind = keyof typeof KINDS;
 const HOUSE: Kind[] = ['size', 'target44', 'room', 'thumb'];
 
+/**
+ * AUDIT_EVIDENCE=dir: the screen, and what was found on it, at the moment a finding that fails
+ * the run is made. CI keeps the folder when the audit fails: a finding only its runner gave took
+ * two to four pushes to explain from the log alone (round 42).
+ */
+export async function keepEvidence(page: Session, name: string, found: Finding[]): Promise<void> {
+  const dir = process.env.AUDIT_EVIDENCE;
+  const gated = found.filter((f) => !HOUSE.includes(f.kind));
+  if (!dir || !gated.length) return;
+  mkdirSync(dir, { recursive: true });
+  const slug = name.normalize('NFD').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 120);
+  // The findings first, whatever happens to the picture: a screen is drawn only on a frame, and a
+  // page that has none to give, or a browser closing, kept the capture waiting for good.
+  writeFileSync(`${dir}/${slug}.json`, JSON.stringify(gated, null, 1));
+  const shot = await Promise.race([page.send<{ data: string }>('Page.captureScreenshot', { format: 'jpeg', quality: 70 }), sleep(5000).then(() => null)]);
+  if (shot) writeFileSync(`${dir}/${slug}.jpg`, Buffer.from(shot.data, 'base64'));
+}
+/** Captures still on their way, for whoever closes the browser to wait for. */
+export const pendingEvidence: Promise<unknown>[] = [];
+
+/** What settle() ran to its end after waiting, summed over the run: how short of frames the pages were. */
+export const unlanded = { animations: 0 };
+
 export interface Finding {
   kind: Kind;
   where: string;
@@ -103,6 +126,8 @@ export interface Finding {
 /* The page, prepared before any of its own script runs                                  */
 /* ------------------------------------------------------------------------------------- */
 
+// The runner runs Node on UTC, so there these are 09:12 and 03:00 UTC; AUDIT_RUNNER reads them so.
+if (process.env.AUDIT_RUNNER) process.env.TZ = 'UTC';
 const DAY = new Date(2026, 8, 29, 9, 12).getTime(); // a Tuesday, mid-morning, every line running
 const NIGHT = new Date(2026, 8, 29, 3, 0).getTime(); // the same day before the first bus
 
@@ -568,6 +593,38 @@ const PROBE = `async function (expectLang) {
   return { findings, measured, named, tightest, title: document.title, nav };
 }`;
 
+export const REACH = `
+  // Shown, not only laid out: the map's sheet is visibility:hidden while closed and keeps its
+  // boxes, and its own close button, "Pechar filtros e capas", came before the button that
+  // opens it. Pressed instead, it closed a closed sheet, and the sheet was never audited.
+  const all = () => [...document.querySelectorAll('button, a, [role=button], summary')].filter((e) => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden');
+  const seeText = (t) => all().find((e) => ((e.textContent || '').trim() + ' ' + (e.getAttribute('aria-label') || '')).toLowerCase().includes(t.toLowerCase()));
+  const byLabel = (t) => all().find((e) => (e.getAttribute('aria-label') || '').toLowerCase().startsWith(t.toLowerCase()));
+  /** Opened the way a keyboard opens it: focus on the control, then the activation, so a dialog knows where to give the focus back. */
+  const press = (e) => { if (!e) return false; e.focus(); e.click(); return true; };
+  const fill = (el, value) => {
+    const set = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    el.focus();
+    set.call(el, value);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+  const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+  // performance.now, not Date: the page's Date is pinned, and frozen it never reaches the end.
+  const until = async (test, ms = 6000) => { const end = performance.now() + ms; while (performance.now() < end) { if (test()) return true; await pause(100); } return false; };
+  /** Until what read() returns has stopped changing for 600 ms: a suggestion list fills in steps, and under load the first pick was a different place. */
+  // Before anything is measured: every map on screen drawn, what moves landed and, asked for,
+  // nothing at work. Four pages run side by side and one in the background gets few frames, CI's
+  // runner most of all: what has not landed in the time given is run to its end, which is what a
+  // reader sees a frame later, so a reading is the same on any machine. Loops are waits, left alone.
+  const finite = (a) => a.playState === 'running' && Number.isFinite(a.effect && a.effect.getComputedTiming().endTime);
+  const settle = async ({ ms = 1500, busy = false } = {}) => {
+    const working = () => (busy && document.querySelector('[aria-busy="true"]')) || [...document.querySelectorAll('.maplibregl-map:not([data-idle])')].some((m) => m.getClientRects().length);
+    for (const end = performance.now() + ms; (working() || document.getAnimations().some(finite)) && performance.now() < end; ) await pause(50);
+    for (const a of document.getAnimations()) if (finite(a)) { try { a.finish(); window.__auditForced = (window.__auditForced || 0) + 1; } catch (e) {} }
+  };
+  const steady = async (read, ms = 5000) => { let last = read(), same = 0; const end = performance.now() + ms; while (performance.now() < end) { await pause(150); const now = read(); if (now === last) { if (++same >= 4) return true; } else { same = 0; last = now; } } return false; };
+`;
+
 /**
  * Words the reader cannot see, which no sideways scroll reports: inside <main>, which
  * clips, a name can be an ellipsis, spill over its neighbour, sit past the edge or be cut
@@ -575,7 +632,7 @@ const PROBE = `async function (expectLang) {
  * "R…" at 200 %, and a route option printed its warning over its minutes. Judged on blocks
  * that hold words themselves; screen-reader text and the map clip on purpose.
  */
-const LAYOUT = `async function (how) {
+const LAYOUT = `async function (how) {${REACH}
   const root = document.documentElement;
   let undo = () => {};
   if (how === 'text200') {
@@ -589,12 +646,10 @@ const LAYOUT = `async function (how) {
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
     undo = () => { document.adoptedStyleSheets = document.adoptedStyleSheets.filter((s) => s !== sheet); };
   }
-  await new Promise((r) => setTimeout(r, 450));
-  // A pane that enters at the new width slides in, and a transform still running widens what main
-  // can scroll: on a page short of frames (CI's runner, or this machine under another run) the
-  // reflow read 2 or 10 px over, on a different state each time. Read once what moves has landed.
-  const moving = () => document.getAnimations().some((a) => a.playState === 'running' && Number.isFinite(a.effect && a.effect.getComputedTiming().endTime));
-  for (const until = performance.now() + 1500; moving() && performance.now() < until; ) await new Promise((r) => setTimeout(r, 50));
+  await pause(450);
+  // A pane that enters at the new width slides in, and a transform still running widens what
+  // main can scroll: the reflow read 2 or 10 px over on a page short of frames.
+  await settle();
   const applied = how !== 'spacing' || getComputedStyle(document.body).letterSpacing !== 'normal';
   const links = [...document.querySelectorAll('nav a[href]')].filter((a) => a.getBoundingClientRect().width > 0);
   const off = links.filter((a) => { const b = a.getBoundingClientRect(); return b.left < -1 || b.right > innerWidth + 1 || b.bottom > innerHeight + 1; }).length;
@@ -880,27 +935,6 @@ async function traverse(page: Session, dialog: boolean): Promise<{ findings: Fin
 /* ------------------------------------------------------------------------------------- */
 
 /** In the page before every setup: find a control by what it says, type into a field, wait for something. */
-export const REACH = `
-  // Shown, not only laid out: the map's sheet is visibility:hidden while closed and keeps its
-  // boxes, and its own close button, "Pechar filtros e capas", came before the button that
-  // opens it. Pressed instead, it closed a closed sheet, and the sheet was never audited.
-  const all = () => [...document.querySelectorAll('button, a, [role=button], summary')].filter((e) => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden');
-  const seeText = (t) => all().find((e) => ((e.textContent || '').trim() + ' ' + (e.getAttribute('aria-label') || '')).toLowerCase().includes(t.toLowerCase()));
-  const byLabel = (t) => all().find((e) => (e.getAttribute('aria-label') || '').toLowerCase().startsWith(t.toLowerCase()));
-  /** Opened the way a keyboard opens it: focus on the control, then the activation, so a dialog knows where to give the focus back. */
-  const press = (e) => { if (!e) return false; e.focus(); e.click(); return true; };
-  const fill = (el, value) => {
-    const set = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-    el.focus();
-    set.call(el, value);
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-  };
-  const pause = (ms) => new Promise((r) => setTimeout(r, ms));
-  // performance.now, not Date: the page's Date is pinned, and frozen it never reaches the end.
-  const until = async (test, ms = 6000) => { const end = performance.now() + ms; while (performance.now() < end) { if (test()) return true; await pause(100); } return false; };
-  /** Until what read() returns has stopped changing for 600 ms: a suggestion list fills in steps, and under load the first pick was a different place. */
-  const steady = async (read, ms = 5000) => { let last = read(), same = 0; const end = performance.now() + ms; while (performance.now() < end) { await pause(150); const now = read(); if (now === last) { if (++same >= 4) return true; } else { same = 0; last = now; } } return false; };
-`;
 
 /** The handful of interface words the setups look for, in the language of the pass. */
 const words = (d: typeof gl) => ({
@@ -1080,16 +1114,18 @@ export const STATES: State[] = [
   {
     screen: 'mapa',
     name: 'buses',
-    setup: `const b = [...document.querySelectorAll('button[aria-pressed]')].find((x) => x.textContent.trim() === T.buses);
-      if (!b) return 'no buses layer button'; b.click(); await pause(900); return true;`,
+    // Waited for, as a reader waits for it: the panel draws once the map has, and looked for once
+    // it was missing in one run of two with the machine busy, there on the screen a moment later.
+    setup: `const b = () => [...document.querySelectorAll('button[aria-pressed]')].find((x) => x.textContent.trim() === T.buses);
+      if (!(await until(b))) return 'no buses layer button'; b().click(); await pause(900); return true;`,
   },
   // A bus tapped: its popup, with the line, the next stop and the sentence that says the
   // position is the timetable's, and a button to the line.
   {
     screen: 'mapa',
     name: 'bus aberto',
-    setup: `const b = [...document.querySelectorAll('button[aria-pressed]')].find((x) => x.textContent.trim() === T.buses);
-      if (!b) return 'no buses layer button'; b.click(); await pause(1500); return true;`,
+    setup: `const b = () => [...document.querySelectorAll('button[aria-pressed]')].find((x) => x.textContent.trim() === T.buses);
+      if (!(await until(b))) return 'no buses layer button'; b().click(); await pause(1500); return true;`,
     tap: 'bus',
   },
   { screen: 'mapa', name: 'filtros', phoneOnly: true, dialog: true, setup: `if (!press(seeText(T.controls))) return 'no controls button'; await pause(600); return true;` },
@@ -1229,6 +1265,11 @@ export async function worker(browser: Browser): Promise<Worker> {
   const w: Worker = { page, api: 'incidents', logged: [], thrown: page.uncaught(), agora: 0 };
   await guard(page, () => w.api, (url) => void (url.pathname.endsWith('/agora') && w.agora++));
   await page.onNewDocument(PREPARE);
+  // AUDIT_RUNNER=1, a machine like CI's (cdp.ts takes away the mouse, DAY above is read on UTC):
+  // the page on UTC too. The journeys set their phones to Lugo's zone over it. Not a slower CPU:
+  // the runner's scripts run at speed, it is its frames that are few, and four times slower gave
+  // ten findings the runner never did, mid-scroll and mid-fade.
+  if (process.env.AUDIT_RUNNER) await page.send('Emulation.setTimezoneOverride', { timezoneId: 'UTC' });
   // Focus as if the window were in front: :focus-visible is off in a page that thinks it is
   // in the background, and four of these run side by side.
   await page.send('Emulation.setFocusEmulationEnabled', { enabled: true });
@@ -1331,10 +1372,11 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
       await page.evaluate(`document.documentElement.classList.toggle('dark', ${theme === 'dark'})`);
       await sleep(250);
     }
-    await page.evaluate(SETTLE);
+    await page.call(SETTLE);
     const probe = await page.call<{ findings: Finding[]; measured: number; named: number; tightest: { ratio: number }; title: string; nav: string }>(PROBE, pass.lang);
     const a = await axe(page);
     const own: Finding[] = [...(theme === pass.themes[0] ? findings : []), ...probe.findings, ...a.findings];
+    await keepEvidence(page, `${pass.name} ${label(state)} ${theme}`, own);
     results.push({ pass: pass.name, state: label(state), theme, findings: own, measured: probe.measured, named: probe.named, tightest: probe.tightest.ratio, axePassed: a.passed, review: a.review, title: probe.title, nav: probe.nav });
   }
   const first = results[0];
@@ -1365,21 +1407,26 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
 
   // The layouts, in the first theme only: the shape of the page does not change with its colours.
   const metrics = pass.desktop ? DESKTOP : PHONE;
+  const layout = async (got: Layout, sc: string, condition: string) => {
+    const found = layoutFindings(got, sc, condition);
+    first.findings.push(...found);
+    await keepEvidence(page, `${pass.name} ${label(state)} ${condition}`, found);
+  };
   await page.send('Emulation.setDeviceMetricsOverride', { ...metrics, width: 320 });
   await sleep(350);
-  first.findings.push(...layoutFindings(await page.call<Layout>(LAYOUT, 'reflow'), '1.4.10', 'at 320 px wide'));
+  await layout(await page.call<Layout>(LAYOUT, 'reflow'), '1.4.10', 'at 320 px wide');
   // 1.4.4 is met through the browser's own zoom, and 200 % on a desktop is the page drawn
   // 640 px wide at twice the pixels. A phone is different: its "larger text" setting scales
   // the type and leaves the layout's width alone, so there the text alone goes to 200 %.
   if (pass.desktop) {
     await page.send('Emulation.setDeviceMetricsOverride', { ...metrics, width: metrics.width / 2, height: metrics.height / 2, deviceScaleFactor: 2 });
     await sleep(350);
-    first.findings.push(...layoutFindings(await page.call<Layout>(LAYOUT, 'zoom200'), '1.4.4', 'zoomed to 200 %'));
+    await layout(await page.call<Layout>(LAYOUT, 'zoom200'), '1.4.4', 'zoomed to 200 %');
   }
   await page.send('Emulation.setDeviceMetricsOverride', metrics);
   await sleep(300);
-  if (!pass.desktop) first.findings.push(...layoutFindings(await page.call<Layout>(LAYOUT, 'text200'), '1.4.4', 'with the text at 200 %'));
-  first.findings.push(...layoutFindings(await page.call<Layout>(LAYOUT, 'spacing'), '1.4.12', 'with the text-spacing overrides'));
+  if (!pass.desktop) await layout(await page.call<Layout>(LAYOUT, 'text200'), '1.4.4', 'with the text at 200 %');
+  await layout(await page.call<Layout>(LAYOUT, 'spacing'), '1.4.12', 'with the text-spacing overrides');
   if (pass.deep) {
     // 1.3.4: a phone turned sideways. And a desktop at 400 % on a 1024 px tall screen, 320 by
     // 256 CSS pixels: 1.4.10 asks 320 px of width of content that scrolls down, and nothing of
@@ -1389,7 +1436,7 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
     await sleep(400);
     const got = await page.call<Layout>(LAYOUT, 'turned');
     const condition = pass.desktop ? 'at 320 by 256' : 'turned sideways';
-    first.findings.push(...layoutFindings({ ...got, cut: [] }, pass.desktop ? '1.4.10' : '1.3.4', condition));
+    await layout({ ...got, cut: [] }, pass.desktop ? '1.4.10' : '1.3.4', condition);
     if (got.mainHeight < 48) first.findings.push({ kind: 'room', where: 'main', detail: `${condition}, the bars leave the screen ${got.mainHeight} px` });
     await page.send('Emulation.setDeviceMetricsOverride', metrics);
     await sleep(350);
@@ -1404,13 +1451,15 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
         await sleep(400);
       }
     }
-    await page.evaluate(SETTLE);
+    await page.call(SETTLE);
     const tab = await traverse(page, !!state.dialog);
     first.findings.push(...tab.findings);
+    await keepEvidence(page, `${pass.name} ${label(state)} keyboard`, tab.findings);
     first.focus = { reached: tab.reached, of: tab.of };
   }
 
   for (const line of new Set([...w.logged.filter((l) => !refused.test(l)), ...w.thrown.map((l) => `uncaught: ${l}`)])) first.findings.push({ kind: 'console', where: label(state), detail: line });
+  unlanded.animations += await page.evaluate<number>('window.__auditForced || 0').catch(() => 0);
   return results;
 }
 
@@ -1423,7 +1472,7 @@ export const label = (s: State) => `${s.screen}/${s.name}`;
  * light to dark measured 1.03:1 against its own text. The loops cannot be finished and are
  * left alone; they are waits, and never what text sits on.
  */
-export const SETTLE = `(() => { for (const a of document.getAnimations()) { try { a.finish(); } catch (e) {} } return true; })()`;
+const SETTLE = `async function () {${REACH} await settle(); return true; }`;
 
 /* ------------------------------------------------------------------------------------- */
 /* What a state cannot show                                                              */
@@ -1873,9 +1922,16 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
     // For an edit loop: AUDIT_STATES and AUDIT_PASSES take a pattern for the state ("ruta/hora")
     // and the pass ("desktop"); the sequences after the states run whatever these say.
     const only = (pattern: string | undefined, value: string) => !pattern || new RegExp(pattern).test(value);
-    const jobs = PASSES.filter((pass) => only(process.env.AUDIT_PASSES, pass.name)).flatMap((pass) =>
+    // CI runs the audit in parts side by side (ci.yml): AUDIT_PART=states, the states of the passes
+    // AUDIT_PASSES names; =sequences, the checks after them; =journeys, the journeys; unset, all of
+    // it. A part that names nothing to audit is a gate that passes by not looking, so it fails.
+    const part = process.env.AUDIT_PART;
+    if (part && !['states', 'sequences', 'journeys'].includes(part)) throw new Error(`AUDIT_PART=${part}: it is states, sequences or journeys`);
+    const runs = (p: string) => !part || part === p;
+    const jobs = !runs('states') ? [] : PASSES.filter((pass) => only(process.env.AUDIT_PASSES, pass.name)).flatMap((pass) =>
       STATES.filter((s) => !(pass.desktop && s.phoneOnly) && !(!pass.desktop && s.desktopOnly) && only(process.env.AUDIT_STATES, label(s))).map((state) => ({ pass, state })),
     );
+    if (part === 'states' && !jobs.length) throw new Error(`AUDIT_PART=states with no state in AUDIT_PASSES=${process.env.AUDIT_PASSES ?? ''}`);
     const results: Result[] = [];
     let next = 0;
     await Promise.all(
@@ -1902,21 +1958,23 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
       }
     };
     let visited = 'menu not opened';
-    await sequence('keyboard: the menu, both ways, and the planner', async () => {
-      const kb = await keyboard(browser);
-      visited = kb.visited;
-      return kb.findings;
-    });
-    await sequence('map: hover labels and panning without a drag', () => mapPointer(browser));
-    await sequence('forced colours', () => forced(browser));
-    await sequence('reduced motion', () => motion(browser));
-    await sequence('site data refused', () => siteDataRefused());
-    await sequence('the bottom bar where the screen ends, with the page itself scrolled', () => pinnedBar(browser));
-    await sequence('a stop’s rows held still under a finger while the board is read again', () => heldBoard(browser));
-    await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
+    if (runs('sequences')) {
+      await sequence('keyboard: the menu, both ways, and the planner', async () => {
+        const kb = await keyboard(browser);
+        visited = kb.visited;
+        return kb.findings;
+      });
+      await sequence('map: hover labels and panning without a drag', () => mapPointer(browser));
+      await sequence('forced colours', () => forced(browser));
+      await sequence('reduced motion', () => motion(browser));
+      await sequence('site data refused', () => siteDataRefused());
+      await sequence('the bottom bar where the screen ends, with the page itself scrolled', () => pinnedBar(browser));
+      await sequence('a stop’s rows held still under a finger while the board is read again', () => heldBoard(browser));
+      await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
+    }
     // Imported here and not at the top: journeys.ts builds its page helpers from this file's,
     // which do not exist yet while this file is still being read.
-    await sequence('journeys: every task through every way in, by touch, on two phones, and back', async () => (await (await import('./journeys')).journeys(browser)).flatMap((run) => run.findings));
+    if (runs('journeys')) await sequence('journeys: every task through every way in, by touch, on two phones, and back', async () => (await (await import('./journeys')).journeys(browser)).flatMap((run) => run.findings));
 
     // 3.2.3 and 2.4.2, across the states of a pass: the navigation is the same in the same
     // order everywhere, and each screen has a title of its own.
@@ -1973,6 +2031,7 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
     console.log(`  ${results.length} state-theme measurements over ${new Set(results.map((r) => r.pass + r.state)).size} states and ${PASSES.length} passes, in ${Math.round((Date.now() - started) / 1000)} s`);
     console.log(`  ${results.reduce((s, r) => s + r.measured, 0)} texts measured, ${results.reduce((s, r) => s + r.named, 0)} controls named`);
     console.log(`  WCAG 2.2 A/AA: ${gated.length} finding${gated.length === 1 ? '' : 's'}${gated.length ? ` (${(Object.keys(KINDS) as Kind[]).filter((k) => !HOUSE.includes(k)).map((k) => [k, gated.filter((f) => f.kind === k).length] as const).filter(([, n]) => n).map(([k, n]) => `${k} ${n}`).join(', ')})` : ''}`);
+    console.log(`  settle: ${unlanded.animations} animation${unlanded.animations === 1 ? '' : 's'} run to their end after the wait, on pages short of frames`);
     console.log(`  house bar: under 12 px ${all.filter((f) => f.kind === 'size').length}, under 44 px ${all.filter((f) => f.kind === 'target44').length}, under 48 px between the bars ${all.filter((f) => f.kind === 'room').length}`);
     if (gated.length) process.exitCode = 1;
   });

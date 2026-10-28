@@ -10,6 +10,11 @@ name: Checks
 # Deliberately not the deployment: a pull request must never publish. This runs the five
 # gates CLAUDE.md names, and three more steps that need their output, and stops there;
 # tools/checkPolicy.ts holds this list and the order, so a step dropped here fails it.
+#
+# Three jobs. The gates take about a minute and a half; the browser audit took ten minutes on
+# its own, run in one job, and now runs in four parts side by side, each on a runner of its
+# own. `checks`, the job main's ruleset requires, waits for all of them and is green only when
+# every one is: a required check that is skipped counts as passed, so it always runs and asks.
 on:
   pull_request:
     branches: [main, develop]
@@ -26,7 +31,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checks:
+  gates:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -81,6 +86,37 @@ jobs:
       - name: The suite, against the build
         run: pnpm test
 
+  # The browser audit in parts, balanced on their times measured like the runner (28 Oct): the
+  # phone in Galician 127 s, in Spanish and English 137, the desktop 159, the checks after the
+  # states (keyboard, map, forced colours, motion and the rest) and the journeys about 140 and
+  # 150, where the last two in one part were 289. One part per runner also means fewer pages
+  # sharing one machine's frames, which is where the audit's flaky findings came from.
+  audit:
+    name: audit (${{ matrix.name }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: phone-gl, part: states, passes: 'phone gl' }
+          - { name: phone-es-en, part: states, passes: 'phone es|phone en' }
+          - { name: desktop, part: states, passes: 'desktop gl' }
+          - { name: sequences, part: sequences, passes: '' }
+          - { name: journeys, part: journeys, passes: '' }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+
       # WCAG 2.2 A and AA, state by state, in a browser: audit:browser against the built
       # server, on a phone and a desktop, in three languages and both themes. It ran weekly
       # in measure.yml and a failure there was a report; here it is a gate, so a change that
@@ -92,7 +128,35 @@ jobs:
       # is fetched. The image ships Google Chrome, where tools/cdp.ts looks; with CI set, a
       # run that cannot start fails, so the gate cannot pass by not looking.
       - name: Accessibility, in a browser
+        env:
+          AUDIT_EVIDENCE: audit-evidence
+          AUDIT_PART: ${{ matrix.part }}
+          AUDIT_PASSES: ${{ matrix.passes }}
         run: |
           PORT=3002 node dist-server/server.cjs > server.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://localhost:3002/ > /dev/null && break; sleep 1; done
           pnpm run audit:browser
+
+      # Only when something failed: the screen of every failing state and journey, as it was when
+      # the finding was made, with the findings beside it. A finding the runner gave and no other
+      # machine did took two to four pushes to explain from the log alone.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: audit-evidence-${{ matrix.name }}-${{ github.run_number }}-${{ github.run_attempt }}
+          path: |
+            audit-evidence/
+            server.log
+          if-no-files-found: ignore
+          retention-days: 14
+
+  checks:
+    needs: [gates, audit]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Every gate and every part of the audit passed
+        env:
+          GATES: ${{ needs.gates.result }}
+          AUDIT: ${{ needs.audit.result }}
+        run: test "$GATES" = success && test "$AUDIT" = success

@@ -2041,6 +2041,19 @@ hora de agora ao espertar. As dúas pasadas de base van tamén dentro de `audit:
 con el na porta de CI. `JOURNEYS=full` engade castelán, inglés, o texto ao 200 %, o
 teléfono de lado e sen rede; `JOURNEY_SHOTS=cartafol`, unha foto de cada paso.
 
+Cada medida, das dúas ferramentas, pasa antes por unha mesma espera: ningún mapa visible sen
+debuxar, nada á espera (`aria-busy`) onde se pide, e o que se move pousado. O que en 1,5 s non
+pousou córrese ata o seu final, que é o que unha persoa ve un cadro despois: catro páxinas á vez
+nunha máquina pequena, coma o executor de CI, dan poucos cadros, e unha medida a medio camiño
+falla alí e pasa aquí. Ao final dise cantas animacións houbo que correr. Se a auditoría falla
+en CI, garda a pantalla e os achados de cada estado e percorrido que falla no momento do
+achado (`AUDIT_EVIDENCE=cartafol` fai o mesmo aquí), e `AUDIT_RUNNER=1` corre aquí coma o
+executor: sen rato, e Node e a páxina en UTC. En CI a auditoría vai en cinco partes á vez, cada
+unha na súa máquina: os estados do teléfono en galego (127 s medidos coma o executor), os do
+castelán e o inglés (137), os do escritorio (159), o que vén despois —teclado, mapa, cores
+forzadas, movemento— (143) e os percorridos (152). Nunha soa máquina eran dez minutos.
+`checks`, o traballo que pide `main`, agarda por todas e só pasa cando pasan todas.
+
 O que `pnpm test` non pode ver: un Chromium real, dirixido por `tools/cdp.ts`, acelerado
 6× e con rede «Slow 4G», contra o sitio construído. `measure:browser` mide o que custa
 arrincar en frío; abrir en frío a ligazón do QR dun poste ata a primeira saída na pantalla,

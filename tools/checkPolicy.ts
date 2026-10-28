@@ -168,12 +168,27 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
   assert.deepStrictEqual(runs(ci), [
     'pnpm install --frozen-lockfile', 'pnpm run lint', 'pnpm test', 'pnpm run check:policy', 'pnpm run check:deep',
     'pnpm run data:build && git diff --exit-code --stat -- src/data', 'pnpm run build', 'pnpm test',
+    'pnpm install --frozen-lockfile', 'pnpm run build',
     'PORT=3002 node dist-server/server.cjs > server.log 2>&1 &\nfor i in $(seq 1 30); do curl -sf http://localhost:3002/ > /dev/null && break; sleep 1; done\npnpm run audit:browser',
+    'test "$GATES" = success && test "$AUDIT" = success',
   ], 'ci.yml no longer runs the gates, this check, the dataset rebuild, the suite against the build and the browser audit, in that order');
+  // The audit runs in parts side by side, one runner each. Every pass the audit knows has a part
+  // and so do the sequences, or a pass dropped from the matrix stops being audited and nothing
+  // fails. And `checks` waits for both jobs and always runs: a required check that is skipped,
+  // as a job is when one it needs fails, counts on GitHub as passed.
+  const passNames = [...read('tools/auditBrowser.ts').matchAll(/^ {8}\{ name: '([^']+)', desktop: (?:true|false), lang:/gm)].map((m) => m[1]);
+  const parts = [...ci.matchAll(/\{ name: [\w-]+, part: (states|sequences|journeys), passes: '([^']*)' \}/g)].map((m) => ({ part: m[1], passes: m[2] }));
+  assert(passNames.length >= 4 && passNames.every((n) => parts.some((p) => p.part === 'states' && p.passes && new RegExp(`^(${p.passes})$`).test(n))) && parts.some((p) => p.part === 'sequences') && parts.some((p) => p.part === 'journeys'), `ci.yml's audit parts no longer cover every pass (${passNames.join(', ')}), the sequences and the journeys`);
+  assert(/AUDIT_PART: \$\{\{ matrix\.part \}\}/.test(ci) && /AUDIT_PASSES: \$\{\{ matrix\.passes \}\}/.test(ci), 'ci.yml runs every part of the audit as the whole audit');
+  assert(/^ {2}checks:\s*\n\s*needs: \[gates, audit\]\s*\n\s*if: always\(\)/m.test(ci), 'the checks job no longer waits for the gates and every part of the audit, whatever they did');
   // The audit is a gate only if a finding fails it and a run that never started fails it too:
   // the guard waits for the run (`.finally`), which is not awaited at the top of its module.
   const audit = read('tools/auditBrowser.ts');
   assert(/if \(gated\.length\) process\.exitCode = 1;/.test(audit) && /\.finally\(\(\) => \{\s*if \(!ran && process\.env\.CI\b/.test(audit), 'the browser audit passes CI with findings, or without running');
+  // When it fails, what the screen was is kept: the audit writes it with AUDIT_EVIDENCE set, and
+  // a step that runs only on failure uploads it. A finding only the runner gave took two to four
+  // pushes to explain from the log alone.
+  assert(/AUDIT_EVIDENCE: audit-evidence/.test(ci) && /uses: actions\/upload-artifact@[0-9a-f]{40}[^\n]*\n\s*if: failure\(\)[\s\S]*?\n\s*audit-evidence\//.test(ci), 'ci.yml no longer keeps the screens and findings of a failing browser audit');
   // And that last line stands outside the condition that decides whether the file runs as the
   // audit: inside it, a launch the condition did not recognise printed nothing and exited 0.
   assert(/^let ran = false;$/m.test(audit) && /^if \(process\.argv\[1\] && \/auditBrowser\\\.ts\$\/\.test\(process\.argv\[1\]\)\) \{$/m.test(audit), 'the audit’s CI safety net is back inside the condition it guards');

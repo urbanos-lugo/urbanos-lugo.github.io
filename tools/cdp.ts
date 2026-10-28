@@ -271,6 +271,10 @@ export async function launch(executable: string, headless = true, prefs?: object
       '--disable-backgrounding-occluded-windows',
       ...(gpu ? [] : ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']),
       ...(headless && !gpu ? ['--headless=new'] : []),
+      // AUDIT_RUNNER=1, a machine like CI's: headless Linux finds no mouse and answers
+      // (hover: none) and (pointer: none) while a mouse is driven over the page, and CDP's media
+      // emulation does not reach those two features, so they are set where Blink reads them.
+      ...(process.env.AUDIT_RUNNER ? ['--blink-settings=primaryHoverType=1,availableHoverTypes=1,primaryPointerType=1,availablePointerTypes=1'] : []),
       'about:blank',
     ],
     { stdio: ['ignore', 'ignore', 'ignore'] },

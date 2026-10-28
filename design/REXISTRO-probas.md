@@ -3987,3 +3987,64 @@ Mirado no panel do navegador a 375 px, en escuro e en claro, nos tres mapas:
 - **Nun iPhone** (NOTAS, lista do iPhone, punto 4): o xiro con dous dedos, o compás, o
   mapa xirando co teléfono e a pregunta de Safari polo compás.
 - Subir a rama a develop e a main é cousa do dono.
+
+## Rolda 45: o CI coma o executor, e en cinco partes á vez — 28 de outubro de 2026
+
+Desde que entraron os percorridos, o 26 de outubro, o CI de develop caeu sete veces en cousas
+que esta máquina non daba. Foron tres causas. O executor é outro ambiente: UTC, sen rato e
+outras fontes. As súas páxinas teñen poucos cadros, catro á vez e cos mapas por SwiftShader, e
+unha medida tomada a medio camiño falla alí. E había comprobacións febles que unha máquina lenta
+destapa. Cada achado custou de dúas a catro subidas, porque o CI só dicía que algo fallara. E
+cada execución levaba de 11 a 14 minutos, dez deles na auditoría do navegador, toda nunha
+máquina. Os arranxos ata aquí foran comprobación a comprobación: 0fc3d96, 969b1ad, dd0c04b,
+94a1f8f, 0225a30, 9f7904a e 588abdb. Esta rolda vai á clase enteira.
+
+### Feito
+
+- **Unha soa espera antes de cada medida**, `settle` en `REACH`, compartida polas dúas
+  ferramentas: ningún mapa visible sen `data-idle`, o que se move pousado e, onde se pide,
+  nada en `aria-busy`. O que en 1,5 s non pousou córrese ata o seu final. Substitúe as catro
+  esperas que había: `SETTLE` (só remataba), a do LAYOUT, `landed` dos percorridos e a foto
+  despois de cada paso. A lista das medidas e das esperas de cada unha fíxoa agy (Flash Low,
+  33 s), lida despois nas liñas citadas.
+- **Evidencias**: con `AUDIT_EVIDENCE`, cada estado e cada percorrido que falla garda a
+  pantalla e os achados no momento do achado. Os JSON escríbense primeiro, e a pantalla ten
+  5 s, porque unha captura agarda por un cadro. Os percorridos esperan polas súas capturas
+  antes de cambiar de pantalla, e a primeira proba mostraba un momento posterior, coa ficha xa
+  pechada. `ci.yml` sobe o cartafol só cando algo falla, e `check:policy` gárdao.
+- **`AUDIT_RUNNER=1`** corre aquí coma o executor: sen rato (`--blink-settings`, porque a
+  emulación de medios de CDP non chega a `hover` nin a `pointer`), e Node e a páxina en UTC.
+  A primeira versión tamén facía a CPU catro veces máis lenta, e deu dez achados que o executor nunca
+  deu, a medio desprazamento e a medio esvaecer: o executor anda a velocidade e o que lle falta
+  son cadros. A segunda tiña a páxina en UTC e Node non, e o día fixado caía noutra hora, con
+  outros textos na pantalla.
+- **Os estados do mapa cos buses** agardan polo botón da capa (`until`) en vez de buscalo
+  unha vez: faltou nunha execución de cada dúas coa máquina ocupada, e estaba na pantalla un
+  momento despois.
+- **O CI en tres traballos**: `gates`, as cinco portas, arredor de minuto e medio; `audit`,
+  a auditoría en cinco partes á vez, cada unha na súa máquina (`AUDIT_PART`); e `checks`, o
+  que pide o conxunto de regras de `main`, que agarda polos outros dous, corre sempre e só
+  pasa se pasaron. En GitHub, un traballo requirido que se salta conta como pasado. A política
+  esixe que as partes cubran cada pase, as secuencias e os percorridos.
+
+### Medidas
+
+- Co reloxo das animacións parado para sempre: o percorrido na parada dá 0, cando antes daba
+  «0 px baixo o bordo», e o QR a 320 px dá 0, cando antes daba «24 px». `settle` remata 168 e
+  3.352 animacións respectivamente.
+- Achados forzados: un do teclado («Tab chegou a 58 de 59») e un de percorrido deixan o JPEG
+  e o JSON, este coa ficha da parada aberta.
+- Auditoría enteira: 0 achados en 242 medidas, 718 s (antes ~640), e `settle` remata 158
+  animacións coa máquina quieta. A barra da casa «menos de 44 px» baixa de ~270 a 25 desde
+  MapLibre (o CI de 29e9d4d dá o mesmo).
+- Coma o executor: 0 achados tras o botón dos buses.
+- As partes, coma o executor: teléfono galego 127 s, castelán e inglés 137, escritorio 159,
+  as secuencias 143 e os percorridos 152. Xuntos, as dúas últimas eran 289.
+- `check:policy` morde: sen a parte do escritorio, sen `if: always()` en `checks`, sen
+  `AUDIT_PART`, e co paso das evidencias en `always()`.
+- As cinco portas: lint, 159 comprobacións, 22 políticas, `check:deep` e a build.
+
+### Queda
+
+- A primeira execución do CI partido: medir o tempo de reloxo e reequilibrar se unha parte
+  queda longa.

@@ -35,7 +35,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { PROBE_SOURCE, withBrowser, type Browser, type Session } from './cdp';
-import { DICT, REACH, press, worker, type Finding, type Lang, type Worker } from './auditBrowser';
+import { DICT, REACH, keepEvidence, pendingEvidence, unlanded, press, worker, type Finding, type Lang, type Worker } from './auditBrowser';
 import { sleep } from './lib';
 import { decodePng } from './png';
 import { BUS_LINES, BUS_STOPS } from '../src/data/transitData';
@@ -643,11 +643,6 @@ const HELP = `${REACH}
   const labelled = (t) => all().filter(shown).find((e) => (e.getAttribute('aria-label') || '').toLowerCase().startsWith(t.toLowerCase()));
   const saying = (t) => all().filter(shown).find((e) => ((e.textContent || '').trim() + ' ' + (e.getAttribute('aria-label') || '')).toLowerCase().includes(t.toLowerCase()));
   const css = (sel) => [...document.querySelectorAll(sel)].find(shown);
-  // An entrance still running on it or around it, as the eye waits for it to land: a rise moves the
-  // box 6 px, a sheet comes up from below its own height, and the first frame is drawn at the start
-  // even under reduced motion; on a page short of frames (CI's runner) that frame is all there is.
-  const arriving = (el) => { for (let n = el; n; n = n.parentElement) for (const a of n.getAnimations()) { const end = a.effect && a.effect.getComputedTiming().endTime; if (a.playState === 'running' && Number.isFinite(end)) return true; } return false; };
-  const landed = async (el) => { for (const until = performance.now() + 1500; arriving(el) && performance.now() < until; ) await pause(50); };
   const tabLink = (name) => [...document.querySelectorAll('nav a')].find((a) => shown(a) && a.textContent.trim() === name);
   /** Where the reader is: the tab, the heading, the dialog, the search's rows, the fields shown, the scroll. */
   const screenNow = () => {
@@ -680,7 +675,7 @@ const HELP = `${REACH}
 const LOCATE = `async function (T, expr, keyboard) {${HELP}
   const el = await (async () => (${'${expr}'}))();
   if (!el || el === true) return null;
-  await landed(el);
+  await settle();
   // Every box between it and the screen that scrolls: a list inside a sheet scrolls, and so does the sheet.
   const scrollers = [];
   for (let n = el.parentElement; n; n = n.parentElement) { const o = getComputedStyle(n).overflowY; if (/(auto|scroll)/.test(o) && n.scrollHeight > n.clientHeight + 1) scrollers.push(n); }
@@ -967,8 +962,15 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
   const H = opts.turned ? PHONES[phone].width : PHONES[phone].height;
   const where = `${label(j)} · ${phone}${opts.turned ? ' · turned' : ''}${opts.api === 'offline' ? ' · offline' : ''}${opts.text200 ? ' · text 200 %' : ''}${lang === 'gl' ? '' : ` · ${lang}`}`;
   const run: Run = { journey: label(j), phone, lang, variant: [opts.turned && 'turned', opts.api === 'offline' && 'offline', opts.text200 && 'text200'].filter(Boolean).join(','), taps: 0, keys: 0, scrolls: 0, decisions: 0, options: 0, screens: 1, appMs: 0, worstMs: 0, zones: { easy: 0, stretch: 0, hard: 0 }, small: [], answerTop: null, findings: [] };
-  const flow = (detail: string) => run.findings.push({ kind: 'flow', where, detail });
-  const backFinding = (detail: string) => run.findings.push({ kind: 'back', where, detail });
+  // With AUDIT_EVIDENCE, the screen at the moment of each finding that fails the run.
+  const caught = (kind: 'flow' | 'back', detail: string) => {
+    run.findings.push({ kind, where, detail });
+    pendingEvidence.push(keepEvidence(page, `${where} ${kind} ${run.findings.length}`, [{ kind, where, detail }]).catch(() => undefined));
+  };
+  const flow = (detail: string) => caught('flow', detail);
+  // Before the screen changes again: a capture waits for a frame, and the next step moved on first.
+  const flush = () => Promise.allSettled(pendingEvidence);
+  const backFinding = (detail: string) => caught('back', detail);
   const thumb = (detail: string) => run.findings.push({ kind: 'thumb', where, detail });
 
   if (!(await open(w, j, phone, lang, opts.theme ?? 'light', !!opts.text200, opts))) {
@@ -1131,6 +1133,8 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     const settled = await stepWait(page, T, `!document.querySelector('[aria-busy="true"]') && new Promise((r) => setTimeout(() => r(!document.querySelector('[aria-busy="true"]')), 100))`, 3000);
     run.appMs += settled.ms;
     await sleep(200);
+    // And what moves landed, the maps drawn: the one settle every measurement goes through.
+    await page.call(`async function () {${HELP} await settle(); return true; }`);
     const after = await snap();
     if (process.env.SCROLL_LOG) console.log('    scrolls after step', i + 1, await page.evaluate('JSON.stringify(window.__sl || [])'));
     await shoot(String(i + 1));
@@ -1153,6 +1157,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
       else if (move !== 'none') stack.push(after);
       seen.add(name(after));
     }
+    await flush();
   }
   run.screens = seen.size;
   const leaks = await page.evaluate<string[]>(`window.__foldLeaks || []`).catch(() => []);
@@ -1161,7 +1166,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
 
   // The answer: on screen, and not under anything.
   const answer = await page.call<{ top: number; bottom: number; covered: string | null; outside?: number } | null>(
-    `async function (T) {${HELP} const el = await (async () => (${j.answer}))(); if (!el || el === true) return null; await landed(el); const r = el.getBoundingClientRect(); const main = document.querySelector('main'), m = main.getBoundingClientRect(); if (main.contains(el) && (r.bottom < m.top + 8 || r.top > m.bottom - 8)) return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: null, outside: Math.round(r.top < m.top ? r.top - m.top : r.top - m.bottom) }; const hit = document.elementFromPoint(Math.min(innerWidth - 1, r.left + Math.min(r.width / 2, 20)), Math.min(innerHeight - 1, Math.max(0, r.top + Math.min(r.height / 2, 12)))); return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: !!hit && !el.contains(hit) && !hit.contains(el) ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().replace(/\s+/g, ' ').slice(0, 40) : null }; }`,
+    `async function (T) {${HELP} const el = await (async () => (${j.answer}))(); if (!el || el === true) return null; await settle(); const r = el.getBoundingClientRect(); const main = document.querySelector('main'), m = main.getBoundingClientRect(); if (main.contains(el) && (r.bottom < m.top + 8 || r.top > m.bottom - 8)) return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: null, outside: Math.round(r.top < m.top ? r.top - m.top : r.top - m.bottom) }; const hit = document.elementFromPoint(Math.min(innerWidth - 1, r.left + Math.min(r.width / 2, 20)), Math.min(innerHeight - 1, Math.max(0, r.top + Math.min(r.height / 2, 12)))); return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: !!hit && !el.contains(hit) && !hit.contains(el) ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().replace(/\s+/g, ' ').slice(0, 40) : null }; }`,
     T,
   );
   if (!answer) flow('the journey ended without its answer on screen');
@@ -1175,6 +1180,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     else if (answer.covered) fold(`the answer, ${answer.top} px down, is under "${answer.covered}"`);
   }
 
+  await flush();
   // Away and back: what was set or planned is still there.
   if (j.away) {
     await tapOn(`tabLink(${j.away.tab})`);
@@ -1215,6 +1221,7 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     else if (reloaded.url !== at.url) backFinding(`a reload keeps the screen but moves the address from ${at.url} to ${reloaded.url}`);
   }
 
+  await flush();
   if (opts.back === false) return run;
   if (j.installed) await walkBackInApp(page, T, stack, backFinding, shoot);
   else await walkBackSystem(page, stack, backFinding, alike, shoot);
@@ -1348,6 +1355,7 @@ export async function journeys(browser: Browser, passes: Pass[] = CORE): Promise
           const r = await runJourney(w, j, pass.phone, pass.lang, { theme: pass.theme, text200: pass.text200, turned: pass.turned, api: pass.api });
           for (const f of r.findings) if (pass.text200 && !f.where.includes('200')) f.where += ' · text 200 %';
           runs.push(r);
+          unlanded.animations += await w.page.evaluate<number>('window.__auditForced || 0').catch(() => 0);
         } catch (error) {
           runs.push({ journey: label(j), phone: pass.phone, lang: pass.lang, variant: pass.name, taps: 0, keys: 0, scrolls: 0, decisions: 0, options: 0, screens: 0, appMs: 0, worstMs: 0, zones: { easy: 0, stretch: 0, hard: 0 }, small: [], answerTop: null, findings: [{ kind: 'flow', where: `${label(j)} · ${pass.name}`, detail: `the run broke: ${String(error).slice(0, 160)}` }] });
         }
@@ -1355,6 +1363,8 @@ export async function journeys(browser: Browser, passes: Pass[] = CORE): Promise
       await w.page.close();
     }),
   );
+  // The screens of the last findings, before the caller closes the browser on them.
+  await Promise.allSettled(pendingEvidence);
   return runs;
 }
 
@@ -1386,6 +1396,7 @@ if (process.argv[1] && /journeys\.ts$/.test(process.argv[1])) {
     for (const [s, n] of small) console.log(`    ${s} (${n})`);
     if (process.env.JOURNEYS_JSON) writeFileSync(process.env.JOURNEYS_JSON, JSON.stringify(runs, null, 1));
     console.log(`\n  ${runs.length} runs of ${JOURNEYS.length} journeys over ${passes.length} passes, in ${Math.round((Date.now() - started) / 1000)} s`);
+    console.log(`  settle: ${unlanded.animations} animation${unlanded.animations === 1 ? '' : 's'} run to their end after the wait (since each page's last load)`);
     const gated = all.filter((f) => f.kind !== 'thumb');
     console.log(`  must hold: ${gated.length} finding${gated.length === 1 ? '' : 's'} (flow ${all.filter((f) => f.kind === 'flow').length}, back ${all.filter((f) => f.kind === 'back').length}); house bar: thumb ${all.filter((f) => f.kind === 'thumb').length}`);
     if (gated.length) process.exitCode = 1;

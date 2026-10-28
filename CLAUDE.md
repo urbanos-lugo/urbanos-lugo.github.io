@@ -59,7 +59,12 @@ also runs weekly and keeps as an artifact (`audit:browser` is a CI gate too, see
 `AUDIT_STATES` / `AUDIT_PASSES` narrow a run, e.g. `AUDIT_STATES=ruta/hora`). Inside it,
 and alone as `pnpm run audit:journeys`, every task through every way in on two phones, by
 touch, and the way back (`JOURNEYS=<pattern>` narrows, `JOURNEYS=full` adds the other
-languages, large text, the phone turned and offline; `JOURNEY_SHOTS=<dir>` photographs). A change
+languages, large text, the phone turned and offline; `JOURNEY_SHOTS=<dir>` photographs).
+`AUDIT_EVIDENCE=<dir>` writes the screen and the findings of every failing state and journey
+(CI sets it and uploads the folder on failure); `AUDIT_RUNNER=1` runs like CI's runner: no
+mouse, and Node and the page on UTC. Run it before pushing a harness change. CI runs the audit
+in five parts side by side (`AUDIT_PART=states|sequences|journeys`, with `AUDIT_PASSES` for the
+states), each about two and a half minutes like the runner. A change
 that should not move a pixel is proved with `pnpm run visual:shoot <dir>` on the build
 before and after (each on its own port, `BASE=`), then `pnpm run visual:compare <before>
 <after> <out>`; about 27 minutes a shoot, and nothing else heavy running meanwhile.
