@@ -161,9 +161,13 @@ precisión e, nun teléfono con compás, cara a onde miras (no mapa da rede, aba
 camiño a pé, polas beirarrúas e calculado no dispositivo, chega ata a parada máis próxima.
 
 ### Mapa da rede
-Leaflet cunha capa vectorial de MapLibre GL sobre teselas de OpenFreeMap; nun dispositivo
-sen WebGL2 —ou cando o navegador perde o contexto WebGL e non o devolve en cinco
-segundos— cae ás teselas ráster de OpenStreetMap. O **estilo é do repositorio**, derivado
+MapLibre GL debuxa os tres mapas, sobre teselas vectoriais de OpenFreeMap. Ata a rolda 43
+era Leaflet cunha capa de MapLibre enriba, que non podía xirar; agora é MapLibre só. Nun
+dispositivo sen WebGL2 —ou cando o navegador perde o contexto WebGL e non o devolve en
+cinco segundos— no sitio do mapa hai un aviso que o di, e as listas din o mesmo: o mapa
+ráster de OpenStreetMap que había para eses casos marchou con Leaflet. Os zooms deste
+texto son os de MapLibre, un menos ca os de Leaflet para as mesmas rúas (o seu mundo mide
+512 px a zoom 0; o de Leaflet, 256). O **estilo é do repositorio**, derivado
 do publicado por OpenFreeMap e xerado por `tools/buildMapStyle.ts`: as teselas, os sprites
 e os glifos seguen sendo os seus, as cores son nosas. Están medidas contra o que se debuxa
 enriba — as 24 cores de liña quedan a 1,45 ou máis sobre calquera das tres capas de rúa
@@ -172,13 +176,15 @@ que cruzan, e ningún rótulo do mapa baixa de 4,5. As decisións e as cifras es
 
 Debúxanse sempre os dous sentidos de cada liña —a volta, descontinua—, cada un á
 **dereita do seu sentido de marcha**, como circulan os buses. Onde varias comparten
-calzada van **en paralelo**, cun carril fixo por liña: 2 px a zoom 15, 3 desde o 16, ata
+calzada van **en paralelo**, cun carril fixo por liña: 2 px a zoom 14, 3 desde o 15, ata
 catro carrís por sentido —máis alá compárteno, e o toque sobre o corredor lista todas as
-que pasan—; por debaixo do 15 o corredor é unha soa trenza. A liña escollida vai sempre
+que pasan—; por debaixo do 14 o corredor é unha soa trenza. O desprazamento faino o
+renderizador en cada fotograma (`line-offset`); antes movíase cada vértice en JavaScript a
+cada chanzo de zoom. A liña escollida vai sempre
 polo bordo, coas súas paradas enriba, e os seus dous sentidos van separados a calquera
 zoom, tamén onde o resto do feixe aínda vai nunha soa trenza. Cunha liña escollida, os seus dous sentidos levan
 **frechas de sentido** cada 120 px de pantalla, do mesmo trazo e cor que a liña; por
-debaixo do zoom 14 non se amosan, e con varias liñas escollidas só desde o 17, que é onde
+debaixo do zoom 13 non se amosan, e con varias liñas escollidas só desde o 16, que é onde
 os seus carrís xa se distinguen e unha frecha se lle pode atribuír á súa liña. As paradas
 son un disco a 8,4:1 sobre o chan nos dous temas: nítidas, e por debaixo da liña que as
 serve, que é a forma do mapa.
@@ -199,7 +205,10 @@ coma desde as fichas de arriba, e a frecha abre a súa páxina. Até o 27 de out
 unha liña abría un globo de Leaflet, que no centro listaba once liñas en 578 px e se metía
 baixo a barra de busca; ao escoller quedaba aberto e o mapa non encadraba nada. O que se
 tocou sobe por riba da folla cando quedaría debaixo, para que o anel da parada se vexa, e
-mentres hai folla o zoom apártase: flotaba sobre os seus dous botóns.
+mentres hai folla o zoom apártase: flotaba sobre os seus dous botóns. Un bus tocado abre o
+seu globo e pecha a folla que houbese: **unha cousa aberta de cada vez**. Co renderizador
+novo o toque nun bus parado nunha parada abría as dúas, o globo e a folla da parada, porque
+un marcador xa non se queda co clic e o mapa tamén o oía.
 
 Desde a folla dunha parada podes deixar no mapa **só as liñas que pasan por aí** — as
 que paran nese poste e as que pasan a menos de 400 m a pé. A pregunta é da parada, así
@@ -224,10 +233,21 @@ a parada á que vas—, agás cando o punto se ía saír da vista.
 **E cara a onde miras.** Nun teléfono con compás, o punto leva un abano que xira coa
 brúxula: di que lado da rúa tes diante antes de dar un paso, que o punto só non dicía. O
 compás só se le mentres o mapa está na pantalla; no iPhone, Safari pide permiso no mesmo
-toque que a posición, e sen compás ou sen permiso o punto vai só, coma antes. O mapa
-aínda non xira: Leaflet non o fai, e xiralo pide debuxalo con MapLibre.
+toque que a posición, e sen compás ou sen permiso o punto vai só, coma antes.
 
-**Os nomes das paradas non se pisan.** Desde o zoom 16 escríbense á dereita do punto, á
+**O mapa da rede xira.** Con dous dedos, co botón dereito ou con Maiúsculas e as frechas;
+inclinar, non: un mapa inclinado dunha cidade pequena lese peor, e separar dous dedos
+inclinábao sen querer. Xirado, aparece un **compás** debaixo do zoom: a agulla, co norte
+na cor de acento, di onde queda o norte, e tocala volve o norte arriba e marcha. Co norte
+arriba non hai compás, porque non ten nada que dicir. E nun teléfono con compás, **un
+segundo toque en «A miña localización» xira o mapa contigo**: o que tes diante vai
+arriba, como ves a rúa, e o botón leva entón unha frecha; un terceiro toque deixa de
+seguirte. Xirar o mapa coa man ou tocar o compás devólvenlle o norte á man. Os nomes das
+paradas seguen dereitos xire como xire, e o abano do punto sinala cara a onde miras tamén
+no mapa xirado. Os dous mapas pequenos —o de preto de ti e o da ruta— quedan co norte
+arriba.
+
+**Os nomes das paradas non se pisan.** Desde o zoom 15 escríbense á dereita do punto, á
 esquerda, enriba ou debaixo, onde non tapen outro nome, outra parada nin a túa posición; o
 que non colle non se escribe. Antes ían sempre á dereita: dúas paradas a cada lado dunha
 rúa escribían un nome enriba do outro, e non se lía ningún. E **tocar un nome é tocar a súa
@@ -250,7 +270,7 @@ debaixo segundo o que se repintase despois, e tocar a parada onde estabas abría
 coa precisión, que o círculo xa debuxa.
 
 **Un dedo non é un punteiro.** Nun ecrán táctil cada parada e cada liña responden ata
-12 px alén do seu bordo: unha parada a zoom 16, ata 20 px do seu centro, e a escollida ata
+12 px alén do seu bordo: unha parada a zoom 15, ata 20 px do seu centro, e a escollida ata
 23. Antes un toque que fallaba o punto por uns píxeles caía na liña que pasa por el e abría
 «Liñas por aquí». Medido tocando arredor da parada escollida: a 12, 14 e 18 px, antes as
 liñas e agora a parada; a 21, a parada; a 25, as liñas. Se o toque cae ao alcance de dúas
@@ -262,10 +282,12 @@ lista cada unha coa distancia á súa parada máis próxima. Antes calculaba as 
 próximas e logo quedaba só coa primeira, así que dende Avda. Américas 88 vías a 8 e
 ningunha máis.
 
-As paradas debúxanse en canvas (`preferCanvas`) e non todas á vez: afastado gañan o sitio
-as máis servidas, e ningunha se pinta a menos de 24 px doutra que xa está, así que a vista
-de cidade é un reparto uniforme que se enche ao achegarse; desde o zoom 16 —ou cunha liña
-escollida— están as 417, cos nomes pintados nun lenzo propio en lugar de 417 nodos DOM.
+As paradas son unha capa do estilo, debuxada na GPU, e non todas á vez: afastado gañan o
+sitio as máis servidas, e ningunha se pinta a menos de 24 px doutra que xa está, así que a
+vista de cidade é un reparto uniforme que se enche ao achegarse; desde o zoom 15 —ou cunha
+liña escollida— están as 417, cos nomes pintados nun lenzo propio en lugar de 417 nodos
+DOM. As capas fanse unha vez por estilo e despois só cambian os seus datos: refeitas en
+cada cambio, liñas e paradas pestanexaban cada tres segundos co reloxo dos buses.
 
 Os vehículos que se ven proveñen do cadro horario: unha expedición que xa saíu e aínda
 non rematou sitúase sobre o trazado onde debería ir. As dúas direccións dunha liña son
@@ -703,7 +725,7 @@ Calde e Santa Comba), que se publican por separado porque son servizos distintos
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/arquitectura-dark.png">
-  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: no navegador, src/data/*.json alimenta o motor de horarios, e este a SPA de React e o mapa de Leaflet, co Service Worker servindo a app sen conexión; a SPA fala cun servidor Express opcional que consulta buslugo.com e o feed de tráfico do Concello; fóra quedan as teselas de OpenFreeMap e o enrutador a pé de OpenStreetMap.">
+  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: no navegador, src/data/*.json alimenta o motor de horarios, e este a SPA de React e o mapa de MapLibre, co Service Worker servindo a app sen conexión; a SPA fala cun servidor Express opcional que consulta buslugo.com e o feed de tráfico do Concello; fóra quedan as teselas de OpenFreeMap e o enrutador a pé de OpenStreetMap.">
 </picture>
 
 O reparto que importa é ese: **todo o cálculo de horas ocorre no navegador**, sobre os
@@ -735,9 +757,11 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   │   ├── LinesHereSheet.tsx  «Liñas por aquí»: as que pasan onde tocaches
 │   │   │   ├── StopNames.ts        os nomes das paradas, nun canvas propio
 │   │   │   ├── nameLayout.ts       onde vai cada nome sen tapar outro, outra parada nin a ti
-│   │   │   ├── basemap.ts          o mapa de fondo, debaixo de todo o demais
+│   │   │   ├── mapStyle.ts         o estilo de cada tema, e se este navegador pode debuxar o mapa
+│   │   │   ├── mapLayers.ts        a orde das capas propias, as etiquetas ao pasar o rato e os toques xa collidos
+│   │   │   ├── MapUnavailable.tsx  o aviso no sitio do mapa cando o navegador non o pode debuxar
 │   │   │   ├── palette.ts          as cores do mapa, lidas dos tokens de index.css, e DRAW, os seus tamaños
-│   │   │   └── popupHtml.ts        os anacos de HTML dos popups de Leaflet, escapados
+│   │   │   └── popupHtml.ts        os anacos de HTML dos globos do mapa, escapados
 │   │   ├── planner/
 │   │   │   ├── PlaceField.tsx      o campo de orixe ou destino, coas suxestións
 │   │   │   ├── TripOptions.tsx     as alternativas, en filas comparables
@@ -811,7 +835,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   ├── useIsDark.ts            se a paleta escura está activa agora mesmo
 │   │   ├── useClock.ts             o reloxo, relido cada N segundos e ao espertar o teléfono: nada se descarga
 │   │   ├── useWalkPaths.ts         o camiño a pé real de cada tramo, calculado no dispositivo
-│   │   └── useLeafletMap.ts        un mapa de Leaflet: base, tema, redimensión e nome accesible
+│   │   └── useMapLibre.ts          un mapa de MapLibre: estilo por tema, zoom e compás, nome accesible, o aviso sen WebGL2
 │   ├── utils/
 │   │   ├── schedule.ts             calendario e cadro horario
 │   │   ├── arrivals.ts             próximos pasos por parada e seguinte saída dunha liña
@@ -827,7 +851,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   │   ├── snapshotAge.ts          cando unha copia deixa de falar do presente
 │   │   ├── searchUtils.ts          buscador
 │   │   ├── clock.ts                se o reloxo do dispositivo coincide co de Lugo
-│   │   ├── html.ts                 quitar as etiquetas ao HTML alleo, e escapalo para Leaflet
+│   │   ├── html.ts                 quitar as etiquetas ao HTML alleo, e escapalo para os globos do mapa
 │   │   └── storage.ts              localStorage e sessionStorage, protexidos, nun sitio
 │   ├── fonts/                      as dúas caras variables + OFL.txt
 │   ├── index.css                   o vocabulario visual enteiro, por papel, e as clases dos patróns que se repiten
@@ -895,7 +919,6 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 ├── design/                         artboards do redeseño (.dc.html), canvas.json, e as notas: o que se decidiu
 │                                   (DECIDIDO.md), o rexistro de probas, a auditoría SEO e as notas de fontes
 ├── docs/diagrams/                  fontes dos diagramas deste README + as imaxes
-├── patches/                        unha liña arranxada na ponte de MapLibre (pnpm patch)
 ├── server.ts
 ├── CONTRIBUTING.md                 o pouco que hai que saber para que un cambio entre á primeira
 ├── DATA.md                         procedencia e condicións dos datos
@@ -1192,9 +1215,8 @@ non usaba ningún. Os QR dos postes apuntan á páxina do operador, non a este s
 
 ## Tecnoloxías
 
-React 19 · TypeScript 7.0 · Vite 8 · Tailwind CSS 4 · Leaflet 1.9 (directo, sen
-envoltorio) coa capa vectorial de MapLibre GL 6 · Lucide React · Express 5 ·
-vite-plugin-pwa · tsx · esbuild.
+React 19 · TypeScript 7.0 · Vite 8 · Tailwind CSS 4 · MapLibre GL 6 · Lucide React ·
+Express 5 · vite-plugin-pwa · tsx · esbuild.
 
 O escaneo de QR usa `BarcodeDetector`, nativo do navegador: sen dependencia externa.
 
@@ -1220,25 +1242,26 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 
 | | sen comprimir | gzip | brotli |
 | :--- | ---: | ---: | ---: |
-| Anaco de entrada | 617 KB | 172 KB | **142 KB** |
-| Folla de estilos | 63 KB | 13 KB | **11 KB** |
+| Anaco de entrada | 629 KB | 175 KB | **146 KB** |
+| Folla de estilos | 67 KB | 13 KB | **12 KB** |
 | `index.html` | 5 KB | 2 KB | **2 KB** |
-| **Primeira carga** | **685 KB** | ~187 KB | **~155 KB** |
+| **Primeira carga** | **701 KB** | ~191 KB | **~159 KB** |
 | Tipografía | 51 KB | — | 51 KB, en paralelo |
-| Renderizador do mapa, co estilo e a paleta | 1.224 KB | 325 KB | 266 KB, ao abrir un mapa |
-| Estilos do renderizador | 84 KB | 16 KB | 13 KB, ao abrir un mapa |
+| Renderizador do mapa, co estilo e a paleta | 1.100 KB | 289 KB | 236 KB, ao abrir un mapa |
+| Estilos do renderizador | 70 KB | 10 KB | 8 KB, ao abrir un mapa |
 | Worker do renderizador | 507 KB | 144 KB | 119 KB, ao abrir un mapa |
 | Xeometría viaria | 511 KB | 82 KB | 28 KB, ao abrir un mapa |
 | Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
-| Worker do planificador, coa súa copia de paradas e liñas (27 de outubro) | 232 KB | 54 KB | 44 KB, ao calcular a primeira ruta |
+| Worker do planificador, coa súa copia de paradas e liñas | 233 KB | 55 KB | 44 KB, ao calcular a primeira ruta |
 
-Medido o 20 de outubro de 2026, sobre a 1.4.0 co vocabulario visual da rolda 37, con Vite 8.3
-e MapLibre 6.14; as tres filas do renderizador, o 27 de outubro con MapLibre 6.15, e o resto
-igual nese día ao KB. Un KB son 1.024 bytes, gzip ao nivel 9 e brotli á calidade 11. Fronte á
-1.4.0 sen el, a folla de estilos medra 3 KB (os tokens e as clases dos patróns) e o anaco de
-entrada baixa 12 KB (as cadeas de clases que esas clases e compoñentes substitúen). O anaco de
-entrada medra co que leva dentro, as cabeceiras por pestana;
-MapLibre non vai nel, senón enteiro no anaco do renderizador, que baixa ao abrir un mapa.
+Medido enteiro o 28 de outubro de 2026, na rolda 44, con Vite 8.3 e MapLibre 6.15. Un KB son
+1.024 bytes, gzip ao nivel 9 e brotli á calidade 11. Sen Leaflet nin a ponte, o anaco do
+renderizador baixa de 1.224 a 1.100 KB (de 266 a 236 KB brotli) e os seus estilos de 84 a
+70 KB. Desde a medida anterior das outras filas, o 20 de outubro, o anaco de entrada pasou
+de 617 a 629 KB (de 142 a 146 brotli) e a folla de estilos de 63 a 67, co que trouxeron as
+roldas 42 a 44 —as cabeceiras por pestana, o planificador no seu *worker*, os estilos do
+mapa novo— sen repartir aquí canto é de cada unha. MapLibre non vai no anaco de entrada,
+senón enteiro no do renderizador, que baixa ao abrir un mapa.
 A instantánea de avisos tampouco: é un ficheiro á parte, `alerts.json`, e o motivo está
 xusto debaixo.
 
@@ -1284,7 +1307,7 @@ interface ten nome, e o nome di para que serve, non canto vale: `tap` é o chan 
 `glass` o fondo translúcido dun control sobre o mapa, `move` os 200 ms dun cambio de sitio.
 Están en `src/index.css`, 184 no bloque `@theme` e 32 cores de paleta con valor claro e
 escuro; o mapa colle deles as cores e, da táboa `DRAW` de `palette.ts`, os números que
-Leaflet quere. As escalas propias de Tailwind están borradas (`--*: initial`): unha clase
+o renderizador quere. As escalas propias de Tailwind están borradas (`--*: initial`): unha clase
 escrita contra un valor por defecto non xera nada en vez de traer de volta un valor que
 ninguén escolleu.
 
@@ -1322,9 +1345,10 @@ e mais as actions, e CodeQL o código en cada push a `main`.
 do renderizador do mapa e o do planificador, e sérvense desde esta orixe, non hai wasm, e o escáner QR usa o
 `BarcodeDetector` do navegador en vez dunha librería. As únicas orixes remotas
 permitidas son as que a app usa de verdade — OpenFreeMap polas teselas vectoriais,
-tile.openstreetmap.org polo respaldo ráster, as dúas tamén en `connect-src`: servida como
-cabeceira, a política é tamén a do service worker, que volve pedir con `fetch` as teselas
-que garda, e sen iso un mapa ráster autoaloxado quedaba en gris. O enrutador peonil de OSM estivo aquí ata
+tamén en `connect-src`: servida como cabeceira, a política é tamén a do service worker,
+que volve pedir con `fetch` as teselas que garda, e sen iso o mapa autoaloxado quedaba en
+gris. tile.openstreetmap.org, o respaldo ráster dun navegador sen WebGL2, marchou con
+Leaflet: ese navegador ve agora un aviso no sitio do mapa. O enrutador peonil de OSM estivo aquí ata
 que a rede peonil pasou a ir dentro do paquete: unha orixe menos. `font-src` é
 `'self'` a secas: a tipografía viña de Google e agora sérvese desde aquí, así que abrir un
 horario de bus xa non llo conta a Google. buslugo.com tampouco está: só o servidor o
@@ -1379,13 +1403,6 @@ compilar, e levan tope superior a propósito: sen el `fast-uri` resolvía a unha
 maior por diante da que pide o seu pai, que é xusto como un arranxo de seguridade se
 converte nunha caída.
 
-E parchea unha liña de `@maplibre/maplibre-gl-leaflet`, a ponte entre Leaflet e o
-renderizador (`patches/`): responde a un cambio de tamaño no seguinte fotograma e lía alí
-o seu mapa, que se o mapa se desmontara entrementres xa non existía, e a páxina lanzaba un
-erro sen capturar (en Ruta sen ruta, no escritorio, en dúas de oito auditorías semanais).
-`pnpm test` executa ese fotograma desde os ficheiros instalados, así que unha versión nova
-que chegue sen a comprobación falla alí.
-
 O servidor normaliza todo o que chega pola query string (`?q[]=a` facía caer o endpoint
 cun volcado de pila), devolve JSON en caso de erro en lugar da páxina de erro de Express,
 limita o corpo das peticións a 32 KB e envía `X-Content-Type-Options`, `X-Frame-Options`,
@@ -1420,8 +1437,9 @@ documento cando o formulario se prega debaixo do botón.
 As filas da lista de liñas e as suxestións do planificador son botóns, non `div` cun
 clic —chegaron a selo, e a pestana Liñas enteira non se abría sen rato—, e a sonda de
 accesibilidade marca `cursor: pointer` sobre calquera cousa que non sexa interactiva. Os
-tres mapas levan nome e controis no idioma da interface, porque o contedor de Leaflet é
-unha parada de tabulación cos seus botóns en inglés se ninguén llos traduce.
+tres mapas levan nome e controis no idioma da interface, porque o lenzo do mapa é unha
+parada de tabulación e os seus botóns —o zoom, o compás, o × dun globo— saen en inglés se
+ninguén llos traduce.
 
 **Contraste.** A insignia dunha liña é texto branco sobre a cor da liña a 10 px, e o número
 que leva é o único que hai que ler dun golpe de vista. Cinco das vinte e catro non chegaban
@@ -1441,7 +1459,7 @@ escritorio ao 400 % (320 × 256), as barras e o aviso nocturno deixan 25 px para
 `audit:browser` lístaos en cada execución sen parar a CI, e ningún texto baixa de 12 px.
 Os pines do mapa (28–32 px) quedan fóra a propósito: un pin de 44 taparía a rúa. Os puntos
 das paradas tampouco medran, e nun ecrán táctil responden ata 12 px alén do seu bordo: 40 px
-a zoom 16.
+a zoom 15.
 
 **Modo escuro e escala do sistema.** **O tema por defecto é o escuro**, e claro ou automático lémbranse só se se escollen:
 isto lese de pé nun poste, moitas veces xa de noite, e un móbil en claro todo o día
@@ -1797,7 +1815,7 @@ da que se proba e se desprega.
 Chrome e Edge 111, Firefox 114, Safari 16.4 (iOS 16.4, marzo de 2023)— e por baixo del a
 app non promete nada. As pezas que ese chan non cobre degrádanse en vez de romper: manter a
 pantalla acesa e `AbortSignal.timeout` pídense só se existen, a vibración é opcional, e sen
-WebGL2 o mapa cae ás teselas ráster. Está probado a fondo só en Chromium (as ferramentas de
+WebGL2 o mapa é un aviso e as listas din o mesmo. Está probado a fondo só en Chromium (as ferramentas de
 `tools/` diríxeno por CDP); Safari en iOS, que é a outra metade dos teléfonos de Lugo,
 próbase a man cunha lista que está en
 [`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md).

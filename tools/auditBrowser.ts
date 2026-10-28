@@ -432,7 +432,7 @@ const PROBE = `async function (expectLang) {
   let tightest = { ratio: Infinity, where: '', detail: '' };
 
   // The map's picture is not measured; its controls and a popup laid over it are.
-  const onCanvas = (el) => !!el.closest('.leaflet-container') && !el.closest('.leaflet-control-container, .leaflet-popup');
+  const onCanvas = (el) => !!el.closest('.maplibregl-map') && !el.closest('.maplibregl-control-container, .maplibregl-popup');
   // Visually hidden until focused, so its 1x1 box is the point rather than a defect.
   const offscreen = (el) => !!el.closest('.sr-only');
   const targets = [];
@@ -603,7 +603,7 @@ const LAYOUT = `async function (how) {
   const sideScroller = (el) => { for (let n = el.parentElement; n; n = n.parentElement) { if (/auto|scroll/.test(getComputedStyle(n).overflowX) && n.scrollWidth > n.clientWidth + 1) return true; } return false; };
   const cut = [];
   for (const el of document.querySelectorAll('body *')) {
-    if (!el.getClientRects().length || el.closest('.sr-only, [aria-hidden="true"], [inert], .leaflet-container, .maplibregl-map, svg, input, textarea')) continue;
+    if (!el.getClientRects().length || el.closest('.sr-only, [aria-hidden="true"], [inert], .maplibregl-map, svg, input, textarea')) continue;
     const style = getComputedStyle(el);
     if (style.display === 'inline' || style.display === 'contents' || style.visibility === 'hidden') continue;
     const words = '"' + (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 40) + '"';
@@ -667,7 +667,7 @@ async function axe(page: Session): Promise<{ findings: Finding[]; passed: number
     // A marker on a map sits where the thing it marks is: 2.5.8 exempts a target whose size
     // and place are essential to what it conveys, and a bus or a pin moved apart from its
     // neighbours to make room would be a lie about where it is.
-    const nodes = v.id === 'target-size' ? v.nodes.filter((n) => !n.target.join(' ').includes('leaflet-marker-icon')) : v.nodes;
+    const nodes = v.id === 'target-size' ? v.nodes.filter((n) => !n.target.join(' ').includes('maplibregl-marker')) : v.nodes;
     for (const n of nodes) findings.push({ kind: 'axe', where: n.target.join(' '), detail: `${v.id} (${sc}): ${v.help}. ${(n.failureSummary ?? '').replace(/\s+/g, ' ').slice(0, 220)}` });
   }
   return { findings, passed: r.passed, review: r.review };
@@ -771,7 +771,7 @@ const CHECK = `function () {
   // which has no place in the flow, and a map's markers, which are placed by geography.
   const at = window.__auditList.indexOf(a);
   const pinned = (el) => {
-    if (el.closest('.leaflet-container')) return true;
+    if (el.closest('.maplibregl-map')) return true;
     for (let n = el; n && n !== modal && n !== document.body; n = n.parentElement) if (/fixed|sticky/.test(getComputedStyle(n).position)) return true;
     return false;
   };
@@ -793,7 +793,7 @@ const CHECK = `function () {
     if (over) issues.push('2.4.3: this Tab stop is drawn ' + Math.round(over.top - here.top) + ' px above ' + over.label + ', which the focus reached before it, in the same column');
   }
   if (here) run.push(here);
-  return { at, where: label(a), issues, map: !!a.closest('.leaflet-container') };
+  return { at, where: label(a), issues, map: !!a.closest('.maplibregl-map') };
 }`;
 
 /**
@@ -815,9 +815,9 @@ async function traverse(page: Session, dialog: boolean): Promise<{ findings: Fin
     await press(page, 'Tab', 9);
     await sleep(60);
     let got = await page.call<{ at: number; where: string; issues: string[]; map: boolean }>(CHECK);
-    // A marker taking the focus pans the map to itself, in a quarter of a second of Leaflet's
-    // own animation: judged before that, every bus off the edge read as hidden. The same wait
-    // for what is inside a map's popup, which the map pans into view as the focus goes in.
+    // A popup's close button taking the focus can have the map pan it into view, in a fraction
+    // of a second of animation: judged before that, a control off the edge read as hidden. No
+    // marker is a Tab stop now (buses are tabindex -1), so the wait is for what a popup holds.
     if (got.issues.some((i) => i.startsWith('2.4.11')) && got.map) {
       await sleep(600);
       got = await page.call(CHECK);
@@ -947,7 +947,7 @@ export interface State {
   expect?: string;
   /** In the page, after the probes: what PRIVACY.md, DATA.md or SECURITY.md promise of this state. Returns the failures. */
   promise?: string;
-  /** After the setup, a real tap -- at the centre of the map, or on a bus -- which Leaflet answers and a scripted click does not. */
+  /** After the setup, a real tap -- at the centre of the map, or on a bus -- which the map answers and a scripted click does not. */
   tap?: 'mapCentre' | 'bus';
 }
 
@@ -1024,7 +1024,7 @@ export const STATES: State[] = [
       const out = [];
       let compared = 0;
       for (const list of lists) {
-        const map = list.parentElement.querySelector('.leaflet-container');
+        const map = list.parentElement.querySelector('.maplibregl-map');
         if (!map) continue;
         compared++;
         const onMap = numbers(map, '.map-rank'), onList = numbers(list, '.stop-rank-row');
@@ -1094,7 +1094,7 @@ export const STATES: State[] = [
   },
   { screen: 'mapa', name: 'filtros', phoneOnly: true, dialog: true, setup: `if (!press(seeText(T.controls))) return 'no controls button'; await pause(600); return true;` },
   // A stop opened on the map: the board sends the map to its stop, which is then at the
-  // centre, and a click there on Leaflet's canvas is what a tap on the stop is.
+  // centre, and a click there on the map's canvas is what a tap on the stop is.
   {
     screen: 'paradas',
     name: 'mapa ficha',
@@ -1204,7 +1204,7 @@ interface Result {
 
 const noise = /\[vite\]|React DevTools|Download the React/;
 /** What refusing every other host makes the page say, which is this audit's doing and not the app's. */
-const refused = /ERR_BLOCKED_BY_CLIENT|ERR_INTERNET_DISCONNECTED|openfreemap|tile\.openstreetmap|Failed to fetch|AJAXError|NetworkError|status code 500|500 \(Internal Server Error\)/;
+const refused = /ERR_BLOCKED_BY_CLIENT|ERR_INTERNET_DISCONNECTED|openfreemap|Failed to fetch|AJAXError|NetworkError|status code 500|500 \(Internal Server Error\)/;
 
 export interface Worker {
   page: Session;
@@ -1288,8 +1288,8 @@ export async function reach(w: Worker, pass: Pass, state: State, frozen = false,
     // that is wholly on the map and not under one of the buttons that float on it.
     const box = await page.evaluate<{ x: number; y: number } | null>(
       state.tap === 'mapCentre'
-        ? `(() => { const m = [...document.querySelectorAll('.leaflet-container')].find((e) => e.getBoundingClientRect().width > 300); if (!m) return null; const b = m.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; })()`
-        : `(() => { const m = [...document.querySelectorAll('.leaflet-container')].find((e) => e.getBoundingClientRect().width > 300); if (!m) return null; const mb = m.getBoundingClientRect();
+        ? `(() => { const m = [...document.querySelectorAll('.maplibregl-map')].find((e) => e.getBoundingClientRect().width > 300); if (!m) return null; const b = m.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; })()`
+        : `(() => { const m = [...document.querySelectorAll('.maplibregl-map')].find((e) => e.getBoundingClientRect().width > 300); if (!m) return null; const mb = m.getBoundingClientRect();
              for (const bus of document.querySelectorAll('.custom-bus-marker')) { const b = bus.getBoundingClientRect(); const x = b.left + b.width / 2, y = b.top + b.height / 2;
                if (b.left > mb.left + 60 && b.right < mb.right - 60 && b.top > mb.top + 80 && b.bottom < mb.bottom - 80) { const hit = document.elementFromPoint(x, y); if (hit && bus.contains(hit)) return { x, y }; } }
              return null; })()`,
@@ -1300,8 +1300,8 @@ export async function reach(w: Worker, pass: Pass, state: State, frozen = false,
       await mouse(page, 'mouseReleased', box.x, box.y);
     }
     try {
-      // The stop sheet is drawn beside Leaflet's container, inside the map's card, not inside the map.
-      await page.waitFor(state.tap === 'mapCentre' ? `document.querySelector('[role=dialog][aria-modal=true]')` : `document.querySelector('.leaflet-popup')`, 5000);
+      // The stop sheet is drawn beside the map's container, inside the map's card, not inside the map.
+      await page.waitFor(state.tap === 'mapCentre' ? `document.querySelector('[role=dialog][aria-modal=true]')` : `document.querySelector('.maplibregl-popup:not(.map-hover-label)')`, 5000);
       await sleep(500);
     } catch {
       findings.push({ kind: 'reach', where: label(state), detail: state.tap === 'mapCentre' ? 'the stop sheet never opened' : box ? 'the bus popup never opened' : 'no bus wholly on the map to tap' });
@@ -1387,11 +1387,11 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
     await page.send('Emulation.setDeviceMetricsOverride', metrics);
     await sleep(350);
     if (state.tap === 'bus') {
-      // A popup half off the map: focusing its close button scrolled the map's own box, Leaflet
-      // put the scroll back, and the button stayed past the edge of the screen -- once in five
-      // runs, wherever the bus had left it. Three of the map's own arrow keys put it there every
-      // time: 240 px, with a pause after each, since Leaflet drops a key while it is still panning.
-      await page.evaluate(`document.querySelector('.leaflet-container').focus()`);
+      // A popup half off the map: focusing its close button scrolled the map's own box and the
+      // button stayed past the edge of the screen -- once in five runs, wherever the bus had
+      // left it. Three of the map's own arrow keys put it there every time: 240 px, with a
+      // pause after each so the pan has ended before the next key.
+      await page.evaluate(`document.querySelector('.maplibregl-map canvas.maplibregl-canvas').focus()`);
       for (let i = 0; i < 3; i++) {
         await press(page, 'ArrowLeft', 37);
         await sleep(400);
@@ -1445,12 +1445,12 @@ async function mapPointer(browser: Browser): Promise<Finding[]> {
   const moved = await page.call<true | string>(`async function (T) {${REACH}${savedBoard} if (!press(byLabel(T.onMap))) return 'no map button'; await pause(2500); return true;}`, T);
   if (moved !== true) return [{ kind: 'reach', where: 'mapa', detail: `the map pointer checks: ${moved}` }];
   const box = await page.evaluate<{ x: number; y: number; w: number; h: number } | null>(
-    `(() => { const m = [...document.querySelectorAll('.leaflet-container')].find((e) => e.getBoundingClientRect().width > 300); if (!m) return null; const b = m.getBoundingClientRect(); return { x: b.left, y: b.top, w: b.width, h: b.height }; })()`,
+    `(() => { const m = [...document.querySelectorAll('.maplibregl-map')].find((e) => e.getBoundingClientRect().width > 300); if (!m) return null; const b = m.getBoundingClientRect(); return { x: b.left, y: b.top, w: b.width, h: b.height }; })()`,
   );
   if (!box) return [{ kind: 'reach', where: 'mapa', detail: 'no map on screen' }];
   const cx = box.x + box.w / 2;
   const cy = box.y + box.h / 2;
-  const tooltip = `(() => { const t = [...document.querySelectorAll('.leaflet-tooltip')].find((e) => getComputedStyle(e).opacity !== '0' && e.getClientRects().length); if (!t) return null; const b = t.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; })()`;
+  const tooltip = `(() => { const t = [...document.querySelectorAll('.map-hover-label')].find((e) => getComputedStyle(e).opacity !== '0' && e.getClientRects().length); if (!t) return null; const b = t.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; })()`;
 
   await mouse(page, 'mouseMoved', cx - 30, cy - 30);
   await mouse(page, 'mouseMoved', cx, cy);
@@ -1475,9 +1475,10 @@ async function mapPointer(browser: Browser): Promise<Finding[]> {
   // then one click on an empty part of the map, and the map has to have moved.
   await page.call(`async function (T) {${REACH} for (const t of [T.stopsLayer, T.routesLayer]) { const b = [...document.querySelectorAll('button[aria-pressed="true"]')].find((x) => x.textContent.trim() === t); if (b) b.click(); await pause(300); } }`, T);
   await sleep(600);
-  // The pane of the map clicked: a screen left for another tab stays in the page, hidden, and
-  // the board's small map came first in it, a pane with no transform that never moved.
-  const pane = `getComputedStyle([...document.querySelectorAll('.leaflet-container')].find((e) => e.getBoundingClientRect().width > 300).querySelector('.leaflet-map-pane')).transform`;
+  // The view of the map clicked: a screen left for another tab stays in the page, hidden, and
+  // the board's small map came first in it, a view that never moved. `data-view` is rewritten
+  // when a move ends, hence the wait after the click.
+  const pane = `[...document.querySelectorAll('.maplibregl-map')].find((e) => e.getBoundingClientRect().width > 300).dataset.view`;
   const before = await page.evaluate<string>(pane);
   await mouse(page, 'mouseMoved', box.x + 70, box.y + box.h - 90);
   await mouse(page, 'mousePressed', box.x + 70, box.y + box.h - 90);

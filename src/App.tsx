@@ -34,7 +34,7 @@ import { isSnapshotStale } from './utils/snapshotAge';
 import { BusStop, BusLine } from './types';
 import { Pane } from './components/ui/Pane';
 
-// Leaflet and its layers are only needed on the map tab, so they load with it.
+// The map renderer and its layers are only needed on the map tab, so they load with it.
 const InteractiveMap = lazy(() => import('./components/Map/TransitMap').then((m) => ({ default: m.TransitMap })));
 
 const LANG_KEY = 'urbanos-lugo-lang';

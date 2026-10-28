@@ -23,7 +23,7 @@ import { PlaceField, suggestionsFor, type Suggestion } from './planner/PlaceFiel
 import { TripOptions } from './planner/TripOptions';
 import { Itinerary } from './planner/Itinerary';
 import { correctionFor, formatKm, measuredWalkFor, rankMeasured, withMeasuredWalk, type Endpoints } from './planner/walkCorrection';
-// Leaflet loads with the map, not with the app.
+// The map renderer loads with the map, not with the app.
 const RouteMap = lazy(() => import('./Map/RouteMap').then((m) => ({ default: m.RouteMap })));
 
 const DEFAULT_ORIGIN = 'Fonte dos Ranchos';

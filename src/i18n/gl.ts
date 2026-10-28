@@ -312,6 +312,10 @@ export const gl = {
     mapTitle: 'Mapa da rede',
     zoomIn: 'Achegar o mapa',
     zoomOut: 'Afastar o mapa',
+    /** The compass, once the map is turned: it puts north back up. */
+    resetNorth: 'Volver o norte arriba',
+    /** Where a map would be on a browser that cannot draw one (no WebGL2, or it gave the renderer up). */
+    unavailable: 'Este navegador non pode debuxar o mapa. O resto funciona: as listas din o mesmo.',
     networkRegion: 'Mapa da rede. Os percorridos e as paradas tamén están na pestana de liñas.',
     nearbyRegion: 'Mapa das paradas preto de ti. As mesmas paradas están na lista de embaixo.',
     loadingMap: 'Cargando o mapa…',
@@ -358,7 +362,7 @@ export const gl = {
     controls: 'Filtros e capas',
     closeControls: 'Pechar filtros e capas',
     closeStop: 'Pechar esta parada',
-    /** The close button of a map popup, which Leaflet names in English. */
+    /** The close button of a map popup, which the map renderer names in English. */
     closePopup: 'Pechar',
     expandLines: 'Ver todas as liñas dunha vez',
     collapseLines: 'Amosar as liñas nunha fila',
@@ -366,6 +370,7 @@ export const gl = {
     /* Coa precisión dentro: un punto só di «estás aquí» coa mesma seguridade viñas do GPS
        na rúa ou do wifi dentro dun edificio, onde pode errar centos de metros. */
     stopFollowing: 'Deixar de seguirme',
+    turnWithMe: 'Xirar o mapa cara a onde miras',
     outOfArea: 'Non hai ningunha parada preto de ti. Esta web só cobre a rede urbana de Lugo.',
     stopsCount: (total: number, withQr: number) =>
       `${total} paradas, ${withQr} con código QR`,

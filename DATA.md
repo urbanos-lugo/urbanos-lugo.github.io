@@ -106,9 +106,10 @@ self-hosted from `src/fonts/`. The street and place names inside the basemap are
 from OpenFreeMap's own SDF glyph tiles, which are **Noto Sans**; they fade out above zoom
 16.5, where the app's own labels take over.
 
-A device without WebGL2 falls back to raster tiles from **tile.openstreetmap.org**, under
-that project's tile usage policy: fetched as the reader pans, cached, never bulk
-downloaded or prefetched.
+A device without WebGL2 gets no map: where it would be, a notice says the browser cannot
+draw it and that the lists say the same. There used to be a raster fallback from
+**tile.openstreetmap.org**; it went in October 2026 with Leaflet, so nothing is fetched
+from that server any more.
 
 This used to be CARTO. It was replaced in August 2026, when CARTO began stamping "API KEY
 REQUIRED" across the tiles of its keyless basemaps.

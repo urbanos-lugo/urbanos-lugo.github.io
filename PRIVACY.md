@@ -92,7 +92,6 @@ Opening any web page tells the servers it contacts your IP address. This one con
 | Host | What for | When |
 | :--- | :--- | :--- |
 | `tiles.openfreemap.org` | the map background | when you open a map |
-| `tile.openstreetmap.org` | the map background, on a device with no WebGL2 | when you open a map |
 | the API, if one is configured | service notices, and the operator's own minutes behind a QR | on the notices screen, and on a stop you reached by scanning |
 
 That is the whole list, and the map is the only one you meet on an ordinary visit. Those

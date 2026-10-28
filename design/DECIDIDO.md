@@ -563,6 +563,39 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - **Compartir é o panel do sistema só nunha pantalla táctil.** Nun escritorio o mesmo API
   abre o diálogo do sistema, e alí o que se quería era copiar. Pechar o panel non di nada.
 
+## Os mapas, con MapLibre só, e xiran — 27 e 28 de outubro de 2026
+
+- **Os tres mapas debúxaos MapLibre GL directamente.** Leaflet, a ponte
+  `@maplibre/maplibre-gl-leaflet` e o parche que levaba saen: Leaflet non xira, e xirar é o
+  que se pediu (26 de outubro, arriba). As liñas en paralelo fanas o renderizador
+  (`line-offset`), as frechas son unha capa de símbolos sobre a liña, e as paradas unha capa
+  de círculos; os nomes seguen nun lenzo propio, na letra da app, dereitos xire como xire.
+- **Sen WebGL2, un aviso e as listas.** Un navegador sen WebGL2, ou que perde o contexto e
+  non o devolve en cinco segundos, ve no sitio do mapa unha frase que o di e que as listas
+  din o mesmo. Non hai mapa ráster de respaldo: sería un segundo mapa, con outro código e
+  outros fallos, para uns poucos navegadores. `tile.openstreetmap.org` sae da política de
+  seguridade, do service worker e de PRIVACY.md.
+- **O mapa da rede xira; non se inclina.** Dous dedos, o botón dereito ou Maiúsculas e as
+  frechas. O compás aparece só co mapa xirado, debaixo do zoom, co norte na cor de acento, e
+  tocalo volve o norte arriba. Os dous mapas pequenos quedan co norte arriba.
+- **«A miña localización» ten tres estados**: segue o lector co norte arriba; onde hai
+  compás, un segundo toque xira o mapa co teléfono (o que tes diante, arriba) e o botón leva
+  unha frecha; o terceiro deixa de seguir. Xirar coa man ou tocar o compás devolve o xiro á
+  man. Sen compás, o segundo toque deixa de seguir, coma antes.
+- **Os zooms están en números de MapLibre**, un menos ca os de Leaflet para as mesmas rúas
+  (o seu mundo mide 512 px a zoom 0, o de Leaflet 256): os nomes desde o 15, os carrís 2 px
+  ao 14 e 3 desde o 15, as frechas desde o 13 (o 16 con varias liñas).
+- **Unha cousa aberta de cada vez.** Un marcador xa non se queda co toque: o mapa tamén o
+  oe. Un bus parado nunha parada abría o seu globo e a folla da parada; agora un toque que
+  colleu un bus ou un nome non o responde ninguén máis, e abrir o globo dun bus pecha a
+  folla que houbese.
+- **As capas fanse unha vez por estilo; despois só cambian os datos.** Refeitas a cada
+  render, o reloxo dos buses (cada tres segundos) facía pestanexar liñas e paradas.
+- **As cores do mapa pásanse a hex ao lelas.** O estilo de MapLibre non le `oklch()`, que é
+  como están escritos os neutros da app, e rexeitaba o anel da parada escollida.
+- **A rexión accesible é o lenzo do mapa**, que MapLibre xa fai rexión co nome do mapa e é
+  a súa parada de tabulación; nomeado tamén o contedor, eran dúas rexións aniñadas co mesmo nome.
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).

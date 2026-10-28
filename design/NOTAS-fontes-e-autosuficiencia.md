@@ -355,6 +355,11 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    capas: paradas, nomes, liñas coas frechas, buses, o lector. MapLibre debuxa os nomes con
    colisións, o que fai `nameLayout.ts` a man. O que hai que decidir antes: que fai un
    teléfono sen WebGL2, que hoxe cae ás teselas ráster de OSM con Leaflet.
+   *Feito na rolda 44 (27 e 28 de outubro de 2026): os tres mapas con MapLibre só, o da rede
+   xira, co compás cando está xirado e o mapa xirando co teléfono ao segundo toque de «A miña
+   localización». Sen WebGL2, un aviso e as listas; o ráster de OSM marchou. Os nomes seguen
+   no lenzo propio, na letra da app. Decisións en DECIDIDO, medidas en REXISTRO. Falta velo
+   nun iPhone (lista de abaixo, punto 4).*
 
 ### Lista para o iPhone
 
@@ -369,7 +374,10 @@ Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e 
    copiar desde el e pegar en Notas: ten `?parada=`. O mesmo na ficha dunha liña: `?linea=`.
 4. **Mapa**: debuxa (é MapLibre, WebGL2); pinza e xiro van fluídos; os nomes das paradas
    lense; a folla de controis sobe desde abaixo e non queda tapada pola barra de inicio
-   (é onde `100dvh` e as zonas seguras rompen). En Paradas, **«Buscar preto de min»**:
+   (é onde `100dvh` e as zonas seguras rompen). Xirado con dous dedos aparece o compás
+   debaixo do zoom, e tocalo volve o norte arriba. «A miña localización» unha vez segue co
+   norte arriba; outra vez, xira o mapa co teléfono (o que tes diante, arriba, e o botón
+   cunha frecha); a terceira deixa de seguir. En Paradas, **«Buscar preto de min»**:
    Safari pregunta pola localización e polo movemento e a orientación; aceptando as dúas, o
    punto leva un abano que xira ao virar o teléfono e apunta cara a onde miras de verdade
    (comparar coa rúa), e cada número do mapa é o da súa fila. Negando a orientación, o

@@ -12,14 +12,12 @@ These end up inside the JavaScript a visitor downloads, so their notices travel 
 | | Licence |
 | :--- | :--- |
 | [React](https://react.dev) and React DOM — Meta Platforms, Inc. | MIT |
-| [Leaflet](https://leafletjs.com) — Volodymyr Agafonkin, CloudMade | BSD-2-Clause |
 | [MapLibre GL JS](https://maplibre.org) — MapLibre contributors, Mapbox | BSD-3-Clause |
-| [@maplibre/maplibre-gl-leaflet](https://github.com/maplibre/maplibre-gl-leaflet), with a one-line fix in `patches/` | ISC |
 | [Lucide](https://lucide.dev) — Lucide contributors, and Cole Bemis for the Feather icons it forked | ISC |
 | [Tailwind CSS](https://tailwindcss.com) — Tailwind Labs | MIT |
 | [Workbox](https://developer.chrome.com/docs/workbox), via vite-plugin-pwa — Google | MIT |
 
-BSD-2-Clause, BSD-3-Clause and ISC each ask that the copyright notice and the licence
+BSD-3-Clause and ISC each ask that the copyright notice and the licence
 text be kept with redistributions of the source or the binary. A bundler strips comments,
 so this table is where they are kept. Each project's full text is in its own package under
 `node_modules`, and at the links above.

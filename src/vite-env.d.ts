@@ -1,4 +1,7 @@
 /// <reference types="vite/client" />
+// The GeoJSON namespace the map layers are typed in: TypeScript no longer brings @types in by
+// itself, and it used to arrive only by way of Leaflet's types.
+/// <reference types="geojson" />
 
 interface ImportMetaEnv {
   /**

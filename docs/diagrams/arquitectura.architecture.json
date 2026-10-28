@@ -54,7 +54,7 @@
     {
       "id": "mapa",
       "type": "frontend",
-      "label": "Mapa Leaflet",
+      "label": "Mapa MapLibre GL",
       "sublabel": "capa vectorial de MapLibre GL",
       "pos": [
         380,

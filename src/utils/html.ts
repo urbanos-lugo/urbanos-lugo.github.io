@@ -96,6 +96,6 @@ export function plainText(html: string, replacement = ' '): string {
   return stripTags(html, replacement).replace(/\s+/g, ' ').trim();
 }
 
-/** HTML-escape a value bound for a Leaflet popup or tooltip, which take HTML strings. */
+/** HTML-escape a value bound for a map popup or hover label, which take HTML strings. */
 export const escapeHtml = (value: string | null | undefined): string =>
   String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);

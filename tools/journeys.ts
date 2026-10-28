@@ -37,6 +37,7 @@ import path from 'node:path';
 import { PROBE_SOURCE, withBrowser, type Browser, type Session } from './cdp';
 import { DICT, REACH, press, worker, type Finding, type Lang, type Worker } from './auditBrowser';
 import { sleep } from './lib';
+import { decodePng } from './png';
 import { BUS_LINES, BUS_STOPS } from '../src/data/transitData';
 
 /* ------------------------------------------------------------------------------------- */
@@ -95,7 +96,7 @@ type Step =
   /** Tap the field, empty it if asked (each character a key), type, and see what comes next above the keyboard. */
   | { type: string; text: string | { gl: string; es?: string; en?: string }; clear?: boolean; next?: string; wait?: string }
   | { enter: true; wait?: string }
-  /** A stop's dot on the map, or the reader's own, the one nearest the middle: found on Leaflet's canvas by its colour, as the eye finds it. */
+  /** A stop's dot on the map, or the reader's own, the one nearest the middle: found in a screenshot of the map by its colour, as the eye finds it. */
   | { tapMap: 'stop' | 'me'; wait?: string }
   /** A point this far from the middle of the map, in px: a finger that aims at what the map was opened on and lands a little off it. */
   | { tapAt: [number, number]; wait?: string }
@@ -134,7 +135,7 @@ export interface Journey {
 }
 
 /** A tab of the bar, and what shows that its screen is up: the map arrives as a chunk of its own. */
-const tab = (name: string): Step => ({ tap: `tabLink(${name})`, stack: 'push', wait: name === 'T.nav.map' ? `css('.leaflet-container')` : `tabLink(${name}).getAttribute('aria-current') === 'page'` });
+const tab = (name: string): Step => ({ tap: `tabLink(${name})`, stack: 'push', wait: name === 'T.nav.map' ? `css('.maplibregl-map canvas.maplibregl-canvas')` : `tabLink(${name}).getAttribute('aria-current') === 'page'` });
 const board = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.closest('header')) && document.querySelector('main ul li .figure')`;
 const firstDeparture = `[...document.querySelectorAll('main ul li .figure')].find(shown)`;
 const lineHeading = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.classList.contains('text-emph'))`;
@@ -455,7 +456,7 @@ export const JOURNEYS: Journey[] = [
       { tap: `saying(T.map.controls)`, wait: `css('[role=dialog][aria-modal=true]')` },
       { tap: `[...document.querySelectorAll('[role=dialog] button[aria-pressed]')].find((b) => shown(b) && b.textContent.includes(T.at.line0))`, options: `[...document.querySelectorAll('[role=dialog] button[aria-pressed]')].filter(shown)`, wait: `!css('[role=dialog][aria-modal=true]')` },
     ],
-    answer: `css('.leaflet-container')`,
+    answer: `css('.maplibregl-map canvas.maplibregl-canvas')`,
   },
   {
     task: 'the map, where am I',
@@ -502,7 +503,7 @@ export const JOURNEYS: Journey[] = [
     task: 'the map, where am I',
     entry: 'map tab, location allowed, at one of two poles across a street',
     // Standing at the pole drawn first: the finger lands on it and inside its partner's reach
-    // too, and Leaflet hands such a tap to whichever was drawn last, the other side's.
+    // too, and the map hands such a tap to the nearest stop within a finger's reach, which must be this one.
     start: { geo: 'granted', at: [ACROSS.lat, ACROSS.lng] },
     steps: [
       tab('T.nav.map'),
@@ -522,7 +523,7 @@ export const JOURNEYS: Journey[] = [
     start: { stored: REGULAR, geo: 'granted', at: [HOME.lat + 1000 / 111_320, HOME.lng], fixMs: 1500, motion: true },
     steps: [
       { tap: `[...document.querySelectorAll('main ul li button')].find(shown)`, wait: board },
-      { tap: `labelled(T.arrivals.map)`, stack: 'push', wait: `css('.leaflet-container') && new Promise((r) => setTimeout(() => r(true), 3000))` },
+      { tap: `labelled(T.arrivals.map)`, stack: 'push', wait: `css('.maplibregl-map canvas.maplibregl-canvas') && new Promise((r) => setTimeout(() => r(true), 3000))` },
       { tapAt: [0, -18], wait: `css('[role=dialog][aria-modal=true]')` },
     ],
     answer: `[...document.querySelectorAll('[role=dialog][aria-modal=true]')].find((d) => d.getAttribute('aria-label') === T.at.home)`,
@@ -698,40 +699,63 @@ const LOCATE = `async function (T, expr, keyboard) {${HELP}
 }`;
 
 /**
- * The dots nearest the middle of the map, in CSS pixels: discs of a colour on Leaflet's
- * canvas, a stop's or the reader's own, clear of the chips along the top and the buttons
- * along the bottom.
+ * The dots nearest the middle of the map, in CSS pixels, as the eye finds them: discs of a
+ * colour in a screenshot of the map, a stop's or the reader's own, clear of the chips along
+ * the top and the buttons along the bottom. Stops are drawn inside the WebGL canvas, so
+ * there is no node or 2D canvas to read; the reader is a DOM marker and needs no scan.
  */
-const dotsOf = (token: '--c-map-stop' | '--c-map-me') => `(() => {
-  const map = [...document.querySelectorAll('.leaflet-container')].find((e) => e.getBoundingClientRect().width > 250);
-  // The reader's position has a pane of its own, over the canvas the stops are drawn on; it was drawn on that one.
-  const canvases = map ? [...map.querySelectorAll('.leaflet-overlay-pane canvas, .leaflet-reader-pane canvas')] : [];
-  if (!canvases.length) return [];
+const dotsOf = async (page: Session, token: '--c-map-stop' | '--c-map-me'): Promise<{ x: number; y: number }[]> => {
+  const seen = await page.evaluate<{ area: { left: number; top: number; width: number; height: number; bottom: number }; mid: { x: number; y: number }; rgb: number[]; me: { x: number; y: number } | null } | null>(`(() => {
+  const map = [...document.querySelectorAll('.maplibregl-map')].find((e) => e.getBoundingClientRect().width > 250);
+  if (!map) return null;
   const probe = document.createElement('canvas').getContext('2d');
   probe.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('${token}').trim();
   probe.fillRect(0, 0, 1, 1);
-  const [fr, fg, fb] = probe.getImageData(0, 0, 1, 1).data;
+  const rgb = [...probe.getImageData(0, 0, 1, 1).data].slice(0, 3);
   // The part of the map on screen: turned sideways, the map is a card taller than the gap between the bars.
   const whole = map.getBoundingClientRect(), view = document.querySelector('main').getBoundingClientRect();
   const area = { left: whole.left, right: whole.right, top: Math.max(whole.top, view.top), bottom: Math.min(whole.bottom, view.bottom) };
   area.width = area.right - area.left;
   area.height = area.bottom - area.top;
-  const read = canvases.map((canvas) => { const box = canvas.getBoundingClientRect(); return { canvas, box, k: canvas.width / box.width, data: canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data }; });
-  const isStop = (x, y) => read.some(({ canvas, box, k, data }) => { const cx = Math.round((x - box.left) * k), cy = Math.round((y - box.top) * k); if (cx < 0 || cy < 0 || cx >= canvas.width || cy >= canvas.height) return false; const i = (cy * canvas.width + cx) * 4; return data[i + 3] > 200 && Math.abs(data[i] - fr) < 14 && Math.abs(data[i + 1] - fg) < 14 && Math.abs(data[i + 2] - fb) < 14; });
-  const mid = { x: area.left + area.width / 2, y: area.top + area.height / 2 };
-  const found = [];
-  // Clear of the chips and the buttons, which take a fixed share of a short map turned sideways.
-  for (let y = area.top + Math.min(80, area.height * 0.25); y < area.bottom - Math.min(120, area.height * 0.3); y += 2) for (let x = area.left + 24; x < area.right - 24; x += 2) {
-    if (!(isStop(x, y) && isStop(x + 2, y) && isStop(x - 2, y) && isStop(x, y + 2) && isStop(x, y - 2))) continue;
-    // A dot the finger can reach: not under a chip or a button floating over the map.
-    const hit = document.elementFromPoint(x, y);
-    if (!hit || !map.contains(hit) || hit.closest('button, a')) continue;
+  const dot = map.querySelector('.map-reader-dot'), b = dot && dot.getBoundingClientRect();
+  return { area, mid: { x: area.left + area.width / 2, y: area.top + area.height / 2 }, rgb, me: b ? { x: b.left + b.width / 2, y: b.top + b.height / 2 } : null };
+})()`);
+  if (!seen) return [];
+  const { area, mid, rgb: [fr, fg, fb] } = seen;
+  const found: { x: number; y: number; d: number }[] = [];
+  const add = (x: number, y: number) => {
     // One point a dot, its first: the scan meets each disc on several rows.
     if (!found.some((f) => Math.hypot(f.x - x, f.y - y) < 12)) found.push({ x, y: y + 2, d: Math.hypot(x - mid.x, y - mid.y) });
+  };
+  const candidates: { x: number; y: number }[] = [];
+  // Clear of the chips and the buttons, which take a fixed share of a short map turned sideways.
+  const top = area.top + Math.min(80, area.height * 0.25), bottom = area.bottom - Math.min(120, area.height * 0.3);
+  if (token === '--c-map-me') {
+    if (seen.me && seen.me.x >= area.left && seen.me.x <= area.left + area.width && seen.me.y >= area.top && seen.me.y <= area.top + area.height) candidates.push(seen.me);
+  } else {
+    const { data } = await page.send<{ data: string }>('Page.captureScreenshot', { format: 'png', clip: { x: area.left, y: area.top, width: area.width, height: area.height, scale: 1 } });
+    const image = decodePng(Buffer.from(data, 'base64'));
+    // The shot may be taken at a device pixel ratio above 1: k maps CSS pixels of the area to image pixels.
+    const k = image.width / area.width;
+    const isStop = (x: number, y: number) => {
+      const cx = Math.round((x - area.left) * k), cy = Math.round((y - area.top) * k);
+      if (cx < 0 || cy < 0 || cx >= image.width || cy >= image.height) return false;
+      const i = (cy * image.width + cx) * 4;
+      return Math.abs(image.data[i] - fr) < 14 && Math.abs(image.data[i + 1] - fg) < 14 && Math.abs(image.data[i + 2] - fb) < 14;
+    };
+    for (let y = top; y < bottom; y += 2) for (let x = area.left + 24; x < area.left + area.width - 24; x += 2) {
+      if (isStop(x, y) && isStop(x + 2, y) && isStop(x - 2, y) && isStop(x, y + 2) && isStop(x, y - 2)) candidates.push({ x, y });
+    }
   }
+  // A dot the finger can reach: not under a chip or a button floating over the map.
+  const reach = await page.evaluate<boolean[]>(`${JSON.stringify(candidates)}.map(({ x, y }) => {
+    const map = [...document.querySelectorAll('.maplibregl-map')].find((e) => e.getBoundingClientRect().width > 250);
+    const hit = document.elementFromPoint(x, y);
+    return !!hit && map.contains(hit) && !hit.closest('button, a');
+  })`);
+  candidates.forEach((c, n) => { if (reach[n]) add(c.x, c.y); });
   return found.sort((a, b) => a.d - b.d).slice(0, 4).map(({ x, y }) => ({ x, y }));
-})()`;
-export const STOP_DOT = dotsOf('--c-map-stop');
+};
 
 /** What is at the point the finger lands, and where the found element is now. */
 const AT_POINT = `function (x, y) {
@@ -1067,13 +1091,13 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
       await press(page, 'Enter', 13);
       run.keys++;
     } else if ('tapAt' in step) {
-      const at = await page.evaluate<{ x: number; y: number }>(`(() => { const m = [...document.querySelectorAll('.leaflet-container')].find((e) => e.getBoundingClientRect().width > 250).getBoundingClientRect(); return { x: m.left + m.width / 2 + ${step.tapAt[0]}, y: m.top + m.height / 2 + ${step.tapAt[1]} }; })()`);
+      const at = await page.evaluate<{ x: number; y: number }>(`(() => { const m = [...document.querySelectorAll('.maplibregl-map')].find((e) => e.getBoundingClientRect().width > 250).getBoundingClientRect(); return { x: m.left + m.width / 2 + ${step.tapAt[0]}, y: m.top + m.height / 2 + ${step.tapAt[1]} }; })()`);
       run.zones[at.y < H * 0.25 ? 'hard' : at.y < H * 0.5 ? 'stretch' : 'easy']++;
       await touch(page, at.x, at.y);
       run.taps++;
     } else if ('tapMap' in step) {
       // The dots nearest the middle, one at a time, as a finger tries the next when one does not answer.
-      const dots = await page.evaluate<{ x: number; y: number }[]>(step.tapMap === 'me' ? dotsOf('--c-map-me') : STOP_DOT);
+      const dots = await dotsOf(page, step.tapMap === 'me' ? '--c-map-me' : '--c-map-stop');
       if (!dots.length) {
         flow(`step ${i + 1}: no ${step.tapMap === 'me' ? "dot for the reader's position" : 'stop'} on the part of the map on screen`);
         break;

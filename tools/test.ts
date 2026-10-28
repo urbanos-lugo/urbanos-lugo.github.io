@@ -44,7 +44,7 @@ import { LANG_PREFIX, PATHS, SLUGS, isCrawler, parsePath, pathFor, pickLang } fr
 import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src/services/walkingPath';
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
 import { routeOnFoot } from '../src/utils/walkRouter';
-import { headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
+import { accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
 import { nameAt, nameBox, placeNames } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
 import { HOLIDAY_YEARS, buildRuns, dayKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
@@ -933,28 +933,6 @@ ok('the options offered are visibly different from each other', () => {
     if (a.id === b.id) continue;
     const labels = planTrips(a.name, b.name, { now }).map((p) => p.segments.filter((s) => s.type === 'bus').map((s) => s.line!.number).join('>') || 'walk');
     assert(new Set(labels).size === labels.length, `duplicate option "${labels.join(', ')}"`);
-  }
-});
-
-ok('the renderer’s bridge does nothing in a frame that comes after its map is gone', () => {
-  // An uncaught "Cannot read properties of null (reading 'getZoom')" in Ruta's "no route"
-  // state on a desktop, in two of eight weekly audits in October 2026. The bridge answers a
-  // resize, and the end of a zoom, in the next animation frame and reads this._map there; a
-  // map taken down within that frame had already cleared it. patches/ makes the frame ask
-  // first. Both of the bridge's builds are run here against a stand-in Leaflet, whose frame
-  // runs at once.
-  const dir = 'node_modules/@maplibre/maplibre-gl-leaflet';
-  for (const file of ['dist/leaflet-maplibre-gl.mjs', 'leaflet-maplibre-gl.js']) {
-    let layer: Record<string, (this: object, e?: object) => void> | undefined;
-    const L = { Layer: { extend: (proto: typeof layer) => ((layer = proto), function () {}) }, Util: { requestAnimFrame: (fn: () => void, context: object) => fn.call(context) } };
-    const source = read(`${dir}/${file}`);
-    if (file.endsWith('.mjs')) new Function('LeafletModule', 'maplibregl', source.replace(/^import .*$/gm, '').replace(/^export .*$/gm, ''))(L, {});
-    else new Function('exports', 'module', 'require', source)({}, {}, (id: string) => (id === 'leaflet' ? L : {}));
-    assert(layer?._transitionEnd, `${file}: the bridge no longer has the frame this check runs`);
-    assert.doesNotThrow(() => layer!._transitionEnd.call({ _map: null, _glMap: null }, {}), `${file}: the frame after a resize reads a map that is gone`);
-    // And with the map still there, the frame still reaches it.
-    const reached = new Error('reached');
-    assert.throws(() => layer!._transitionEnd.call({ _map: { getZoom: () => { throw reached; } }, _glMap: {} }, {}), (e) => e === reached, `${file}: the frame no longer puts the renderer back in step with a map that is there`);
   }
 });
 
@@ -1974,7 +1952,7 @@ await okAsync('the address the app calls for /api is the one its policy admits, 
   // Without the setting the app asks beside the page, and the policy names no other origin to ask.
   assert(apiUrl('alerts', { VITE_API_ORIGIN: undefined, BASE_URL: '/' }) === '/api/alerts', 'without VITE_API_ORIGIN the app asks somewhere other than beside the page');
   const connect = CSP_HEADER.match(/connect-src ([^;]+)/)?.[1].split(' ') ?? [];
-  assert(connect.filter((s) => s.startsWith('https://')).every((s) => /openfreemap|openstreetmap/.test(s)), `with no API origin set, connect-src admits ${connect.join(' ')}`);
+  assert(connect.filter((s) => s.startsWith('https://')).every((s) => /openfreemap/.test(s)), `with no API origin set, connect-src admits ${connect.join(' ')}`);
 });
 
 ok('a star or a recent stop set in one open copy of the app survives another copy', () => {
@@ -2888,7 +2866,7 @@ function markupInterpolations(code: string): { expr: string; at: number }[] {
 }
 
 ok('a name bound for a map label arrives as text, whatever it contains', () => {
-  // Leaflet takes HTML, not text: a name with a tag in it puts a real element in the DOM. Two
+  // a map popup or hover label takes HTML, not text: a name with a tag in it puts a real element in the DOM. Two
   // maps once carried scraped names straight into innerHTML. Every value the map's labels,
   // popups and pins carry from the dataset goes through escapeHtml, so that is what is asked:
   // nothing in its output can open a tag or leave an attribute, and nothing is lost.
@@ -4154,6 +4132,20 @@ ok('the fan on the reader points where the top of the screen faces, and nowhere 
   for (let from = 0; from < 360; from += 37) for (let to = 0; to < 360; to += 41) {
     const step = turnToward(from, to, 0.3);
     assert(step >= 0 && step < 360, `${from}→${to} gave ${step}`);
+  }
+});
+
+ok('the circle of a fix is drawn as far from the reader as the fix is uncertain, every way', () => {
+  // The renderer draws the accuracy as a polygon in degrees. A degree of longitude in Lugo is
+  // 0.73 of one of latitude: a circle built without that is an ellipse a third too wide.
+  for (const metres of [5, 25, 500]) {
+    const at: [number, number] = [43.0097, -7.556];
+    const ring = accuracyCircle(at, metres).geometry.coordinates[0];
+    assert.deepEqual(ring[0], ring[ring.length - 1], 'the ring closes');
+    for (const [lng, lat] of ring) {
+      const d = metresBetween(at[0], at[1], lat, lng);
+      assert(Math.abs(d - metres) < metres * 0.005, `${metres} m: a point of the circle is ${d.toFixed(2)} m out`);
+    }
   }
 });
 

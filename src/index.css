@@ -79,7 +79,7 @@
   /* The QR reader's frame and its caption, drawn over the camera's picture. */
   --c-on-camera: #ffffff;
 
-  /* The map's own colours. Leaflet bakes a colour into a layer when it makes the layer, so
+  /* The map's own colours. A map style takes a colour as a value, not a variable, so
      Map/palette.ts reads these off <html> once per theme. The names written beside the dots
      are the app's ink, haloed in its ground, and the stop chosen is a ring of that ink: blue
      is the reader's position alone. The accent stays off the map: several lines are red,
@@ -337,6 +337,16 @@
      half), and the same number on the stop's row in the list, in rem like the row. */
   --spacing-stop-rank: 24px;
   --spacing-stop-rank-row: 1.5rem;
+  /* The map's own markers, in the map's pixels: a numbered stop's box a finger can hit, the
+     reader's dot with its ring, and the fan of the way the phone faces. */
+  --spacing-map-rank: 36px;
+  --spacing-map-pin: 28px; /* a trip's A, B and boarding pins */
+  --spacing-map-bus: 46px; /* a bus, its chip and the nose round it (DRAW.icon.bus, its SVG) */
+  --spacing-map-reader: 19px;
+  --spacing-map-beam: 96px;
+  /* A zoom or compass glyph inside its 44 px button, and a popup's ×, the 24 px it always had. */
+  --spacing-map-glyph: 18px;
+  --spacing-map-close: 24px;
 
   /* How tall a panel or a list may grow before it scrolls. */
   --spacing-sheet-max: 78dvh;       /* the map's controls sheet: the map stays visible above */
@@ -381,7 +391,7 @@
   --radius-badge: 7px;    /* a line's number on its colour, as on the poles */
   --radius-tag: 0.25rem;  /* a small tag: a code, a provenance chip, a small badge */
   --radius-sheet: 1rem;   /* the top of a sheet rising from the bottom */
-  --radius-map-bar: 14px; /* Leaflet's zoom bar */
+  --radius-map-bar: 14px; /* the map's zoom bar */
   --radius-pill: calc(infinity * 1px);
 
   --default-border-width: 1px;  /* the hairline */
@@ -416,11 +426,13 @@
   --blur-glass: 4px; /* behind a control floating over the map */
   --blur-bar: 8px;   /* behind the ride's bar, over the list it is stuck to */
 
-  /* Stacking. Leaflet's panes sit at 400 to 1000 inside a map, so what floats over a map
-     starts at its overlay pane; the page's own layers sit above any map. */
+  /* Stacking. Inside a map its own controls sit at 2 and its markers in the order they were
+     added; what floats over a map starts well clear of both, and the page's own layers sit
+     above any map. */
   --z-index-raised: 10;      /* a bar stuck over the list it belongs to */
   --z-index-dropdown: 30;    /* a field's suggestions over the form */
-  --z-index-map-float: 400;  /* a control floating on a map, level with Leaflet's overlay pane */
+  --z-index-map-bus: 1;      /* a bus over the map's other markers (VehicleLayer) */
+  --z-index-map-float: 400;  /* a control floating on a map */
   --z-index-map-chips: 401;  /* the line chips, over the buses' notice that follows them */
   --z-index-map-alert: 402;  /* why the locate button found nothing, over the chips it can grow under at 200 % text */
   --z-index-map-overlay: 500; /* the scrim under the map's controls sheet */
@@ -682,12 +694,23 @@
      a finger's reach, wider than the disc. */
   .stop-rank { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: var(--spacing-stop-rank); height: var(--spacing-stop-rank); border: var(--border-width-strong) solid var(--c-map-ring); border-radius: var(--radius-pill); background-color: var(--c-map-stop); color: var(--c-map-ring); font-family: var(--font-sans); font-size: var(--text-map-pin); line-height: var(--text-map-pin--line-height); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
   .stop-rank-row { width: var(--spacing-stop-rank-row); height: var(--spacing-stop-rank-row); font-size: var(--text-label); line-height: var(--text-label--line-height); }
-  .map-rank { display: grid; place-items: center; }
+  .map-rank { display: grid; place-items: center; width: var(--spacing-map-rank); height: var(--spacing-map-rank); cursor: pointer; }
   .map-rank .stop-rank { box-shadow: var(--shadow-pin); }
 
+  /* The reader on a map (reader.ts): a dot in the reader's blue with the stop dots' ring, and
+     the fan under it. Information, not a control: neither takes a tap. */
+  .map-reader-dot { width: var(--spacing-map-reader); height: var(--spacing-map-reader); border: var(--border-width-heavy) solid var(--c-map-ring); border-radius: var(--radius-pill); background-color: var(--c-map-me); pointer-events: none; }
+  .map-beam { width: var(--spacing-map-beam); height: var(--spacing-map-beam); pointer-events: none; }
+  /* A trip's pins (RouteMap): A, B and each boarding, in the place's or the line's colour. */
+  .route-map-pin { width: var(--spacing-map-pin); height: var(--spacing-map-pin); }
+  /* A bus on the network map (VehicleLayer), over every other marker; a tap opens its popup. */
+  .custom-bus-marker { width: var(--spacing-map-bus); height: var(--spacing-map-bus); z-index: var(--z-index-map-bus); cursor: pointer; }
+  /* The stop names' own canvas (StopNames.ts), over the map and under its markers. */
+  .map-names { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
   /* The way the phone faces (reader.ts): a fan of the reader's blue, fading from the dot
-     outward, turned by the compass through --heading. Drawn only once the compass answers. */
-  .map-beam-fan { width: 100%; height: 100%; border-radius: var(--radius-pill); background: conic-gradient(from calc(var(--beam-spread) / -2), var(--c-map-me) 0 var(--beam-spread), transparent 0); mask-image: radial-gradient(closest-side, black 25%, transparent); opacity: var(--opacity-beam); transform: rotate(var(--heading, 0deg)); }
+     outward, turned with the map by its marker's rotation. Drawn only once the compass answers. */
+  .map-beam-fan { width: 100%; height: 100%; border-radius: var(--radius-pill); background: conic-gradient(from calc(var(--beam-spread) / -2), var(--c-map-me) 0 var(--beam-spread), transparent 0); mask-image: radial-gradient(closest-side, black 25%, transparent); opacity: var(--opacity-beam); }
 
   /* A labelled action. Primary is the accent fill; secondary a bordered fill a step off its
      ground (the caller makes it bg-bg where it sits on a tint or on glass); outbound an <a> to
@@ -761,10 +784,6 @@
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
   }
-  /* Leaflet paints its container #ddd until a layer draws over it. On the dark theme
-     that is a light-grey rectangle for as long as the renderer takes to put something
-     on screen — most obvious switching to the Mapa tab, where it reads as the map
-     resizing rather than loading. Measured at rgb(221,221,221) on a dark ground. */
   /**
    * The app shell fills the screen, on a phone too: pinned to the screen's four edges, so
    * the bottom bar is where the screen ends. It was a column 100dvh tall in the page's flow,
@@ -827,114 +846,110 @@
     display: none;
   }
 
-  .leaflet-container {
-    /* !important because Leaflet ships its CSS unlayered, and an unlayered rule beats
-       anything in @layer base however late it comes — the same reason the popup and
-       tooltip overrides below carry it. */
-    background: var(--c-bg) !important;
-  }
+  /* The map, themed. MapLibre's own sheet (mapStyle.ts imports it) is unlayered, and an
+     unlayered rule beats anything in a layer however late it comes: every override here
+     carries !important for that reason. Left to its sheet the map would paint a white
+     ground until the first tiles land (on the dark theme a light rectangle that read as the
+     map resizing), white plates under a #333 glyph for the zoom bar at 29 px, under the
+     44 px floor every other target here clears, white popups that strand themed text, and an
+     attribution in grey on translucent white that fails contrast in both themes. */
+  /* The ground before the first tiles, and the app's typeface for whatever the map writes. */
+  .maplibregl-map { background: var(--c-bg) !important; font-family: var(--font-sans) !important; }
 
-  /* Leaflet paints its popups white from its own sheet, which strands themed text on a
-     white card in dark mode. */
-  .leaflet-popup-content-wrapper,
-  .leaflet-popup-tip {
-    background: var(--c-bg) !important;
-    color: var(--c-ink) !important;
-  }
-  /* And its close button in a fixed grey, #757575: 4.19:1 on the dark card, under the 4.5 its
-     "×" needs. The zoom buttons' ink. */
-  .leaflet-container a.leaflet-popup-close-button {
-    color: var(--c-ink-2) !important;
-  }
-  .leaflet-container a.leaflet-popup-close-button:hover {
-    color: var(--c-ink) !important;
-  }
-
-  /* The hover labels on stops and routes never got the same treatment: the two class
-     names the layers pass — stop-hover-tooltip and transit-map-tooltip — were never
-     defined, so they fell back to Leaflet's own white card with a white arrow. On the
-     dark basemap that is a bright rectangle quoting a street name in near-black. */
-  .leaflet-tooltip {
-    background: var(--c-bg) !important;
-    color: var(--c-ink) !important;
+  /* The zoom bar and the compass: one set with the locate button, 44 px each. */
+  .maplibregl-ctrl-group {
     border: var(--default-border-width) solid var(--c-border) !important;
-    box-shadow: var(--shadow-tooltip) !important;
-    font-family: var(--font-sans);
+    border-radius: var(--radius-map-bar) !important;
+    background: var(--c-bg) !important;
+    box-shadow: var(--shadow-float) !important;
+    overflow: hidden;
   }
-  .leaflet-tooltip-top::before {
-    border-top-color: var(--c-border) !important;
+  .maplibregl-ctrl-group button {
+    width: var(--spacing-tap-bar) !important;
+    height: var(--spacing-tap-bar) !important;
+    color: var(--c-ink-2);
   }
-  .leaflet-tooltip-bottom::before {
-    border-bottom-color: var(--c-border) !important;
+  .maplibregl-ctrl-group button + button { border-top: var(--default-border-width) solid var(--c-line) !important; }
+  .maplibregl-ctrl-group button:not(:disabled):hover,
+  .maplibregl-ctrl-group button:focus-visible {
+    background-color: var(--c-surface) !important;
+    color: var(--c-ink);
   }
-  .leaflet-tooltip-left::before {
-    border-left-color: var(--c-border) !important;
+  /* Its sheet takes the outline away for a glow of its own; the app's ring instead, inside,
+     where the bar's rounded edge does not cut it. */
+  .maplibregl-ctrl-group button:focus-visible {
+    outline: var(--outline-width-focus) solid var(--c-accent) !important;
+    outline-offset: calc(var(--outline-width-focus) * -1) !important;
+    box-shadow: none !important;
   }
-  .leaflet-tooltip-right::before {
-    border-right-color: var(--c-border) !important;
+  .maplibregl-ctrl-group button:disabled { color: var(--c-ink-3); }
+  .maplibregl-ctrl-group button:disabled .maplibregl-ctrl-icon { opacity: var(--opacity-disabled) !important; }
+  /* The glyphs drawn in the button's own ink, so they follow the theme: a plus, a minus, and
+     a needle whose north half is the accent. MapLibre turns the needle's box with the map. */
+  .maplibregl-ctrl-group .maplibregl-ctrl-icon { display: grid !important; place-items: center; background-image: none !important; }
+  .maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon,
+  .maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon {
+    background: linear-gradient(currentColor, currentColor) center / var(--spacing-map-glyph) var(--border-width-strong) no-repeat !important;
   }
+  .maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon::before { content: ''; width: var(--border-width-strong); height: var(--spacing-map-glyph); background: currentColor; }
+  .maplibregl-ctrl-compass .maplibregl-ctrl-icon::before {
+    content: '';
+    width: calc(var(--spacing-map-glyph) / 3);
+    height: var(--spacing-map-glyph);
+    background: linear-gradient(var(--c-accent) 50%, currentColor 50%);
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  }
+  /* The compass only once the map is turned (useMapLibre sets .map-turned): north up, it has
+     nothing to say. A tap on it puts north back up, and it goes. */
+  .maplibregl-ctrl-group .maplibregl-ctrl-compass { display: none !important; }
+  .map-turned .maplibregl-ctrl-group .maplibregl-ctrl-compass { display: block !important; }
+  /* With a stop's or a line's sheet up (TransitMap) the zoom bar steps aside: it floated over the
+     sheet's buttons, and a tap meant for them zoomed the map. The attribution stays. */
+  .map-sheet-up .maplibregl-ctrl-group { visibility: hidden; }
 
-  /* The stop names written on the map from zoom 16 in are not tooltips any more: they
-     are painted on a canvas of their own, in Map/StopNames.ts, which also says why. */
-
-  /* With a stop's or a line's sheet up (TransitMap), the zoom bar steps aside: it floated over
-     the sheet's buttons, and a tap meant for them zoomed the map. The attribution stays. */
-  .map-sheet-up .leaflet-control-zoom { visibility: hidden; }
-
-  /* Leaflet's attribution is required, and at its default 11 px grey on a translucent
-     white it fails contrast in both themes. Keep it, make it readable. */
-  .leaflet-control-attribution {
+  /* The attribution: required, and readable. */
+  .maplibregl-ctrl.maplibregl-ctrl-attrib {
     background: var(--c-bg) !important;
     color: var(--c-ink-2) !important;
     font-size: var(--text-label) !important;
+    line-height: var(--text-label--line-height) !important;
   }
-  .leaflet-control-attribution a {
-    color: var(--c-accent) !important;
-  }
+  .maplibregl-ctrl-attrib a { color: var(--c-accent) !important; }
 
-  /* Leaflet draws its own controls at 30 px, which is under the tap floor everything
-     else in this app clears. Widen them rather than hiding them.
-
-     And theme them. Leaflet paints these from its own sheet — white plate, near-black
-     glyph, a grey plate for the disabled end of the range — so at night the zoom sat on
-     the map as a white brick two inches from a locate button that was themed properly.
-     Same surface, same border, same ink and the same float over the map as that button:
-     they are two halves of one set of map controls and they should look it. Not the same
-     corner: a bar of two buttons is not a circle, so it keeps its own.
-
-     !important throughout because Leaflet ships its CSS unlayered, and an unlayered rule
-     beats anything in @layer base however late it comes. */
-  .leaflet-bar,
-  .leaflet-touch .leaflet-bar {
-    border: var(--default-border-width) solid var(--c-border) !important;
-    border-radius: var(--radius-map-bar) !important;
-    box-shadow: var(--shadow-float) !important;
-    /* So the children's square corners are cut by the rounded container instead of
-       poking out of it. */
-    overflow: hidden;
-  }
-  .leaflet-touch .leaflet-bar a,
-  .leaflet-bar a {
-    width: var(--spacing-tap-bar) !important;
-    height: var(--spacing-tap-bar) !important;
-    line-height: var(--spacing-tap-bar) !important;
+  /* Popups: the card on the page's ground, its tip the same, its × in the zoom buttons' ink. */
+  .maplibregl-popup-content {
     background: var(--c-bg) !important;
-    color: var(--c-ink-2) !important;
-    border-bottom: var(--default-border-width) solid var(--c-line) !important;
-  }
-  .leaflet-bar a:last-child {
-    border-bottom: none !important;
-  }
-  .leaflet-bar a:hover,
-  .leaflet-bar a:focus {
-    background: var(--c-surface) !important;
     color: var(--c-ink) !important;
+    border-radius: var(--radius-control) !important;
+    box-shadow: var(--shadow-tooltip) !important;
   }
-  /* The end of the range: still readable, plainly not pressable. */
-  .leaflet-bar a.leaflet-disabled {
-    background: var(--c-bg) !important;
-    color: var(--c-ink-3) !important;
-    opacity: var(--opacity-disabled);
+  .maplibregl-popup-anchor-top .maplibregl-popup-tip,
+  .maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+  .maplibregl-popup-anchor-top-right .maplibregl-popup-tip { border-bottom-color: var(--c-bg) !important; }
+  .maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+  .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+  .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip { border-top-color: var(--c-bg) !important; }
+  .maplibregl-popup-anchor-left .maplibregl-popup-tip { border-right-color: var(--c-bg) !important; }
+  .maplibregl-popup-anchor-right .maplibregl-popup-tip { border-left-color: var(--c-bg) !important; }
+  .maplibregl-popup-close-button {
+    width: var(--spacing-map-close);
+    height: var(--spacing-map-close);
+    color: var(--c-ink-2) !important;
+    font-size: var(--text-body) !important;
+    line-height: var(--spacing-map-close) !important;
+  }
+  .maplibregl-popup-close-button:hover { color: var(--c-ink) !important; background-color: transparent !important; }
+
+  /* The labels a pointer's hover shows (mapLayers.ts hoverLabels): a small card with a hairline,
+     never in the way of the pointer that raised it. */
+  .map-hover-label { pointer-events: none; }
+  .map-hover-label .maplibregl-popup-content {
+    border: var(--default-border-width) solid var(--c-border);
+    padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2) !important;
+    font-size: var(--text-label);
+    line-height: var(--text-label--line-height);
+    white-space: nowrap;
+    pointer-events: none;
   }
 
   /* A row tinted with its own line colour, mixed against whatever the background

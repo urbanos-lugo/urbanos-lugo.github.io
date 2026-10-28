@@ -280,6 +280,8 @@ export const en: Dict = {
     mapTitle: 'Network map',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
+    resetNorth: 'Put north back up',
+    unavailable: 'This browser cannot draw the map. Everything else works: the lists say the same.',
     networkRegion: 'Network map. The routes and stops are also on the lines tab.',
     nearbyRegion: 'Map of the stops near you. The same stops are in the list below.',
     loadingMap: 'Loading the map…',
@@ -330,6 +332,7 @@ export const en: Dict = {
     collapseLines: 'Show the lines in one row',
     geolocationUnavailable: 'Geolocation is not available.',
     stopFollowing: 'Stop following me',
+    turnWithMe: 'Turn the map the way you face',
     outOfArea: 'No stop near you. This site only covers Lugo’s urban network.',
     stopsCount: (total: number, withQr: number) =>
       `${total} stops, ${withQr} with a QR code`,

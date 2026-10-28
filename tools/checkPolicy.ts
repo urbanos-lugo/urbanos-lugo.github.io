@@ -245,8 +245,7 @@ ok('the documents name every data file, every bundled library and every host a v
   // dependency fails here until it has a row there and an entry in this table.
   const notice = read('NOTICE.md');
   const CREDITED: Record<string, string> = {
-    react: 'React', 'react-dom': 'React DOM', leaflet: 'Leaflet', 'maplibre-gl': 'MapLibre GL JS',
-    '@maplibre/maplibre-gl-leaflet': 'maplibre-gl-leaflet', 'lucide-react': 'Lucide', express: 'Express',
+    react: 'React', 'react-dom': 'React DOM', 'maplibre-gl': 'MapLibre GL JS', 'lucide-react': 'Lucide', express: 'Express',
     tailwindcss: 'Tailwind CSS', 'vite-plugin-pwa': 'Workbox',
   };
   const pkg = JSON.parse(read('package.json'));
@@ -513,7 +512,7 @@ ok('the stops a ride passes line up under the words that unfold them', () => {
 
 await okAsync('every colour, size, space, corner, edge, shadow, layer, duration and curve is a named token', async () => {
   // October 2026: every value the interface drew with was named in index.css, by its role, or
-  // in the map's DRAW table where Leaflet needs numbers, and Tailwind's own scales were cleared.
+  // in the map's DRAW table where the map takes numbers, and Tailwind's own scales were cleared.
   // Run on the tree before that round, this check reported 256 values that named no token:
   // 96 classes, 57 raw values in index.css's own rules, 44 numbers in the maps' layers, 24
   // colours in strings, 18 style attributes and 6 SVG attributes in HTML strings, a class that
@@ -577,8 +576,9 @@ await okAsync('every colour, size, space, corner, edge, shadow, layer, duration 
   // reset drew nothing at all, silently.
   const UTILITY = /^-?(bg|text|border|rounded|shadow|ring|outline|p[xytrbls]?|m[xytrbls]?|w|h|size|min-[wh]|max-[wh]|gap(-[xy])?|space-[xy]|z|opacity|duration|ease|delay|animate|tracking|leading|font|stroke|fill|top|right|bottom|left|inset(-[xy])?|translate-[xy]|scale|rotate|grid-cols|col-span|row-start|basis|underline-offset|decoration|backdrop-blur|blur|drop-shadow|divide(-[xy])?|line-clamp|scroll-m[xytrbl]?|aspect)-/;
   const escapeClass = (cls: string) => cls.replace(/[^\w-]/g, (c) => `\\${c}`);
-  // Not classes: a custom property's name, and the SVG attributes the markers' markup spells.
-  const NOT_CLASS = /^--|^(stroke-(width|linecap|linejoin|dasharray)|text-anchor|font-(family|size|weight)|fill-opacity|dominant-baseline|paint-order)$/;
+  // Not classes: a custom property's name, the SVG attributes the markers' markup spells, and the
+  // map style's own property names and the corners its controls go in.
+  const NOT_CLASS = /^--|^(stroke-(width|linecap|linejoin|dasharray)|text-anchor|font-(family|size|weight)|fill-(opacity|color|outline-color)|dominant-baseline|paint-order|(top|bottom)-(left|right))$/;
   for (const candidate of candidates) {
     if (UTILITY.test(utilityOf(candidate)) && !NOT_CLASS.test(candidate) && !/[()]/.test(candidate) && !built.includes(`.${escapeClass(candidate)}`)) off.push(`class ${candidate} generates nothing`);
   }
@@ -600,7 +600,7 @@ await okAsync('every colour, size, space, corner, edge, shadow, layer, duration 
     }
   }
 
-  // 3. HTML strings, for Leaflet: a style attribute carries only interpolated data, and an SVG's
+  // 3. HTML strings, for the map's markers and popups: a style attribute carries only interpolated data, and an SVG's
   // paint and type come from classes. The one exception is the visually-hidden idiom on the
   // crawlers' <h1> in index.html, sr-only's own values, which has to work before any CSS.
   for (const file of sources) {
@@ -620,10 +620,13 @@ await okAsync('every colour, size, space, corner, edge, shadow, layer, duration 
     }
   }
 
-  // 5. The maps' numbers are DRAW's, in palette.ts; a layer's options name them.
+  // 5. The maps' numbers are DRAW's, in palette.ts; a layer's options and its paint name them:
+  // the option names a marker, a popup or a fit takes, and the renderer's own quoted style
+  // properties ('line-width', 'circle-radius', 'icon-offset'…).
   for (const file of sourcesUnder('src/components/Map').filter((f) => !f.endsWith('palette.ts'))) {
     const code = readFileSync(file, 'utf8').replace(/\/\/.*$|\/\*[\s\S]*?\*\//gm, '');
-    for (const [, key, value] of code.matchAll(/\b(weight|radius|opacity|fillOpacity|dashArray|iconSize|iconAnchor|zIndexOffset|zIndex|lineWidth|offset|padding|paddingTopLeft|paddingBottomRight)\s*[:=]\s*((?:\[[^\]]*\]|'[^']*'|[^,;}\n])+)/g)) {
+    for (const [, option, style, value] of code.matchAll(/(?:\b(weight|radius|opacity|fillOpacity|dashArray|iconSize|iconAnchor|zIndexOffset|zIndex|lineWidth|offset|padding|paddingTopLeft|paddingBottomRight)|'((?:line|circle|fill|icon|symbol)-[a-z-]+)')\s*[:=]\s*((?:\[[^\]]*\]|'[^']*'|[^,;}\n])+)/g)) {
+      const key = option ?? style;
       // Halving a box for its centre is geometry, not a value.
       if (/(?<![\w.$])-?(?:\d*\.\d+|[2-9]\d*|1\d+)(?![\w.])|'[\d ]+'/.test(value.replace(/\s*\/\s*2\b/g, ''))) off.push(`${relative(file)}: ${key}: ${value.trim()}`);
     }

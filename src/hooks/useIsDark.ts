@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 /**
  * Whether the dark palette is live right now, read off the class `useTheme` sets on
- * <html>. Leaflet bakes colours into a layer when the layer is made, so the map cannot
+ * <html>. A map style takes its colours as values, not variables, so the map cannot
  * use a CSS variable and has to be told in JavaScript.
  */
 export function useIsDark(): boolean {

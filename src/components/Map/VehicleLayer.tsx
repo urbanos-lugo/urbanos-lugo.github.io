@@ -1,40 +1,41 @@
 import { useEffect, useRef } from 'react';
-import L from 'leaflet';
+import { Marker, Popup, type Map as MapLibre } from 'maplibre-gl';
 import { translations, useLang, type Lang } from '../../i18n';
 import { escapeHtml } from '../../utils/html';
 import { ScheduledBus } from '../../types';
-import { POPUP_CLEAR_OF_CONTROLS, badgeHtml, popupBox, rowButtonClass } from './popupHtml';
+import { badgeHtml, popupBox, rowButtonClass } from './popupHtml';
 import { DRAW } from './palette';
+import { claim } from './mapLayers';
 
 interface VehicleLayerProps {
-  map: L.Map | null;
+  map: MapLibre | null;
   buses: ScheduledBus[];
   /** Lines to draw; null means every line. */
   visibleLineIds: string[] | null;
   showBuses: boolean;
   onOpenLine: (lineId: string) => void;
+  /** A bus's popup opened: whatever sheet is up goes, so one thing is open at a time. */
+  onOpenBus?: () => void;
 }
 
 /**
  * The bus as one SVG: a round chip in the line's colour carrying the number, with a nose
- * that turns to face the way it is going. The number sits outside the rotating group so
- * it stays upright. The position is computed from the timetable and the popup says so.
+ * that turns to face the way it is going, on the map as it is turned. The number sits outside
+ * the rotating group so it stays upright. The position is computed from the timetable and the
+ * popup says so.
  */
-function busIcon(bus: ScheduledBus): L.DivIcon {
+function busSvg(bus: ScheduledBus, mapBearing: number): string {
   const colour = escapeHtml(bus.lineColor);
   const number = escapeHtml(bus.lineNumber);
   const size = number.length > 2 ? 'text-map-bus-long' : 'text-map-bus';
-  return L.divIcon({
-    className: 'custom-bus-marker',
-    iconSize: [DRAW.icon.bus, DRAW.icon.bus],
-    iconAnchor: [DRAW.icon.bus / 2, DRAW.icon.bus / 2],
-    html:
-      `<div class="cursor-pointer"><svg width="${DRAW.icon.bus}" height="${DRAW.icon.bus}" viewBox="0 0 46 46" aria-hidden="true" class="block overflow-visible drop-shadow-marker">` +
-      `<g transform="rotate(${bus.bearing} 23 23)"><path d="M23 2.5 L30 14 L16 14 Z" fill="${colour}" class="stroke-bg stroke-marker" stroke-linejoin="round" paint-order="stroke"></path></g>` +
-      `<circle cx="23" cy="23" r="13" fill="${colour}" class="stroke-bg stroke-marker"></circle>` +
-      `<text x="23" y="23" text-anchor="middle" dominant-baseline="central" class="fill-on-line font-sans font-bold ${size} tracking-map-bus">${number}</text></svg></div>`,
-  });
+  return (
+    `<svg width="${DRAW.icon.bus}" height="${DRAW.icon.bus}" viewBox="0 0 46 46" aria-hidden="true" class="block overflow-visible drop-shadow-marker">` +
+    `<g data-nose transform="${noseTurn(bus.bearing, mapBearing)}"><path d="M23 2.5 L30 14 L16 14 Z" fill="${colour}" class="stroke-bg stroke-marker" stroke-linejoin="round" paint-order="stroke"></path></g>` +
+    `<circle cx="23" cy="23" r="13" fill="${colour}" class="stroke-bg stroke-marker"></circle>` +
+    `<text x="23" y="23" text-anchor="middle" dominant-baseline="central" class="fill-on-line font-sans font-bold ${size} tracking-map-bus">${number}</text></svg>`
+  );
 }
+const noseTurn = (bearing: number, mapBearing: number) => `rotate(${(bearing - mapBearing).toFixed(1)} 23 23)`;
 
 /** Built as a node so the line heading can carry a real click handler. */
 function popupNode(bus: ScheduledBus, onOpenLine: (lineId: string) => void, lang: Lang): HTMLElement {
@@ -52,20 +53,32 @@ function popupNode(bus: ScheduledBus, onOpenLine: (lineId: string) => void, lang
   return node;
 }
 
-/** A bus out of the Tab order is still found by a screen reader moving through the map: an image with its line and destination. */
-function name(marker: L.Marker, label: string): void {
-  const el = marker.getElement();
-  el?.setAttribute('role', 'img');
-  el?.setAttribute('aria-label', label);
+/**
+ * A popup kept clear of what floats over the map: on a phone the line chips and the buses'
+ * notice over its top and the locate and controls buttons over its foot. A bus's popup opened
+ * under the notice, which covered its close button (WCAG 2.5.8), and a button in it reached by
+ * Tab could sit under them (2.4.11). The renderer does not pan to a popup; this does, the least.
+ */
+function keepClear(map: MapLibre, popup: Popup): void {
+  const el = popup.getElement();
+  if (!el) return;
+  const box = map.getContainer().getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  const room = DRAW.popupClear;
+  const dx = r.left < box.left + room.left ? r.left - box.left - room.left : r.right > box.right - room.right ? r.right - box.right + room.right : 0;
+  const dy = r.top < box.top + room.top ? r.top - box.top - room.top : r.bottom > box.bottom - room.bottom ? r.bottom - box.bottom + room.bottom : 0;
+  if (dx || dy) map.panBy([dx, dy]);
 }
 
-export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine }: VehicleLayerProps) {
+export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine, onOpenBus }: VehicleLayerProps) {
   const lang = useLang();
-  const markersRef = useRef<Record<string, L.Marker>>({});
+  const markersRef = useRef<Record<string, Marker>>({});
   /** What each marker was last drawn from, so a tick that changed neither icon nor popup costs neither. */
   const drawnRef = useRef<Record<string, { icon: string; popup: string }>>({});
   const onOpenLineRef = useRef(onOpenLine);
   onOpenLineRef.current = onOpenLine;
+  const onOpenBusRef = useRef(onOpenBus);
+  onOpenBusRef.current = onOpenBus;
 
   useEffect(() => {
     if (!map) return;
@@ -91,37 +104,66 @@ export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine
     });
 
     const t = translations(lang);
+    const bearing = map.getBearing();
     for (const bus of placed) {
       // Five degrees is under what the chip can show.
       const iconKey = `${bus.lineNumber}|${bus.lineColor}|${Math.round(bus.bearing / 5) * 5}|${lang}`;
       const popupKey = `${bus.destination}|${bus.nextStopName}|${bus.occupancy}|${lang}`;
-      const label = t.map.busMarker(bus.lineNumber, bus.destination);
       const existing = markersRef.current[bus.id];
       // Not while the focus is inside the popup: new content replaces the old, the focused
       // button with it, and the focus fell to the page (2.4.3). It catches up once the focus
       // has gone.
       const holdsFocus = !!existing?.getPopup()?.getElement()?.contains(document.activeElement);
       if (existing) {
-        existing.setLatLng([bus.currentLat, bus.currentLng]);
-        const drawn = drawnRef.current[bus.id];
-        if (drawn?.icon !== iconKey) {
-          existing.setIcon(busIcon(bus));
-          name(existing, label); // setIcon rebuilds the element
-        }
-        if (drawn?.popup !== popupKey && !holdsFocus) existing.setPopupContent(popupNode(bus, onOpenLineRef.current, lang));
+        existing.setLngLat([bus.currentLng, bus.currentLat]);
+        const el = existing.getElement();
+        el.dataset.bearing = String(bus.bearing);
+        if (drawnRef.current[bus.id]?.icon !== iconKey) el.innerHTML = busSvg(bus, bearing);
+        if (drawnRef.current[bus.id]?.popup !== popupKey && !holdsFocus) existing.getPopup()?.setDOMContent(popupNode(bus, onOpenLineRef.current, lang));
+        el.setAttribute('aria-label', t.map.busMarker(bus.lineNumber, bus.destination));
       } else {
-        // Out of the Tab order (keyboard: false). Leaflet made each bus a Tab stop, and the
-        // focus went to buses past the edge of the map or under the buttons that float on it
-        // (2.4.11). Their popup says what the lines screen says -- the buses the timetable
-        // has on the road and the stop each is reaching -- which the keyboard reaches there.
-        const marker = L.marker([bus.currentLat, bus.currentLng], { icon: busIcon(bus), zIndexOffset: DRAW.busesOver, keyboard: false }).addTo(map);
-        marker.bindPopup(popupNode(bus, onOpenLineRef.current, lang), POPUP_CLEAR_OF_CONTROLS);
-        name(marker, label);
-        markersRef.current[bus.id] = marker;
+        const el = document.createElement('div');
+        el.className = 'custom-bus-marker';
+        el.dataset.bearing = String(bus.bearing);
+        el.innerHTML = busSvg(bus, bearing);
+        // A bus out of the Tab order is still found by a screen reader moving through the map: an image with its line and destination.
+        el.setAttribute('role', 'img');
+        el.setAttribute('aria-label', t.map.busMarker(bus.lineNumber, bus.destination));
+        // Out of the Tab order: a Tab stop per bus sent the focus to buses past the edge of the
+        // map or under the buttons that float on it (2.4.11). Their popup says what the lines
+        // screen says -- the buses the timetable has on the road and the stop each is reaching --
+        // which the keyboard reaches there. The renderer gives a marker with a popup tabindex 0
+        // unless it has one already.
+        el.setAttribute('tabindex', '-1');
+        // The tap is the bus's: the map neither pans to it nor lists the routes under it.
+        el.addEventListener('click', claim);
+        const popup = new Popup({ offset: DRAW.icon.bus / 2, maxWidth: 'none' }).setDOMContent(popupNode(bus, onOpenLineRef.current, lang));
+        popup.on('open', () => {
+          onOpenBusRef.current?.();
+          keepClear(map, popup);
+          popup.getElement()?.addEventListener('focusin', () => keepClear(map, popup));
+        });
+        markersRef.current[bus.id] = new Marker({ element: el }).setLngLat([bus.currentLng, bus.currentLat]).setPopup(popup).addTo(map);
       }
       drawnRef.current[bus.id] = { icon: iconKey, popup: holdsFocus ? (drawnRef.current[bus.id]?.popup ?? popupKey) : popupKey };
     }
   }, [map, buses, visibleLineIds, showBuses, lang]);
+
+  // A turned map turns each nose back, so it still points the way the bus goes.
+  useEffect(() => {
+    if (!map) return;
+    const turn = () => {
+      const bearing = map.getBearing();
+      for (const marker of Object.values(markersRef.current)) {
+        const el = marker.getElement();
+        el.querySelector('[data-nose]')?.setAttribute('transform', noseTurn(Number(el.dataset.bearing), bearing));
+      }
+    };
+    map.on('rotate', turn);
+    return () => {
+      map.off('rotate', turn);
+    };
+  }, [map]);
 
   useEffect(
     () => () => {

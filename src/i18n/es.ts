@@ -269,6 +269,8 @@ export const es: Dict = {
     mapTitle: 'Mapa de la red',
     zoomIn: 'Acercar el mapa',
     zoomOut: 'Alejar el mapa',
+    resetNorth: 'Volver el norte arriba',
+    unavailable: 'Este navegador no puede dibujar el mapa. Lo demás funciona: las listas dicen lo mismo.',
     networkRegion: 'Mapa de la red. Los recorridos y las paradas también están en la pestaña de líneas.',
     nearbyRegion: 'Mapa de las paradas cerca de ti. Las mismas paradas están en la lista de abajo.',
     loadingMap: 'Cargando el mapa…',
@@ -319,6 +321,7 @@ export const es: Dict = {
     collapseLines: 'Mostrar las líneas en una fila',
     geolocationUnavailable: 'La geolocalización no está disponible.',
     stopFollowing: 'Dejar de seguirme',
+    turnWithMe: 'Girar el mapa hacia donde miras',
     outOfArea: 'No hay ninguna parada cerca de ti. Esta web solo cubre la red urbana de Lugo.',
     stopsCount: (total: number, withQr: number) =>
       `${total} paradas, ${withQr} con código QR`,

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import L from 'leaflet';
-import { LocateFixed, SlidersHorizontal } from 'lucide-react';
+import { LngLatBounds, type Map as MapLibre } from 'maplibre-gl';
+import { LocateFixed, Navigation2, SlidersHorizontal } from 'lucide-react';
 import { CloseButton, Notice, Scrim } from '../ui/controls';
 import { useT } from '../../i18n';
 import { BusStop, BusLine } from '../../types';
@@ -9,7 +9,7 @@ import { getScheduledBuses } from '../../utils/vehicles';
 import { getNearbyLines, NearbyLine } from '../../utils/places';
 import { useIsDark } from '../../hooks/useIsDark';
 import { useDialog } from '../../hooks/useDialog';
-import { useLeafletMap } from '../../hooks/useLeafletMap';
+import { useMapLibre } from '../../hooks/useMapLibre';
 import { useClock } from '../../hooks/useClock';
 import { useRouteGeometry } from '../../data/routeGeometry';
 import { DRAW, mapColors } from './palette';
@@ -21,6 +21,7 @@ import { VehicleLayer } from './VehicleLayer';
 import { LineChips } from './LineChips';
 import { AROUND_STOP_RADIUS_M, MapControls, NEARBY_RADIUS_M, type Layer, type Preset } from './MapControls';
 import { useFollowMe } from './useFollowMe';
+import { MapUnavailable } from './MapUnavailable';
 
 /**
  * How many of the nearby lines the map draws: the network converges on the muralla, so
@@ -39,10 +40,16 @@ const PRESET_CENTERS: Partial<Record<Preset, [number, number]>> = {
   ceao: [43.044, -7.5692],
 };
 
-const fitLines = (map: L.Map, ids: string[]) => {
-  const bounds = L.latLngBounds([]);
-  for (const id of ids) for (const direction of lineById(id)?.directions ?? []) for (const point of direction.pathCoordinates ?? []) bounds.extend(point);
-  if (bounds.isValid()) map.fitBounds(bounds, { padding: [DRAW.fit.network, DRAW.fit.network], maxZoom: 16 });
+/** MapLibre's zooms, one less than the Leaflet ones that showed the same streets: a stop and its corner, a district, the city. */
+const STOP_ZOOM = 15;
+const AREA_ZOOM = 14;
+const CITY_ZOOM = 13;
+
+const fitLines = (map: MapLibre, ids: string[]) => {
+  const bounds = new LngLatBounds();
+  for (const id of ids) for (const direction of lineById(id)?.directions ?? []) for (const [lat, lng] of direction.pathCoordinates ?? []) bounds.extend([lng, lat]);
+  const room = DRAW.fit.network;
+  if (!bounds.isEmpty()) map.fitBounds(bounds, { padding: { top: room, left: room, bottom: room + DRAW.fit.credit, right: room + DRAW.fit.zoomBar }, maxZoom: STOP_ZOOM });
 };
 
 interface TransitMapProps {
@@ -62,10 +69,11 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
   const t = useT();
   const containerRef = useRef<HTMLDivElement>(null);
   const colors = mapColors(useIsDark());
-  const map = useLeafletMap(containerRef, {
+  const { map, styled, unavailable } = useMapLibre(containerRef, {
     center: selectedStop ? [selectedStop.lat, selectedStop.lng] : LUGO_CENTER,
-    zoom: selectedStop ? 16 : 14,
+    zoom: selectedStop ? STOP_ZOOM : CITY_ZOOM,
     region: t.map.networkRegion,
+    turns: true,
   });
   // Street geometry arrives as its own chunk; until then the stop layer still works.
   const geometryReady = useRouteGeometry();
@@ -85,7 +93,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
   /** The stop whose board is open over the map. */
   const [tappedStop, setTappedStop] = useState<BusStop | null>(null);
   /** The routes under a tap on the map, and where it was: their sheet is open. */
-  const [linesHere, setLinesHere] = useState<{ hits: RouteHit[]; at: L.LatLng } | null>(null);
+  const [linesHere, setLinesHere] = useState<{ hits: RouteHit[]; at: [number, number] } | null>(null);
   /** The controls pulled up over the map; only means anything below `lg`. */
   const [sheetOpen, setSheetOpen] = useState(false);
   const closeSheet = useCallback(() => setSheetOpen(false), []);
@@ -94,7 +102,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
   const stopsWithQr = useMemo(() => BUS_STOPS.filter((s) => poleCode(s)).length, []);
 
   const drawNearbyWhenReady = useRef(false);
-  const follow = useFollowMe(map, colors, (lat, lng) => {
+  const follow = useFollowMe(map, styled, colors, (lat, lng) => {
     setNearbyLines(getNearbyLines(lat, lng, NEARBY_RADIUS_M));
     setPreset('nearby');
     setPickedLineIds([]);
@@ -115,9 +123,13 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
     const centre = PRESET_CENTERS[preset];
     return centre ? getNearbyLines(centre[0], centre[1], NEARBY_RADIUS_M).map((n) => n.line.id) : [];
   }, [preset]);
+  // Kept the same array from one render to the next while the scope is the same: the clock
+  // renders the map every three seconds for the buses, and a new array each time redrew every
+  // route and stop with it, which on the renderer was a blink of the whole map.
+  const nearbyLineIds = useMemo(() => nearbyLines.slice(0, NEARBY_SCOPE_LIMIT).map((n) => n.line.id), [nearbyLines]);
   const scopeLineIds =
     preset === 'stop' && aroundStopLineIds.length ? aroundStopLineIds
-    : preset === 'nearby' && nearbyLines.length ? nearbyLines.slice(0, NEARBY_SCOPE_LIMIT).map((n) => n.line.id)
+    : preset === 'nearby' && nearbyLineIds.length ? nearbyLineIds
     : presetAreaLineIds.length ? presetAreaLineIds
     : null;
   const visibleLineIds = pickedLineIds.length ? pickedLineIds : scopeLineIds;
@@ -141,8 +153,8 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
       setPreset('all');
       setAroundStop(null);
     }
-    map.setView([selectedStop.lat, selectedStop.lng], 16, { animate: true });
-    map.invalidateSize();
+    map.resize();
+    map.easeTo({ center: [selectedStop.lng, selectedStop.lat], zoom: STOP_ZOOM });
   }, [selectedStop, map, focus]);
 
   const handleSelectLine = (line: BusLine) => {
@@ -164,7 +176,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
     setPickedLineIds([]);
     if (next !== 'stop') setAroundStop(null);
     const centre = PRESET_CENTERS[next];
-    if (centre) map?.setView(centre, 15, { animate: true });
+    if (centre) map?.easeTo({ center: [centre[1], centre[0]], zoom: AREA_ZOOM });
     if (next === 'nearby' && !nearbyLines.length) follow.start();
   };
 
@@ -188,13 +200,14 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
    * stop whose ring nobody could see. Only when it is under the sheet or the chips, and then to
    * the middle of what the sheet leaves.
    */
-  const keepAbove = (at: L.LatLngExpression, sheetPx: number) => {
+  const keepAbove = ([lat, lng]: [number, number], sheetPx: number) => {
     if (!map) return;
-    const y = map.latLngToContainerPoint(at).y;
+    const y = map.project([lng, lat]).y;
     const top = DRAW.fit.sheetTop;
-    const bottom = Math.max(top, map.getSize().y - sheetPx - DRAW.fit.sheetGap);
+    const bottom = Math.max(top, map.getContainer().clientHeight - sheetPx - DRAW.fit.sheetGap);
     if (y >= top && y <= bottom) return;
-    map.panBy([0, y - (top + bottom) / 2], { animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches });
+    // Straight up or down on the screen, whichever way the map is turned; the renderer skips the glide under reduced motion.
+    map.panBy([0, y - (top + bottom) / 2]);
   };
 
   /** From a stop's own sheet: keep the map, drop every line that does not serve it. */
@@ -202,7 +215,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
     setAroundStop(stop);
     setPreset('stop');
     setPickedLineIds([]);
-    map?.setView([stop.lat, stop.lng], 15, { animate: true });
+    map?.easeTo({ center: [stop.lng, stop.lat], zoom: AREA_ZOOM });
   };
 
   // Open on the lines near you — only for someone who has already agreed to be located,
@@ -223,7 +236,18 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
       .catch(() => {}); // Firefox once threw for an unknown descriptor
   }, []);
 
-  const locateLabel = follow.isLocating ? t.map.locating : follow.isFollowing ? t.map.stopFollowing : t.map.myLocation;
+  const locateLabel = follow.label;
+  const LocateIcon = follow.isTurning ? Navigation2 : LocateFixed;
+
+  // No map to filter, follow or tap: the notice where it would be, and nothing over it.
+  if (unavailable)
+    return (
+      <div className="page map-gutter h-full card:h-auto">
+        <div className="h-map-viewport w-full overflow-hidden bg-surface card:rounded-card card:border card:border-edge">
+          <MapUnavailable className="h-full" />
+        </div>
+      </div>
+    );
 
   return (
     // No page padding on a phone: the map is the screen there, edge to edge.
@@ -239,7 +263,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
           stopCount={BUS_STOPS.length}
           stopsWithQr={stopsWithQr}
           locate={follow}
-          onCenterLugo={() => map?.setView(LUGO_CENTER, 14, { animate: true })}
+          onCenterLugo={() => map?.easeTo({ center: [LUGO_CENTER[1], LUGO_CENTER[0]], zoom: CITY_ZOOM })}
           preset={preset}
           onPreset={handlePreset}
           aroundStop={aroundStop}
@@ -261,6 +285,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
             {/* The scope, not the one line picked out of it: the layer keeps the rest faint underneath. The stops narrow to the pick: 417 dots is clutter. */}
             <RouteLayer
               map={geometryReady ? map : null}
+              styled={styled}
               visibleLineIds={scopeLineIds}
               emphasisLineIds={pickedLineIds}
               lines={BUS_LINES}
@@ -273,6 +298,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
             {/* The big dot follows what the reader is looking at: the stop whose sheet is open, else the one whose board they came from. */}
             <StopLayer
               map={map}
+              styled={styled}
               visibleLineIds={visibleLineIds}
               stops={BUS_STOPS}
               selectedStop={tappedStop ?? selectedStop}
@@ -318,6 +344,10 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
               visibleLineIds={visibleLineIds}
               buses={buses}
               showBuses={layers.buses}
+              onOpenBus={() => {
+                setTappedStop(null);
+                setLinesHere(null);
+              }}
               onOpenLine={(lineId) => {
                 const line = lineById(lineId);
                 if (line) onOpenLine(line);
@@ -364,7 +394,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                 follow.isFollowing ? 'border-accent text-accent' : 'text-ink-2'
               }`}
             >
-              <LocateFixed className="h-5 w-5" aria-hidden="true" />
+              <LocateIcon className="h-5 w-5" aria-hidden="true" />
             </button>
             {/* The way to everything the sidebar holds, without leaving the map. */}
             <button

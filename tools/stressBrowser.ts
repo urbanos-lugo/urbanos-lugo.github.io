@@ -51,7 +51,7 @@ const top = (title: string, rows: { label: string; ms: number }[], n: number) =>
 };
 
 const domCounts = (page: Session): Promise<{ nodes: number; canvases: number; maps: number }> =>
-  page.evaluate(`({ nodes: document.getElementsByTagName('*').length, canvases: document.querySelectorAll('canvas').length, maps: document.querySelectorAll('.leaflet-container').length })`);
+  page.evaluate(`({ nodes: document.getElementsByTagName('*').length, canvases: document.querySelectorAll('canvas').length, maps: document.querySelectorAll('.maplibregl-map').length })`);
 
 /** Heap (collected first), DOM nodes, canvases and map containers, for a before/after. */
 const footprint = async (page: Session) => ({ heap: await page.heapBytes(), ...(await domCounts(page)) });
@@ -167,7 +167,7 @@ async function coldStart(browser: Browser): Promise<void> {
   report('JSON.parse of the bundled datasets', `${(await bundledJsonParseMs(page)).toFixed(1)} ms`, `main thread, ${CPU_THROTTLE}x`);
 
   const screen = await page.evaluate<{ path: string; headings: string[]; maps: number; canvases: number }>(
-    `({ path: location.pathname, headings: [...document.querySelectorAll('h1,h2')].map((e) => e.textContent.trim()).slice(0, 8), maps: document.querySelectorAll('.leaflet-container').length, canvases: document.querySelectorAll('canvas').length })`,
+    `({ path: location.pathname, headings: [...document.querySelectorAll('h1,h2')].map((e) => e.textContent.trim()).slice(0, 8), maps: document.querySelectorAll('.maplibregl-map').length, canvases: document.querySelectorAll('canvas').length })`,
   );
   console.log(`\n  what was on screen: ${screen.path}  ${screen.maps} map(s), ${screen.canvases} canvas`);
   for (const h of screen.headings) console.log(`    ${h}`);
@@ -245,7 +245,7 @@ async function warmStart(browser: Browser): Promise<void> {
 const tapNav = (page: Session, label: string): Promise<boolean> =>
   page.call<boolean>(`(label) => { const b = [...document.querySelectorAll('nav a, nav button')].find((e) => e.textContent.trim().startsWith(label)); if (!b) return false; b.click(); return true; }`, label);
 
-const MAP_READY = `document.querySelector('.leaflet-container canvas, .leaflet-container img.leaflet-tile')`;
+const MAP_READY = `document.querySelector('.maplibregl-map canvas.maplibregl-canvas')`;
 
 /**
  * What opening the map costs, and what closing and reopening it leaves behind. The first
@@ -286,7 +286,7 @@ async function mapTab(browser: Browser): Promise<void> {
   await reset(page);
   const zooming = await profile(page, async () => {
     for (let i = 0; i < 4; i++) {
-      await page.evaluate(`document.querySelector('.leaflet-control-zoom-in')?.click()`);
+      await page.evaluate(`document.querySelector('.maplibregl-ctrl-zoom-in')?.click()`);
       await sleep(900);
     }
   });
@@ -298,10 +298,10 @@ async function mapTab(browser: Browser): Promise<void> {
   top('where the zooming went, self time, top 12', zooming, 12);
 
   // Panning, the gesture a finger makes most on a map: four drags across the middle of it,
-  // real mouse events that Leaflet's dragging answers. Nothing measured it, and a layer
+  // real mouse events that the map's dragging answers. Nothing measured it, and a layer
   // that redrew on every `move` would show here and nowhere else.
   const box = await page.evaluate<{ x: number; y: number; w: number; h: number }>(
-    `(() => { const r = document.querySelector('.leaflet-container').getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; })()`,
+    `(() => { const r = document.querySelector('.maplibregl-map').getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; })()`,
   );
   await reset(page);
   const panning = await profile(page, async () => {

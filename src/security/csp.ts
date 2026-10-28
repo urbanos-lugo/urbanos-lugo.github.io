@@ -2,10 +2,10 @@
  * One Content Security Policy, used in both places it has to exist: inside the page for
  * GitHub Pages, which sets no headers, and as a real header from `server.ts`.
  *
- * Every remote origin here is one the app uses: OpenFreeMap for the basemap, and
- * tile.openstreetmap.org as the raster fallback for a device with no WebGL2. Google Fonts
- * and OSM's foot router used to be here and are not; buslugo.com never was, only the
- * server reaches it. Scripts are same-origin plus exactly one hash, the theme script, which
+ * Every remote origin here is one the app uses: OpenFreeMap for the basemap. Google Fonts,
+ * OSM's foot router and tile.openstreetmap.org (a raster map for a device with no WebGL2,
+ * which now says the map cannot be drawn instead) used to be here and are not; buslugo.com
+ * never was, only the server reaches it. Scripts are same-origin plus exactly one hash, the theme script, which
  * admits one byte sequence and is computed here from the same export the page inlines.
  * `worker-src` stays at 'self' because Vite emits the map's worker as a same-origin
  * module: if that stops holding the map goes blank and the console says so.
@@ -31,12 +31,12 @@ const apiOrigin = (() => {
 })();
 
 /**
- * The map's two hosts: OpenFreeMap for the vector tiles, glyphs and sprites, and OSM's raster
- * tiles for a device with no WebGL2. The page draws from them and the service worker caches
- * them (vite.config.ts builds its rule from this list), and the worker's own fetch answers to
- * connect-src, so the directives below and that rule cannot name different hosts.
+ * The map's one host: OpenFreeMap, for the vector tiles, glyphs and sprites. The page draws
+ * from it and the service worker caches it (vite.config.ts builds its rule from this list), and
+ * the map worker's own fetch answers to connect-src, so the directives below and that rule
+ * cannot name different hosts.
  */
-export const MAP_ORIGINS = ['https://tiles.openfreemap.org', 'https://tile.openstreetmap.org'];
+export const MAP_ORIGINS = ['https://tiles.openfreemap.org'];
 
 /** The digest of the one inline script, in the form CSP wants. */
 export const THEME_INIT_HASH = `sha256-${createHash('sha256').update(THEME_INIT_SOURCE, 'utf8').digest('base64')}`;

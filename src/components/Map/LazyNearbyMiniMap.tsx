@@ -4,7 +4,7 @@ import type { NearbyMiniMapProps } from './NearbyMiniMap';
 /**
  * The mini map, and nothing of it until it is on screen. `lazy()` alone defers the chunk
  * until the component renders, and below lg the board stays mounted behind `hidden` — so
- * Leaflet was being built inside `display: none` on every cold start (255 KB, 700 ms of
+ * the map (Leaflet then) was being built inside `display: none` on every cold start (255 KB, 700 ms of
  * blocked main thread). An element with no box never intersects, which is the question.
  */
 const NearbyMiniMap = lazy(() => import('./NearbyMiniMap').then((m) => ({ default: m.NearbyMiniMap })));

@@ -1,287 +1,236 @@
 import { useEffect, useRef } from 'react';
-import { useMapZoom } from '../../hooks/useLeafletMap';
-import L from 'leaflet';
-import { translations, useLang, type Lang } from '../../i18n';
+import type { ExpressionSpecification, LineLayerSpecification, Map as MapLibre, MapLayerMouseEvent, MapMouseEvent, MapStyleImageMissingEvent } from 'maplibre-gl';
+import { translations, useLang } from '../../i18n';
 import { escapeHtml } from '../../utils/html';
 import { directionLabel } from '../../utils/serviceLabels';
-import { BusDirection, BusLine, BusStop } from '../../types';
-import { stopById } from '../../data/transitData';
-import { metresBetween } from '../../utils/geo';
+import { BusDirection, BusLine } from '../../types';
 import { DRAW } from './palette';
+import { claim, dropLayers, hoverLabels, isClaimed, placeLayer, setSource } from './mapLayers';
 import type { RouteHit } from './LinesHereSheet';
 
 interface RouteLayerProps {
-  map: L.Map | null;
+  map: MapLibre | null;
+  /** useMapLibre's count of styles loaded: the layer is drawn again on each. */
+  styled: number;
   lines: BusLine[];
   /** Lines to draw; null means every line. */
   visibleLineIds: string[] | null;
   /** The lines lifted out of the network, painted in full over the rest kept faint. */
   emphasisLineIds?: string[];
   showRoutes: boolean;
-  /** The routes under a tap, nearest first, and where the tap was: the map opens its sheet of them. */
-  onLinesHere: (hits: RouteHit[], at: L.LatLng) => void;
+  /** The routes under a tap, nearest first, and where the tap was ([lat, lng]): the map opens its sheet of them. */
+  onLinesHere: (hits: RouteHit[], at: [number, number]) => void;
 }
 
 /** How close a click has to land, in screen pixels, to count as hitting a route. Nobody aims at 3.5 px. */
 const HIT_PX = 20;
+/** The rings a tap is asked about, inside out: a route found in a smaller one is nearer the finger. */
+const HIT_RINGS = [4, 8, 12, 16, HIT_PX];
 
 /**
- * The lane, in screen pixels. Lugo's lines converge on the same corridors, so routes that
- * share a street are drawn side by side. Pixels and not metres: metres vanish at zoom 14
- * and turn a roundabout inside out at 18. Nothing below 15, where the tap on a corridor
- * lists everything that runs there.
+ * The lane, in screen pixels, from each zoom on. Lugo's lines converge on the same corridors,
+ * so routes that share a street are drawn side by side. Pixels and not metres: metres vanish
+ * at zoom 13 and turn a roundabout inside out at 17. Nothing below 14, where the tap on a
+ * corridor lists everything that runs there.
  */
-const laneWidthPx = (zoom: number): number => (zoom >= 16 ? 3 : zoom >= 15 ? 2 : 0);
+const LANE_PX: [number, number][] = [
+  [14, 2],
+  [15, 3],
+];
 /** Lanes a side before they are reused: twelve pixels a side, still narrower than the road. */
 const LANES = 4;
 /** The lane width the line being looked at gets whatever the zoom, so its ida and volta stay apart. */
 const SUBJECT_LANE_PX = 6;
 
-/**
- * Only the vertices a zoom can show: 26,175 vertices over 48 directions, most under a
- * pixel apart at zoom 13, and Leaflet projected and stroked every one on every redraw
- * (2.2 s blocked over four zoom steps). Douglas-Peucker at 0.7 px in the zoom's own pixel
- * frame, remembered per direction and zoom; the survivors are the original coordinates.
- */
-const verticesAt = new Map<string, [number, number][]>();
-function verticesFor(key: string, coords: [number, number][], zoom: number): [number, number][] {
-  const cached = verticesAt.get(`${key}@${zoom}`);
-  if (cached) return cached;
-  const scale = 256 * 2 ** zoom;
-  const points = coords.map(([lat, lng], i) => {
-    const sin = Math.sin((lat * Math.PI) / 180);
-    return { x: ((lng + 180) / 360) * scale, y: (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * scale, i };
-  });
-  // LineUtil.simplify only reads x and y, and hands back the same objects it was given.
-  const kept = (L.LineUtil.simplify(points as unknown as L.Point[], 0.7) as unknown as typeof points).map((p) => coords[p.i]);
-  verticesAt.set(`${key}@${zoom}`, kept);
-  return kept;
-}
-
-const M_PER_DEG_LAT = 111_320;
-const cosLat = (lat: number) => Math.cos(lat * (Math.PI / 180));
-
-/**
- * Shift a path sideways by `metres`, perpendicular to its own direction, in a local
- * metric frame (longitude scaled by the cosine of the latitude, 0.731 here). Each vertex
- * moves along the average of its two segments' perpendiculars so corners stay joined, and
- * a vertex whose shifted segment reverses against its own original is dropped.
- */
-function offsetPath(coords: [number, number][], metres: number): [number, number][] {
-  if (metres === 0 || coords.length < 2) return coords;
-  const perpendiculars: [number, number][] = [];
-  for (let i = 0; i < coords.length - 1; i++) {
-    const [lat1, lng1] = coords[i];
-    const [lat2, lng2] = coords[i + 1];
-    const dx = (lng2 - lng1) * cosLat((lat1 + lat2) / 2) * M_PER_DEG_LAT;
-    const dy = (lat2 - lat1) * M_PER_DEG_LAT;
-    const len = Math.hypot(dx, dy);
-    perpendiculars.push(len === 0 ? (perpendiculars[i - 1] ?? [0, 0]) : [dy / len, -dx / len]);
-  }
-  const shifted: [number, number][] = coords.map(([lat, lng], i) => {
-    const before = perpendiculars[i - 1];
-    const after = perpendiculars[i];
-    const px = ((before?.[0] ?? after?.[0] ?? 0) + (after?.[0] ?? before?.[0] ?? 0)) / 2;
-    const py = ((before?.[1] ?? after?.[1] ?? 0) + (after?.[1] ?? before?.[1] ?? 0)) / 2;
-    const norm = Math.hypot(px, py) || 1;
-    return [lat + ((py / norm) * metres) / M_PER_DEG_LAT, lng + ((px / norm) * metres) / (M_PER_DEG_LAT * (cosLat(lat) || 1))];
-  });
-  const keep: [number, number][] = [shifted[0]];
-  for (let i = 1; i < shifted.length; i++) {
-    const cos = cosLat(coords[i][0]);
-    const ox = (coords[i][1] - coords[i - 1][1]) * cos;
-    const oy = coords[i][0] - coords[i - 1][0];
-    const sx = (shifted[i][1] - shifted[i - 1][1]) * cos;
-    const sy = shifted[i][0] - shifted[i - 1][0];
-    if (ox * sx + oy * sy >= 0 || i === shifted.length - 1) keep.push(shifted[i]);
-  }
-  return keep;
-}
-
 /** Direction arrows every so many screen pixels, so the density is the same at every zoom. */
 const ARROW_EVERY_PX = 120;
 /** Below this the city fits on the screen and chevrons would be texture. */
-const ARROW_MIN_ZOOM = 14;
+const ARROW_MIN_ZOOM = 13;
 /** With several lines up their lanes overlap until here, and an arrow on the wrong ribbon is worse than none. */
-const ARROW_MIN_ZOOM_SHARED = 17;
-/** No arrow this close to a pole, so a stop dot is never half hidden under one. */
-const ARROW_CLEAR_OF_STOP_M = 20;
+const ARROW_MIN_ZOOM_SHARED = 16;
+const ARROW_IMAGE = 'route-arrow-';
 
-/** Where to draw the arrows along a path and which way each points, the bearing measured in screen space. */
-function arrowsAlong(path: [number, number][], keepClear: { lat: number; lng: number }[], everyMetres: number): { at: [number, number]; deg: number }[] {
-  const metres = (a: [number, number], b: [number, number]) => metresBetween(a[0], a[1], b[0], b[1]);
-  const out: { at: [number, number]; deg: number }[] = [];
-  let untilNext = everyMetres / 2;
-  for (let i = 1; i < path.length; i++) {
-    const a = path[i - 1];
-    const b = path[i];
-    const length = metres(a, b);
-    if (length === 0) continue;
-    let walked = 0;
-    while (length - walked >= untilNext) {
-      walked += untilNext;
-      untilNext = everyMetres;
-      const t = walked / length;
-      const at: [number, number] = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-      if (keepClear.some((s) => metres(at, [s.lat, s.lng]) < ARROW_CLEAR_OF_STOP_M)) continue;
-      // Web Mercator is conformal, so the angle is the same at every zoom.
-      const pa = L.CRS.EPSG3857.latLngToPoint(L.latLng(a[0], a[1]), 16);
-      const pb = L.CRS.EPSG3857.latLngToPoint(L.latLng(b[0], b[1]), 16);
-      out.push({ at, deg: (Math.atan2(pb.y - pa.y, pb.x - pa.x) * 180) / Math.PI });
-    }
-    untilNext -= length - walked;
-  }
-  return out;
+const LAYERS = ['app-routes', 'app-routes-volta', 'app-route-arrows'];
+const TRACES = ['app-routes', 'app-routes-volta'];
+
+/**
+ * A route's shift to the right of travel (buses keep right, and the two directions land on
+ * their own kerbs): half a lane out from the kerb, then whole lanes, drawn by the renderer at
+ * every frame. Leaflet's version moved every vertex in JavaScript at each zoom step.
+ */
+const atLane = (lanePx: number): ExpressionSpecification => ['*', ['get', 'half'], ['case', ['boolean', ['get', 'subject'], false], SUBJECT_LANE_PX, lanePx]];
+const LANE_OFFSET: ExpressionSpecification = ['step', ['zoom'], atLane(0), ...LANE_PX.flatMap(([zoom, px]) => [zoom, atLane(px)])] as ExpressionSpecification;
+/** The arrows ride the subject's lane, which is the same at every zoom: offset sideways in the arrow's own frame. */
+const ARROW_OFFSET = ['match', ['get', 'lane'], ...Array.from({ length: LANES - 1 }, (_, lane) => [lane, ['literal', [0, (lane + 0.5) * SUBJECT_LANE_PX]]]).flat(), ['literal', [0, (LANES - 0.5) * SUBJECT_LANE_PX]]] as unknown as ExpressionSpecification;
+/** The volta's dashes, the same length in pixels whatever the width (the renderer counts in widths). */
+const dashesAt = (width: number) => ['literal', DRAW.route.returnDashPx.map((px) => px / width)];
+const VOLTA_DASHES = ['match', ['get', 'weight'], DRAW.route.muted, dashesAt(DRAW.route.muted), DRAW.route.subject, dashesAt(DRAW.route.subject), dashesAt(DRAW.route.network)] as unknown as ExpressionSpecification;
+
+/** An open chevron in the line's own stroke, its point on the centreline, drawn the first time the map asks for that colour. */
+function addArrowImage(map: MapLibre, id: string): void {
+  const size = DRAW.icon.arrow;
+  const dpr = window.devicePixelRatio || 1;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = Math.ceil(size * dpr);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  ctx.scale(dpr, dpr);
+  ctx.translate(size / 2, size / 2);
+  ctx.strokeStyle = id.slice(ARROW_IMAGE.length);
+  ctx.lineWidth = DRAW.route.subject;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(-4, -6);
+  ctx.lineTo(3, 0);
+  ctx.lineTo(-4, 6);
+  ctx.stroke();
+  map.addImage(id, ctx.getImageData(0, 0, canvas.width, canvas.height), { pixelRatio: dpr });
 }
 
-/** An open chevron in the line's own stroke, its point on the centreline. Not interactive. */
-const arrowIcon = (color: string, weight: number, deg: number): L.DivIcon =>
-  L.divIcon({
-    className: 'route-arrow',
-    iconSize: [DRAW.icon.arrow, DRAW.icon.arrow],
-    iconAnchor: [DRAW.icon.arrow / 2, DRAW.icon.arrow / 2],
-    html:
-      `<svg width="${DRAW.icon.arrow}" height="${DRAW.icon.arrow}" viewBox="-8 -8 16 16" class="block" style="transform:rotate(${deg.toFixed(1)}deg)" aria-hidden="true">` +
-      `<path d="M-4 -6 L3 0 L-4 6" fill="none" stroke="${escapeHtml(color)}" stroke-width="${weight}" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  });
+/** No line lifted out: one array, so a parent that passes none does not hand a new one each render. */
+const NONE: string[] = [];
+const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
 
-interface Drawn {
-  line: BusLine;
-  dir: BusDirection;
-  path: [number, number][];
-}
-
-interface Arrowed {
-  lineId: string;
-  path: [number, number][];
-  color: string;
-  weight: number;
-  poles: BusStop[];
-}
-
-export function RouteLayer({ map, lines, visibleLineIds, emphasisLineIds = [], showRoutes, onLinesHere }: RouteLayerProps) {
+export function RouteLayer({ map, styled, lines, visibleLineIds, emphasisLineIds = NONE, showRoutes, onLinesHere }: RouteLayerProps) {
   const lang = useLang();
-  const zoom = useMapZoom(map);
   // Held in a ref so a fresh arrow from the parent does not redraw the map on every tick.
   const onLinesHereRef = useRef(onLinesHere);
   onLinesHereRef.current = onLinesHere;
-  const zoomForDrawing = Math.round(zoom);
+  /** The traces drawn now, by key, for the tap that asks which they are. */
+  const tracedRef = useRef(new Map<string, RouteHit>());
 
+  // The layers, once per style. What they draw is the source's data, set below: a new filter
+  // or a new pick changes the data, and the renderer keeps drawing the old tiles until the new
+  // ones are ready. Taken down and put up again, the routes blinked out at every change.
   useEffect(() => {
-    if (!map) return;
-    const zoom = zoomForDrawing;
-    const group = L.layerGroup().addTo(map);
+    if (!map || !styled) return;
+    setSource(map, 'app-routes', EMPTY);
+    const paint: LineLayerSpecification['paint'] = { 'line-color': ['get', 'color'], 'line-width': ['get', 'weight'], 'line-opacity': ['get', 'opacity'], 'line-offset': LANE_OFFSET };
+    const layout: LineLayerSpecification['layout'] = { 'line-join': 'round', 'line-cap': 'round', 'line-sort-key': ['get', 'order'] };
+    placeLayer(map, { id: 'app-routes', type: 'line', source: 'app-routes', filter: ['!', ['boolean', ['get', 'volta'], false]], layout: { ...layout }, paint: { ...paint } });
+    placeLayer(map, { id: 'app-routes-volta', type: 'line', source: 'app-routes', filter: ['boolean', ['get', 'volta'], false], layout: { ...layout }, paint: { ...paint, 'line-dasharray': VOLTA_DASHES } });
+    // Which way the bus goes, on the subject only: its two directions, each on its own lane.
+    // Under the stops (LAYER_ORDER), so a dot is never half hidden under an arrow.
+    placeLayer(map, {
+      id: 'app-route-arrows',
+      type: 'symbol',
+      source: 'app-routes',
+      filter: ['boolean', ['get', 'subject'], false],
+      minzoom: ARROW_MIN_ZOOM,
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': ARROW_EVERY_PX,
+        'icon-image': ['concat', ARROW_IMAGE, ['get', 'color']],
+        'icon-rotation-alignment': 'map',
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-offset': ARROW_OFFSET,
+      },
+    });
+    const missing = (e: MapStyleImageMissingEvent) => {
+      if (e.id.startsWith(ARROW_IMAGE) && !map.hasImage(e.id)) addArrowImage(map, e.id);
+    };
+    map.on('styleimagemissing', missing);
 
-    if (!map.getPane('routeArrows')) {
-      // Between the overlay canvas (400) and the shadow pane (500); taps pass through to the stops.
-      const pane = map.createPane('routeArrows');
-      pane.style.zIndex = String(DRAW.pane.arrows);
-      pane.style.pointerEvents = 'none';
+    // A mouse is told the line and the direction under it.
+    const hover = hoverLabels(map);
+    const label = (e: MapLayerMouseEvent) => {
+      const text = e.features?.[0]?.properties.label;
+      if (typeof text === 'string') hover.show(e.lngLat, text);
+    };
+    const leave = () => hover.leave();
+    for (const id of TRACES) {
+      map.on('mousemove', id, label);
+      map.on('mouseleave', id, leave);
     }
-    const arrows = L.layerGroup();
-    const metresPerPx = (156543.03 * cosLat(map.getCenter().lat)) / 2 ** zoom;
-    const drawn: Drawn[] = [];
-    const arrowed: Arrowed[] = [];
 
-    // Only the arrows in view plus half a screen: a line has two hundred at zoom 16 and a phone shows a dozen.
-    const placeArrows = () => {
-      if (Math.round(map.getZoom()) !== zoom) return; // a zoom step fires moveend too; the rebuild handles it
-      arrows.clearLayers();
-      const subjectLines = new Set(arrowed.map((t) => t.lineId)).size;
-      if (zoom < ARROW_MIN_ZOOM || (subjectLines > 1 && zoom < ARROW_MIN_ZOOM_SHARED)) return;
-      const reach = map.getBounds().pad(0.5);
-      for (const trace of arrowed) {
-        for (const { at, deg } of arrowsAlong(trace.path, trace.poles, ARROW_EVERY_PX * metresPerPx)) {
-          if (reach.contains(at)) arrows.addLayer(L.marker(at, { icon: arrowIcon(trace.color, trace.weight, deg), pane: 'routeArrows', interactive: false, keyboard: false }));
+    // The only place a route tap is answered: after every other listener has heard the click,
+    // a stop's or a name's included, so a tap one of them took is not answered twice. The
+    // renderer is asked what is drawn under the finger, lanes and all, ring by ring outward.
+    const openLinesHere = (e: MapMouseEvent) =>
+      queueMicrotask(() => {
+        if (isClaimed(e)) return;
+        const { x, y } = e.point;
+        const hits = new Map<string, RouteHit>();
+        for (const r of HIT_RINGS) {
+          for (const feature of map.queryRenderedFeatures([[x - r, y - r], [x + r, y + r]], { layers: TRACES })) {
+            const key = String(feature.properties.key);
+            const hit = tracedRef.current.get(key);
+            if (hit && !hits.has(key)) hits.set(key, hit);
+          }
         }
-      }
-      arrows.addTo(map);
-    };
-
-    if (showRoutes) {
-      const inScope = visibleLineIds === null ? lines : lines.filter((l) => visibleLineIds.includes(l.id));
-      const emphasised = inScope.filter((l) => emphasisLineIds.includes(l.id));
-      // Emphasised last, so they are painted over the network rather than under it.
-      const linesToRender = emphasised.length ? [...inScope.filter((l) => !emphasisLineIds.includes(l.id)), ...emphasised] : inScope;
-      const singleLine = linesToRender.length === 1;
-
-      // A fixed lane per line, always to the right of travel (buses keep right, and the two
-      // directions land on their own kerbs). The subjects take the kerb lanes in the order
-      // chosen; the backdrop is dealt the lanes behind them by list position, so choosing a
-      // line does not reshuffle the others.
-      const subjects = lines.filter((line) => inScope.includes(line) && (emphasisLineIds.includes(line.id) || singleLine));
-      const laneOf = (line: BusLine) => {
-        const s = subjects.indexOf(line);
-        if (s >= 0) return Math.min(s, LANES - 1);
-        const i = lines.indexOf(line);
-        return subjects.length ? 1 + (i % (LANES - 1)) : i % LANES;
-      };
-      const laneMetres = laneWidthPx(zoom) * metresPerPx;
-      const subjectLaneMetres = Math.max(laneWidthPx(zoom), SUBJECT_LANE_PX) * metresPerPx;
-
-      for (const line of linesToRender) {
-        const isEmphasised = emphasisLineIds.includes(line.id);
-        const muted = emphasised.length > 0 && !isEmphasised;
-        const subject = isEmphasised || singleLine;
-        line.directions.forEach((dir, dirIndex) => {
-          if (!dir.pathCoordinates || dir.pathCoordinates.length < 2) return;
-          const isReturn = dirIndex === 1;
-          // Half a lane out from the kerb, then whole lanes; nothing where lanes are off.
-          const path = offsetPath(verticesFor(`${line.id}/${dirIndex}`, dir.pathCoordinates, zoom), (laneOf(line) + 0.5) * (subject ? subjectLaneMetres : laneMetres));
-          const weight = muted ? DRAW.route.muted : subject ? DRAW.route.subject : DRAW.route.network;
-          const polyline = L.polyline(path, {
-            color: line.color,
-            weight,
-            opacity: muted ? DRAW.route.mutedOpacity : subject ? DRAW.route.subjectOpacity : DRAW.route.networkOpacity,
-            dashArray: isReturn ? DRAW.route.returnDash : undefined,
-            lineJoin: 'round',
-            lineCap: 'round',
-          });
-          polyline.bindTooltip(`<div class="font-sans text-label"><b>${escapeHtml(translations(lang).lines.lineLabel(line.number))}</b><br/>${escapeHtml(directionLabel(dir, lang))}</div>`, {
-            sticky: true,
-            className: 'transit-map-tooltip',
-          });
-          // No click handler on the route: layer handlers run before the map's, and these answered the click before the stop could.
-          group.addLayer(polyline);
-          drawn.push({ line, dir, path });
-          // Which way the bus goes, on the subject's ida only: the volta is the dashed trace and runs the other way.
-          if (subject) arrowed.push({ lineId: line.id, path, color: line.color, weight, poles: dir.stops.map(stopById).filter((s): s is BusStop => !!s) });
-        });
-      }
-    }
-
-    // Routes are the floor of the shared canvas: rebuilt after the stops, they would paint over the dots.
-    for (const layer of [...group.getLayers()].reverse()) (layer as L.Path).bringToBack();
-
-    // The only place a route click is answered — after every layer has had its say, including a tapped stop.
-    const openLinesHere = (e: L.LeafletMouseEvent) => {
-      if ((e.originalEvent as MouseEvent & { _stopClaimed?: boolean })?._stopClaimed) return;
-      const click = map.latLngToContainerPoint(e.latlng);
-      const hits = drawn
-        .map(({ line, dir, path }) => {
-          const pts = path.map((c) => map.latLngToContainerPoint(c as L.LatLngTuple));
-          let nearest = Infinity;
-          for (let i = 1; i < pts.length; i++) nearest = Math.min(nearest, L.LineUtil.pointToSegmentDistance(click, pts[i - 1], pts[i]));
-          return { line, dir, d: nearest };
-        })
-        .filter((h) => h.d <= HIT_PX)
-        .sort((a, b) => a.d - b.d);
-      if (!hits.length) return;
-      // Claimed like a stop's tap: the map does not slide away from the finger under the sheet it opens.
-      if (e.originalEvent) (e.originalEvent as MouseEvent & { _stopClaimed?: boolean })._stopClaimed = true;
-      onLinesHereRef.current(hits, e.latlng);
-    };
+        if (!hits.size) return;
+        // Claimed like a stop's tap: the map does not slide away from the finger under the sheet it opens.
+        claim(e);
+        onLinesHereRef.current([...hits.values()], [e.lngLat.lat, e.lngLat.lng]);
+      });
     map.on('click', openLinesHere);
-    placeArrows();
-    if (arrowed.length) map.on('moveend', placeArrows);
 
     return () => {
       map.off('click', openLinesHere);
-      map.off('moveend', placeArrows);
-      arrows.remove();
-      group.remove();
+      map.off('styleimagemissing', missing);
+      for (const id of TRACES) {
+        map.off('mousemove', id, label);
+        map.off('mouseleave', id, leave);
+      }
+      hover.remove();
+      dropLayers(map, LAYERS, ['app-routes']);
     };
-  }, [map, lines, visibleLineIds, emphasisLineIds, showRoutes, lang, zoomForDrawing]);
+  }, [map, styled]);
+
+  // What the layers draw: the lines in scope, the ones picked over the rest, each on its lane.
+  useEffect(() => {
+    if (!map || !styled) return;
+    const inScope = !showRoutes ? [] : visibleLineIds === null ? lines : lines.filter((l) => visibleLineIds.includes(l.id));
+    const emphasised = inScope.filter((l) => emphasisLineIds.includes(l.id));
+    const singleLine = inScope.length === 1;
+
+    // A fixed lane per line. The subjects take the kerb lanes in the order chosen; the backdrop
+    // is dealt the lanes behind them by list position, so choosing a line does not reshuffle the others.
+    const subjects = lines.filter((line) => inScope.includes(line) && (emphasisLineIds.includes(line.id) || singleLine));
+    const laneOf = (line: BusLine) => {
+      const s = subjects.indexOf(line);
+      if (s >= 0) return Math.min(s, LANES - 1);
+      const i = lines.indexOf(line);
+      return subjects.length ? 1 + (i % (LANES - 1)) : i % LANES;
+    };
+
+    const t = translations(lang);
+    const traced = new Map<string, RouteHit>();
+    const features: GeoJSON.Feature<GeoJSON.LineString>[] = [];
+    for (const line of inScope) {
+      const isEmphasised = emphasisLineIds.includes(line.id);
+      const muted = emphasised.length > 0 && !isEmphasised;
+      const subject = isEmphasised || singleLine;
+      const lane = laneOf(line);
+      line.directions.forEach((dir: BusDirection, dirIndex) => {
+        if (!dir.pathCoordinates || dir.pathCoordinates.length < 2) return;
+        const key = `${line.id}/${dirIndex}`;
+        traced.set(key, { line, dir });
+        features.push({
+          type: 'Feature',
+          properties: {
+            key,
+            color: line.color,
+            weight: muted ? DRAW.route.muted : subject ? DRAW.route.subject : DRAW.route.network,
+            opacity: muted ? DRAW.route.mutedOpacity : subject ? DRAW.route.subjectOpacity : DRAW.route.networkOpacity,
+            volta: dirIndex === 1,
+            subject,
+            lane,
+            half: lane + 0.5,
+            // Emphasised over the network rather than under it.
+            order: isEmphasised ? 1 : 0,
+            label: `<div class="font-sans text-label"><b>${escapeHtml(t.lines.lineLabel(line.number))}</b><br/>${escapeHtml(directionLabel(dir, lang))}</div>`,
+          },
+          geometry: { type: 'LineString', coordinates: dir.pathCoordinates.map(([lat, lng]) => [lng, lat]) },
+        });
+      });
+    }
+    tracedRef.current = traced;
+    setSource(map, 'app-routes', { type: 'FeatureCollection', features });
+    map.setLayerZoomRange('app-route-arrows', subjects.length > 1 ? ARROW_MIN_ZOOM_SHARED : ARROW_MIN_ZOOM, 24);
+  }, [map, styled, lines, visibleLineIds, emphasisLineIds, showRoutes, lang]);
 
   return null;
 }

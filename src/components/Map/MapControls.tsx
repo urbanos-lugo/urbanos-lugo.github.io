@@ -27,7 +27,8 @@ export interface MapControlsProps {
   busCount: number;
   stopCount: number;
   stopsWithQr: number;
-  locate: { isLocating: boolean; isFollowing: boolean; error: string | null; toggle: () => void };
+  /** useFollowMe: its press goes through off, following, turning with the phone, off; `label` says what the next press does. */
+  locate: { isLocating: boolean; isFollowing: boolean; error: string | null; toggle: () => void; label: string };
   onCenterLugo: () => void;
   preset: Preset;
   onPreset: (preset: Preset) => void;
@@ -62,7 +63,7 @@ export function MapControls(p: MapControlsProps) {
     { id: 'buses', Icon: Bus, tint: 'text-estimated', label: t.map.layerBuses },
     { id: 'routes', Icon: Layers, tint: 'text-accent', label: t.map.layerRoutes },
   ];
-  const locateLabel = p.locate.isLocating ? t.map.locating : p.locate.isFollowing ? t.map.stopFollowing : t.map.myLocation;
+  const locateLabel = p.locate.label;
 
   // First of the panels on a phone, so the map has its own controls directly under it; second
   // in the sidebar. Drawn twice, one shown per breakpoint, rather than moved by CSS order: the

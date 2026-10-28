@@ -7,7 +7,7 @@ import { useDialog } from '../../hooks/useDialog';
  * What a tap on the map opens, the same whatever was tapped, a stop or a line: a sheet from the
  * bottom of the map with the map still behind it, its title, the line under it that says what it
  * is, and the chevron that puts it away. A panel inside the map's card, so the same markup is a
- * sheet on a phone and a panel over the map on a desktop. A line tapped opened a Leaflet popup
+ * sheet on a phone and a panel over the map on a desktop. A line tapped opened a popup
  * instead, which in the centre listed eleven lines over 578 px and ran under the search bar.
  */
 export function MapSheet({
