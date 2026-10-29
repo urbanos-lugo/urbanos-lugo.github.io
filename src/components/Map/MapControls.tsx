@@ -97,7 +97,7 @@ export function MapControls(p: MapControlsProps) {
       role={p.sheetOpen ? 'dialog' : undefined}
       aria-modal={p.sheetOpen ? true : undefined}
       aria-label={p.sheetOpen ? t.map.controls : undefined}
-      className={`order-2 flex flex-col gap-3.5 lg:order-none lg:col-span-4 fixed inset-x-0 bottom-0 z-sheet max-h-sheet-max overflow-y-auto rounded-t-sheet border-t border-edge bg-surface p-3.5 shadow-overlay transition-transform duration-move motion-reduce:transition-none lg:static lg:z-auto lg:max-h-none lg:overflow-visible lg:visible lg:translate-y-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none ${
+      className={`order-2 flex flex-col gap-3.5 lg:order-none lg:col-span-4 fixed inset-x-0 bottom-0 z-sheet max-h-sheet-max overflow-y-auto rounded-t-sheet border-t border-edge bg-surface p-3.5 shadow-overlay transition-transform duration-move motion-reduce:transition-none lg:static lg:z-auto lg:max-h-none lg:overflow-y-auto lg:visible lg:translate-y-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:-mx-1 lg:px-1 lg:py-0 lg:shadow-none ${
         p.sheetOpen ? 'translate-y-0' : 'invisible translate-y-full'
       }`}
     >
@@ -150,7 +150,7 @@ export function MapControls(p: MapControlsProps) {
       {p.preset === 'nearby' && p.nearbyLines.length > 0 && (
         <div className={card}>
           <SectionLabel quiet className="mb-2">{t.map.nearbyTitle(NEARBY_RADIUS_M)}</SectionLabel>
-          <div className={`${list} max-h-list-nearby-max`}>
+          <div className={`${list} max-h-list-nearby-max lg:max-h-none`}>
             {p.nearbyLines.map(({ line, nearestStop, walkMeters }) => (
               <button key={line.id} onClick={() => p.onSelectLine(line)} className="row-button p-2">
                 <LineBadge number={line.number} color={line.color} size="sm" />
@@ -193,8 +193,10 @@ export function MapControls(p: MapControlsProps) {
             {t.map.allLines}
           </button>
         </div>
-        {/* Drawing the route and reading the timetable are two different errands, so two buttons. */}
-        <div className={`${list} max-h-list-lines-max`}>
+        {/* Drawing the route and reading the timetable are two different errands, so two buttons.
+            Its own box of four rows on a phone's sheet; on a computer the column beside the map
+            scrolls, and a box inside it handed the wheel to the page at its end. */}
+        <div className={`${list} max-h-list-lines-max lg:max-h-none`}>
           {p.listedLines.map((line) => {
             const isSelected = p.pickedLineIds.includes(line.id);
             return (

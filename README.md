@@ -1686,6 +1686,10 @@ a 3,18 pantallas de alto. O que queda é o itinerario paso a paso, que é unha l
 ao pé, avisos, tarifas, tema e idioma. Paradas e Liñas son dous paneis con **scroll
 independente**: escoller unha parada non che fai perder o sitio na lista. No planificador
 o formulario queda fixo mentres o itinerario baixa ao lado. A barra inferior desaparece.
+No **mapa** a páxina non baixa: o mapa enche o alto que queda, e os controis do lado
+baixan sós, coas liñas nunha soa lista; antes baixaba a páxina co mapa dentro, e as liñas
+ían nunha caixa de catro filas que, ao acabar, lle pasaba a roda á páxina. Nunha xanela
+máis baixa ca o chan do mapa, 380 px, volve baixar a páxina.
 
 ---
 

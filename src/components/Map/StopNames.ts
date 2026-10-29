@@ -33,6 +33,8 @@ const TAP_SLOP_PX = 3;
 export interface StopNames {
   /** The stops whose names may be written, and points ([lat, lng]) no name may cover. */
   setStops(stops: BusStop[], keepClear?: [number, number][]): void;
+  /** Out of sight until the map's next stop, then faded in: call before the move it waits for. */
+  holdWhileMoving(): void;
   remove(): void;
 }
 
@@ -107,6 +109,7 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
   const container = map.getContainer();
   container.addEventListener('pointerdown', onDown, true);
   container.addEventListener('click', onClick, true);
+  let arrive: (() => void) | null = null;
 
   return {
     setStops(next, keepClear = []) {
@@ -114,7 +117,19 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
       clear = keepClear;
       later();
     },
+    // Placed afresh each frame of a glide, the names swapped sides at the map's edges and came
+    // and went as the stops crossed one another; they wait for it to stop instead.
+    holdWhileMoving() {
+      canvas.hidden = true;
+      arrive = () => {
+        arrive = null;
+        canvas.hidden = false;
+        canvas.classList.add('anim-fade-full');
+      };
+      map.once('moveend', arrive);
+    },
     remove() {
+      if (arrive) map.off('moveend', arrive);
       cancelAnimationFrame(frame);
       map.off('move', later);
       map.off('resize', later);

@@ -4113,7 +4113,8 @@ que pedir. A ficha de liña escolle o día desde a rolda 43.
   contradí. Os metros por rúas peonís de OpenStreetMap non se volveron medir. Revisado o 29;
   a seguinte, antes do 3 de decembro.
 - **O sitemap en Search Console**: lido só o 14 de outubro, «Non se puido ler», e o ficheiro
-  está ben (NOTAS, Pendente 2). Queda no dono volver envialo.
+  está ben (NOTAS, Pendente 2). O dono volveuno enviar o 29, e Search Console seguía igual
+  ao momento; Bing, co mesmo ficheiro importado, di «Success» e 18 URL.
 - **Os festivos locais de 2027**: buscados o 28 e o 29, sen resolución publicada aínda.
 
 ## Rolda 48: o escritorio en PageSpeed — 29 de outubro de 2026
@@ -4187,3 +4188,42 @@ do mapa): as medidas de tempo só valen alternando e sen nada máis correndo.
 - **Fóra do fuso de Lugo**, o aviso do reloxo carga os datos de fusos de ICU (92 ms a 4× no
   primeiro render). En Lugo non se carga, e levalo a despois do pintado traería outro salto,
   porque o aviso vai enriba da lista.
+
+## Rolda 49: o escritorio — o mapa pequeno viaxa, e o mapa non leva a páxina — 29 de outubro de 2026
+
+Dúas cousas que no ordenador se sentían bruscas.
+
+### Feito
+
+- **O mapa do taboleiro viaxa á parada nova** en vez de saltar a ela. Medido a 1280 × 800,
+  de Rda. Muralla 56 a Rúa Vilalba 6: no primeiro cadro o mapa xa estaba noutro sitio, medio
+  quilómetro e de zoom 15,10 a 15,79, e acababa de debuxar aos ~330 ms. Agora, `fitBounds`
+  cun deslizamento recto, o do mapa da rede: chega en ~517 ms en tres saltos distintos e
+  acaba de debuxar aos ~925. O primeiro encadre de cada mapa segue sendo no sitio, e quen
+  pide menos movemento tenos quietos (o renderizador). Probouse primeiro o voo
+  predeterminado de MapLibre: de 0,6 a 1 s para unhas rúas.
+- **Os nomes das paradas agardan a que o mapa chegue.** Colocados de novo en cada cadro do
+  deslizamento, cambiaban de lado nos bordos e ían e viñan ao cruzarse. Agora o lenzo dos
+  nomes vai oculto desde o primeiro cadro e volve cun esvaecemento ao `moveend`: en tres
+  saltos, ocultos aos 17–28 ms e de volta aos 530–544. No mapa de quen se busca a si mesmo
+  non se ocultan: móvese un pouco con cada posición e pestanexarían.
+- **O mapa de Ruta, igual**: saltaba ao encadre novo con cada orixe ou destino novo e con
+  cada tramo da viaxe. O primeiro encadre segue no sitio, e o que repón un cambio de tamaño
+  tamén; os demais deslízanse. Medido a 1280 × 800: de HULA á Estación Adif, de zoom 11,38 a
+  14,20 en ~500 ms, e de alí ao Campus USC igual, sen corte no primeiro cadro. Escoller outra
+  opción non move a cámara: todas encadran A e B.
+- **No mapa, a páxina non baixa** desde `lg`: o mapa enche o alto de `main` (632 px a
+  1280 × 800, onde tiña 540 fixos) e a columna dos controis baixa soa; as dúas listas
+  perden a súa caixa alí. Antes `main` baixaba 94 px co mapa dentro, e a lista das liñas,
+  175 px para 1.527 de contido, pasáballe a roda á páxina ao acabar. Unha xanela máis baixa
+  ca o chan, 380 px, volve baixar a páxina. A 1280 × 520, 900 × 800 e 375 × 812, `main`
+  non baixa e o mapa mide 394, 494 e 619 px: a tableta e o teléfono, coma antes.
+- A marxe dos aneis de foco da columna vai só aos lados: con `-m-1` sobresaía 4 px por
+  abaixo e a 1280 × 520 `main` baixaba eses 4.
+
+### Medidas
+
+- Auditoría enteira con `AUDIT_RUNNER=1`, co mapa que viaxa e o mapa de escritorio: 0
+  achados WCAG; a barra da casa, 25, 3 e 62, coma antes. Bastaban os estados do mapa e do
+  taboleiro e as secuencias; correuse enteira porque a mañá unha estreita deixara pasar o
+  pregable pechado.

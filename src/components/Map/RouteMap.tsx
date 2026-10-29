@@ -35,8 +35,10 @@ interface RouteMapProps {
 const FIT = {
   padding: { top: DRAW.fit.tripTop, left: DRAW.fit.trip, bottom: DRAW.fit.trip + DRAW.fit.credit, right: DRAW.fit.trip + DRAW.fit.zoomBar },
   maxZoom: 15,
-  duration: 0,
+  linear: true,
 };
+/** The same fit drawn in place: a map's first, and the one a resize puts back. */
+const FIT_NOW = { ...FIT, duration: 0 };
 const FAINT = DRAW.trip.faint;
 const LAYERS = ['app-walks', 'app-walks-guess', 'app-legs', 'app-calls'];
 
@@ -92,6 +94,8 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
    * fit worked out for a box that no longer exists clipped the trip to a couple of streets.
    */
   const shownRef = useRef<LngLatBounds | null>(null);
+  /** The map already framed once: another option, or the next leg on the ride, is travelled to rather than cut to (as on the board's map). */
+  const framed = useRef<typeof map>(null);
 
   useEffect(() => {
     if (!map) return;
@@ -99,7 +103,7 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
       // Only when the trip has actually fallen off the map: a reader who zoomed in keeps their view.
       const want = shownRef.current;
       const view = map.getBounds();
-      if (want && !(view.contains(want.getSouthWest()) && view.contains(want.getNorthEast()))) map.fitBounds(want, FIT);
+      if (want && !(view.contains(want.getSouthWest()) && view.contains(want.getNorthEast()))) map.fitBounds(want, FIT_NOW);
     };
     map.on('resize', refit);
     return () => {
@@ -249,7 +253,8 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
 
     if (!bounds.isEmpty()) {
       shownRef.current = bounds;
-      map.fitBounds(bounds, FIT);
+      map.fitBounds(bounds, framed.current === map ? FIT : FIT_NOW);
+      framed.current = map;
     }
     return () => {
       for (const id of ['app-walks', 'app-legs', 'app-calls']) {

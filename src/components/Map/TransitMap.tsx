@@ -242,7 +242,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
   // No map to filter, follow or tap: the notice where it would be, and nothing over it.
   if (unavailable)
     return (
-      <div className="page map-gutter h-full card:h-auto">
+      <div className="page map-gutter h-full card:max-lg:h-auto">
         <div className="h-map-viewport w-full overflow-hidden bg-surface card:rounded-card card:border card:border-edge">
           <MapUnavailable className="h-full" />
         </div>
@@ -250,9 +250,13 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
     );
 
   return (
-    // No page padding on a phone: the map is the screen there, edge to edge.
-    <div className="page map-gutter h-full card:h-auto">
-      <div className="h-full card:h-auto grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+    // No page padding on a phone: the map is the screen there, edge to edge. On a computer the
+    // screen is the window's height again and does not scroll: the map takes all of it and the
+    // controls beside it scroll on their own. The page moved under the wheel with the map in it,
+    // and the lines' own box handed the wheel on to the page once it ran out. A window too short
+    // for the map's floor scrolls the page as before.
+    <div className="page map-gutter h-full card:max-lg:h-auto">
+      <div className="h-full card:max-lg:h-auto grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-1 lg:min-h-map-tablet-min gap-5 items-start lg:items-stretch">
         {sheetOpen && <Scrim label={t.map.closeControls} onClose={closeSheet} className="fixed z-map-overlay lg:hidden" />}
 
         <MapControls
@@ -276,7 +280,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
           onOpenLine={onOpenLine}
         />
 
-        <div className="h-full card:h-auto order-1 lg:order-none lg:col-span-8">
+        <div className="h-full card:max-lg:h-auto order-1 lg:order-none lg:col-span-8">
           {/* The map is the screen on a phone, upright or turned; the card, the border and the fixed height come back where one fits. */}
           {/* With a sheet up, the zoom bar steps aside: it floated over the sheet's two buttons, and a tap meant for them zoomed the map. */}
           <div className={`h-map-viewport relative z-0 w-full overflow-hidden bg-surface card:rounded-card card:border card:border-edge card:shadow-raised ${tappedStop || linesHere ? 'map-sheet-up' : ''}`}>

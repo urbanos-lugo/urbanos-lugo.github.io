@@ -828,9 +828,10 @@
       min-height: var(--spacing-map-tablet-min);
     }
   }
+  /* On a computer it is the screen's whole height again, beside the controls (TransitMap). */
   @media (min-width: 64rem) {
     .h-map-viewport {
-      height: var(--spacing-map-desktop);
+      height: 100%;
       min-height: 0;
     }
   }

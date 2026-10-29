@@ -284,7 +284,9 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    no sitio: a primeira lectura foi co dominio dun día. O seguinte paso é do dono: quitar o
    sitemap en Search Console e envialo de novo; en Bing, mirar en Sitemaps se o importado
    se leu e cantas URL atopou, e na inspección da raíz, `/es/` e `/en/`, se seguen
-   «Discovered but not crawled».*
+   «Discovered but not crawled».* *O mesmo día: Bing, «Success» e 18 URL atopadas, e
+   inspeccionadas as tres; o sitemap volveuse enviar en Search Console, que ao momento
+   seguía igual. Mirar outra vez nunha semana.*
 3. **Os festivos de 2027.** `src/data/festivos.json` ten só 2026. O decreto galego de 2027
    xa saíu: Decreto 68/2026, DOG do 2 de xullo de 2026, co 19 de marzo e o 17 de maio no
    lugar do 25 de xullo e do 15 de agosto, que caen en domingo. Faltan os dous festivos

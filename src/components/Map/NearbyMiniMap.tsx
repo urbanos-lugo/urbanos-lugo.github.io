@@ -45,6 +45,8 @@ export function NearbyMiniMap({ centre, stops, onSelectStop, regionLabel }: Near
   const t = useT();
   const { label, kind, accuracy = 0 } = centre;
   const { map, styled, unavailable } = useMapLibre(containerRef, { center: [centre.lat, centre.lng], zoom: 15, scrollZoom: false, region: regionLabel });
+  /** The map already framed once: its first picture is drawn in place, and every one after it travelled to. */
+  const framed = useRef<typeof map>(null);
 
   useEffect(() => {
     if (!map || !styled) return;
@@ -85,7 +87,16 @@ export function NearbyMiniMap({ centre, stops, onSelectStop, regionLabel }: Near
     // No name over the point the map is about, the reader or the pole.
     names.setStops(stops, [at]);
     const room = DRAW.fit.nearby;
-    if (stops.length) map.fitBounds(bounds, { padding: { top: room, bottom: room + DRAW.fit.credit, left: room, right: room + DRAW.fit.zoomBar }, maxZoom: 16, duration: 0 });
+    // Another stop is travelled to, not cut to: on a computer the board stays put while its map
+    // jumped half a kilometre and most of a zoom step in one frame. A straight glide, the
+    // network map's own: the arc of a flight took up to a second over a few streets. The
+    // renderer keeps it still for a reader who asked for less motion. The names wait for it to
+    // land, asked first because a still move lands within the call; not on the reader's own
+    // map, which moves a little with every fix and would blink.
+    const travels = framed.current === map && stops.length > 0;
+    if (travels && !reader) names.holdWhileMoving();
+    if (stops.length) map.fitBounds(bounds, { padding: { top: room, bottom: room + DRAW.fit.credit, left: room, right: room + DRAW.fit.zoomBar }, maxZoom: 16, linear: true, ...(travels ? {} : { duration: 0 }) });
+    framed.current = map;
 
     // The way to the nearest stop on the pavement, routed on the device: which side of the
     // street it is on, and where to cross. Nothing is drawn where there is no pedestrian route.
