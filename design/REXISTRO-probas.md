@@ -4227,3 +4227,10 @@ Dúas cousas que no ordenador se sentían bruscas.
   achados WCAG; a barra da casa, 25, 3 e 62, coma antes. Bastaban os estados do mapa e do
   taboleiro e as secuencias; correuse enteira porque a mañá unha estreita deixara pasar o
   pregable pechado.
+- **Atopado na seguinte auditoría enteira**, e vén da rolda 44: no estado «bus aberto»,
+  escritorio e claro, o × do globo dun bus quedaba enteiro detrás do marcador doutro bus
+  (2.4.11). Os buses van sobre os demais marcadores (`z-index` 1) e os globos non tiñan
+  ningún, así que un bus que pasase por debaixo dun globo aberto pintábase enriba; saía
+  segundo o reloxo, porque os buses se moven. Os globos van agora sobre os buses. Proba
+  determinista na páxina: cun bus engadido despois do globo e posto enriba do ×, o punto do
+  × é o ×; sen a regra, era o bus. O estado, despois: 0 achados.

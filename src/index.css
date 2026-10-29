@@ -432,6 +432,7 @@
   --z-index-raised: 10;      /* a bar stuck over the list it belongs to */
   --z-index-dropdown: 30;    /* a field's suggestions over the form */
   --z-index-map-bus: 1;      /* a bus over the map's other markers (VehicleLayer) */
+  --z-index-map-popup: 2;    /* a popup over the buses, which pass under an open one */
   --z-index-map-float: 400;  /* a control floating on a map */
   --z-index-map-chips: 401;  /* the line chips, over the buses' notice that follows them */
   --z-index-map-alert: 402;  /* why the locate button found nothing, over the chips it can grow under at 200 % text */
@@ -921,7 +922,10 @@
   }
   .maplibregl-ctrl-attrib a { color: var(--c-accent) !important; }
 
-  /* Popups: the card on the page's ground, its tip the same, its × in the zoom buttons' ink. */
+  /* Popups: the card on the page's ground, its tip the same, its × in the zoom buttons' ink.
+     Over the buses: a bus is lifted over the other markers, and one moving under an open popup
+     covered its ×. */
+  .maplibregl-popup { z-index: var(--z-index-map-popup); }
   .maplibregl-popup-content {
     background: var(--c-bg) !important;
     color: var(--c-ink) !important;
