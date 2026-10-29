@@ -4115,3 +4115,75 @@ que pedir. A ficha de liña escolle o día desde a rolda 43.
 - **O sitemap en Search Console**: lido só o 14 de outubro, «Non se puido ler», e o ficheiro
   está ben (NOTAS, Pendente 2). Queda no dono volver envialo.
 - **Os festivos locais de 2027**: buscados o 28 e o 29, sen resolución publicada aínda.
+
+## Rolda 48: o escritorio en PageSpeed — 29 de outubro de 2026
+
+PageSpeed Insights deu á portada 97 no teléfono e 63 no escritorio: CLS 0,204, 840 ms de
+bloqueo total, e `registerSW.js` detendo o primeiro pintado (450 ms estimados nos dous). A
+caché de 10 minutos é a de GitHub Pages, e non se toca desde aquí.
+
+### Atopado
+
+- **O salto era o taboleiro**, e só cun procesador lento. Coa sonda de `layout-shift` a 1350 ×
+  940 e o fuso de Los Ángeles (de onde mide PageSpeed), sen freo dá 0,015, e coa CPU 4× máis
+  lenta 0,161: a 1,5 s, «Onde está este poste» e «Ver o paso a outra hora» saían da pantalla
+  (0,146). O taboleiro lía as saídas nun efecto, despois do primeiro render: cada parada
+  abría co «non vén ningún bus» e a seguinte saída calculada para nada, e as filas chegaban
+  no render seguinte. Nun ordenador rápido non se pinta; no DOM está sempre.
+- **O resto, 0,015**, é a franxa dos avisos, que chega coa resposta de `/api/alerts`: unha
+  petición de verdade, por debaixo do 0,1 que Chrome chama bo.
+
+### Feito
+
+- **O taboleiro le as saídas no render** (`useMemo`, coa parada, a hora, o día e un contador
+  que o refresco de 15 s adianta), e un dedo enriba segue detendo o refresco coma antes.
+- **O rexistro do service worker vai con `defer`** (`injectRegister: 'script-defer'`).
+- Dúas comprobacións: na build, ningún script que a páxina pide sen `defer`, `async` nin
+  `type="module"` (falla coa build de antes, co `registerSW.js`); e nos percorridos, unha
+  pantalla que dixo que estaba baleira e se encheu sen que ninguén tocase nada.
+- **Probado e deixado**: o primeiro render dentro dunha transición baixaba o bloqueo
+  (337–551 ms) pero atrasaba o primeiro pintado uns 150 ms. Antes dese pintado non hai nada
+  que tocar, así que só movía a cifra.
+
+### Medidas
+
+Contra a build de `develop` (bd0bf61) e a desta rama, cada unha no seu servidor, alternándoas:
+1350 × 940, fuso de Los Ángeles, CPU 4× máis lenta, cinco voltas cada unha coa máquina sen
+outra carga. Unha tanda anterior, con outros programas pesados abertos, deu o mesmo con máis ruído, e
+unha de `measure:browser` saíu peor en cousas que este cambio non toca (o planificador, o zoom
+do mapa): as medidas de tempo só valen alternando e sen nada máis correndo.
+
+- **CLS**: 0,16–0,21 antes (unha volta deu 0,211, a cifra de PageSpeed), 0,014–0,016 despois.
+- **Tarefas longas** na carga: 5–11 antes, 4–5 despois; o bloqueo sumado (o que pasa de 50 ms
+  en cada unha), 563–1.056 ms antes e 550–884 despois. O primeiro render faise máis longo
+  (403 → 551 ms nunha traza), porque agora leva o taboleiro enteiro.
+- **O que baixa ao chegar**: antes, o anaco de entrada e o mapa pequeno con MapLibre
+  (237 KB, o seu *worker* e os nomes), porque «Onde está este poste» quedaba á vista no
+  taboleiro baleiro e o mapa empezaba a cargar antes de que as filas o botasen da pantalla.
+  Agora, só o anaco de entrada (146 KB).
+- **O primeiro pintado** é un pouco máis tarde (FCP 1,27–1,48 s fronte a 1,17–1,46), pero
+  antes era o taboleiro baleiro co «non hai saídas»: as filas entraban no DOM ás 1,24–1,31 s e
+  pintábanse despois dunha disposición de 180–190 ms. Agora van no primeiro pintado.
+- **No teléfono** (o arranque en frío de `measure:browser`, 6× e Slow 4G, catro voltas
+  alternadas): FCP 2,96–3,16 s antes e 2,92–3,33 despois, bloqueo 433–641 e 373–578 ms; CLS 0
+  nas dúas. Abrindo o QR dun poste, o primeiro pintado (2,6 s) xa leva a primeira saída, que
+  antes chegaba despois (2,7 e 2,9 s).
+- **Os percorridos** «next bus at a stop» (20 voltas): os 20 marcan o taboleiro baleiro
+  coa build de antes, ningún con esta.
+- `registerSW.js` vai agora con `defer`, e a comprobación nova falla coa build de antes.
+- Os dous excesos de orzamento de `measure:browser` (o fío ocupado por minuto de «Vou nesta»,
+  9,5–9,8 s fronte a 5) xa estaban coa build de antes (13,5–14,0 s nesa tanda).
+- **A auditoría enteira** con `AUDIT_RUNNER=1`: 0 achados WCAG en 242 medidas, ningún de fluxo
+  nin de volta nos percorridos (a sonda nova non marca nada fóra do taboleiro), e a barra da
+  casa 25 / 3 / 62, a mesma de `develop` (641 s).
+- As cinco portas: lint, 161 comprobacións (antes e despois da build), 22 políticas,
+  `check:deep` e a build.
+
+### Queda
+
+- **PageSpeed de novo** cando isto estea publicado: mide o sitio, que é `main`.
+- **Os 0,015 da franxa dos avisos**: só se evitarían reservando un oco que quizais quede
+  baleiro, e iso é peor.
+- **Fóra do fuso de Lugo**, o aviso do reloxo carga os datos de fusos de ICU (92 ms a 4× no
+  primeiro render). En Lugo non se carga, e levalo a despois do pintado traería outro salto,
+  porque o aviso vai enriba da lista.

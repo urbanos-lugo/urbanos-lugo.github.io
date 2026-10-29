@@ -1927,6 +1927,16 @@ ok('the built page’s one inline script is the one its policy admits', () => {
   assert(html.includes(`content="${CSP_META}"`), 'the built page does not carry the policy in its meta tag');
 });
 
+ok('no script the built page fetches holds its first paint', () => {
+  // A plain <script src> stops the parser until its file has come and run. The service
+  // worker's registration was one, in <head>, and Lighthouse put the paint it held at 450 ms.
+  const built = join(root, 'dist', 'index.html');
+  if (!existsSync(built)) return;
+  const tags = [...readFileSync(built, 'utf8').matchAll(/<script\b[^>]*\bsrc=[^>]*>/gi)].map((m) => m[0]);
+  const blocking = tags.filter((tag) => !/\s(defer|async)[\s>=]|type="module"/i.test(tag));
+  assert(tags.length > 0 && blocking.length === 0, `the built page waits on ${blocking.join(', ') || 'no script at all'}`);
+});
+
 await okAsync('the address the app calls for /api is the one its policy admits, and only that origin', async () => {
   // apiUrl.ts builds the request and csp.ts admits the origin, each reading VITE_API_ORIGIN:
   // name the setting differently in one and the build succeeds, and the published site's

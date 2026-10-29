@@ -167,6 +167,9 @@ export default defineConfig({
     // works with no connection at all, which is the normal case at a bus stop.
     VitePWA({
       registerType: 'autoUpdate',
+      // Registering the worker can wait for the page: a plain script in <head> held the first
+      // paint for a request of its own, which Lighthouse put at 450 ms.
+      injectRegister: 'script-defer',
       includeAssets: ['favicon.svg'],
       manifest: {
         name: 'Urbanos de Lugo',

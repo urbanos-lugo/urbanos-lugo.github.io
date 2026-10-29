@@ -783,6 +783,30 @@ const FOLDS = `(() => {
 })()`;
 
 /**
+ * A screen that said it had nothing, then filled in with nobody touching anything. The board read
+ * its departures in an effect, so every stop opened on "no bus comes" for a frame: in the DOM on
+ * any computer, painted on a slow one, and then pushed half the screen down (CLS 0.15 on
+ * PageSpeed's desktop run). An empty state is the one dashed card, and input in between excuses it.
+ */
+const EMPTY_FLASH = `(() => {
+  window.__emptyFlashes = [];
+  let input = 0;
+  for (const type of ['pointerdown', 'keydown', 'input']) addEventListener(type, () => { input++; }, true);
+  const shown = new Map();
+  const empties = (n) => (n.nodeType !== 1 ? [] : [...(n.matches('.rounded-card.border-dashed') ? [n] : []), ...n.querySelectorAll('.rounded-card.border-dashed')]);
+  new MutationObserver((records) => {
+    for (const r of records) {
+      for (const n of r.addedNodes) for (const el of empties(n)) shown.set(el, { at: performance.now(), input });
+      for (const n of r.removedNodes) for (const el of empties(n)) {
+        const was = shown.get(el);
+        shown.delete(el);
+        if (was && was.input === input && performance.now() - was.at < 2000) window.__emptyFlashes.push((el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 50));
+      }
+    }
+  }).observe(document, { childList: true, subtree: true });
+})()`;
+
+/**
  * Where each control a tap brought is laid out in every frame drawn after it: its offset in
  * the page, which neither a transform nor a scroll moves. A control first drawn in one place
  * and then settled in another jumped under the eye, however short the first frame was; the
@@ -1162,6 +1186,8 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
   run.screens = seen.size;
   const leaks = await page.evaluate<string[]>(`window.__foldLeaks || []`).catch(() => []);
   if (leaks.length) flow(`a fold closed with what was inside it still on screen until the next frame (${[...new Set(leaks)].join(', ')} of its fields, buttons, links and headings)`);
+  const flashes = await page.evaluate<string[]>(`window.__emptyFlashes || []`).catch(() => []);
+  if (flashes.length) flow(`a screen first said it was empty, then filled in with nobody touching it («${[...new Set(flashes)].join('», «')}»)`);
   if (run.findings.some((f) => f.kind === 'flow' && /never|nothing|no field|no map/.test(f.detail))) return run;
 
   // The answer: on screen, and not under anything.
@@ -1343,6 +1369,7 @@ export async function journeys(browser: Browser, passes: Pass[] = CORE): Promise
       await w.page.onNewDocument(PROBE_SOURCE);
       await w.page.onNewDocument(FRAMES);
       await w.page.onNewDocument(FOLDS);
+      await w.page.onNewDocument(EMPTY_FLASH);
       // Where the screen was when the app left it: the scroll at each step it adds to the history.
       await w.page.onNewDocument(`(() => { const push = history.pushState.bind(history); history.pushState = (s, t, u) => { const m = document.querySelector('main'); window.__leftAt = m ? Math.round(m.scrollTop) : null; push(s, t, u); }; })()`);
       const cpu = Number(process.env.JOURNEY_CPU ?? 1);

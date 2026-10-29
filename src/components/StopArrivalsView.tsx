@@ -84,7 +84,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const noticeSections = notices.flatMap((alert) => alert.sections ?? []);
   const noticeLines = [...new Set(selectedStop.lines.map(lineById).filter((line): line is BusLine => !!line && noticeSections.some((s) => namesLine(s, line))).map((line) => line.number))];
   const noticeDays = notices.find((alert) => alert.description !== alert.title)?.description;
-  const [arrivals, setArrivals] = useState<StopArrival[]>([]);
+  /** Bumped by the board's own refresh; another stop or time asked for is read at once, below. */
+  const [tick, setTick] = useState(0);
   const [view, setView] = useState<'next' | 'byLine'>('next');
   /** A time to read the board at, or '' for now — the question the night before. */
   const [atTime, setAtTime] = useState('');
@@ -131,18 +132,6 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
     firedRef.current.clear();
     setFiredMessage(null);
   }, [selectedStop.id]);
-
-  useEffect(() => {
-    for (const arrival of arrivals) {
-      const lead = watches[arrival.lineId];
-      if (lead === undefined || firedRef.current.has(arrival.lineId) || arrival.etaMinutes > lead) continue;
-      firedRef.current.add(arrival.lineId);
-      const message = t.arrivals.watchFired(arrival.lineNumber, arrival.etaMinutes, selectedStop.name);
-      setFiredMessage(message);
-      ringAlarm();
-      notify(t.arrivals.watchTitle, message);
-    }
-  }, [arrivals, watches, selectedStop.name]);
 
   // Alarm for "wake me when I am nearly at my stop". It belongs to one stop.
   const [alarmOn, setAlarmOn] = useState(false);
@@ -212,7 +201,24 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   /** A refresh that came while the finger was down, run when it lifts. */
   const waiting = useRef<(() => void) | null>(null);
 
-  // Recomputed every 15 s because the minutes count down against the wall clock, and the moment
+  // Read in the render, not after it: an effect let a slow device paint the board empty, saying
+  // no bus comes, then push half the screen down when the rows landed (CLS 0.15 on PageSpeed).
+  // Another stop, or another time asked for, is the reader's own doing: drawn at once.
+  const arrivals = useMemo<StopArrival[]>(() => getArrivalsForStop(selectedStop.id, boardMoment()).arrivals, [selectedStop.id, atTime, daysAhead, tick]);
+
+  useEffect(() => {
+    for (const arrival of arrivals) {
+      const lead = watches[arrival.lineId];
+      if (lead === undefined || firedRef.current.has(arrival.lineId) || arrival.etaMinutes > lead) continue;
+      firedRef.current.add(arrival.lineId);
+      const message = t.arrivals.watchFired(arrival.lineNumber, arrival.etaMinutes, selectedStop.name);
+      setFiredMessage(message);
+      ringAlarm();
+      notify(t.arrivals.watchTitle, message);
+    }
+  }, [arrivals, watches, selectedStop.name]);
+
+  // Read again every 15 s because the minutes count down against the wall clock, and the moment
   // the phone is woken; nothing is fetched, so no "last updated". While a finger is on the board
   // the rows wait for it to lift: a bus leaving moved every row up, under a thumb about to tap.
   useEffect(() => {
@@ -221,11 +227,9 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         waiting.current = read;
         return;
       }
-      setArrivals(getArrivalsForStop(selectedStop.id, boardMoment()).arrivals);
+      setTick((n) => n + 1);
     };
-    // Another stop, or another time asked for, is the reader's own doing: drawn at once.
     fingerSince.current = 0;
-    read();
     if (atTime) return; // a named time does not move
     const interval = setInterval(read, 15000);
     const unshown = onShown(read);

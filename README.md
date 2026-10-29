@@ -1241,7 +1241,9 @@ opaca cóntalle ao Chrome megabytes de espazo sexa do tamaño que sexa: seis tes
 A xeometría viaria, o renderizador do mapa e a rede peonil cárganse só cando fan falta.
 `index.html` só pide tres cousas: o anaco de entrada, unha folla de estilos e o rexistro
 do service worker; o script que fixa o tema antes do primeiro pintado vai inline, co seu
-hash na política de seguridade.
+hash na política de seguridade. O rexistro vai con `defer`: era un script corrente na
+cabeceira, que detiña o primeiro pintado ata chegar e correr (Lighthouse poñíalle 450 ms), e
+unha comprobación da build mira que ningún script que a páxina pide a deteña.
 
 E a build escribe un `.br` e un `.gz` ao lado de cada activo, que o servidor entrega cando
 o navegador di que sabe lelos. Medido contra a build de produción:
@@ -2037,7 +2039,9 @@ volto a abrir— nun Android pequeno (360 × 640) e no iPhone máis grande (430 
 de verdade. Conta toques, teclas, desprazamentos, escollas, pantallas e o que tarda a app en
 responder a cada paso; mide onde cae o dedo (o cuarto de arriba da pantalla é difícil cunha
 man), o tamaño do que toca, se algo o tapa ou se move xusto antes do toque, e se se pintou
-noutro sitio antes de quedar quieto (cadro a cadro, pola súa posición na páxina); e cun teclado
+noutro sitio antes de quedar quieto (cadro a cadro, pola súa posición na páxina); se unha
+pantalla dixo que estaba baleira e se encheu sen que ninguén tocase nada (o taboleiro abría
+cada parada co «non vén ningún bus» un cadro, e nun ordenador lento pintábao); e cun teclado
 sobre o 41 % de abaixo da pantalla, se o campo e o que vén despois quedan á vista. Despois
 volve: o atrás do sistema ten que desfacer a viaxe pantalla a pantalla, pechando primeiro o
 que está enriba e co desprazamento e os campos como estaban, e só a última pulsación sae da
@@ -2063,9 +2067,10 @@ forzadas, movemento— (143) e os percorridos (152). Nunha soa máquina eran dez
 O que `pnpm test` non pode ver: un Chromium real, dirixido por `tools/cdp.ts`, acelerado
 6× e con rede «Slow 4G», contra o sitio construído. `measure:browser` mide o que custa
 arrincar en frío; abrir en frío a ligazón do QR dun poste ata a primeira saída na pantalla,
-co reloxo da páxina nun mércores ás 13:30 (medido: primeiro pintado 2,7 s e primeira saída
-2,9 s; eran 2,9 e 3,0 antes de que a comprobación do fuso horario deixase de cargar a base
-de datos de fusos nun teléfono que xa está no de Lugo); e —o que é cada visita dunha app instalada— en quente, co *service
+co reloxo da páxina nun mércores ás 13:30 (medido o 29 de outubro: o primeiro pintado en
+2,6 s xa leva a primeira saída; ata entón o taboleiro lía as saídas despois de pintarse
+baleiro, e eran 2,7 e 2,9 s, e 2,9 e 3,0 antes de que a comprobación do fuso horario deixase
+de cargar a base de datos de fusos nun teléfono que xa está no de Lugo); e —o que é cada visita dunha app instalada— en quente, co *service
 worker* xa instalado (medido: 1.360 ms ata o primeiro pintado a 6× na rolda completa, 824 só, 8 de 8 respostas do
 *worker*, 0 KB pola rede fóra dos avisos); abrir o mapa, catro pasos de zoom e catro
 arrastres (medido o 28 de outubro con MapLibre só, alternando coa build de Leaflet na mesma
