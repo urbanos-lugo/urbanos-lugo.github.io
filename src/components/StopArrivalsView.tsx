@@ -600,7 +600,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           options={(['laborable', 'sabado', 'domingo'] as const).map((kind) => ({ id: kind, label: t.lines.dayKinds[kind] }))}
           value={atDay ?? today}
           onChange={askOn}
-          className="px-3 pb-3"
+          className="mx-3 mb-3"
         />
       </Disclosure>
       {Object.keys(watches).length > 0 && <Notice className="mt-3">{t.arrivals.watchForeground}</Notice>}

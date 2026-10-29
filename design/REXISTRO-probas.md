@@ -4087,3 +4087,18 @@ que pedir. A ficha de liña escolle o día desde a rolda 43.
   las 23:51», co taboleiro baleiro e «la siguiente es la línea 4.1 el domingo a las ~07:25».
   «Volver a ahora» baleira a hora e volve ao día de hoxe. A 320 px, «Domingos y festivos»
   colle dúas liñas, partidas nun espazo.
+
+### Atopado despois de subilo
+
+- **O CI de 6ca443f caeu** nas partes do escritorio e dos dous teléfonos: «Sábados» e
+  «Domingos e festivos» a 1,52 de contraste no escuro, só cos estados que teñen o pregable
+  pechado. A auditoría local miraba só «parada outra hora», onde está aberto. Nun `<details>`
+  pechado o contido non se debuxa, e a transición da cor dos botóns non avanza: tras o
+  cambio de tema, 600 ms despois o botón seguía coa cor da paleta de antes e unha animación
+  pendente. Ninguén o ve, porque está pregado; a auditoría méteo, e segundo o tempo. Agora,
+  dentro dun pregable pechado nada transiciona, e un cambio aplícase ao momento. Cos tres
+  estados que fallaban e `AUDIT_RUNNER=1`: 10 achados antes, 0 despois.
+- **O selector ía pegado aos bordos do pregable**, e o resaltado desprazado dos botóns:
+  `Segmented` pon a clase na propia pista, e `px-3 pb-3` substituía a súa marxe interior,
+  da que colga o resaltado. Agora é `mx-3 mb-3`: 13 px a cada lado e por baixo, e o
+  resaltado cadra co botón.

@@ -603,6 +603,10 @@
   .disclosure-chevron { transition: transform var(--transition-duration-move) var(--ease-enter); }
   .disclosure[open] summary .disclosure-chevron, [aria-expanded="true"] > .disclosure-chevron { transform: rotate(180deg); }
   .disclosure[open] > :not(summary) { animation: fade-full var(--transition-duration-mark) var(--ease-fade); }
+  /* A closed panel is not drawn, and a transition inside it never runs: after a theme switch
+     the board's day selector kept the old palette's colour, 1.52 against the new background,
+     until the panel opened. Folded, a change lands at once. */
+  .disclosure:not([open]) > :not(summary), .disclosure:not([open]) > :not(summary) * { transition: none; }
   @supports (interpolate-size: allow-keywords) {
     .disclosure { interpolate-size: allow-keywords; }
     .disclosure::details-content { block-size: 0; overflow: hidden; transition: block-size var(--transition-duration-panel) var(--ease-enter), content-visibility var(--transition-duration-panel) allow-discrete; }
