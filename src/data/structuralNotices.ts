@@ -7,4 +7,4 @@
  * (tools/checkNoticesReviewed.ts).
  */
 export const NOTICE_META = [{ id: 'struct-2', severity: 'info' as const, linesAffected: ['7', '8', '9', '12'] }];
-export const NOTICES_REVIEWED_ON = '2026-10-13';
+export const NOTICES_REVIEWED_ON = '2026-10-29';

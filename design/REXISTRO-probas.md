@@ -4102,3 +4102,16 @@ que pedir. A ficha de liña escolle o día desde a rolda 43.
   `Segmented` pon a clase na propia pista, e `px-3 pb-3` substituía a súa marxe interior,
   da que colga o resaltado. Agora é `mx-3 mb-3`: 13 px a cada lado e por baixo, e o
   resaltado cadra co botón.
+
+## Rolda 47: antes da 1.7.0 — 29 de outubro de 2026
+
+### Medido
+
+- **O aviso estrutural** (a cabeceira das liñas 7, 8, 9 e 12 en Bolaño Ribadeneira),
+  revisado como o 13 de outubro: `lines.json` dao así nas catro, o dataset non cambia desde
+  o 6 de outubro, a comprobación semanal das fontes do luns 26 pasou, e ningunha nova o
+  contradí. Os metros por rúas peonís de OpenStreetMap non se volveron medir. Revisado o 29;
+  a seguinte, antes do 3 de decembro.
+- **O sitemap en Search Console**: lido só o 14 de outubro, «Non se puido ler», e o ficheiro
+  está ben (NOTAS, Pendente 2). Queda no dono volver envialo.
+- **Os festivos locais de 2027**: buscados o 28 e o 29, sen resolución publicada aínda.

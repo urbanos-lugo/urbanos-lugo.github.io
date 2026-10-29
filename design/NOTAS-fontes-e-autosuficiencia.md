@@ -276,6 +276,15 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    Console. O sitemap vello e o sitio vello quitáronse dos dous paneis. O que queda é
    mirar en dúas semanas que «Páxinas» amose as 18 e que cada idioma saia a quen busca
    nel.*
+   *Mirado o 29 de outubro. Google: o sitemap «/sitemap.xml» leuse só o 14, «Non se puido
+   ler o sitemap», 0 páxinas, e sen volver ler en quince días; indexadas, as que se pediron a
+   man. O ficheiro, pedido unha vez desde fóra co axente de Googlebot: 200,
+   `application/xml`, 1.248 bytes sen BOM, só o espazo de nomes de sitemaps, 18 URL que
+   responden 200 coa súa canónica e sen `noindex`, e `robots.txt` noméao. Nada que arranxar
+   no sitio: a primeira lectura foi co dominio dun día. O seguinte paso é do dono: quitar o
+   sitemap en Search Console e envialo de novo; en Bing, mirar en Sitemaps se o importado
+   se leu e cantas URL atopou, e na inspección da raíz, `/es/` e `/en/`, se seguen
+   «Discovered but not crawled».*
 3. **Os festivos de 2027.** `src/data/festivos.json` ten só 2026. O decreto galego de 2027
    xa saíu: Decreto 68/2026, DOG do 2 de xullo de 2026, co 19 de marzo e o 17 de maio no
    lugar do 25 de xullo e do 15 de agosto, que caen en domingo. Faltan os dous festivos
