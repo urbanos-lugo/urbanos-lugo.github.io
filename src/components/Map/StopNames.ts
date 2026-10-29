@@ -1,7 +1,7 @@
 import type { Map as MapLibre } from 'maplibre-gl';
 import type { BusStop } from '../../types';
 import { DRAW } from './palette';
-import { nameAt, nameBox, placeNames, sideOf, type Box, type NamedDot } from './nameLayout';
+import { nameAt, nameBox, placeNames, placeOn, sideOf, type Box, type NamedDot, type NamePlace } from './nameLayout';
 import type { ClaimedEvent } from './mapLayers';
 
 /**
@@ -25,8 +25,10 @@ interface StopNamesOptions {
   onTap?: (stop: BusStop) => void;
 }
 
-const { size: FONT_PX, weight: FONT_WEIGHT, gap: GAP_PX, halo: HALO_PX, edge: EDGE_PX, reach: REACH_PX } = DRAW.names;
+const { size: FONT_PX, weight: FONT_WEIGHT, gap: GAP_PX, halo: HALO_PX, edge: EDGE_PX, reach: REACH_PX, fade: FADE_MS } = DRAW.names;
 const HEIGHT_PX = FONT_PX + HALO_PX;
+/** The most time one frame of a fade may count: two frames at 60 Hz. */
+const FRAME_CAP_MS = 33;
 /** Further than this between a press and its release is a drag, not a tap: the renderer's own click tolerance. */
 const TAP_SLOP_PX = 3;
 
@@ -48,13 +50,26 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
   const widths = new Map<string, number>();
   /** The side each stop's name was last written on, kept while it fits (placeNames). */
   const sides = new Map<string, number>();
+  /**
+   * How visible each name is, eased toward 1 while it is written and to 0 once it is not:
+   * names came and went in one frame as stops crossed one another under a drag. A name fading
+   * out keeps its side beside its dot and takes no tap; one fading in takes it at once.
+   */
+  const alpha = new Map<string, number>();
+  /** A name that moved to another side, fading out on the old one while it fades in on the new: it jumped across its dot in one frame. */
+  const leaving = new Map<string, { side: number; alpha: number }>();
   let stops: BusStop[] = [];
   let clear: [number, number][] = [];
   let written: { item: BusStop; box: Box }[] = [];
   let frame = 0;
+  let drawnAt = 0;
 
-  const draw = () => {
+  const draw = (now: number = performance.now()) => {
     frame = 0;
+    // The time since the last frame, no more than a couple of frames: after a still spell a
+    // name that appears still fades in rather than arriving whole.
+    const step = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : Math.min(now - (drawnAt || now), FRAME_CAP_MS) / FADE_MS;
+    drawnAt = now;
     const { clientWidth: width, clientHeight: height } = map.getContainer();
     const dpr = window.devicePixelRatio || 1;
     // Sizing the bitmap also clears it and resets the context.
@@ -84,15 +99,41 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
       shown.map(({ stop }) => sides.get(stop.id)),
     );
     written = [];
+    let fading = false;
+    const view = { radius: options.radius, gap: GAP_PX, height: HEIGHT_PX };
+    const write = (name: string, at: NamePlace, a: number) => {
+      ctx.globalAlpha = a;
+      ctx.textAlign = at.align;
+      ctx.strokeText(name, at.x, at.y);
+      ctx.fillText(name, at.x, at.y);
+    };
     shown.forEach(({ stop }, i) => {
       const place = places[i];
-      if (!place) return;
-      sides.set(stop.id, sideOf(place, dots[i]));
-      ctx.textAlign = place.align;
-      ctx.strokeText(stop.name, place.x, place.y);
-      ctx.fillText(stop.name, place.x, place.y);
-      written.push({ item: stop, box: nameBox(place, dots[i].width, HEIGHT_PX) });
+      const before = sides.get(stop.id);
+      const side = place ? sideOf(place, dots[i]) : before;
+      let was = alpha.get(stop.id) ?? 0;
+      if (place && before !== undefined && side !== before && was > 0) {
+        leaving.set(stop.id, { side: before, alpha: was });
+        was = 0;
+      }
+      const old = leaving.get(stop.id);
+      if (old) {
+        old.alpha = Math.max(0, old.alpha - step);
+        if (old.alpha > 0) {
+          fading = true;
+          write(stop.name, placeOn(dots[i], old.side, view), old.alpha);
+        } else leaving.delete(stop.id);
+      }
+      const target = place ? 1 : 0;
+      const a = was < target ? Math.min(target, was + step) : Math.max(target, was - step);
+      if (a !== target) fading = true;
+      if (a <= 0) return void alpha.delete(stop.id);
+      alpha.set(stop.id, a);
+      if (side !== undefined) sides.set(stop.id, side);
+      write(stop.name, place ?? placeOn(dots[i], side ?? 0, view), a);
+      if (place) written.push({ item: stop, box: nameBox(place, dots[i].width, HEIGHT_PX) });
     });
+    if (fading) frame = requestAnimationFrame(draw);
   };
   const later = () => {
     if (!frame) frame = requestAnimationFrame(draw);

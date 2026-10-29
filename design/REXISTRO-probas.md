@@ -4253,3 +4253,11 @@ Dúas cousas que no ordenador se sentían bruscas.
 - Auditoría enteira con `AUDIT_RUNNER=1` coas tres cousas: un só achado, o do globo
   detrás dun bus (arriba), que non vén delas. O deslizamento do lector non se probou nun
   teléfono co GPS.
+- **E os nomes esvaecen** en vez de aparecer e desaparecer nun cadro: cada un leva a súa
+  opacidade cara a 1 mentres se escribe e cara a 0 cando non, en 160 ms
+  (`--transition-duration-swap`). O que esvaece segue ao carón do seu punto, no lado que
+  tiña (`placeOn`, cun check), e non colle toques; o que aparece cólleos xa. Un nome que
+  cambia de lado esvaece no vello mentres aparece no novo: a primeira versión só esvaecía
+  os que entraban ou saían, e o cambio de lado, o que máis se ve arrastrando, seguía sendo
+  un salto. Medido: o debuxo para uns 160 ms despois do último movemento, sen bucle. Os
+  estados con nomes, as secuencias e os percorridos con `AUDIT_RUNNER=1`: 0 achados.

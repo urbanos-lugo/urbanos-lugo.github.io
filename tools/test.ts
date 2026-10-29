@@ -45,7 +45,7 @@ import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
 import { routeOnFoot } from '../src/utils/walkRouter';
 import { accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
-import { nameAt, nameBox, placeNames, sideOf } from '../src/components/Map/nameLayout';
+import { nameAt, nameBox, placeNames, placeOn, sideOf } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
 import { HOLIDAY_YEARS, buildRuns, dayKind, daysUntilKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
 import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
@@ -4212,6 +4212,8 @@ ok('a name on a map never covers another name, another stop or the reader', () =
   assert.equal(placeNames([panned], view, [leftOfIt])[0]?.align, 'right', 'a name written left of its dot jumped right as soon as there was room');
   // Not a side that has stopped working: kept to the right, at the edge it still goes left.
   assert.equal(placeNames([{ x: 360, y: 100, width: 80 }], view, [0])[0]?.align, 'right', 'a name kept to a side that runs off the screen');
+  // A name fading out is drawn on its side by placeOn: anywhere else, it jumped as it faded.
+  places.forEach((p, i) => p && assert.deepEqual(placeOn(dots[i], sideOf(p, dots[i]), view), p, `stop ${i}'s name moved as it faded`));
 });
 
 ok('a tap on a stop name written on the map is a tap on that stop', () => {

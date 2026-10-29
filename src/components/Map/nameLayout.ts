@@ -38,6 +38,22 @@ export function nameAt<T>(names: { item: T; box: Box }[], x: number, y: number, 
 /** Which of placeNames' four sides a name was written on: 0 right of its dot, 1 left, 2 above, 3 below. */
 export const sideOf = (place: NamePlace, dot: { y: number }): number => (place.align === 'left' ? 0 : place.align === 'right' ? 1 : place.y < dot.y ? 2 : 3);
 
+/** The four places a name can take beside its dot, `off` from its centre, in sideOf's order. */
+function sidesOf(d: NamedDot, off: number, height: number): (Box & { place: NamePlace })[] {
+  const row = { top: d.y - height / 2, bottom: d.y + height / 2 };
+  const centred = { left: d.x - d.width / 2, right: d.x + d.width / 2 };
+  return [
+    { left: d.x + off, right: d.x + off + d.width, ...row, place: { x: d.x + off, y: d.y, align: 'left' } },
+    { left: d.x - off - d.width, right: d.x - off, ...row, place: { x: d.x - off, y: d.y, align: 'right' } },
+    { ...centred, top: d.y - off - height, bottom: d.y - off, place: { x: d.x, y: d.y - off - height / 2, align: 'center' } },
+    { ...centred, top: d.y + off, bottom: d.y + off + height, place: { x: d.x, y: d.y + off + height / 2, align: 'center' } },
+  ];
+}
+
+/** Where a name on `side` (sideOf) sits beside its dot now: a name fading out keeps to its dot. */
+export const placeOn = (d: NamedDot, side: number, view: { radius: number; gap: number; height: number }): NamePlace =>
+  sidesOf(d, view.radius + view.gap, view.height)[side].place;
+
 /**
  * Where each stop's name goes beside its dot, taken in the order given, so the first ones
  * win: on the side it had before (`prefer`, by sideOf) while that is still usable, else to
@@ -59,14 +75,7 @@ export function placeNames(
   const clear = keepClear.map(around);
   const off = radius + gap;
   return dots.map((d, i) => {
-    const row = { top: d.y - height / 2, bottom: d.y + height / 2 };
-    const centred = { left: d.x - d.width / 2, right: d.x + d.width / 2 };
-    const sides: (Box & { place: NamePlace })[] = [
-      { left: d.x + off, right: d.x + off + d.width, ...row, place: { x: d.x + off, y: d.y, align: 'left' } },
-      { left: d.x - off - d.width, right: d.x - off, ...row, place: { x: d.x - off, y: d.y, align: 'right' } },
-      { ...centred, top: d.y - off - height, bottom: d.y - off, place: { x: d.x, y: d.y - off - height / 2, align: 'center' } },
-      { ...centred, top: d.y + off, bottom: d.y + off + height, place: { x: d.x, y: d.y + off + height / 2, align: 'center' } },
-    ];
+    const sides = sidesOf(d, off, height);
     // Each side only while it stays on the screen, except the left of a dot with no room on its right, which has nowhere better.
     const roomRight = sides[0].right <= width - edge;
     const usable = sides.filter((s, k) => (k === 0 ? roomRight : k === 1 ? s.left >= edge || !roomRight : s.left >= edge && s.right <= width - edge));
