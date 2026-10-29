@@ -74,7 +74,7 @@ export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine
   const lang = useLang();
   const markersRef = useRef<Record<string, Marker>>({});
   /** What each marker was last drawn from, so a tick that changed neither icon nor popup costs neither. */
-  const drawnRef = useRef<Record<string, { icon: string; popup: string }>>({});
+  const drawnRef = useRef<Record<string, { face: string; heading: number; popup: string }>>({});
   const onOpenLineRef = useRef(onOpenLine);
   onOpenLineRef.current = onOpenLine;
   const onOpenBusRef = useRef(onOpenBus);
@@ -106,8 +106,9 @@ export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine
     const t = translations(lang);
     const bearing = map.getBearing();
     for (const bus of placed) {
+      const face = `${bus.lineNumber}|${bus.lineColor}`;
       // Five degrees is under what the chip can show.
-      const iconKey = `${bus.lineNumber}|${bus.lineColor}|${Math.round(bus.bearing / 5) * 5}|${lang}`;
+      const heading = Math.round(bus.bearing / 5) * 5;
       const popupKey = `${bus.destination}|${bus.nextStopName}|${bus.occupancy}|${lang}`;
       const existing = markersRef.current[bus.id];
       // Not while the focus is inside the popup: new content replaces the old, the focused
@@ -118,7 +119,12 @@ export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine
         existing.setLngLat([bus.currentLng, bus.currentLat]);
         const el = existing.getElement();
         el.dataset.bearing = String(bus.bearing);
-        if (drawnRef.current[bus.id]?.icon !== iconKey) el.innerHTML = busSvg(bus, bearing);
+        const drawn = drawnRef.current[bus.id];
+        if (drawn?.face !== face) el.innerHTML = busSvg(bus, bearing);
+        // A new heading turns the nose already drawn. The whole SVG was replaced at every 5° a
+        // turning bus made, more than once a second across the map, and a tap whose press and
+        // release fell either side of it was lost: the popup never opened.
+        else if (drawn.heading !== heading) el.querySelector('[data-nose]')?.setAttribute('transform', noseTurn(bus.bearing, bearing));
         if (drawnRef.current[bus.id]?.popup !== popupKey && !holdsFocus) existing.getPopup()?.setDOMContent(popupNode(bus, onOpenLineRef.current, lang));
         el.setAttribute('aria-label', t.map.busMarker(bus.lineNumber, bus.destination));
       } else {
@@ -148,7 +154,7 @@ export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine
         });
         markersRef.current[bus.id] = new Marker({ element: el }).setLngLat([bus.currentLng, bus.currentLat]).setPopup(popup).addTo(map);
       }
-      drawnRef.current[bus.id] = { icon: iconKey, popup: holdsFocus ? (drawnRef.current[bus.id]?.popup ?? popupKey) : popupKey };
+      drawnRef.current[bus.id] = { face, heading, popup: holdsFocus ? (drawnRef.current[bus.id]?.popup ?? popupKey) : popupKey };
     }
   }, [map, buses, visibleLineIds, showBuses, lang]);
 

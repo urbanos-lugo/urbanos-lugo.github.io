@@ -1553,6 +1553,18 @@ async function mapPointer(browser: Browser): Promise<Finding[]> {
     }
   }
 
+  // A bus redrawn under a finger: its whole drawing was replaced at every 5° of a turn, more
+  // than once a second across the map, and a tap whose press and release fell either side of
+  // it opened nothing (CI, 29 Oct). Over two updates of the buses, no marker may lose the
+  // nodes it is drawn with; a new heading turns the nose already there.
+  if (buses) {
+    const replaced = await page.call<number>(`async function () {
+      let n = 0; const seen = new MutationObserver((list) => { for (const m of list) n += m.removedNodes.length; });
+      for (const bus of document.querySelectorAll('.custom-bus-marker')) seen.observe(bus, { childList: true });
+      await new Promise((r) => setTimeout(r, 6500)); seen.disconnect(); return n; }`);
+    if (replaced) at('flow', `a bus's drawing was replaced ${replaced} times in two updates of the buses, and a tap made across a replacement opens nothing`);
+  }
+
   // The pan. Stops and routes off (the controls are a column beside the map on a desktop),
   // then one click on an empty part of the map, and the map has to have moved.
   await page.call(`async function (T) {${REACH} for (const t of [T.stopsLayer, T.routesLayer]) { const b = [...document.querySelectorAll('button[aria-pressed="true"]')].find((x) => x.textContent.trim() === t); if (b) b.click(); await pause(300); } }`, T);

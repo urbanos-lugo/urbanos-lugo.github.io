@@ -4261,3 +4261,23 @@ Dúas cousas que no ordenador se sentían bruscas.
   os que entraban ou saían, e o cambio de lado, o que máis se ve arrastrando, seguía sendo
   un salto. Medido: o debuxo para uns 160 ms despois do último movemento, sen bucle. Os
   estados con nomes, as secuencias e os percorridos con `AUDIT_RUNNER=1`: 0 achados.
+
+## Rolda 50: un toque nun bus que xira — 29 de outubro de 2026
+
+O CI de 1944664 caeu unha vez no teléfono galego: no estado «bus aberto», o globo do bus
+tocado non se abriu. Ao volver correr esa parte, pasou; en local, 6 de 6. Non era só da proba.
+
+### Medido
+
+- **A causa**: cada 3 s os buses lense outra vez, e un que xira 5° ou máis substituía o seu
+  SVG enteiro (`innerHTML`). Nun Chrome por CDP, coma a auditoría: un toque normal abre o
+  globo, 2 de 2; co SVG substituído entre a pulsación e a soltura, 0 de 2. Nun mapa con 17
+  buses, 21 substitucións en 15 s: máis dunha por segundo, e un toque duns 100 ms cae nunha
+  delas arredor dunha vez de cada cen. Pasaríalle igual a quen use a web.
+- **O arranxo**: un rumbo novo xira o morro que xa está debuxado, coma o xiro do mapa; o SVG
+  só se fai de novo se cambian a liña ou a súa cor. Despois, en dúas tandas: 0 substitucións
+  e 20–22 morros xirados no sitio en 15 s.
+- **Un check na auditoría** (`mapPointer`): durante dúas lecturas dos buses, ningún marcador
+  pode perder os nodos cos que está debuxado. Co arranxo, 0; sen el, «o debuxo dun bus
+  substituíuse 10 veces». O reloxo da auditoría corre desde a hora fixada, así que os buses
+  móvense nela coma na rúa.
