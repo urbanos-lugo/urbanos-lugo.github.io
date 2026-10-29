@@ -1,7 +1,7 @@
 import type { Map as MapLibre } from 'maplibre-gl';
 import type { BusStop } from '../../types';
 import { DRAW } from './palette';
-import { nameAt, nameBox, placeNames, type Box, type NamedDot } from './nameLayout';
+import { nameAt, nameBox, placeNames, sideOf, type Box, type NamedDot } from './nameLayout';
 import type { ClaimedEvent } from './mapLayers';
 
 /**
@@ -46,6 +46,8 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
   map.getCanvas().after(canvas);
   const font = `${FONT_WEIGHT} ${FONT_PX}px ${getComputedStyle(document.documentElement).getPropertyValue('--font-sans') || 'system-ui, sans-serif'}`;
   const widths = new Map<string, number>();
+  /** The side each stop's name was last written on, kept while it fits (placeNames). */
+  const sides = new Map<string, number>();
   let stops: BusStop[] = [];
   let clear: [number, number][] = [];
   let written: { item: BusStop; box: Box }[] = [];
@@ -76,11 +78,16 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
       return { x: at.x, y: at.y, width: w };
     });
     const keepClear = clear.map(([lat, lng]) => map.project([lng, lat]));
-    const places = placeNames(dots, { width, radius: options.radius, gap: GAP_PX, height: HEIGHT_PX, edge: EDGE_PX, keepClear });
+    const places = placeNames(
+      dots,
+      { width, radius: options.radius, gap: GAP_PX, height: HEIGHT_PX, edge: EDGE_PX, keepClear },
+      shown.map(({ stop }) => sides.get(stop.id)),
+    );
     written = [];
     shown.forEach(({ stop }, i) => {
       const place = places[i];
       if (!place) return;
+      sides.set(stop.id, sideOf(place, dots[i]));
       ctx.textAlign = place.align;
       ctx.strokeText(stop.name, place.x, place.y);
       ctx.fillText(stop.name, place.x, place.y);

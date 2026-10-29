@@ -712,6 +712,9 @@
   .custom-bus-marker { width: var(--spacing-map-bus); height: var(--spacing-map-bus); z-index: var(--z-index-map-bus); cursor: pointer; }
   /* The stop names' own canvas (StopNames.ts), over the map and under its markers. */
   .map-names { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  /* The old palette's picture over a map changing theme (useMapLibre), gone once the new one has drawn. */
+  .map-still { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity var(--transition-duration-panel) var(--ease-fade); }
+  .map-still-gone { opacity: 0; }
 
   /* The way the phone faces (reader.ts): a fan of the reader's blue, fading from the dot
      outward, turned with the map by its marker's rotation. Drawn only once the compass answers. */

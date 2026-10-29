@@ -27,6 +27,8 @@ export interface MapHandle {
 
 /** Long enough for the second click of a double click, which zooms, to cancel the pan of the first. */
 export const PAN_AFTER_CLICK_MS = 300;
+/** The longest the old palette's picture waits for the new style before it fades anyway. */
+const STILL_MAX_MS = 3000;
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -161,7 +163,34 @@ export function useMapLibre(containerRef: RefObject<HTMLDivElement | null>, { ce
   useEffect(() => {
     if (!map || palette.current === isDark) return;
     palette.current = isDark;
-    map.setStyle(isDark ? MAP_STYLES.dark : MAP_STYLES.light, { diff: false });
+    const swap = () => map.setStyle(isDark ? MAP_STYLES.dark : MAP_STYLES.light, { diff: false });
+    const canvas = map.getCanvas();
+    if (!canvas.clientWidth || reduced()) return void swap();
+    // The old picture is held over the new style until that has drawn, then faded: loaded
+    // whole, the new style showed its bare background for as long as its tiles took, a flash
+    // on every change of theme. Copied in the frame that drew it, the one moment a WebGL
+    // canvas can be read; under the markers and the names, which change palette on their own.
+    map.once('render', () => {
+      const still = document.createElement('canvas');
+      still.className = 'map-still';
+      still.setAttribute('aria-hidden', 'true');
+      still.width = canvas.width;
+      still.height = canvas.height;
+      still.getContext('2d')?.drawImage(canvas, 0, 0);
+      canvas.after(still);
+      swap();
+      let gone = false;
+      const fade = () => {
+        if (gone) return;
+        gone = true;
+        still.addEventListener('transitionend', () => still.remove(), { once: true });
+        still.classList.add('map-still-gone');
+      };
+      map.once('idle', fade);
+      // A style that never finishes (offline, its tiles not kept) does not keep the old picture.
+      window.setTimeout(fade, STILL_MAX_MS);
+    });
+    map.triggerRepaint();
   }, [map, isDark]);
 
   // A language switch relabels a live map: its region, and the renderer's words.

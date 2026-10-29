@@ -35,17 +35,23 @@ export function nameAt<T>(names: { item: T; box: Box }[], x: number, y: number, 
   return hit ? hit.item : null;
 }
 
+/** Which of placeNames' four sides a name was written on: 0 right of its dot, 1 left, 2 above, 3 below. */
+export const sideOf = (place: NamePlace, dot: { y: number }): number => (place.align === 'left' ? 0 : place.align === 'right' ? 1 : place.y < dot.y ? 2 : 3);
+
 /**
  * Where each stop's name goes beside its dot, taken in the order given, so the first ones
- * win: to the right of the dot while that stays on the screen, else to the left, else above
- * or below it, and not at all where it would cover a name already written, another stop's
- * dot or a point kept clear (the reader). Written one over another, two names could not be
- * read; a name over a dot hid the stop it lay on, and over the reader, where you are.
- * Pure screen geometry, so it can be checked without a map.
+ * win: on the side it had before (`prefer`, by sideOf) while that is still usable, else to
+ * the right of the dot while that stays on the screen, else to the left, else above or below
+ * it, and not at all where it would cover a name already written, another stop's dot or a
+ * point kept clear (the reader). Written one over another, two names could not be read; a
+ * name over a dot hid the stop it lay on, and over the reader, where you are. Chosen afresh
+ * each frame of a pan, a name crossing the screen's edge went left there and right again a
+ * few pixels on. Pure screen geometry, so it can be checked without a map.
  */
 export function placeNames(
   dots: NamedDot[],
   view: { width: number; radius: number; gap: number; height: number; edge: number; keepClear?: { x: number; y: number }[] },
+  prefer: (number | undefined)[] = [],
 ): (NamePlace | null)[] {
   const { width, radius, gap, height, edge, keepClear = [] } = view;
   const around = (p: { x: number; y: number }): Box => ({ left: p.x - radius, right: p.x + radius, top: p.y - radius, bottom: p.y + radius });
@@ -64,7 +70,8 @@ export function placeNames(
     // Each side only while it stays on the screen, except the left of a dot with no room on its right, which has nowhere better.
     const roomRight = sides[0].right <= width - edge;
     const usable = sides.filter((s, k) => (k === 0 ? roomRight : k === 1 ? s.left >= edge || !roomRight : s.left >= edge && s.right <= width - edge));
-    for (const side of usable) {
+    const kept = prefer[i] === undefined ? -1 : usable.indexOf(sides[prefer[i]!]);
+    for (const side of kept > 0 ? [usable[kept], ...usable.filter((_, k) => k !== kept)] : usable) {
       const hits = (b: Box) => side.left < b.right && side.right > b.left && side.top < b.bottom && side.bottom > b.top;
       // Its own dot is not in the way.
       if (taken.some((b, j) => j !== i && hits(b)) || clear.some(hits)) continue;

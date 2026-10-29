@@ -94,9 +94,10 @@ export const DRAW = {
   /**
    * The circle of the reader's accuracy, and the share of the way the fan of the way the phone
    * faces turns toward each new reading of the compass, which jitters a few degrees from one
-   * reading to the next. The dot and the fan are index.css's.
+   * reading to the next, and how long the dot takes, in ms, to slide to a new fix (about a
+   * second apart, a few metres each). The dot and the fan are index.css's.
    */
-  me: { accuracyFill: 0.12, turn: 0.3 },
+  me: { accuracyFill: 0.12, turn: 0.3, glide: 400 },
   /** The point a small map is about, drawn as filled as the reader's own. */
   centreFill: 0.95,
   /** A line on the network map: faded behind the lines chosen, as the network, as a line chosen; the volta's dashes, in pixels. */

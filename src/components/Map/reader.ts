@@ -41,11 +41,30 @@ export function readerMark(map: MapLibre, colors: MapColors): ReaderMark {
   let frame = 0;
   let beamOn = false;
 
-  const drawCircle = () => {
-    if (!at) return;
-    setSource(map, SOURCE, accuracyCircle(at, accuracy));
+  /** The dot, the fan and the circle at a point: the fix, or a step of the slide to it. */
+  const show = (p: [number, number]) => {
+    dot.setLngLat([p[1], p[0]]);
+    if (beamOn) beam.setLngLat([p[1], p[0]]);
+    setSource(map, SOURCE, accuracyCircle(p, accuracy));
     if (!map.getLayer('app-accuracy'))
       placeLayer(map, { id: 'app-accuracy', type: 'fill', source: SOURCE, paint: { 'fill-color': colors.userFill, 'fill-opacity': DRAW.me.accuracyFill, 'fill-outline-color': colors.userStroke } });
+  };
+  // Each fix slides the reader there instead of jumping to it, from wherever the last slide
+  // had got to; at once for a reader who asked for less motion, and for the first fix.
+  let slide = 0;
+  const slideTo = (to: [number, number]) => {
+    cancelAnimationFrame(slide);
+    slide = 0;
+    const was = dot.getElement().isConnected ? dot.getLngLat() : null;
+    if (!was || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return show(to);
+    const from: [number, number] = [was.lat, was.lng];
+    const start = performance.now();
+    const step = (now: number) => {
+      const k = Math.min(1, (now - start) / DRAW.me.glide);
+      show([from[0] + (to[0] - from[0]) * k, from[1] + (to[1] - from[1]) * k]);
+      slide = k < 1 ? requestAnimationFrame(step) : 0;
+    };
+    slide = requestAnimationFrame(step);
   };
 
   // A reading every few milliseconds, each a few degrees off the last: the fan eases toward
@@ -87,12 +106,11 @@ export function readerMark(map: MapLibre, colors: MapColors): ReaderMark {
     place(next, metres) {
       at = next;
       accuracy = metres;
-      drawCircle();
-      dot.setLngLat([next[1], next[0]]);
+      slideTo(next);
       if (!dot.getElement().isConnected) dot.addTo(map);
-      if (beamOn) beam.setLngLat([next[1], next[0]]);
     },
     hide() {
+      cancelAnimationFrame(slide);
       at = null;
       beamOn = false;
       beam.remove();

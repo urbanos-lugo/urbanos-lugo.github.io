@@ -4234,3 +4234,22 @@ Dúas cousas que no ordenador se sentían bruscas.
   segundo o reloxo, porque os buses se moven. Os globos van agora sobre os buses. Proba
   determinista na páxina: cun bus engadido despois do globo e posto enriba do ×, o punto do
   × é o ×; sen a regra, era o bus. O estado, despois: 0 achados.
+
+### O mesmo, noutros tres sitios
+
+- **Os nomes do mapa da rede conservan o seu lado** mentres caiban: elixido de novo en cada
+  cadro dun arrastre, un nome que pasaba polo bordo ía á esquerda do punto alí e volvía á
+  dereita uns píxeles despois. `placeNames` recibe o lado de cada nome na vez anterior
+  (`sideOf`) e próbao primeiro; un check, co nome que xa non cabe no seu lado indo ao
+  seguinte.
+- **O punto do lector deslízase ata cada posición** en 400 ms, co seu círculo, en vez de
+  saltar; a primeira posición e quen pide menos movemento, ao momento.
+- **O cambio de tema dos mapas** deixa enriba a foto do mapa de antes ata que o novo
+  estilo debuxou, e esvaece: cargado enteiro, o estilo novo amosaba o fondo baleiro mentres
+  chegaban as teselas. A foto cópiase no cadro que a debuxa, o único momento no que se pode
+  ler un lenzo WebGL; un estilo que non remata (sen conexión) non a deixa máis de 3 s.
+  Medido no mapa da rede a 1280 × 800: a foto aos 37 ms, o novo estilo debuxado e a foto
+  esvaecendo aos 688, fóra aos 912; antes eses ~650 ms eran o mapa baleiro.
+- Auditoría enteira con `AUDIT_RUNNER=1` coas tres cousas: un só achado, o do globo
+  detrás dun bus (arriba), que non vén delas. O deslizamento do lector non se probou nun
+  teléfono co GPS.

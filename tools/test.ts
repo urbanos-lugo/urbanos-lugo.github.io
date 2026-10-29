@@ -45,7 +45,7 @@ import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
 import { routeOnFoot } from '../src/utils/walkRouter';
 import { accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
-import { nameAt, nameBox, placeNames } from '../src/components/Map/nameLayout';
+import { nameAt, nameBox, placeNames, sideOf } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
 import { HOLIDAY_YEARS, buildRuns, dayKind, daysUntilKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
 import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
@@ -4204,6 +4204,14 @@ ok('a name on a map never covers another name, another stop or the reader', () =
   assert(pair[1] === null || !overlap(boxOf({ width: 80 }, pair[1]), boxOf({ width: 80 }, pair[0]!)), 'two neighbours wrote one name over the other');
   // Against the right edge, the name goes left, as it always has.
   assert.equal(placeNames([{ x: 360, y: 100, width: 80 }], view)[0]?.align, 'right');
+  // And it keeps the side it had while that still fits: chosen afresh each frame, a name
+  // panned in from the right edge sat left of its dot there and jumped right a few pixels on.
+  const panned = { x: 250, y: 100, width: 80 };
+  assert.equal(placeNames([panned], view)[0]?.align, 'left', 'a name with no side yet and room on its right does not go there');
+  const leftOfIt = sideOf({ x: 343, y: 100, align: 'right' }, { y: 100 });
+  assert.equal(placeNames([panned], view, [leftOfIt])[0]?.align, 'right', 'a name written left of its dot jumped right as soon as there was room');
+  // Not a side that has stopped working: kept to the right, at the edge it still goes left.
+  assert.equal(placeNames([{ x: 360, y: 100, width: 80 }], view, [0])[0]?.align, 'right', 'a name kept to a side that runs off the screen');
 });
 
 ok('a tap on a stop name written on the map is a tap on that stop', () => {
