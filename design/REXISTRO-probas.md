@@ -4058,3 +4058,32 @@ máquina. Os arranxos ata aquí foran comprobación a comprobación: 0fc3d96, 96
   cinco buses e non admite ningunha etiqueta aberta: co código de antes dá «Liña 2 Sentido
   Xosé Castiñeira (Froiz)» enriba do bus, e co arranxo 0. As notas de quen escribiu ese
   código (a sesión de MapLibre) guiaron o deseño.
+
+## Rolda 46: o taboleiro, noutro día — 28 de outubro de 2026
+
+O taboleiro «a outra hora» lía sempre o horario de hoxe (Queda da rolda 43): un venres á
+noite, as 07:30 daban as horas dun laborable para a mañá dun sábado, e non había outro día
+que pedir. A ficha de liña escolle o día desde a rolda 43.
+
+### Feito
+
+- **Baixo a hora, o selector da ficha de liña**: laborables, sábados, domingos e festivos. O
+  taboleiro le o primeiro día desde hoxe que corre ese horario (`daysUntilKind`, en
+  `schedule.ts`), e os avisos do operador lense nese momento. A frase de enriba nomea o día
+  con `dayWord`: «Paso previsto mañá ás 07:30, non agora mesmo».
+- **Outro día sen hora** pon a deste minuto, para que a escolla se vexa ao momento.
+- **A seguinte saída dun taboleiro baleiro** cóntase desde a hora pedida, non desde agora:
+  baixo «nada mañá ás 03:00», un «22:35» sen día líase coma de mañá.
+- Unha comprobación: desde un venres; desde o domingo antes do luns festivo do 12 de outubro,
+  cando o seguinte laborable é o martes; e desde a véspera do sábado festivo do 15 de agosto,
+  cando o seguinte horario de sábado está a oito días.
+
+### Medidas
+
+- As cinco portas: lint, 160 comprobacións, 22 políticas, `check:deep` e a build.
+- `AUDIT_STATES='paradas/parada outra hora'`: 0 achados WCAG e nada na barra da casa, en 6
+  medidas sobre 4 estados (289 s).
+- No navegador, un mércores ás 23:51, «Sábados» pon esa hora e di «Paso previsto el sábado a
+  las 23:51», co taboleiro baleiro e «la siguiente es la línea 4.1 el domingo a las ~07:25».
+  «Volver a ahora» baleira a hora e volve ao día de hoxe. A 320 px, «Domingos y festivos»
+  colle dúas liñas, partidas nun espazo.

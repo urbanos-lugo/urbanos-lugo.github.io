@@ -526,9 +526,10 @@ export const gl = {
     viewNext: 'Próximas',
     atTimeSummary: 'Ver o paso a outra hora',
     atTimeLabel: 'Ver o paso ás',
-    showingAt: (time: string) => `Paso previsto ás ${time}, non agora mesmo.`,
+    /** `day` is `dayWord`'s: '' today, "mañá", "o sábado". */
+    showingAt: (time: string, day = '') => `Paso previsto ${day ? `${day} ` : ''}ás ${time}, non agora mesmo.`,
     backToNow: 'Volver a agora',
-    noneAtTime: (time: string) => `Non hai ningún paso previsto ás ${time} nesta parada.`,
+    noneAtTime: (time: string, day = '') => `Non hai ningún paso previsto ${day ? `${day} ` : ''}ás ${time} nesta parada.`,
     viewByLine: 'Por liña',
     viewNextHint: 'Todas as liñas, en orde de chegada',
     viewByLineHint: 'Cada liña coas súas próximas saídas',

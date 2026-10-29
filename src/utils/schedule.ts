@@ -52,6 +52,18 @@ export function dayKind(date: Date): DayKind {
   return d === 6 ? 'sabado' : 'laborable';
 }
 
+/** Days from `from` to the first day that runs `kind`'s timetable, 0 if `from` does: on a Friday, Saturday is 1. */
+export function daysUntilKind(from: Date, kind: DayKind): number {
+  const day = new Date(from);
+  let ahead = 0;
+  // A Saturday that is a holiday runs Sunday's timetable, so the next Saturday's can be thirteen days off.
+  while (dayKind(day) !== kind && ahead < 14) {
+    day.setDate(day.getDate() + 1);
+    ahead++;
+  }
+  return ahead;
+}
+
 /** Answered from the published service patterns, which carry Saturday and Sunday apart. */
 export function lineRunsOn(line: BusLine, kind: DayKind): boolean {
   return line.services.some((p) => p.days.includes(kind));

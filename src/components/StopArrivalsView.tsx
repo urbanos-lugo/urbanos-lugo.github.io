@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef, type CSSProperties, type TouchEvent } from 'react';
 import { Bell, Check, Clock, Map as MapIcon, Share2 } from 'lucide-react';
-import { BusStop, BusLine, ServiceAlert, StopArrival } from '../types';
+import { BusStop, BusLine, DayKind, ServiceAlert, StopArrival } from '../types';
+import { dayKind, daysUntilKind, formatMinutes, minutesNow } from '../utils/schedule';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
 import { changesNow, closedAt, pastTimetable, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
 import { LazyNearbyMiniMap } from './Map/LazyNearbyMiniMap';
@@ -87,6 +88,20 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const [view, setView] = useState<'next' | 'byLine'>('next');
   /** A time to read the board at, or '' for now — the question the night before. */
   const [atTime, setAtTime] = useState('');
+  /** The timetable that time is read on: today's, unless another is asked for (on a Friday night, Saturday's). */
+  const [atDay, setAtDay] = useState<DayKind | null>(null);
+  const today = dayKind(new Date());
+  /** The board reads the first day from today that runs that timetable: a holiday counts as a Sunday. */
+  const daysAhead = atDay ? daysUntilKind(new Date(), atDay) : 0;
+  const askAt = (time: string) => {
+    setAtTime(time);
+    if (!time) setAtDay(null);
+  };
+  // Another day with no time yet is that day at this minute, so the choice shows at once.
+  const askOn = (kind: DayKind) => {
+    setAtDay(kind === today ? null : kind);
+    if (!atTime && kind !== today) setAtTime(formatMinutes(Math.floor(minutesNow())));
+  };
 
   /** "Tell me before the bus gets here": one watch per line, checked on the board's own refresh. Fires once. */
   const [watches, setWatches] = useState<Record<string, number>>({});
@@ -166,11 +181,12 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
     setAlarmOn(true);
   };
 
-  /** The moment the board is read at: now, or the time asked for today. */
+  /** The moment the board is read at: now, or the time asked for, today or on the day asked for. */
   const boardMoment = (): Date => {
     if (!atTime) return new Date();
     const [h, m] = atTime.split(':').map(Number);
     const when = new Date();
+    when.setDate(when.getDate() + daysAhead);
     when.setHours(h, m, 0, 0);
     return when;
   };
@@ -218,7 +234,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       unshown();
       waiting.current = null;
     };
-  }, [selectedStop.id, atTime]);
+  }, [selectedStop.id, atTime, daysAhead]);
 
   /** Down, up and cancelled alike: `touches` is what is still on the screen. */
   const onBoardTouch = (e: TouchEvent) => {
@@ -239,7 +255,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       .slice(0, NEARBY_LINE_LIMIT);
   }, [selectedStop]);
 
-  const nextService = useMemo(() => (arrivals.length === 0 ? nextServiceAtStop(selectedStop.id) : null), [arrivals.length, selectedStop.id]);
+  // From the moment the board is read at: under "nothing at 03:00 tomorrow", a bare "22:35" read as tomorrow's.
+  const nextService = useMemo(() => (arrivals.length === 0 ? nextServiceAtStop(selectedStop.id, boardMoment()) : null), [arrivals.length, selectedStop.id, atTime, daysAhead]);
 
   /** Grouped by line and destination, in the order printed on the poles and the buses. */
   const groups = useMemo<LineGroup[]>(() => {
@@ -445,8 +462,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {/* Every row below is a scheduled passing for an hour the reader chose, and the countdown counts from that hour; this is where it is undone. */}
       {atTime && (
         <div className="anim-rise mt-3 flex flex-wrap items-center justify-between gap-2 rounded-control border border-edge bg-surface py-1.5 pl-3 pr-1.5 text-label font-semibold text-ink-2">
-          <span>{t.arrivals.showingAt(atTime)}</span>
-          <button onClick={() => setAtTime('')} className="btn btn-secondary btn-dense">
+          <span>{t.arrivals.showingAt(atTime, dayWord(lang, daysAhead))}</span>
+          <button onClick={() => askAt('')} className="btn btn-secondary btn-dense">
             {t.arrivals.backToNow}
           </button>
         </div>
@@ -508,8 +525,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       {/* Not a live region: the minute tick moved every row's count at once and announced fifteen bare numbers. */}
       {arrivals.length === 0 ? (
         <EmptyState icon={Clock} className="mt-6">
-          <p className="text-body text-ink-2">{atTime ? t.arrivals.noneAtTime(atTime) : t.arrivals.noArrivals}</p>
-          {nextService && <p className="mt-2 text-body font-semibold">{t.arrivals.nextServiceAt(nextService.lineNumber, `${nextService.precision === 'estimated' ? '~' : ''}${nextService.time}`, nextService.destination, dayWord(lang, nextService.daysAhead))}</p>}
+          <p className="text-body text-ink-2">{atTime ? t.arrivals.noneAtTime(atTime, dayWord(lang, daysAhead)) : t.arrivals.noArrivals}</p>
+          {nextService && <p className="mt-2 text-body font-semibold">{t.arrivals.nextServiceAt(nextService.lineNumber, `${nextService.precision === 'estimated' ? '~' : ''}${nextService.time}`, nextService.destination, dayWord(lang, daysAhead + nextService.daysAhead))}</p>}
         </EmptyState>
       ) : view === 'next' ? (
         <ul className="anim-fade mt-1" {...holdsUnderFinger}>
@@ -576,7 +593,15 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           </>
         }
       >
-        <TimeField label={t.arrivals.atTimeLabel} value={atTime} onChange={setAtTime} className="px-3 pb-3" />
+        <TimeField label={t.arrivals.atTimeLabel} value={atTime} onChange={askAt} className="px-3 pb-3" />
+        <Segmented
+          dense
+          label={t.lines.dayKindsLabel}
+          options={(['laborable', 'sabado', 'domingo'] as const).map((kind) => ({ id: kind, label: t.lines.dayKinds[kind] }))}
+          value={atDay ?? today}
+          onChange={askOn}
+          className="px-3 pb-3"
+        />
       </Disclosure>
       {Object.keys(watches).length > 0 && <Notice className="mt-3">{t.arrivals.watchForeground}</Notice>}
 

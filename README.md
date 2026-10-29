@@ -113,6 +113,12 @@ agardas por unha en concreto.
 da próxima hora") en lugar de cortarse en silencio. "Por liña" non ten horizonte, porque
 aí a pregunta xa é de planificación.
 
+**A outra hora, e noutro día.** Pregado baixo a lista, o taboleiro lese a calquera hora e
+co horario de calquera tipo de día: un venres á noite, «Sábados» ás 07:30 le o sábado
+seguinte, e un festivo conta como domingo. A frase de enriba di cal, «Paso previsto mañá ás
+07:30», e a seguinte saída dun taboleiro baleiro cóntase desde esa hora. Ata o 28 de outubro
+de 2026 só se podía preguntar pola hora de hoxe.
+
 **Cun dedo enriba, as filas non se moven.** O taboleiro lese outra vez cada 15 segundos e
 ao espertar o teléfono, e un bus que marcha sube todas as filas: os botóns da seguinte
 chegaban baixo o dedo que ía tocar a de enriba. Mentres hai un dedo no taboleiro, a

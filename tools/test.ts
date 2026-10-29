@@ -47,7 +47,7 @@ import { routeOnFoot } from '../src/utils/walkRouter';
 import { accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
 import { nameAt, nameBox, placeNames } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
-import { HOLIDAY_YEARS, buildRuns, dayKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
+import { HOLIDAY_YEARS, buildRuns, dayKind, daysUntilKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
 import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
 import festivos from '../src/data/festivos.json';
 import { holidaysDue } from './checkHolidaysAhead';
@@ -2748,6 +2748,21 @@ ok('a public holiday runs the Sunday timetable, and the file that says which day
   assert(holidaysDue(['2026'], new Date(2026, 11, 31))?.includes('2027'), 'the holiday reminder is quiet on 31 December with next year missing');
   assert(holidaysDue(['2026', '2027'], new Date(2026, 10, 1)) === null, 'the holiday reminder fires with next year already in');
   assert(holidaysDue(['2027'], new Date(2027, 0, 5)) === null, 'the holiday reminder fires in January, which the suite already covers');
+});
+
+ok('the board at another time reads the day whose timetable was asked for, a holiday being a Sunday', () => {
+  // The board's other time was always today's: asked on a Friday night about 07:30, it gave the
+  // weekday times for a Saturday morning, and there was no other day to ask about.
+  const friday = new Date(2026, 9, 30, 22, 0);
+  assert(daysUntilKind(friday, 'laborable') === 0, 'a Friday does not run its own weekday timetable');
+  assert(daysUntilKind(friday, 'sabado') === 1, `asked on a Friday, Saturday is ${daysUntilKind(friday, 'sabado')} days off, not 1`);
+  assert(daysUntilKind(friday, 'domingo') === 2, `asked on a Friday, Sunday is ${daysUntilKind(friday, 'domingo')} days off, not 2`);
+  // Sunday 11 October: the Monday is a holiday, so the next weekday timetable is Tuesday's.
+  assert(daysUntilKind(new Date(2026, 9, 11, 22, 0), 'laborable') === 2, 'the weekday after a Sunday is the holiday Monday');
+  // Friday 14 August: Saturday 15 is a holiday, which runs Sunday's, and the next Saturday's is the 22nd.
+  const eve = new Date(2026, 7, 14, 22, 0);
+  assert(daysUntilKind(eve, 'domingo') === 1, 'a holiday Saturday does not run the Sunday timetable');
+  assert(daysUntilKind(eve, 'sabado') === 8, `the next Saturday timetable after a holiday Saturday is ${daysUntilKind(eve, 'sabado')} days off, not 8`);
 });
 
 ok('the structural notices are reviewed every five weeks, and each has its words in the three languages', () => {
