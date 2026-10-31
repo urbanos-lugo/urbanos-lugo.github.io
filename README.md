@@ -1345,9 +1345,9 @@ arriba, sen que ningún commit o dixese, e arranxouse.
 ### Seguridade
 
 `pnpm audit` (31 de outubro de 2026): **0 vulnerabilidades** nas 5 dependencias de
-produción, e 3 avisos, 2 moderados e 1 baixo, nas 14 de desenvolvemento: os tres dentro
-de workbox-build, só ao compilar, e sen arranxo que caiba no que pide o seu pai (máis
-abaixo, «Versións das dependencias»). Dependabot revisa semanalmente as dependencias e
+produción, e un aviso baixo nas 14 de desenvolvemento: `deepmerge`, dentro de
+workbox-build, só ao compilar e sen arranxo publicado (máis abaixo, «Versións das
+dependencias»). Dependabot revisa semanalmente as dependencias e
 mais as actions, e CodeQL o código en cada push a `main` e unha vez á semana.
 
 **Content Security Policy.** `script-src 'self'` máis o hash do script do tema, sen
@@ -1411,9 +1411,12 @@ quen express analiza a cadea de consulta de cada petición, antes de que a vexa 
 liña deste proxecto. Os outros tres chegan dentro de workbox-build e só len os nosos
 propios ficheiros ao compilar. Todos levan tope superior a propósito: sen el `fast-uri`
 resolvía a unha versión maior por diante da que pide o seu pai, que é xusto como un
-arranxo de seguridade se converte nunha caída. Por iso quedan tres avisos abertos, tamén
-dentro de workbox-build e só ao compilar: `glob` e `minimatch` arránxanse nunha versión
-maior que o seu pai non admite, e `deepmerge` non ten arranxo publicado.
+arranxo de seguridade se converte nunha caída. A única excepción é `glob`, forzado á 14
+aínda que workbox-build pide a 11, que o seu autor deu por obsoleta: o arranxo só está na
+14, e o service worker construído con ela é idéntico byte a byte ao de antes. E `jake`,
+que `ejs` trae só para a súa liña de comandos, quítase da árbore: nada aquí o executa, e
+con el marcha unha `minimatch` vella. Queda un aviso aberto, `deepmerge`, dentro de
+workbox-build e só ao compilar, porque non ten arranxo publicado.
 
 O servidor normaliza todo o que chega pola query string (`?q[]=a` facía caer o endpoint
 cun volcado de pila), devolve JSON en caso de erro en lugar da páxina de erro de Express,

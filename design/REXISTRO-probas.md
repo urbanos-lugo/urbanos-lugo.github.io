@@ -4318,3 +4318,14 @@ versións que xa non se instalan, e o de CodeQL, sobre un escape que si se fai.
   está claro que cambiou entre un e outro. Os avisos 2 a 9 quedan descartados cun comentario
   que di onde está cada arranxo, o #30 de CodeQL como falso positivo, e o PR #41 de
   Dependabot (body-parser) pechado por estar xa en main.
+- **Dous dos tres que quedaban, fóra.** glob vai forzado á 14.0.3, a única excepción á
+  regra de quedar dentro da versión maior que pide o pai: workbox-build 7.4.1, a última, pide
+  ^11, que o autor de glob deu por obsoleta, e workbox só chama a `globSync`. Trae minimatch
+  11.0.3. E `ejs>jake: '-'` quita jake, filelist, minimatch 5.1.9 e brace-expansion 2.x: só
+  os usa a liña de comandos de ejs, e a biblioteca que carga o plugin de workbox require só
+  `fs`, `path` e os seus propios ficheiros. O `-` probouse antes nun cartafol aparte co pnpm
+  11.25.0 do repositorio. Seis paquetes menos.
+- **A proba**: o `dist/` de antes e o de despois, comparados ficheiro a ficheiro: 115 de 115
+  idénticos byte a byte, `sw.js` incluído, coas mesmas 34 entradas de precache na mesma
+  orde. O comparador marca unha revisión cambiada (probado). As cinco portas en verde.
+  `pnpm audit`: de 3 a 1, `deepmerge`, que non ten versión arranxada.
