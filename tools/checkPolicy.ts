@@ -344,6 +344,77 @@ ok('src/data holds only what ships, and the build inputs stay out of it', () => 
   assert(offenders.length === 0, `a build input reached the app:\n    ${offenders.join('\n    ')}`);
 });
 
+ok('every file, script, command and heading a document names exists', () => {
+  // On 31 October 2026 three documents promised checks the suite had dropped eleven days
+  // before, the README sent readers to a script argument that did nothing, and nothing would
+  // have said so for a renamed file either. Every document but the two records, which cite
+  // what existed on their day, and the comments in the code and the workflows, for paths.
+  const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' }).split('\0').filter(Boolean);
+  assert(tracked.length > 100, `git lists ${tracked.length} files, so this is not reading the repository`);
+  const files = new Set(tracked);
+  const dirs = new Set(tracked.flatMap((f) => f.split('/').slice(0, -1).map((_, i, parts) => parts.slice(0, i + 1).join('/'))));
+  const names = new Set(tracked.map((f) => f.split('/').pop()!));
+  const scripts = new Set(Object.keys(JSON.parse(read('package.json')).scripts));
+  const PNPM = new Set(['install', 'i', 'add', 'exec', 'dlx', 'why', 'outdated', 'update', 'audit', 'list', 'remove', 'test', 'start', 'run', 'store', 'config', 'approve-builds', 'licenses']);
+  // Written beside the page by the build (vite.config.ts), and a file a document says is gone.
+  const BUILT = new Set(['404.html', 'robots.txt', 'sitemap.xml', 'sw.js']);
+  const GONE = new Set(['transitEngine.ts']);
+  const ignored = (path: string) => {
+    try {
+      execFileSync('git', ['check-ignore', '-q', '--no-index', path], { cwd: root });
+      return true; // what the build or a tool writes and no checkout carries: dist/, .cache/, a snapshot
+    } catch {
+      return false;
+    }
+  };
+  const glob = (path: string) => new RegExp(`^${path.replace(/[.+^$()|[\]\\]/g, '\\$&').replace(/\*\*/g, '\0').replace(/\*/g, '[^/]*').replace(/\0/g, '.*').replace(/\{([^}]+)\}/g, (_, a: string) => `(${a.split(',').join('|')})`)}$`);
+  const exists = (path: string) => {
+    const p = path.replace(/\/$/, '');
+    if (files.has(p) || dirs.has(p)) return true;
+    if (/[*{]/.test(p)) return [...files, ...dirs].some((f) => glob(p).test(f));
+    // A folder rule (`worker/dist/`) matches a folder git cannot see in a fresh checkout only through a child.
+    return ignored(p) || ignored(`${p}/_`);
+  };
+  const PATH = /(?<![\w/.@:-])((?:\.github|src|tools|data|design|docs|public|worker|dist|dist-server|\.cache)\/[\w./@*{},-]*[\w*}/])/g;
+  // GitHub's anchor for a heading: lower case, punctuation out, spaces to hyphens, repeats numbered.
+  const anchors = (doc: string) => {
+    const seen = new Map<string, number>();
+    return new Set(
+      [...read(doc).replace(/^```[\s\S]*?^```/gm, '').matchAll(/^#{1,6}\s+(.+?)\s*#*$/gm)].map(([, heading]) => {
+        const slug = heading.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').toLowerCase().replace(/[^\p{L}\p{N} _-]/gu, '').replace(/ /g, '-');
+        const n = seen.get(slug) ?? 0;
+        seen.set(slug, n + 1);
+        return n ? `${slug}-${n}` : slug;
+      }),
+    );
+  };
+  const off: string[] = [];
+  for (const doc of tracked.filter((f) => f.endsWith('.md') && !/^design\/(REXISTRO-probas|DECIDIDO)\.md$/.test(f))) {
+    const text = read(doc);
+    for (const [, path] of text.matchAll(PATH)) if (!exists(path)) off.push(`${doc} names ${path}`);
+    for (const [, name] of text.matchAll(/`([\w.-]+\.(?:tsx?|md|json|ya?ml|css|html|m?js|cjs|txt|svg|png|woff2|ico|webmanifest|lock))`/g)) {
+      const known = names.has(name) || BUILT.has(name) || GONE.has(name) || (name.startsWith('.') && tracked.some((f) => f.endsWith(name))) || exists(name);
+      if (!known) off.push(`${doc} names a file ${name}`);
+    }
+    for (const [, href] of text.matchAll(/\]\(([^)\s]+)\)/g)) {
+      if (/^(https?:|mailto:)/.test(href)) continue;
+      const [target, anchor] = href.split('#');
+      const file = target ? join(dirname(doc), decodeURIComponent(target)).replace(/\\/g, '/') : doc;
+      if (target && !exists(file)) off.push(`${doc} links to ${href}, which is not there`);
+      else if (anchor && file.endsWith('.md') && !anchors(file).has(decodeURIComponent(anchor))) off.push(`${doc} links to ${href}, a heading that is not there`);
+    }
+    // A command is what a reader would type: inside a code span or a fenced block.
+    const code = [...text.matchAll(/^```[\s\S]*?^```|`[^`\n]+`/gm)].map((m) => m[0]).join('\n');
+    for (const [, script] of code.matchAll(/\bpnpm (?:run )?([a-z][\w:-]*)/g)) if (!scripts.has(script) && !PNPM.has(script)) off.push(`${doc} runs pnpm ${script}, which package.json does not have`);
+  }
+  // The comments in the code and the workflows name files too.
+  for (const file of tracked.filter((f) => /\.(tsx?|ya?ml|css|html)$/.test(f) && !/^(src\/)?data\//.test(f) && f !== 'pnpm-lock.yaml')) {
+    const comments = (read(file).match(/\.ya?ml$/.test(file) ? /#.*$/gm : /\/\/.*$|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/gm) ?? []).join('\n');
+    for (const [, path] of comments.matchAll(PATH)) if (!exists(path)) off.push(`${file}: a comment names ${path}`);
+  }
+  assert(off.length === 0, `documents name what is not there:\n    ${off.join('\n    ')}`);
+});
+
 ok('index.html keeps the Search Console verification tag', () => {
   // Search Console re-checks its verification tag now and then; a head rewrite that
   // dropped it would end the verification without anything on screen changing.
