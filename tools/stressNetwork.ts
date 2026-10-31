@@ -18,12 +18,16 @@ import { sleep } from './lib';
 
 const t = translations('gl');
 
-/** The snapshot is on screen when the page says so above the notices; the sentence names the date. */
+/** The snapshot is on screen when the page says so: in a sentence above its notices when it carries
+ *  any, and as the saved copy beside the last check when it carries none. Only the sentence was
+ *  looked for, and with the committed snapshot empty every run reported "never" on a screen that
+ *  showed it. */
 const SNAPSHOT_SENTENCE = t.fares.snapshotNotice('').split('.')[0];
+const SAVED_COPY = `(${t.fares.savedCopy})`;
 /** Probes run with `page.call`, so the strings they look for travel as arguments, never as code.
  *  Case-insensitive: innerText carries the CSS text-transform, and the notice labels are set in capitals. */
 const PAGE_SAYS = '(s) => document.body.innerText.toLowerCase().includes(s.toLowerCase())';
-const snapshotShown = (page: Session) => page.call<boolean>(PAGE_SAYS, SNAPSHOT_SENTENCE);
+const snapshotShown = async (page: Session) => (await page.call<boolean>(PAGE_SAYS, SNAPSHOT_SENTENCE)) || page.call<boolean>(PAGE_SAYS, SAVED_COPY);
 /** A departure board has at least one clock time on it. */
 const boardShown = (page: Session) => page.call<boolean>("() => /\\b\\d{1,2}:\\d{2}\\b/.test(document.querySelector('main')?.innerText ?? '')");
 
@@ -129,10 +133,11 @@ async function offlineSecondVisit(browser: Browser): Promise<void> {
   await boardReport(page, 'timetable board on screen, from the cache', (b) => b < 0);
   report('navigator.onLine', String(await page.evaluate<boolean>('navigator.onLine')));
 
-  // Offline, the service worker answers /api/alerts with the last answer it saw, and the
-  // screen shows it: as notice cards when it carried any, as the "last check" line when
-  // it did not. Only when the worker has nothing does the hook's snapshot appear. Any of
-  // the three is a dated answer; an empty list is the failure.
+  // Offline, the service worker has no rule for /api/ (vite.config.ts: a cached answer came
+  // back as a live one, hours old), so the hook shows its precached snapshot: as notice cards
+  // when it carries any, as the "last check" line when it does not. An answer still fresh in
+  // the browser's own HTTP cache may come first. Any of them is a dated answer; an empty list
+  // is the failure.
   await page.goto(`${BASE}/avisos/`);
   const cards = () => page.call<boolean>(PAGE_SAYS, t.fares.sourceOperator);
   const checked = () => page.call<boolean>(PAGE_SAYS, t.fares.lastCheck);
@@ -145,7 +150,7 @@ async function offlineSecondVisit(browser: Browser): Promise<void> {
       ? ` (nothing dated; the screen reads: ${JSON.stringify(await page.call<string>("() => (document.querySelector('main')?.innerText ?? '').replace(/\\s+/g, ' ').slice(0, 160)"))})`
       : (await snapshotShown(page))
         ? ' (the committed snapshot)'
-        : " (the worker's last cached answer)";
+        : " (an answer from the browser's cache)";
   report('notices screen shows a dated answer', ms(shown) + which, shown < 0 || shown > 3500);
   exceptionsReport(thrown);
   await browser.offline(false);
