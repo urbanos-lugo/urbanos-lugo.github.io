@@ -36,14 +36,18 @@ allowBuilds:
 #
 # Drop an entry once its parent asks for a fixed version by itself.
 overrides:
-  qs: '>=6.16.0'
+  # 6.16.1 since GHSA-6pq8-jhm2-2vcw; capped at the major express asks for, like fast-uri below.
+  qs: '>=6.16.1 <7'
   # Upper bound on purpose: an open `>=3.1.6` resolved to 4.1.4, and ajv asks for ^3.0.1.
   # An override is allowed to ignore that, which is exactly how a security fix becomes an
-  # outage. Patched, and still inside the range its parent was written against. 3.1.8 since
-  # GHSA-hrr3-gc8f-f4qj.
-  fast-uri: '>=3.1.8 <4'
+  # outage. Patched, and still inside the range its parent was written against. 3.1.9 since
+  # GHSA-wjr9-j795-jxcr and the three published with it; 3.1.8 since GHSA-hrr3-gc8f-f4qj.
+  fast-uri: '>=3.1.9 <4'
   # brace-expansion arrives under minimatch twice, both inside workbox-build and both reading
   # only our own glob patterns at build time: 2.x through ejs/jake/filelist, 5.x through glob.
   # GHSA-q2hr-2g5m-vwhr and the two before it; each pinned inside the major its parent asks for.
   brace-expansion@2: '>=2.1.7 <3'
   brace-expansion@5: '>=5.0.12 <6'
+  # Under @rollup/plugin-terser inside workbox-build, which asks for ^7.0.3; it writes our own
+  # service-worker config at build time. GHSA-m5mm-p8h7-m29v.
+  serialize-javascript: '>=7.1.3 <8'

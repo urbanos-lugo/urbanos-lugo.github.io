@@ -1403,13 +1403,15 @@ canto de `true` ou `false`, `pnpm install --frozen-lockfile` para con ese erro. 
 nas tres. Nunha máquina con `ignore-scripts` na configuración global de pnpm non para,
 porque alí non corre ningún script.
 
-**Versións das dependencias.** `pnpm-workspace.yaml` fixa tamén `qs`, `fast-uri` e
-`brace-expansion` por riba do seu aviso de seguridade. `qs` é con quen express analiza a
-cadea de consulta de cada petición, antes de que a vexa ningunha liña deste proxecto. Os
-outros dous chegan dentro de workbox-build e só len os nosos propios ficheiros ao
-compilar, e levan tope superior a propósito: sen el `fast-uri` resolvía a unha versión
-maior por diante da que pide o seu pai, que é xusto como un arranxo de seguridade se
-converte nunha caída.
+**Versións das dependencias.** `pnpm-workspace.yaml` fixa tamén `qs`, `fast-uri`,
+`brace-expansion` e `serialize-javascript` por riba do seu aviso de seguridade. `qs` é con
+quen express analiza a cadea de consulta de cada petición, antes de que a vexa ningunha
+liña deste proxecto. Os outros tres chegan dentro de workbox-build e só len os nosos
+propios ficheiros ao compilar. Todos levan tope superior a propósito: sen el `fast-uri`
+resolvía a unha versión maior por diante da que pide o seu pai, que é xusto como un
+arranxo de seguridade se converte nunha caída. Por iso quedan tres avisos abertos, tamén
+dentro de workbox-build e só ao compilar: `glob` e `minimatch` arránxanse nunha versión
+maior que o seu pai non admite, e `deepmerge` non ten arranxo publicado.
 
 O servidor normaliza todo o que chega pola query string (`?q[]=a` facía caer o endpoint
 cun volcado de pila), devolve JSON en caso de erro en lugar da páxina de erro de Express,

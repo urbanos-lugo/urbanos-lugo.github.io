@@ -4281,3 +4281,35 @@ tocado non se abriu. Ao volver correr esa parte, pasou; en local, 6 de 6. Non er
   pode perder os nodos cos que está debuxado. Co arranxo, 0; sen el, «o debuxo dun bus
   substituíuse 10 veces». O reloxo da auditoría corre desde a hora fixada, así que os buses
   móvense nela coma na rúa.
+
+## Rolda 51: os avisos de seguridade de GitHub — 31 de outubro de 2026
+
+Oito avisos de Dependabot e un de CodeQL abertos en main. Seis dos de Dependabot eran sobre
+versións que xa non se instalan, e o de CodeQL, sobre un escape que si se fai.
+
+### Medido
+
+- **O grafo de dependencias de GitHub está parado no 14 de setembro.** A súa SBOM e a súa
+  páxina («Detected automatically on Sep 14, 2026») din vite 8.3.0, proxy-addr 2.0.7,
+  express 5.2.1 e fast-uri 3.1.7; o lockfile de main ten vite 8.3.4 dende bd443a4 e
+  proxy-addr 2.0.8 dende c9841a9. Le ben o ficheiro: `dependency-graph/compare` de 46e5190 a
+  45be8fd dá as versións de agora. O push do 29, que cambiaba o lockfile, non o moveu.
+- **Así, os avisos 2 a 7** (vite e proxy-addr) estaban abertos contra versións vellas, e o
+  traballo de Dependabot contra main remataba en `security_update_not_needed` («vite is no
+  longer vulnerable»). Tampouco se ve o que chegou despois: `pnpm audit` contra o lockfile
+  atopaba 10 avisos, e GitHub só amosaba os que coincidían co de setembro (fast-uri,
+  body-parser).
+- **Arranxados dentro do que pide cada pai:** body-parser 2.3.0 → 2.4.0 (GHSA-27r3-jxmh-p828,
+  alto, no servidor Express), qs 6.16.0 → 6.17.1 (GHSA-6pq8-jhm2-2vcw), fast-uri 3.1.8 →
+  3.1.9 (catro avisos, entre eles GHSA-wjr9-j795-jxcr) e serialize-javascript 7.1.0 → 7.1.4
+  (GHSA-m5mm-p8h7-m29v). `pnpm update` move body-parser, que vén xusto debaixo de express,
+  pero non serialize-javascript, tres niveis por debaixo de vite-plugin-pwa: ese leva un
+  override. `pnpm audit`: de 10 a 3.
+- **Quedan tres**, todos dentro de workbox-build e só ao compilar: glob 11.1.0 (o arranxo
+  está en 14.0.2 e workbox-build pide ^11), minimatch 5.1.9 e 10.2.6 (en 11.0.1) e deepmerge
+  4.3.1 (sen arranxo).
+- **O CodeQL #30** (`js/incomplete-hostname-regexp`, `src/security/csp.ts:39`) é un falso
+  positivo: `vite.config.ts` escapa cada metacarácter antes do `new RegExp`, e o `dist/sw.js`
+  construído leva `tiles\.openfreemap\.org`. CodeQL segue a cadea a través do `.replace` sen
+  contar o escape. Sen duplicar o host non hai forma de evitalo: workbox escribe un
+  `urlPattern` función co seu `toString()`, e a lista que esa función usaría quedaría fóra.

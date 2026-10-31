@@ -371,6 +371,12 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    localización». Sen WebGL2, un aviso e as listas; o ráster de OSM marchou. Os nomes seguen
    no lenzo propio, na letra da app. Decisións en DECIDIDO, medidas en REXISTRO. Falta velo
    nun iPhone (lista de abaixo, punto 4).*
+9. **O grafo de dependencias de GitHub, parado no 14 de setembro de 2026**, cousa do dono
+   (rolda 51). Mentres non se mova, os avisos de Dependabot compáranse co lockfile daquel día:
+   non se pechan cando se arranxan e non ven o que chegou despois. Os pushes a main non o
+   moven. O que queda: desactivar e volver activar os avisos de Dependabot en *Settings →
+   Advanced Security*, e se segue igual, o soporte de GitHub. Mentres tanto, `pnpm audit` é
+   o que di a verdade sobre o lockfile.
 
 ### Lista para o iPhone
 

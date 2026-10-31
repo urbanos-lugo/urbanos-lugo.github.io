@@ -316,8 +316,8 @@ ok('the lockfile keeps the two pinned packages above their advisories', () => {
   const qs = versions('qs');
   const fastUri = versions('fast-uri');
   assert(qs.length > 0 && fastUri.length > 0, 'qs or fast-uri is no longer in the lockfile, so this checks nothing; drop it with its override');
-  for (const v of qs) assert(atLeast(v, [6, 16, 0]), `the lockfile resolves qs ${v.join('.')}, under 6.16.0`);
-  for (const v of fastUri) assert(atLeast(v, [3, 1, 8]) && v[0] < 4, `the lockfile resolves fast-uri ${v.join('.')}, outside >=3.1.8 <4`);
+  for (const v of qs) assert(atLeast(v, [6, 16, 1]) && v[0] < 7, `the lockfile resolves qs ${v.join('.')}, outside >=6.16.1 <7`);
+  for (const v of fastUri) assert(atLeast(v, [3, 1, 9]) && v[0] < 4, `the lockfile resolves fast-uri ${v.join('.')}, outside >=3.1.9 <4`);
 });
 
 // The design, round 37 of REXISTRO: one visual vocabulary. Moved here from the suite on 20 October 2026,
