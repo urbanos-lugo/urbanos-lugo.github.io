@@ -4313,3 +4313,8 @@ versións que xa non se instalan, e o de CodeQL, sobre un escape que si se fai.
   construído leva `tiles\.openfreemap\.org`. CodeQL segue a cadea a través do `.replace` sen
   contar o escape. Sen duplicar o host non hai forma de evitalo: workbox escribe un
   `urlPattern` función co seu `toString()`, e a lista que esa función usaría quedaría fóra.
+- **Despois do push a main de b0d7702 o grafo moveuse**: a SBOM di xa vite 8.3.4,
+  proxy-addr 2.0.8, body-parser 2.4.0 e fast-uri 3.1.9. O push do 29 non o movera, e non
+  está claro que cambiou entre un e outro. Os avisos 2 a 9 quedan descartados cun comentario
+  que di onde está cada arranxo, o #30 de CodeQL como falso positivo, e o PR #41 de
+  Dependabot (body-parser) pechado por estar xa en main.

@@ -1348,9 +1348,7 @@ arriba, sen que ningún commit o dixese, e arranxouse.
 produción, e 3 avisos, 2 moderados e 1 baixo, nas 14 de desenvolvemento: os tres dentro
 de workbox-build, só ao compilar, e sen arranxo que caiba no que pide o seu pai (máis
 abaixo, «Versións das dependencias»). Dependabot revisa semanalmente as dependencias e
-mais as actions, e CodeQL o código en cada push a `main` e unha vez á semana. Os avisos de
-Dependabot compáranse co grafo de dependencias de GitHub, parado desde o 14 de setembro:
-ata que se mova, o que di a verdade sobre o lockfile é `pnpm audit`.
+mais as actions, e CodeQL o código en cada push a `main` e unha vez á semana.
 
 **Content Security Policy.** `script-src 'self'` máis o hash do script do tema, sen
 `unsafe-inline` nin `unsafe-eval`: ese é o único script en liña, os únicos workers son o
