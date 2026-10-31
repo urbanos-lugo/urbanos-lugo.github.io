@@ -286,6 +286,20 @@ ok('the documents name every data file, every bundled library and every host a v
   assert.deepStrictEqual(listed, allowed, `PRIVACY.md lists [${listed.join(', ')}] as the hosts a visit contacts; the policy allows [${allowed.join(', ')}]`);
 });
 
+ok('a repository named <owner>.github.io deploys at the root', () => {
+  // The app moved on 13 October 2026 to an organisation site, urbanos-lugo.github.io, which
+  // Pages serves at the root. The deploy built every asset under /<repository>/, which there
+  // would have been /urbanos-lugo.github.io/, and the first deploy after the rename would
+  // have drawn nothing. Dropped from the suite on 20 October with the checks that read files,
+  // while MUDANZA-organizacion.md went on saying a check held it.
+  const deploy = read('.github/workflows/deploy-pages.yml');
+  assert(
+    /if \[ "\$\{NAME,,\}" = "\$\{OWNER,,\}\.github\.io" \]; then\s+export BASE_PATH="\/"\s+export SITE_URL="https:\/\/\$\{NAME,,\}\/"/.test(deploy),
+    'the deploy builds an <owner>.github.io repository under its own name again',
+  );
+  assert(/export BASE_PATH="\/\$NAME\/"\s+export SITE_URL="https:\/\/\$OWNER\.github\.io\/\$NAME\/"/.test(deploy), 'a project site is no longer built under its repository name');
+});
+
 ok('index.html keeps the Search Console verification tag', () => {
   // Search Console re-checks its verification tag now and then; a head rewrite that
   // dropped it would end the verification without anything on screen changing.
