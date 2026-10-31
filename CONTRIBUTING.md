@@ -5,14 +5,16 @@ primeira; o resto está no [README](README.md), que é a documentación enteira.
 
 ## Antes de tocar nada
 
-- **`src/data/*.json` é xerado.** Non se edita a man: cámbiase o xerador en `tools/` e
+- **`src/data/*.json` é xerado**, agás `festivos.json`, que se amplía a man cada ano coa
+  súa fonte ([`DATA.md`](DATA.md)). Non se edita a man: cámbiase o xerador en `tools/` e
   execútase `pnpm run data:build`. Un PR que toque eses ficheiros directamente non se pode
   aceptar, aínda que o cambio sexa correcto, porque a seguinte rexeneración o borraría.
 - **Ningunha hora é unha medida.** Esta rede non publica posicións. Cada hora que aparece
   en pantalla vén do cadro do operador ou se deriva del, e leva a súa etiqueta —`HORARIO
   OFICIAL` ou `~ ESTIMADO`—. Unha hora sen etiqueta é un erro, non unha simplificación.
-- **As coordenadas das paradas son as do operador.** Non se corrixen a ollo, nin cando
-  parecen mal: [`DATA.md`](DATA.md) di de onde sae cada ficheiro e con que licenza.
+- **As coordenadas das paradas son as do operador**, agás dúas que se tomaron de
+  OpenStreetMap despois de ver o poste. Non se corrixen a ollo, nin cando parecen mal:
+  [`DATA.md`](DATA.md) di de onde sae cada ficheiro e con que licenza, e cales son esas dúas.
 - **Textos en tres idiomas.** `src/i18n/gl.ts` é a forma; unha clave que falte en `es.ts`
   ou `en.ts` non compila, e iso é adrede. Nada de texto para o lector escrito nun compoñente.
 
