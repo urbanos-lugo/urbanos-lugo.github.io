@@ -56,7 +56,7 @@ jobs:
       # Two tools under tools/ walk the whole dataset rather than a sample — 240,192
       # boards, 512,106 departures and 10,623 window edges for the invariants, over a
       # weekday, a weekend and a public holiday; 1,050 origin/destination pairs over a
-      # weekday and a weekend and 36,876 journeys for the
+      # weekday and a weekend and 38,343 journeys (31 October 2026) for the
       # planner — and each sets a failing exit code when something does not hold. None of
       # them was referenced by a script, a workflow or another file, so nothing had run
       # them since they were written, and a check nobody runs is a file. About twenty
