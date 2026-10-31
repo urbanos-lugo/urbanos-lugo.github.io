@@ -4442,6 +4442,19 @@ no código, antes de corrixir nada; as cifras, coa build de hoxe nun servidor no
 - As ligazóns dos documentos, abertas unha vez (34): `urbanoslugo.com` xa non resolve, e a
   ficha do Punto de Acceso Nacional dá 404; dito onde se citan. O enderezo vello dá 404, como
   se di. CodeQL: a configuración por defecto segue activa (`code-scanning/default-setup`).
+- **`check:deep`**: 240.192 taboleiros, 512.106 saídas e 10.623 bordos de ventá, coma di o
+  comentario de `ci.yml`; 1.050 pares e 38.343 viaxes, onde o comentario dicía 36.876.
+- **Sobre a rama rebasada en `develop` (d64c670)**: lint, 161 comprobacións antes e despois
+  da build, 26 políticas (eran 22: tres devoltas e a das referencias), `check:deep` en 11 s,
+  `data:build` sen cambios e a build. `audit:browser` enteiro con `AUDIT_RUNNER=1` na build
+  final: 0 achados WCAG en 242 medidas de 162 estados, en 635 s; a barra da casa, 0, 25 e 3.
+
+### Erro noso durante esta rolda
+
+- **Unha proba de que o check das ligazóns morde desfíxose co `git checkout -q README.md`**
+  que a deixaba como estaba, e levou consigo as correccións do README aínda sen commit.
+  Volvéronse aplicar unha a unha. Desde aí, cada proba que rompe un ficheiro garda antes
+  unha copia e repona desde ela.
 
 ### Mirado e descartado
 
