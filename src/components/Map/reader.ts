@@ -41,20 +41,26 @@ export function readerMark(map: MapLibre, colors: MapColors): ReaderMark {
   let frame = 0;
   let beamOn = false;
 
-  /** The dot, the fan and the circle at a point: the fix, or a step of the slide to it. */
+  /** The dot and the fan at a point: the fix, or a step of the slide to it. */
   const show = (p: [number, number]) => {
     dot.setLngLat([p[1], p[0]]);
     if (beamOn) beam.setLngLat([p[1], p[0]]);
+  };
+  /** The circle at the fix, once a fix: it is a layer of the style, and each new shape repaints the whole map. */
+  const circle = (p: [number, number]) => {
     setSource(map, SOURCE, accuracyCircle(p, accuracy));
     if (!map.getLayer('app-accuracy'))
       placeLayer(map, { id: 'app-accuracy', type: 'fill', source: SOURCE, paint: { 'fill-color': colors.userFill, 'fill-opacity': DRAW.me.accuracyFill, 'fill-outline-color': colors.userStroke } });
   };
-  // Each fix slides the reader there instead of jumping to it, from wherever the last slide
-  // had got to; at once for a reader who asked for less motion, and for the first fix.
+  // Each fix slides the dot there instead of jumping to it, from wherever the last slide had
+  // got to; at once for a reader who asked for less motion, and for the first fix. The circle
+  // goes to the fix at once: set on every frame of the slide, a ride with a fix a second kept
+  // the page's thread busy 30–37 s a minute at 6x CPU (REXISTRO, round 52).
   let slide = 0;
   const slideTo = (to: [number, number]) => {
     cancelAnimationFrame(slide);
     slide = 0;
+    circle(to);
     const was = dot.getElement().isConnected ? dot.getLngLat() : null;
     if (!was || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return show(to);
     const from: [number, number] = [was.lat, was.lng];

@@ -659,7 +659,10 @@ async function longSession(browser: Browser): Promise<void> {
 const RIDE_COUNTERS = `
 (() => {
   const w = window;
-  w.__ride = { commits: 0, frames: 0, timers: 0 };
+  w.__ride = { commits: 0, frames: 0, timers: 0, paints: 0 };
+  // The map clears its canvas once for every frame it draws.
+  const clear = WebGL2RenderingContext.prototype.clear;
+  WebGL2RenderingContext.prototype.clear = function (...a) { w.__ride.paints++; return clear.apply(this, a); };
   const raf = w.requestAnimationFrame.bind(w);
   w.requestAnimationFrame = (cb) => raf((t) => { w.__ride.frames++; cb(t); });
   const setI = w.setInterval.bind(w);
@@ -726,7 +729,7 @@ async function ride(browser: Browser): Promise<void> {
     await sleep(4000);
 
     const metrics = async () => Object.fromEntries((await page.send<{ metrics: { name: string; value: number }[] }>('Performance.getMetrics')).metrics.map((m) => [m.name, m.value]));
-    const counters = () => page.evaluate<{ commits: number; frames: number; timers: number }>('({ ...window.__ride })');
+    const counters = () => page.evaluate<{ commits: number; frames: number; timers: number; paints: number }>('({ ...window.__ride })');
     const heapBefore = await page.heapBytes();
     const [m0, c0] = [await metrics(), await counters()];
     for (let i = 1; i <= seconds; i++) {
@@ -743,11 +746,16 @@ async function ride(browser: Browser): Promise<void> {
     const perMinute = (a: number, b: number) => ((b - a) * 60) / seconds;
     console.log(`\n  ${lookedAtMap ? 'after a look at the map' : 'straight onto the ride'}  (on screen: ${onScreen.trim().slice(0, 30)})`);
     // Measured 1.8-2.0 s a minute at 6x; it was 42-45 s while the one looping animation was a box-shadow.
+    // On 31 October 2026, 19.8-22.5 s with the reader sliding to each fix (round 49), 4.4-5.2 s
+    // with reduced motion, which does not slide it.
     budget('main thread busy per minute of ride', perMinute(m0.TaskDuration, m1.TaskDuration) * 1000, 5000);
     report('  of which script', `${(perMinute(m0.ScriptDuration, m1.ScriptDuration) * 1000).toFixed(0)} ms`);
     report('  of which style and layout', `${(perMinute(m0.RecalcStyleDuration + m0.LayoutDuration, m1.RecalcStyleDuration + m1.LayoutDuration) * 1000).toFixed(0)} ms`);
     report('React commits', `${perMinute(c0.commits, c1.commits).toFixed(0)}`, 'a minute');
     report('animation frames the app asked for', `${perMinute(c0.frames, c1.frames).toFixed(0)}`, 'a minute');
+    // 1,902-1,992 a minute while the reader's slide reset the accuracy circle on every frame,
+    // each one a repaint of the whole map; 244-286 once it was set once a fix.
+    budget('frames the map drew a minute', perMinute(c0.paints, c1.paints), 600, '');
     report('timer callbacks', `${perMinute(c0.timers, c1.timers).toFixed(0)}`, 'a minute');
     report('animations looping for ever', `${looping.length}`, looping.slice(0, 3).join('; '));
     budget('heap held after the ride', (heapAfter - heapBefore) / 1048576, 3, 'MB');
