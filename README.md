@@ -2130,9 +2130,12 @@ do primeiro pintado, CLS 0,000; o QR dun poste pinta aos 2,7 s coa primeira saí
 en quente, o primeiro pintado en 476–612 ms, 8 de 9 respostas do *service worker* e 0 KB
 pola rede. O mapa: o primeiro debuxado en 2,4–3,8 s, o fío ocupado ao abrilo 1,5–2,1 s e a
 tarefa máis longa 448–746 ms, catro pasos de zoom 212–771 ms e catro arrastres 0–58 ms;
-dentro do orzamento, e peor ca o 28 de outubro. Planificar: o toque responde en 56–96 ms;
-chegando antes das 17:00, a resposta en 1,9–3,6 s co fío ocupado 473–933 ms; e **saíndo
-agora, 1,06–1,29 s, por riba do orzamento de 1 s** nas tres voltas, sen saber aínda por que.
+dentro do orzamento (sen alternar con outra build, así que non se compara co 28 de outubro).
+Planificar: o toque responde en 56–96 ms; chegando antes das 17:00, a resposta en 1,9–3,6 s
+co fío ocupado 473–933 ms; e saíndo agora, 1,06–1,29 s en tres voltas seguidas, por riba do
+orzamento de 1 s. Non era o código: alternando na mesma máquina e no mesmo cuarto de hora a
+build de `62bc5b7`, a do 26 de outubro, e a de `45be8fd`, a de hoxe, saíron 548–1.182 ms e
+542–802 ms. É unha medida que varía o dobre dunha volta a outra, e só vale alternando.
 E «Vou nesta» ocupaba o fío **30,5–37,0 s por minuto**: desde o 29 de outubro o punto do
 lector deslízase ata cada fix, e cada cadro do deslizamento volvía poñer o círculo da
 precisión, que é unha capa do mapa, así que o mapa se debuxaba de novo en cada cadro

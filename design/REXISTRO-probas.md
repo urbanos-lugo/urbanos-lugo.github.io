@@ -4436,9 +4436,15 @@ no código, antes de corrixir nada; as cifras, coa build de hoxe nun servidor no
 - **`measure:browser`**, tres voltas por medida: en frío 227 KB e 202 antes do pintado, CLS
   0,000; o QR dun poste pinta aos 2,7 s coa primeira saída dentro; en quente 476–612 ms, 8 de
   9 respostas do service worker; o mapa, primeiro debuxado en 2,4–3,8 s, 1,5–2,1 s de fío ao
-  abrilo, zoom 212–771 ms, arrastres 0–58 ms (dentro do orzamento, peor ca o 28 de outubro);
-  planificar, o toque 56–96 ms, chegando antes das 17:00 1,9–3,6 s, e saíndo agora
-  1,06–1,29 s, por riba do orzamento de 1 s nas tres.
+  abrilo, zoom 212–771 ms, arrastres 0–58 ms (dentro do orzamento; sen alternar, así que
+  non se compara co 28 de outubro); planificar, o toque 56–96 ms, chegando antes das 17:00
+  1,9–3,6 s, e saíndo agora 1,06–1,29 s, por riba do orzamento de 1 s nas tres.
+- **Esas tres voltas por riba de 1 s non eran o código.** Partido para buscar o commit
+  (31 entre `62bc5b7`, a medida do 26 de outubro, e `45be8fd`), o primeiro paso foi
+  confirmar os dous extremos alternándoos na mesma máquina, cada un na súa build e no 3013, e
+  coa mesma ferramenta: `62bc5b7` 889, 931, 548 e 1.182 ms; `45be8fd` 609, 678, 802 e 542.
+  A de hoxe non vai máis lenta. A cifra varía o dobre entre dúas voltas da mesma build, e
+  tres seguidas noutro momento parecían unha regresión. Non houbo nada que partir.
 - As ligazóns dos documentos, abertas unha vez (34): `urbanoslugo.com` xa non resolve, e a
   ficha do Punto de Acceso Nacional dá 404; dito onde se citan. O enderezo vello dá 404, como
   se di. CodeQL: a configuración por defecto segue activa (`code-scanning/default-setup`).
@@ -4483,8 +4489,8 @@ no código, antes de corrixir nada; as cifras, coa build de hoxe nun servidor no
   pedidos por minuto, fronte a 3.382–3.539. Cun fix por segundo o punto pasa o 40 % do tempo
   deslizándose. Apagalo durante a viaxe, ou facelo máis barato, é cambiar o que se fixo na
   rolda 49, e é do dono.
-- **Planificar saíndo agora pasa de 1 s** (1.059, 1.285 e 1.255 ms en tres voltas; o README
-  dicía 0,85–0,88 o 26 de outubro). Sen atribuír.
+- **O orzamento de 1 s de «saíndo agora» cae dentro do ruído**: a mesma build dá 548 e
+  1.182 ms. Unha volta soa por riba non di nada; a mediana de varias, alternando, si.
 - Que a alarma de chegada deixe de mirar o GPS ao soar: é unha decisión, non un arranxo.
 - A inxección dos dous bloques de datos estruturados non a mira ningún check da CI, porque a
   build da CI non leva `SITE_URL`.
