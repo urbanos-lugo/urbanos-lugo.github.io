@@ -1,8 +1,8 @@
 /**
- * Human-readable data quality report (`pnpm data:audit`). `npm test` asserts the
+ * Human-readable data quality report (`pnpm data:audit`). `pnpm test` asserts the
  * invariants; this prints the dataset's shape and flags what is suspicious, not wrong.
  */
-import { BUS_STOPS, BUS_LINES } from '../src/data/transitData';
+import { BUS_STOPS, BUS_LINES, poleCode } from '../src/data/transitData';
 import { getDistanceMeters } from '../src/utils/geo';
 import { getScheduledBuses } from '../src/utils/vehicles';
 import { getArrivalsForStop } from '../src/utils/arrivals';
@@ -35,6 +35,7 @@ console.log('COBERTURA');
 console.log(`  Liñas                 ${BUS_LINES.length}`);
 console.log(`  Sentidos              ${directions.length}`);
 console.log(`  Paradas               ${BUS_STOPS.length}`);
+console.log(`  Con código QR         ${BUS_STOPS.filter((s) => poleCode(s)).length}`);
 console.log(`  Con xeometría viaria  ${withGeometry.length}/${directions.length}  (${pct(withGeometry.length, directions.length)})`);
 console.log(`  Itinerario levantado  ${surveyed.length}/${directions.length}  (o resto, trazado de OSRM)`);
 console.log(`  Con horario oficial   ${withSchedule.length}/${BUS_LINES.length}  (${pct(withSchedule.length, BUS_LINES.length)})`);
@@ -99,16 +100,20 @@ for (const stop of busiest) {
 }
 
 console.log('\nHORARIOS');
-let runsTotal = 0;
+// Each kind of day, whichever this is: the README's figure is a weekday's, and on a Saturday this printed Saturday's.
+const today = dayKind(now);
 const noRuns: string[] = [];
-for (const line of BUS_LINES) {
-  line.directions.forEach((dir, i) => {
-    const runs = buildRuns(line, i, BUS_STOPS, dayKind(now));
-    runsTotal += runs.length;
-    if (!runs.length) noRuns.push(`${line.id}/${dir.id}`);
-  });
+for (const day of ['laborable', 'sabado', 'domingo'] as const) {
+  let runsTotal = 0;
+  for (const line of BUS_LINES) {
+    line.directions.forEach((dir, i) => {
+      const runs = buildRuns(line, i, BUS_STOPS, day);
+      runsTotal += runs.length;
+      if (day === today && !runs.length) noRuns.push(`${line.id}/${dir.id}`);
+    });
+  }
+  console.log(`  Expedicións ${day.padEnd(10)}${runsTotal}${day === today ? '  (hoxe)' : ''}`);
 }
-console.log(`  Expedicións diarias   ${runsTotal}`);
-if (noRuns.length) console.log(`  Sen expedicións       ${noRuns.join(', ')}`);
+if (noRuns.length) console.log(`  Sen expedicións hoxe  ${noRuns.join(', ')}`);
 
 console.log(`\n${bar}\n`);
