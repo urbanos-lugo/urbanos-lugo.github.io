@@ -57,7 +57,8 @@ about where you are.
 The map, the alarm and the ride read one and the same watch (`src/services/stopAlarm.ts`):
 one GPS client, one permission prompt, and for the alarm and the ride one radius and one
 sound. The difference is how long it runs — the map until you press the button again, the
-alarm until you reach one stop, the ride until you say you have finished — and in every
+alarm until you turn it off or leave that stop's board (it goes on after it has rung, to show
+how far you are), the ride until you say you have finished — and in every
 case it runs only while the page is open, because a web page cannot wake itself in the
 background.
 
@@ -92,10 +93,11 @@ Opening any web page tells the servers it contacts your IP address. This one con
 | Host | What for | When |
 | :--- | :--- | :--- |
 | `tiles.openfreemap.org` | the map background | when you open a map |
-| the API, if one is configured | service notices, and the operator's own minutes behind a QR | on the notices screen, and on a stop you reached by scanning |
+| the API, if one is configured (on the published site, `urbanos-lugo-api.braisbrg.deno.net`) | service notices, and the operator's own minutes behind a QR | once each time the app opens and when you ask it to check again, and on a stop you reached by scanning its pole or by a shared stop link |
 
-That is the whole list, and the map is the only one you meet on an ordinary visit. Those
-hosts necessarily learn roughly which part of Lugo you are looking at, because that is
+That is the whole list. The published site has an API configured, so an ordinary visit
+meets it once, for the notices, and meets the map's host when you open a map. The map's
+host necessarily learns roughly which part of Lugo you are looking at, because that is
 what a tile request is. None of them is asked to identify you, and no identifier of ours
 travels with any of these requests.
 
@@ -104,12 +106,13 @@ Google you had opened a bus timetable. It is served from this site now
 (`tools/importFonts.ts`), which changes nothing about what you download and removes the
 one third party that was giving neither the map nor the data.
 
-The published site has no API of its own: service notices come from a copy committed by a
-scheduled job, and the app says on screen when that copy was taken. Where an API **is**
-configured, it is a small service on Deno Deploy (`worker/index.ts`) that reads
-buslugo.com on the browser's behalf, because that site refuses a browser directly. (It
-read the council's traffic feed too until October 2026; from there the feed never
-answered.) It is sent a stop code and nothing else — no identifier, no position.
+GitHub Pages runs no code, so the API is a separate small service on Deno Deploy
+(`worker/index.ts`) that reads buslugo.com, and the operator's stop page behind the QR, on
+the browser's behalf, because those sites refuse a browser directly. (It read the council's
+traffic feed too until October 2026; from there the feed never answered.) It is sent a stop
+code and nothing else — no identifier, no position. When it does not answer, or a site is
+built without one, the notices come from a copy the hourly build takes and publishes with
+the site, and the app says on screen when that copy was taken.
 
 ## If you run the server yourself
 
