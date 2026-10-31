@@ -38,8 +38,8 @@ shelter and bench, and one coordinate, from OpenStreetMap; both are covered belo
   service, and is not endorsed by or affiliated with AULUSA, Grupo Monbus or the
   Concello de Lugo. Anyone redistributing this dataset should reach their own
   conclusion about the terms, not rely on this note.
-- **Verification:** `npm run reconcile` re-parses buslugo's own pages and compares
-  them stop by stop against the shipped dataset. `npm run reconcile:selftest` proves
+- **Verification:** `pnpm run reconcile` re-parses buslugo's own pages and compares
+  them stop by stop against the shipped dataset. `pnpm run reconcile:selftest` proves
   that comparison can actually fail.
 - **One thing worth naming rather than leaving implied:** a departure time is a fact and
   facts are not copyrightable, but in the EU a *collection* of them can carry a sui
@@ -72,7 +72,8 @@ Every drawn itinerary follows an OSM route relation, or the OSRM driving profile
 where no surveyed relation exists.
 
 - **Licence:** Open Database License (ODbL) 1.0 — <https://opendatacommons.org/licenses/odbl/>
-- **Attribution:** "© OpenStreetMap contributors", shown on the map and in the menu.
+- **Attribution:** "© OpenStreetMap contributors", shown on every map; the menu also says
+  the routes are surveyed in OpenStreetMap.
 - **Consequence:** the derived geometry is a Derivative Database under ODbL and stays
   under ODbL. It is not covered by the MIT licence. That is `src/data/route-geometry.json`,
   which ships, and the snapshots it is built from: `data/osm-routes.json`,
@@ -187,9 +188,10 @@ are not the same claim:
   they never count towards the navigation badge.
 
 Both are read **from the server**, never from the browser: neither sends CORS headers.
-Each read is capped at 512 KB and given a deadline. On the static build there is no server
-to do it, so the screen shows the snapshot a scheduled job committed, and says when it was
-taken. The Deno worker reads the operator's page only: from there the council's feed
+Each read is capped at 512 KB and given a deadline. Pages runs no server, so the published
+site asks the Deno worker, and when that does not answer it shows the snapshot the hourly
+build takes and publishes with the site, and says when it was taken. The Deno worker reads
+the operator's page only: from there the council's feed
 never connected (seven logged reads on 6 and 13 October 2026, all timed out at four
 seconds). The scheduled snapshot and a self-hosted `server.ts` still read it, so on the
 published app the council's notices appear only when the screen falls back to that snapshot.
@@ -197,8 +199,8 @@ published app the council's notices appear only when the screen falls back to th
 ## The minutes behind the QR sticker — info.urbanoslugo.com
 
 Every pole's QR opens `info.urbanoslugo.com/qr-demo-paradas/<code>`, the operator's own
-page for that stop. Somebody who arrives in this app by scanning that sticker — and only
-them — is shown what that page says, in a block of its own, attributed to the operator and
+page for that stop. Somebody who arrives in this app by scanning that sticker, or by a
+link to the stop that someone shared — and only them — is shown what that page says, in a block of its own, attributed to the operator and
 never called live. It is read server-side and cached for twenty seconds, so one pole's
 page is asked for at most three times a minute however many people are looking at it, and
 one server or worker instance asks for at most 120 pages a minute in all, whichever poles
