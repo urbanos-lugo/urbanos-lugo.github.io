@@ -66,8 +66,8 @@ Antes de empezar: o teléfono en galego ou non, dá igual; a app en galego desde
 ## 3. Liñas
 
 1. Abrir a lista. Cada fila debe dicir número, nome e cantos buses hai en ruta.
-2. Abrir unha liña. As frechas das saídas deben chamarse «Saída anterior» e «Saída
-   seguinte», e a saída á vista debe dicir que está seleccionada.
+2. Abrir unha liña. As frechas das saídas deben chamarse «Expedición anterior» e
+   «Expedición seguinte», e a saída á vista debe dicir que está seleccionada.
 3. Percorrer as paradas da liña: cada unha co seu nome e a súa hora, e as estimadas dito.
 
 ## 4. Mapa
@@ -105,7 +105,7 @@ Antes de empezar: o teléfono en galego ou non, dá igual; a app en galego desde
 
 ## 6. Avisos e tarifas
 
-1. Avisos: «Comprobar agora». Debe dicir que está comprobando e, ao rematar, o que
+1. Avisos: «Comprobar avisos». Debe dicir que está comprobando e, ao rematar, o que
    atopou (cantos avisos, ou que non se puido saber).
 2. Un aviso citado do operador está en castelán: **a voz debe cambiar á castelá** ao
    lelo e volver á galega despois. VoiceOver adoita facelo; TalkBack depende do motor de

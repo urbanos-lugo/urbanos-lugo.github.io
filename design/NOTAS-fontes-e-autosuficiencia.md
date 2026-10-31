@@ -25,8 +25,12 @@ tocar nada; e o día que cambien, salta.
   Hoxe os prezos están escritos en `transitData.ts`. Deberían comprobarse no mesmo traballo
   semanal: non para cambialos sós —un prezo que muda só é un prezo no que non se pode
   confiar— senón para **fallar** cando deixen de coincidir.
+  *Feito: `tools/checkFares.ts` corre cada luns en `check-source.yml` (máis abaixo, «As
+  tarifas»).*
 - **Os avisos do operador nunha segunda fonte.** O RSS de `urbanoslugo.com/es/rss.xml` está
   abandonado hoxe, pero é XML e custa nada consultalo. O día que o usen, chega de balde.
+  *O 31 de outubro de 2026 o dominio `urbanoslugo.com` xa nin resolve; `info.urbanoslugo.com`,
+  o dos QR, si.*
 
 ### **Non pode ir só**
 
@@ -167,7 +171,7 @@ Galicia.** O punto de acceso nacional (`nap.dgt.es`) responde, pero é un portal
 non un endpoint.
 
 E aínda tendo acceso: a DGT leva **estradas**. Un bus urbano párao o casco vello, a Ronda
-da Muralla, unha avaría de auga ou unha procesión. Das nosas 20 liñas só un par tocan
+da Muralla, unha avaría de auga ou unha procesión. Das nosas 24 liñas só un par tocan
 estrada da DGT (a N-VI nas liñas 2 e 3.2).
 
 O que de verdade importa xa chega: «Retenciones en zona Estación Tren» entrou pola campá do

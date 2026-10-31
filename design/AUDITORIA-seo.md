@@ -1,9 +1,11 @@
 # Auditoría SEO: por que ninguén atopa o sitio, e que facer
 
 Auditoría do 14 de setembro de 2026 sobre <https://braisbrg.github.io/urbanos-lugo/>.
-**Case nada disto está feito** —só a descrición, ver o punto 4 de «Esta semana»—: é a
-lista de cousas para máis adiante, coa medida de cada unha para que quen a retome saiba de
-onde parte e poida comprobar se cambiou.
+Cando se escribiu, case nada estaba feito. **Estado o 31 de outubro de 2026:** de «Esta
+semana» están feitos todos os puntos agás o 5, aparcado; o trimestre decidiuse non facelo
+polo momento; e o sitio vive desde o 13 de outubro en <https://urbanos-lugo.github.io/>
+([`MUDANZA-organizacion.md`](MUDANZA-organizacion.md)). As medidas e os problemas de abaixo
+son os de partida, do 14 de setembro, para que quen a retome saiba de onde se partiu.
 
 Método: o HTML tal e como o serve Pages (`curl`), as cabeceiras, `robots.txt` e
 `sitemap.xml`; o DOM renderizado no navegador cun viewport de 375×812; e tres buscadores
@@ -191,7 +193,7 @@ ferramenta (bloquean a descarga): o que se di deles vén dos títulos da SERP.
    por etiqueta `<meta>` ou por ficheiro HTML en `public/` —o token é público, non é
    unha credencial—, enviar o sitemap e «Inspeccionar URL → Solicitar indexación» na raíz.
    *Feito o 15 de setembro de 2026, coa 1.1.1 en produción: propiedade de prefixo de URL
-   verificada por etiqueta `<meta>` (que `test.ts` garda), sitemap enviado en Google e
+   verificada por etiqueta `<meta>` (que garda `check:policy`), sitemap enviado en Google e
    importado en Bing —Bing leuno o mesmo día: 7 URL, estado correcto; Google marcaba «non
    se puido obter» e tipo «descoñecido» nas primeiras horas, o habitual nunha propiedade
    nova, mentres a proba de URL publicada dicía que si podía acceder. O que segue é
@@ -281,7 +283,7 @@ présa por competir con ninguén. O dominio propio queda descartado polo momento
 - El Progreso: <https://www.elprogreso.es/articulo/lugo/autobus-urbano-lugo-horario-lineas-tarifas/202309111049411690927.html>
 - Moovit: <https://moovitapp.com/index/en/public_transit-lines-Vigo-3841-3755394>,
   <https://moovitapp.com/index/en/public_transit-line-1_4-Vigo-3841-3755394-157737866-1>
-- urbanoslugo.com: <http://urbanoslugo.com/es/info-en-tiempo-real.html>
+- urbanoslugo.com: <http://urbanoslugo.com/es/info-en-tiempo-real.html> (o dominio xa non resolve, 31 de outubro de 2026)
 - Lucus Bus: <https://apps.apple.com/es/app/lucus-bus-bus-lugo/id1611708157>,
   <https://play.google.com/store/apps/details?id=com.trespies.busurbano>
 - O repositorio: <https://github.com/braisbrg/urbanos-lugo>

@@ -24,7 +24,7 @@ recomenda (ver abaixo).
 ## Xa feito
 
 - O despregue de Pages constrúe para a raíz cando o repositorio se chama
-  `<propietario>.github.io` (`deploy-pages.yml`, cunha comprobación na suite). Para o
+  `<propietario>.github.io` (`deploy-pages.yml`, cunha comprobación en `check:policy`). Para o
   repositorio de hoxe non cambia nada.
 - O worker toma `ALLOWED_ORIGIN` do propietario do repositorio en cada despregue, así que
   pasará a `https://urbanos-lugo.github.io` el só.
