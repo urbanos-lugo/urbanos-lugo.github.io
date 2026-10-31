@@ -38,8 +38,9 @@ So the interesting surface is small:
 
 ## The worker's address
 
-The static site trusts one origin besides its own: the worker's, `API_ORIGIN`, which the
-Content Security Policy admits and the app asks for notices and the operator's minutes.
+Besides its own and the map tiles' host, the static site trusts one origin: the worker's,
+`API_ORIGIN`, which the Content Security Policy admits and the app asks for notices and the
+operator's minutes.
 What comes back is narrowed in the browser before anything is drawn: text as text, and
 links only to buslugo.com or concellodelugo.gal. A hostile answer can be wrong about a
 notice, but it cannot run script, break the screen or send anyone elsewhere. If the Deno
@@ -70,9 +71,9 @@ someone else could register the name that was freed, and the site would go on as
 
 Dependencies and GitHub Actions are updated weekly by Dependabot. No dependency runs an
 install script: `pnpm-workspace.yaml` rules on the one that has one (esbuild, refused),
-and a new one stops the install until somebody decides. CI installs with
-`--frozen-lockfile` and runs the type check and the test suite before it will build
-anything. Every action is pinned to a commit, with its version beside it, and the one job
+and a new one stops the install until somebody decides. Every workflow installs with
+`--frozen-lockfile`, and both deploys run the type check and the test suite before they
+build anything. Every action is pinned to a commit, with its version beside it, and the one job
 that holds a deploy token runs an exact Deno and an exact `@deno/deploy`, in the
 `deno-deploy` environment: that is where the token belongs, and Settings → Environments
 lets only `main` deploy from it. `pnpm run check:policy` fails if any of that comes loose
