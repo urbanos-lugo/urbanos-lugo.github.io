@@ -4329,3 +4329,149 @@ versións que xa non se instalan, e o de CodeQL, sobre un escape que si se fai.
   idénticos byte a byte, `sw.js` incluído, coas mesmas 34 entradas de precache na mesma
   orde. O comparador marca unha revisión cambiada (probado). As cinco portas en verde.
   `pnpm audit`: de 3 a 1, `deepmerge`, que non ten versión arranxada.
+
+## Rolda 52: cada palabra dos documentos, contra o código e contra unha medida de hoxe — 31 de outubro de 2026
+
+Pedido: que todo o que din os documentos (os tres README, CLAUDE.md, CONTRIBUTING, PRIVACY,
+SECURITY, DATA, NOTICE, `design/`, os comentarios dos workflows e do código) sexa certo hoxe;
+cada cifra medida outra vez e datada, cada ligazón aberta unha vez, e un check que falle cando
+un documento nomee o que non existe. REXISTRO e DECIDIDO son historia: non se tocan.
+
+Como: un script lista cada ruta, ficheiro, ligazón e orde `pnpm` que nomean os documentos e
+os comentarios, e mira se existen; seis lecturas (`explorador`) contrastaron cada afirmación
+do README por tramos e os demais documentos contra o código, e cada achado comprobouse aquí,
+no código, antes de corrixir nada; as cifras, coa build de hoxe nun servidor no 3012.
+
+### Atopado e arranxado no código
+
+- **Tres comprobacións que os documentos prometían e xa non existían.** O commit 48bed7b (20
+  de outubro, rolda 41) quitou da suite as que lían ficheiros, e destas tres nin as moveu a
+  `check:policy` nin as nomeou entre as borradas: que un repositorio `<propietario>.github.io`
+  se constrúa para a raíz (MUDANZA dicía «cunha comprobación na suite»), que só os rexistros
+  nomeen o enderezo vello (DECIDIDO, 13 de outubro) e que as entradas da build non volvan a
+  `src/data` nin as nomee nada de `src/` (README, «Por que hai 1,4 MB de JSON»). As tres,
+  de volta en `check:policy`, cada unha probada rompendo o que garda.
+- **Os datos estruturados `WebSite`.** NOTAS (Pendente 5) listaba «os datos estruturados
+  `WebSite` co nome» entre o que había que cambiar para que o sitio levase o seu nome nos
+  buscadores, e pechouse o 13 de outubro coa portada levando só `WebApplication`. Agora leva
+  os dous; o check comproba tipo, nome e enderezo, e falla co tipo cambiado. Construída con
+  `SITE_URL`, a portada leva os dous bloques. A build da CI non leva `SITE_URL`, así que ningún
+  dos dous se mira nela (xa era así).
+- **A lista das ferramentas que len servidores alleos** (CLAUDE.md) deixaba fóra cinco:
+  `importWalkNetwork.ts` e `checkLandmarks.ts` (Overpass, e Wikidata), `importElevation.ts`
+  (o IGN), `compareWalkRouter.ts` (o enrutador de FOSSGIS) e `buildMapStyle.ts --fetch`
+  (OpenFreeMap). O patrón de `check:policy` que as aparta dos workflows tiña os mesmos ocos:
+  `data:walk` en `measure.yml` pasaba, e agora falla.
+- **`data:audit`** imprimía as expedicións do día no que corría baixo «diarias» (404 un
+  sábado, onde a táboa do README di as 777 dun laborable) e non os 271 postes con QR. Agora
+  imprime as dos tres tipos de día e os postes.
+- **`stress:network`** buscaba só a frase que vai enriba dos avisos dunha copia, e coa copia
+  gardada baleira (do 19 de setembro, 0 avisos) as tres formas de fallo daban «nunca» mentres
+  a pantalla a amosaba como última verificación, «(copia gardada)». Busca as dúas. E sen rede
+  chamáballe «a última resposta do worker» a unha regra do service worker para `/api/` que
+  `vite.config.ts` xa non ten: era a copia da build.
+- **«Vou nesta» ocupaba o fío 30–37 s por minuto a 6×** (seis medidas en tres tandas), cun
+  orzamento de 5 s e un README que dicía 1,8. Desde a rolda 49 (81b2cc7) o punto do lector
+  deslízase 400 ms ata cada fix, e cada cadro do deslizamento volvía poñer o círculo da
+  precisión, unha capa do estilo: o mapa redebuxábase en cada cadro, 1.902–1.992 cadros por
+  minuto. O círculo vai agora á posición de golpe, unha vez por fix, e o punto e o abano
+  seguen deslizándose: 19,8–22,5 s por minuto e 244–286 cadros, en dúas tandas.
+  `measure:browser` conta agora os cadros que debuxa o mapa (cada `clear` do lenzo) co seu
+  orzamento, 600 por minuto: coa build de antes, 1.934 e 2.018, e falla.
+
+### Documentos corrixidos
+
+- **PRIVACY.md**, o máis importante: dicía que a web publicada non tiña API, que a API se
+  preguntaba na pantalla de avisos e que o mapa era o único servidor dunha visita normal. A
+  política da web publicada admite `urbanos-lugo-api.braisbrg.deno.net`, e a app pregúntalle
+  os avisos cada vez que abre (`useServiceAlerts` vai na raíz). Tamén: os minutos do operador
+  saen tamén cunha ligazón compartida, a copia dos avisos tómaa e publícaa a build de cada
+  hora (non se commitea), e a alarma de chegada segue mirando o GPS despois de soar, ata que se
+  apaga ou se deixa o taboleiro (sempre foi así; o documento dicía «ata chegar a unha parada»).
+- **README.md**: o alcance dun toque (unha liña, 20 px co dedo ou co rato; unha parada a zoom
+  15, 21 px), as paradas cunha liña escollida, a pregunta «Colliches o 1.1 das 07:15?», de onde
+  saen os minutos do poste e quen os ve, «HH:MM → ~HH:MM» no canto de «sae ás», `ci.yml` non
+  corre nun push a `main`, a ruta `/api/paradas/:code/agora` que faltaba na táboa, o service
+  worker sen teselas ráster nin respostas da API gardadas, a insignia a 12 px, os bucles de
+  2.3.1, o dominio propio (hai que cambiar o paso, non poñer unha variable), dezaoito entradas
+  no sitemap, un check de posicións falsas que marchou coa función, `reconcile` contra a páxina
+  de buslugo.com (non a do QR, e son 1.187), `audit:browser` sen argumento `light | dark`, e
+  corenta e un estados, non trinta e oito.
+- **CLAUDE.md**: `Map/` sen Leaflet, `src/utils` puro agás `storage.ts`, as dúas peticións do
+  navegador nos hooks, `festivos.json` e `structuralNotices.ts` feitos a man.
+- **SECURITY.md**: a orixe das teselas tamén se admite; quen proba antes de construír son os
+  dous despregues (a auditoría de `ci.yml` constrúe ao carón das portas).
+- **DATA.md**: o mesmo dos avisos e dos minutos, a atribución de OSM (no mapa; o menú di que as
+  rutas son de OSM), `pnpm` e non `npm`. **CONTRIBUTING.md**: `festivos.json` e as dúas paradas
+  na posición de OSM. **README.es/en**: o botón chámase «Voy en esta» e "I am taking this one".
+- **design/**: AUDITORIA-seo abría con «case nada disto está feito»; MUDANZA nomeaba a suite;
+  NOTAS pedía comprobar as tarifas cada semana (`checkFares.ts` faino), contaba 20 liñas e
+  falaba dun RSS nun dominio que xa non resolve; o guión do lector de pantalla nomeaba dous
+  botóns como a app non os chama.
+- **Comentarios**: o service worker falaba dun ráster de respaldo e de dous servidores, e
+  dun anaco de 490 KB como razón do tope de 4 MB (o maior é a rede peonil, 1,3 MB); o workflow
+  de Pages dicía «pon BASE_PATH» para un dominio propio.
+- **Un check novo en `check:policy`**: falla cando un documento (agás este e DECIDIDO) nomea
+  un ficheiro, unha ruta, unha ligazón, un título ao que apunta unha ligazón ou unha orde
+  `pnpm` que non existe, e cando un comentario do código ou dun workflow nomea unha ruta que
+  non existe. O que escriben a build e as ferramentas déixano pasar as regras de `.gitignore`.
+  Probado con cinco: unha ferramenta, un título, un script, un comentario e unha ligazón.
+
+### Medido
+
+- **O conxunto de datos**: 24 liñas, 48 sentidos, 417 paradas, 271 postes con QR, 45/48
+  levantados en OSM e 3 co trazado dun coche (3.2 nos dous, 5.2 cara a Avda. Américas), 24/24
+  con horario, 777 expedicións nun laborable (404 sábado e domingo), 436 km. Sindicatos ten 21
+  identificadores, non 20. 390 das 417 sen hora publicada, como di a app. A rede peonil, 21.093
+  cruces, 29.489 arestas e 17.053 chás.
+- **A descarga**, coa build de hoxe: o anaco de entrada 630 / 176 / 146 KB, a primeira carga
+  702 / ~192 / ~159; o resto das filas igual ca o 28 de outubro. A precaché, 30 ficheiros (34
+  entradas), 4,47 / 1,30 / 1,07 MB; o README dicía 28 (32) e 4,33 / 1,28 / 1,06, e noutro
+  parágrafo «~155 KB» para a primeira carga.
+- **`stress:network`**, co sondador arranxado: 2.094 ms coa API colgada, 128 con erro, a
+  resposta tardía aos 4.013, e 55 ms sen rede, a copia da build.
+- **`audit:browser`** con `AUDIT_RUNNER=1`: 0 achados WCAG en 242 medidas de 162 estados, en
+  715 s; ningún texto baixo 12 px, 25 obxectivos baixo 44, 3 estados baixo 48 entre as barras.
+  Na CI de `develop` (7349930) as cinco partes duraron 124, 139, 138, 147 e 133 s.
+- **`measure:browser`**, tres voltas por medida: en frío 227 KB e 202 antes do pintado, CLS
+  0,000; o QR dun poste pinta aos 2,7 s coa primeira saída dentro; en quente 476–612 ms, 8 de
+  9 respostas do service worker; o mapa, primeiro debuxado en 2,4–3,8 s, 1,5–2,1 s de fío ao
+  abrilo, zoom 212–771 ms, arrastres 0–58 ms (dentro do orzamento, peor ca o 28 de outubro);
+  planificar, o toque 56–96 ms, chegando antes das 17:00 1,9–3,6 s, e saíndo agora
+  1,06–1,29 s, por riba do orzamento de 1 s nas tres.
+- As ligazóns dos documentos, abertas unha vez (34): `urbanoslugo.com` xa non resolve, e a
+  ficha do Punto de Acceso Nacional dá 404; dito onde se citan. O enderezo vello dá 404, como
+  se di. CodeQL: a configuración por defecto segue activa (`code-scanning/default-setup`).
+
+### Mirado e descartado
+
+- **O alcance de 12 px das liñas.** O README dicíao para paradas e liñas; as liñas responden a
+  20 px desde agosto (`HIT_PX`), tamén con Leaflet, onde o clic no mapa xa buscaba liñas a 20
+  px. Era o documento.
+- **«27 das 417» no taboleiro.** Son os puntos horarios que o operador imprime; dous deles
+  (Ramón Ferreiro 26 na 5.1 de volta, Rúa Casas Vellas 2 na 13 de ida) nunca levan hora
+  oficial, porque o motor non confía nas súas horas para a viaxe. A frase di o que publica o
+  operador, e iso é certo.
+- **A alarma que segue mirando despois de soar** non é un erro novo: sempre foi así, e amosa a
+  distancia. Corríxese o documento; se debe parar ao soar é do dono (abaixo).
+- Lidos e certos: as rutas de `src/data` fronte a `data/`, `/api/*` do servidor e do worker,
+  os prazos e os topes de `SECURITY.md`, as pausas de `DATA.md`, o 1-de-cada-120 do poste, os
+  pesos das fontes, o filtro de 750 m, os 300 m da alarma, os 60 minutos de «Próximas», os
+  cinco minutos dun bus que vai tarde, os seis recentes, os 15 s do taboleiro. O mirror de
+  Overpass en NOTAS, que unha lectura daba por pendente, pechouse o 6 de outubro.
+- **Non volto medir**: as cifras de antes e despois de cada rolda, que son historia coa súa
+  data; os metros de ascenso polo perfil do IGN (piden as teselas do MDT, 46 MB, unha
+  ferramenta de rede); as horas de `reconcile` (lería buslugo.com).
+
+### Queda
+
+- **«Vou nesta» segue por riba do orzamento**: 19,8–22,5 s por minuto fronte a 5. O resto é o
+  deslizamento do punto: con movemento reducido, que non o fai, 4,4–5,2 s e 86–94 cadros
+  pedidos por minuto, fronte a 3.382–3.539. Cun fix por segundo o punto pasa o 40 % do tempo
+  deslizándose. Apagalo durante a viaxe, ou facelo máis barato, é cambiar o que se fixo na
+  rolda 49, e é do dono.
+- **Planificar saíndo agora pasa de 1 s** (1.059, 1.285 e 1.255 ms en tres voltas; o README
+  dicía 0,85–0,88 o 26 de outubro). Sen atribuír.
+- Que a alarma de chegada deixe de mirar o GPS ao soar: é unha decisión, non un arranxo.
+- A inxección dos dous bloques de datos estruturados non a mira ningún check da CI, porque a
+  build da CI non leva `SITE_URL`.
