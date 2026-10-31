@@ -324,6 +324,24 @@ ok('no tracked file outside the records names the old address', () => {
   assert(mentions.every((paragraph) => paragraph.includes('404')), 'README.md names braisbrg.github.io outside the paragraph that says it gives 404');
 });
 
+ok('src/data holds only what ships, and the build inputs stay out of it', () => {
+  // Four files in src/data were build scaffolding the app never imported, 1.4 MB one
+  // distracted import away from the bundle. They live in data/ now, and the README says a
+  // check fails if one comes back or src/ names one: dropped from the suite on 20 October
+  // with the checks that read files, and the README kept saying it.
+  const BUILD_ONLY = ['official-raw.json', 'osm-routes.json', 'routes.json', 'stop-amenities.json'];
+  for (const name of BUILD_ONLY) {
+    assert(!existsSync(join(root, 'src', 'data', name)), `${name} is back in src/data; it is a build input and the app never reads it`);
+    assert(existsSync(join(root, 'data', name)), `data/${name} is missing, so the build cannot run`);
+  }
+  const offenders: string[] = [];
+  for (const file of sourcesUnder('src')) {
+    const text = readFileSync(file, 'utf8');
+    for (const name of BUILD_ONLY) if (text.includes(name)) offenders.push(`${relative(file)} names ${name}`);
+  }
+  assert(offenders.length === 0, `a build input reached the app:\n    ${offenders.join('\n    ')}`);
+});
+
 ok('index.html keeps the Search Console verification tag', () => {
   // Search Console re-checks its verification tag now and then; a head rewrite that
   // dropped it would end the verification without anything on screen changing.
