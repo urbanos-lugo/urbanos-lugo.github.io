@@ -1325,7 +1325,7 @@ JSX era `any` e ningunha prop se comprobaba; ao poñelos, dos 1.581 erros que sa
 Cada cor, tamaño, espazo, canto, bordo, sombra, capa, duración e curva que debuxa a
 interface ten nome, e o nome di para que serve, non canto vale: `tap` é o chan de 44 px,
 `glass` o fondo translúcido dun control sobre o mapa, `move` os 200 ms dun cambio de sitio.
-Están en `src/index.css`, 184 no bloque `@theme` e 32 cores de paleta con valor claro e
+Están en `src/index.css`, 198 no bloque `@theme` (contados o 31 de outubro de 2026) e 32 cores de paleta con valor claro e
 escuro; o mapa colle deles as cores e, da táboa `DRAW` de `palette.ts`, os números que
 o renderizador quere. As escalas propias de Tailwind están borradas (`--*: initial`): unha clase
 escrita contra un valor por defecto non xera nada en vez de traer de volta un valor que
@@ -2082,9 +2082,10 @@ falla alí e pasa aquí. Ao final dise cantas animacións houbo que correr. Se a
 en CI, garda a pantalla e os achados de cada estado e percorrido que falla no momento do
 achado (`AUDIT_EVIDENCE=cartafol` fai o mesmo aquí), e `AUDIT_RUNNER=1` corre aquí coma o
 executor: sen rato, e Node e a páxina en UTC. En CI a auditoría vai en cinco partes á vez, cada
-unha na súa máquina: os estados do teléfono en galego (127 s medidos coma o executor), os do
-castelán e o inglés (137), os do escritorio (159), o que vén despois —teclado, mapa, cores
-forzadas, movemento— (143) e os percorridos (152). Nunha soa máquina eran dez minutos.
+unha na súa máquina: os estados do teléfono en galego (124 s no executor, na CI de `develop`
+do 31 de outubro de 2026), os do castelán e o inglés (139), os do escritorio (138), o que vén
+despois —teclado, mapa, cores forzadas, movemento— (147) e os percorridos (133). Nunha soa
+máquina son doce minutos (715 s, aquí, o mesmo día).
 `checks`, o traballo que pide `main`, agarda por todas e só pasa cando pasan todas.
 
 O que `pnpm test` non pode ver: un Chromium real, dirixido por `tools/cdp.ts`, acelerado
@@ -2114,21 +2115,39 @@ pero esa diferenza pode ser en parte da medida, que fai 6× máis lento o fío d
 quizais non o do *worker*: nun teléfono lento de verdade o *worker* tamén é lento. Saíndo
 agora, 0,85–0,88 s fronte a 0,6–1,2 s. O 30 de setembro esta mesma máquina daba 5,0–6,4 s
 chegando antes, e 12,4 antes de que o planificador lembrase o que non cambia); e un minuto de «Vou nesta» cun fix de GPS por
-segundo, contado polo propio navegador (medido: 1,8 s de fío principal por minuto a 6×;
-eran 45 s mentres o latexo da seguinte parada foi unha sombra, que se repinta en cada
-cadro, e non un disco que medra e se esvae, que o compositor move só). Cada cifra compárase co orzamento que ten escrito
+segundo, contado polo propio navegador (medido o 30 de setembro, antes do mapa con MapLibre: 1,8 s
+de fío principal por minuto a 6×; eran 45 s mentres o latexo da seguinte parada foi unha
+sombra, que se repinta en cada cadro, e non un disco que medra e se esvae, que o compositor
+move só; hoxe, máis abaixo). Cada cifra compárase co orzamento que ten escrito
 ao lado, co porqué, e dende o 19 de setembro de 2026 tamén os bytes (260 KB en total,
 250 antes do primeiro pintado: unha dependencia que engorde o anaco de entrada xa non é
 un número máis nun rexistro que ninguén le) e o desprazamento de deseño acumulado (CLS,
 0,1; medido 0,000 nas dúas visitas).
+
+**Medido outra vez o 31 de outubro de 2026** (rolda 52 do rexistro), coa build de hoxe, tres
+voltas por medida e sen nada máis correndo na máquina. En frío, 227 KB en total e 202 antes
+do primeiro pintado, CLS 0,000; o QR dun poste pinta aos 2,7 s coa primeira saída xa dentro;
+en quente, o primeiro pintado en 476–612 ms, 8 de 9 respostas do *service worker* e 0 KB
+pola rede. O mapa: o primeiro debuxado en 2,4–3,8 s, o fío ocupado ao abrilo 1,5–2,1 s e a
+tarefa máis longa 448–746 ms, catro pasos de zoom 212–771 ms e catro arrastres 0–58 ms;
+dentro do orzamento, e peor ca o 28 de outubro. Planificar: o toque responde en 56–96 ms;
+chegando antes das 17:00, a resposta en 1,9–3,6 s co fío ocupado 473–933 ms; e **saíndo
+agora, 1,06–1,29 s, por riba do orzamento de 1 s** nas tres voltas, sen saber aínda por que.
+E «Vou nesta» ocupaba o fío **30,5–37,0 s por minuto**: desde o 29 de outubro o punto do
+lector deslízase ata cada fix, e cada cadro do deslizamento volvía poñer o círculo da
+precisión, que é unha capa do mapa, así que o mapa se debuxaba de novo en cada cadro
+(1.902–1.992 cadros por minuto). Co círculo posto unha vez por fix baixa a 19,8–22,5 s e
+244–286 cadros, e segue catro veces por riba do orzamento: o resto é o deslizamento do punto,
+porque con movemento reducido, que non o fai, son 4,4–5,2 s.
 `audit:browser` mide a app contra as WCAG 2.2 nos niveis A e AA, estado por estado. Son
-trinta e oito estados —a portada baleira e a dunha persoa con paradas gardadas, a busca con
+corenta e un estados —a portada baleira e a dunha persoa con paradas gardadas, a busca con
 e sen resultados, o taboleiro (por hora, por liña, a outra hora e aberto desde o QR), «preto
 de min» con permiso e sen el, o menú, os favoritos, o lector de QR e o seu erro, as liñas, o
 mapa cos buses e coa ficha dunha parada, o planificador baleiro, coas suxestións abertas,
-planificado, a outra hora, sen ruta e sen GPS, a viaxe agardando o bus e xa nel (o reloxo da
+planificado, coas rutas recentes borradas, a outra hora, sen ruta e sen GPS, a viaxe agardando o bus e xa nel (o reloxo da
 páxina pasa da saída e respóndese «Si, vou nel»), os avisos con incidencias,
-sen elas, co servidor caído e sen rede, e a noite—, cada un alcanzado como o alcanza unha
+sen elas, comprobando, co servidor caído e sen rede, as tarifas, e a noite na portada, nunha
+parada e no planificador—, cada un alcanzado como o alcanza unha
 persoa, nun teléfono e nun escritorio, en galego, castelán e inglés e nos dous temas. O
 reloxo da páxina vai fixado (un martes ás 09:12, e ás 03:00 para a noite), as dúas respostas
 da API son fixtures e calquera petición a outro servidor rexéitase no propio navegador: unha
