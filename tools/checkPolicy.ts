@@ -221,7 +221,9 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
   }
 
   // Every install is the locked one, and pnpm comes from packageManager, not from a workflow.
-  const network = /importOfficialData|importOsmRoutes|importStopAmenities|fetchAlerts|calibrateWalking|importFonts|checkParsersUnchanged|reconcile\.ts|checkFares|checkOsmGeometry|compareOperatorTimes|data:(fetch|osm|amenities|alerts)\b|pnpm (run )?reconcile\b|compare:operator|calibrate:walking|fonts:import|check:parsers/;
+  // The same list as CLAUDE.md's network block. The walking network, the heights, the landmarks,
+  // the walk router and the published map styles were missing from both until 31 October 2026.
+  const network = /importOfficialData|importOsmRoutes|importStopAmenities|fetchAlerts|calibrateWalking|importFonts|checkParsersUnchanged|reconcile\.ts|checkFares|checkOsmGeometry|compareOperatorTimes|importWalkNetwork|importElevation|checkLandmarks|compareWalkRouter|buildMapStyle\.ts --fetch|map:style --fetch|data:(fetch|osm|amenities|alerts|walk|elevation)\b|pnpm (run )?reconcile\b|compare:(operator|walk)|calibrate:walking|check:landmarks|fonts:import|check:parsers/;
   for (const name of readdirSync(join(root, '.github', 'workflows')).filter((f) => /\.ya?ml$/.test(f))) {
     const text = workflow(name);
     for (const step of runs(text).filter((s) => /pnpm (i|install)\b/.test(s))) assert(step === 'pnpm install --frozen-lockfile', `${name}: "${step}" is not the locked install`);
