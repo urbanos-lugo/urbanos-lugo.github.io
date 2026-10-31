@@ -351,6 +351,8 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    non redirixe (DECIDIDO, 13 de outubro; rolda 35). O 14, coa 1.4.0 publicada, Search
    Console e Bing (punto 8 da guía): a propiedade nova verificouse coa etiqueta que xa
    levaba `index.html`, que é a da conta.*
+   *Os datos estruturados `WebSite` co nome, que este plan listaba, non se fixeran: a
+   portada levaba só `WebApplication`. Feitos o 31 de outubro de 2026 (rolda 52).*
 6. **Un lector de pantalla de verdade, nun teléfono**, cousa do dono: o guión de
    [`PROBA-lector-de-pantalla.md`](PROBA-lector-de-pantalla.md), unha vez con VoiceOver e
    outra con TalkBack (rolda 31). `audit:browser` mide nomes, estados, orde e idioma no

@@ -7,7 +7,7 @@ import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { CSP_META, MAP_ORIGINS } from './src/security/csp';
 import { THEME_INIT_SOURCE } from './src/security/themeInit';
-import { SITE_LANGS, SITE_PATHS, pageHtml, robotsTxt, siteUrl, sitemapXml, structuredData } from './src/seo';
+import { SITE_LANGS, SITE_PATHS, pageHtml, robotsTxt, siteUrl, sitemapXml, structuredData, websiteData } from './src/seo';
 import { pathFor } from './src/routes';
 
 // GitHub Pages project sites live under /<repo>/, so every asset URL needs that prefix.
@@ -109,6 +109,7 @@ const injectSeoTags: Plugin = {
         `<meta property="og:image" content="${site}icon-512.png" />`,
         `<meta property="og:image:width" content="512" />`,
         `<meta property="og:image:height" content="512" />`,
+        `<script type="application/ld+json">${websiteData(site)}</script>`,
         `<script type="application/ld+json">${structuredData(site)}</script>`,
       ].join('\n    '),
     );

@@ -19,6 +19,11 @@ export function siteUrl(raw: string | undefined): string | null {
   }
 }
 
+/** `WebSite` with the name, on the home page: what Google takes a result's site name from (NOTAS, Pendente 5). */
+export function websiteData(site: string): string {
+  return JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: JSON.parse(structuredData(site)).name, url: site });
+}
+
 /** `WebApplication`, and `disambiguatingDescription` says whose service it is not. */
 export function structuredData(site: string): string {
   return JSON.stringify({

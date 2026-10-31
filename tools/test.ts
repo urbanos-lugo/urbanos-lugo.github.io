@@ -20,7 +20,7 @@ import { apiUrl } from '../src/services/apiUrl';
 import { createHash } from 'node:crypto';
 import { buildSync } from 'esbuild';
 import { REPO_URL } from '../src/project';
-import { ROOT_HEAD, SITE_LANGS, SITE_PATHS, canonicalUrl, pageHead, pageHtml, robotsTxt, siteUrl, sitemapXml, structuredData } from '../src/seo';
+import { ROOT_HEAD, SITE_LANGS, SITE_PATHS, canonicalUrl, pageHead, pageHtml, robotsTxt, siteUrl, sitemapXml, structuredData, websiteData } from '../src/seo';
 import { CACHE_TTL_MS as ALERTS_CACHE_MS, MIN_OUTBOUND_INTERVAL_MS as ALERTS_MIN_OUTBOUND_MS, extractAlertsFromHtml, extractConcelloNotices } from '../src/services/alertSyncService';
 import { clockDriftFromTimetable, lugoOffsetByRule } from '../src/utils/clock';
 import { MAX_QUERY_LENGTH, calculateRelevanceScore, matchesQuery, normalizeText, withinEditDistance } from '../src/utils/searchUtils';
@@ -2395,6 +2395,12 @@ ok('the structured data does not pass this off as the operator', () => {
   assert(data.url === site, 'the url field does not match the site');
   assert(/non oficial/i.test(String(data.disambiguatingDescription)), 'the structured data no longer says the project is unofficial');
   assert(data.isAccessibleForFree === true, 'it is free and should say so');
+
+  // The site name in a search result comes from WebSite data on the home page. The move to
+  // urbanos-lugo.github.io was made for that name (NOTAS, Pendente 5), whose plan listed this
+  // block, and the item was closed on 13 October without it.
+  const website = JSON.parse(websiteData(site));
+  assert(website['@type'] === 'WebSite' && website.url === site && website.name === data.name, `the WebSite data reads ${JSON.stringify(website)}, not the app's name at the site's root`);
 
   // robots.txt has to point at a sitemap that is actually emitted beside it.
   const robots = robotsTxt(site);
