@@ -27,7 +27,7 @@ pasan, en una web ligera que funciona sin cobertura.
   reales por las calles y las 417 paradas.
 - **Te bajas en una parada que no conoces.** Pones una alarma y el móvil te avisa cuando
   estás cerca.
-- **Vas en el bus y no quieres pasarte.** Pulsa **«Vou nesta»** en el trayecto y la
+- **Vas en el bus y no quieres pasarte.** Pulsa **«Voy en esta»** en el trayecto y la
   pantalla cuenta las paradas que faltan contra tu GPS, dice los minutos según el cuadro y
   te avisa antes de bajar — también en el transbordo.
 - **No tienes datos.** Una vez abierta funciona sin conexión. Los horarios van dentro.
