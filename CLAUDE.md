@@ -8,10 +8,10 @@ Tailwind 4 + MapLibre, TypeScript throughout, pnpm, Node >= 22.
 
 | Path | What lives there |
 | :--- | :--- |
-| `src/components/` | Screens and UI. `Map/` holds every MapLibre/Leaflet surface. |
-| `src/utils/` | The engine: `arrivals.ts`, `planner.ts`, `vehicles.ts`, `places.ts` (one subject each; they were one `transitEngine.ts`), `schedule.ts` (runs and service windows), `searchUtils.ts`, `geo.ts`. Pure functions, no React. |
-| `src/services/` | Everything that touches the network. Shared by browser, `server.ts` and `worker/`. |
-| `src/data/` | The shipped dataset. **Generated** — see the pipeline block below. |
+| `src/components/` | Screens and UI. `Map/` holds every MapLibre surface. |
+| `src/utils/` | The engine: `arrivals.ts`, `planner.ts`, `vehicles.ts`, `places.ts` (one subject each; they were one `transitEngine.ts`), `schedule.ts` (runs and service windows), `searchUtils.ts`, `geo.ts`. Pure functions, no React; `storage.ts`, the guarded browser storage, is the one exception. |
+| `src/services/` | The network code shared by browser, `server.ts` and `worker/`. The browser's own two requests, the notices and a pole's minutes, are made in `src/hooks/useServiceAlerts.ts` and `useOperatorTimes.ts`. |
+| `src/data/` | The shipped dataset. **Generated** — see the pipeline block below — but for `festivos.json` and `structuralNotices.ts`, which are kept by hand. |
 | `src/i18n/` | `gl` / `es` / `en` dictionaries. `gl.ts` is the type source. |
 | `src/hooks/`, `src/security/`, `src/seo.ts`, `src/routes.ts` | React hooks, CSP + rate limit, SEO surfaces, path constants. |
 | `tools/` | Everything run from the CLI: the dataset pipeline, the test suite, the stress and reconciliation checks. Never imported by the app. |
