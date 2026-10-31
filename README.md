@@ -275,9 +275,9 @@ o mapa, nomes incluídos, e non colle ningún toque. Ía no mesmo lenzo cás par
 debaixo segundo o que se repintase despois, e tocar a parada onde estabas abría un globo
 coa precisión, que o círculo xa debuxa.
 
-**Un dedo non é un punteiro.** Nun ecrán táctil cada parada e cada liña responden ata
-12 px alén do seu bordo: unha parada a zoom 15, ata 20 px do seu centro, e a escollida ata
-23. Antes un toque que fallaba o punto por uns píxeles caía na liña que pasa por el e abría
+**Un dedo non é un punteiro.** Nun ecrán táctil cada parada responde ata 12 px alén do
+seu bordo: a zoom 15, ata 21 px do seu centro, e a escollida ata 23; unha liña responde a
+20 px da súa raia, co dedo ou co rato. Antes un toque que fallaba o punto por uns píxeles caía na liña que pasa por el e abría
 «Liñas por aquí». Medido tocando arredor da parada escollida: a 12, 14 e 18 px, antes as
 liñas e agora a parada; a 21, a parada; a 25, as liñas. Se o toque cae ao alcance de dúas
 paradas ábrese a máis próxima ao dedo, non a debuxada de última, e o nome que o dedo abre
@@ -290,8 +290,8 @@ ningunha máis.
 
 As paradas son unha capa do estilo, debuxada na GPU, e non todas á vez: afastado gañan o
 sitio as máis servidas, e ningunha se pinta a menos de 24 px doutra que xa está, así que a
-vista de cidade é un reparto uniforme que se enche ao achegarse; desde o zoom 15 —ou cunha
-liña escollida— están as 417, cos nomes pintados nun lenzo propio en lugar de 417 nodos
+vista de cidade é un reparto uniforme que se enche ao achegarse; cunha liña escollida
+están todas as súas, e desde o zoom 15 as 417, cos nomes pintados nun lenzo propio en lugar de 417 nodos
 DOM. As capas fanse unha vez por estilo e despois só cambian os seus datos: refeitas en
 cada cambio, liñas e paradas pestanexaban cada tres segundos co reloxo dos buses.
 
@@ -386,7 +386,8 @@ O signo importa e é honesto dicilo: os nosos camiños son sistematicamente un c
 curtos. O noso perfil admite `track`, que é o que fai falta para chegar ás parroquias —
 Bóveda, Muxa, Nadela — e o de OSRM penalízao. A maior discrepancia, −15,6%, é xustamente
 un traxecto rural (Barbaín → Avda. Madrid). Se algún día hai que apertar iso, o mando
-está en `STEPS_SPEED_FACTOR` e nos tipos de vía de `tools/importWalkNetwork.ts`.
+está en `STEPS_SPEED_FACTOR` (`src/utils/walkRouter.ts`) e nos tipos de vía de
+`tools/importWalkNetwork.ts`.
 
 Non está en CI nin no `pnpm test`: bate contra un servidor alleo, á súa cadencia dunha
 petición por segundo, e cachea para que repetilo non custe nada.
@@ -448,7 +449,7 @@ primeiro bus pasa ao principio da resposta, a tamaño de titular, e pasada a hor
 volve ao seu sitio porque o plan xa é vello. Se déchelle a túa posición ao planificador,
 esa posición só pode baixalo —«non estás no poste»—, nunca subilo: é unha lectura única,
 igual tomada na casa. Se pasan tres minutos da hora de subida sen que o móbil te vise pasar
-ningunha parada, pregunta **«Colliches o bus?»**. «Non» le do cadro a seguinte saída
+ningunha parada, pregunta se o colliches —**«Colliches o 1.1 das 07:15?»**—. «Non» le do cadro a seguinte saída
 desa liña nese poste — non recalcula nada desde unha posición en movemento — e, cando
 non queda ningunha, di que era a última en vez de imprimir a primeira de mañá.
 
@@ -682,6 +683,7 @@ van no repositorio. As fontes só se consultan ao rexenerar os datos.
 Comprobouse, e **non existe un GTFS público da rede urbana de Lugo**:
 
 - O ficheiro do [Punto de Acceso Nacional](https://nap.transportes.gob.es/Files/Detail/1386)
+  (esa páxina dá 404 desde polo menos o 31 de outubro de 2026)
   que se citaba antes neste README **non é o bus urbano**. É o feed *interurbano* da
   Xunta de Galicia: 127.784 viaxes, 6.594 rutas e 22.386 paradas repartidas por Lugo,
   A Coruña, Pontevedra, Ourense, Asturias, León e Zamora. O servizo urbano de Lugo é
@@ -700,7 +702,7 @@ municipal, substituír o scraper por un lector de GTFS afecta só a
 ### Identificadores de parada
 
 O operador numera cada parada **unha vez por liña e sentido**, polo que un mesmo poste
-aparece con moitos identificadores distintos (a parada de Sindicatos ten 20). O
+aparece con moitos identificadores distintos (a parada de Sindicatos ten 21). O
 xerador agrúpaos por poste físico e conserva todos os identificadores en `officialIds`,
 para que calquera enlace QR antigo siga resolvendo.
 
@@ -723,7 +725,8 @@ para que calquera enlace QR antigo siga resolvendo.
 As 24 liñas inclúen a **5DS** e os **catro ramais rurais da liña 11** (Pías, Bóveda,
 Calde e Santa Comba), que se publican por separado porque son servizos distintos.
 
-`pnpm data:audit` imprime estas cifras actualizadas xunto cos tramos sospeitosos.
+`pnpm data:audit` imprime estas cifras actualizadas xunto cos tramos sospeitosos (as
+expedicións, as dos tres tipos de día, corra o día que corra). Medidas o 31 de outubro de 2026.
 
 ---
 
@@ -735,9 +738,11 @@ Calde e Santa Comba), que se publican por separado porque son servizos distintos
 </picture>
 
 O reparto que importa é ese: **todo o cálculo de horas ocorre no navegador**, sobre os
-JSON que viaxan no paquete. O servidor de Node existe só para o que o navegador non pode
-facer por si mesmo —pedirlle avisos e minutos de poste a buslugo.com e ao Concello, que
-non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHub Pages.
+JSON que viaxan no paquete. A app só lle pide ao servidor o que o navegador non pode
+facer por si mesmo —os avisos a buslugo.com e ao Concello, e os minutos dun poste á páxina
+do operador detrás do seu QR, que non serven CORS— e segue funcionando sen el: iso é o
+despregue en GitHub Pages. As outras rutas da [API REST](#api-rest) son para quen as
+queira usar; a app non chama ningunha.
 
 ---
 
@@ -920,7 +925,7 @@ non serven CORS— e a app segue funcionando sen el: iso é o despregue en GitHu
 │   ├── deploy-worker.yml           publica a API en Deno Deploy, se hai token
 │   ├── check-source.yml            luns: reconcile + xeometría + tarifas + analizadores
 │   ├── measure.yml                 luns: measure:browser, audit:browser e stress:network, como artefacto
-│   └── ci.yml                      en cada push: lint, test, check:policy, check:deep, build e audit:browser
+│   └── ci.yml                      en cada push menos a main, e en cada proposta: lint, test, check:policy, check:deep, build e audit:browser
 ├── worker/                         a API que Pages non pode servir (opcional)
 ├── design/                         artboards do redeseño (.dc.html), canvas.json, e as notas: o que se decidiu
 │                                   (DECIDIDO.md), o rexistro de probas, a auditoría SEO e as notas de fontes
@@ -975,9 +980,10 @@ pola que un scrape se garda en lugar de repetirse.
 presenta como medido se non o é**, e cada hora que aparece en pantalla di de onde sae.
 
 O operador si publica os seus propios minutos por parada, na páxina que hai detrás do QR
-dos postes. A ficha de parada amósaos cando hai servidor que os poida pedir, nun bloque
-aparte e atribuídos a eles — «segundo o operador», nunca «en directo», porque o que son
-eses minutos non está confirmado por escrito. As horas propias desta app seguen sendo:
+dos postes. A ficha dunha parada aberta desde ese QR, ou desde unha ligazón compartida a
+ela, amósaos cando hai servidor que os poida pedir, nun bloque aparte e atribuídos a eles
+—«É o dato do operador, non o desta app», nunca «en directo»—, porque o que son eses
+minutos non está confirmado por escrito. As horas propias desta app seguen sendo:
 
 | Etiqueta | Significado |
 | :--- | :--- |
@@ -1150,8 +1156,8 @@ Regras que evitan suxestións absurdas ou perigosas:
   chegada é oficial, porque as dúas puntas veñen do mesmo cadro; catro cando é
   interpolada. Pasarse de largo só empurra a suxestión ao seguinte bus, quedarse curto
   deixa a alguén na beirarrúa.
-- **Cando saír da casa.** Cada opción amosa `sae ás HH:MM`, que é a hora de saír da
-  orixe: a espera antes do primeiro bus pásase na casa, non na parada. Contala como
+- **Cando saír da casa.** Cada opción amosa `HH:MM → ~HH:MM`, e a primeira é a hora de
+  saír da orixe: a espera antes do primeiro bus pásase na casa, non na parada. Contala como
   tempo de viaxe facía parecer peor unha ruta que só saía máis tarde. Preguntando ás
   09:00 por HULA, a resposta era «50 min, sae ás 09:00» con 21 deles de pé no poste;
   agora é «33 min, sae ás 09:17», e chégase á mesma hora. Na parada quedan os mesmos
@@ -1211,6 +1217,7 @@ navegación, e a WCAG (2.4.5) pide máis dun camiño a cada páxina dun conxunto
 | `GET` | `/api/buses/scheduled-positions` | Onde debería ir cada expedición segundo o horario. **Non son vehículos observados** |
 | `GET` | `/api/plan?from=&to=` | Cálculo de traxecto |
 | `GET` | `/api/alerts` | Avisos oficiais (`?refresh=true` forza) |
+| `GET` | `/api/paradas/:code/agora` | Os minutos que dá a páxina do operador detrás do QR dese poste |
 | `GET` | `/api/fares` | Tarifas |
 
 Os alias `/api/stop/:code/arrivals`, `/api/realtime/:stopId` e `/api/buses/live`, e o
@@ -1231,10 +1238,11 @@ O escaneo de QR usa `BarcodeDetector`, nativo do navegador: sen dependencia exte
 A aplicación é unha PWA instalable. Todo o que calcula —horarios, chegadas, rutas—
 execútase en local sobre datos empaquetados, así que unha vez instalada segue a
 funcionar sen cobertura, que é xusto o que pasa nunha marquesiña. As teselas do mapa
-cachéanse segundo se van vendo —as ráster tamén pedidas con CORS, porque unha resposta
-opaca cóntalle ao Chrome megabytes de espazo sexa do tamaño que sexa: seis teselas eran
-38 MB e agora son o que pesan— e os avisos oficiais usan rede-primeiro con recurso á
-última resposta gardada.
+cachéanse segundo se van vendo —só as respostas con CORS, porque unha resposta opaca
+cóntalle ao Chrome megabytes de espazo sexa do tamaño que sexa: seis teselas eran 38 MB e
+agora son o que pesan— e os avisos oficiais pídense á rede e, se non responde, amósase a
+copia que vai coa build, coa hora á que se tomou: unha resposta da API gardada volvía como
+se fose de agora, horas despois.
 
 ### Tamaño de descarga
 
@@ -1250,10 +1258,10 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 
 | | sen comprimir | gzip | brotli |
 | :--- | ---: | ---: | ---: |
-| Anaco de entrada | 629 KB | 175 KB | **146 KB** |
+| Anaco de entrada | 630 KB | 176 KB | **146 KB** |
 | Folla de estilos | 67 KB | 13 KB | **12 KB** |
 | `index.html` | 5 KB | 2 KB | **2 KB** |
-| **Primeira carga** | **701 KB** | ~191 KB | **~159 KB** |
+| **Primeira carga** | **702 KB** | ~192 KB | **~159 KB** |
 | Tipografía | 51 KB | — | 51 KB, en paralelo |
 | Renderizador do mapa, co estilo e a paleta | 1.100 KB | 289 KB | 236 KB, ao abrir un mapa |
 | Estilos do renderizador | 70 KB | 10 KB | 8 KB, ao abrir un mapa |
@@ -1262,7 +1270,9 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 | Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
 | Worker do planificador, coa súa copia de paradas e liñas | 233 KB | 55 KB | 44 KB, ao calcular a primeira ruta |
 
-Medido enteiro o 28 de outubro de 2026, na rolda 44, con Vite 8.3 e MapLibre 6.15. Un KB son
+Medido enteiro o 28 de outubro de 2026, na rolda 44, con Vite 8.3 e MapLibre 6.15, e outra
+vez o 31 de outubro (rolda 52), co mesmo: o anaco de entrada medra 1 KB sen comprimir e en
+gzip, e o resto dá o mesmo. Un KB son
 1.024 bytes, gzip ao nivel 9 e brotli á calidade 11. Sen Leaflet nin a ponte, o anaco do
 renderizador baixa de 1.224 a 1.100 KB (de 266 a 236 KB brotli) e os seus estilos de 84 a
 70 KB. Desde a medida anterior das outras filas, o 20 de outubro, o anaco de entrada pasou
@@ -1283,13 +1293,15 @@ deixa ao lado de cada ficheiro.
 
 **O que si baixa enteiro, en segundo plano.** «Só cando fan falta» describe o que a
 páxina pide para pintarse; o service worker é outra cousa. Para que a app funcione sen
-cobertura, na primeira visita garda **todo** o que a build produce — 28 ficheiros
-distintos (o manifesto lista 32: catro iconas van dúas veces e baixan unha), 4,33 MB sen
-comprimir, 1,28 MB en gzip e 1,06 MB en brotli, medidos sobre `dist/sw.js` — sen esperar a que
+cobertura, na primeira visita garda **todo** o que a app usa —fóra quedan só as copias en
+castelán e inglés de cada páxina, que son para os buscadores, `robots.txt` e
+`sitemap.xml`—: 30 ficheiros distintos (o manifesto lista 34: catro iconas van dúas veces e
+baixan unha), 4,47 MB sen comprimir, 1,30 MB en gzip e 1,07 MB en brotli, medidos sobre
+`dist/sw.js` o 31 de outubro de 2026, sen esperar a que
 se abra un mapa nin se trace un camiño. Non bloquea nada: vai detrás da primeira
 pantalla, e a partir de aí cada anaco sae da caché. É o prezo de que o planificador e o
 mapa vaian dentro do móbil, e está á vista aquí para que ninguén o tome por unha primeira
-carga de ~155 KB.
+carga de ~159 KB.
 
 E cando un despregue cambia os nomes deses ficheiros debaixo dunha páxina aberta, a
 páxina que pide o mapa despois de publicado recarga unha soa vez en lugar de amosar «a
@@ -1298,8 +1310,8 @@ vellos. Pasaba varias veces ao día, pola instantánea de avisos: ía importada 
 entrada coa hora da lectura dentro, e Rollup nomea cada anaco polo seu contido e polo
 dos que importa, así que cada refresco renomeaba seis ficheiros —medio megabyte
 comprimido— sen que cambiase unha liña de código. Dende o 19 de setembro de 2026 a
-instantánea é un ficheiro á parte (`public/alerts.json`, 1,3 KB, na precaché do service
-worker): un refresco de avisos non renomea nada, medido construíndo dúas veces coa hora
+instantánea é un ficheiro á parte (`public/alerts.json`, uns centos de bytes ou poucos KB
+segundo os avisos que leve, na precaché do service worker): un refresco de avisos non renomea nada, medido construíndo dúas veces coa hora
 cambiada. Só un despregue de código cambia nomes agora.
 
 ### Rigor de tipos
@@ -1456,7 +1468,7 @@ tres mapas levan nome e controis no idioma da interface, porque o lenzo do mapa 
 parada de tabulación e os seus botóns —o zoom, o compás, o × dun globo— saen en inglés se
 ninguén llos traduce.
 
-**Contraste.** A insignia dunha liña é texto branco sobre a cor da liña a 10 px, e o número
+**Contraste.** A insignia dunha liña é texto branco sobre a cor da liña a 12 px, e o número
 que leva é o único que hai que ler dun golpe de vista. Cinco das vinte e catro non chegaban
 ao mínimo de WCAG AA para texto pequeno —a liña 2 quedaba en 2,94:1 fronte ao 4,5 esixido—,
 o que nunha marquesiña a pleno sol non se le. Escureceuse cada unha o mínimo que pasa a
@@ -1567,7 +1579,7 @@ de pantalla de verdade, hai un guión para seguir a man:
 | 2.1.4 Atallos de teclado | A | Cumpre | Non hai atallos dunha tecla; as do mapa (frechas, + e −) só van co mapa enfocado. |
 | 2.2.1 Tempo axustable | A | Cumpre | Non hai límites de tempo. |
 | 2.2.2 Pausar, deter, ocultar | A | Arranxado | O latexo da seguinte parada en «Vou nesta» repetíase mentres duraba a viaxe, e a páxina non tiña como paralo (`prefers-reduced-motion` non conta). Agora late dúas veces, uns 4 s, cada vez que cambia a seguinte parada, e queda quieto. Os buses do mapa empezan ocultos e ocúltanse cun botón; os indicadores de espera rematan coa espera. `audit:browser`. |
-| 2.3.1 Tres escintileos | A | Cumpre | Nada escintila: o único bucle é un anel que medra cada 2 s. |
+| 2.3.1 Tres escintileos | A | Cumpre | Nada escintila: os únicos bucles son os tres puntos de «Calculando» e os indicadores de espera, que rematan coa espera, e a marca da seguinte parada en «Vou nesta» late dúas veces e para. |
 | 2.4.1 Saltar bloques | A | Cumpre | Ligazón «Ir ao contido» e rexións. axe. |
 | 2.4.2 Titulado das páxinas | A | Cumpre | Cada pantalla, parada e liña ten o seu título. `audit:browser`. |
 | 2.4.3 Orde do foco | A | Arranxado | Un diálogo aberto devolvía o foco ao seu primeiro control cada vez que a páxina de detrás se repintaba (no mapa, cada 3 s); cada bus que saía reconstruía todas as filas seguintes do taboleiro e o foco ía ao principio da páxina; o globo dun bus reconstruíase baixo o foco; «Borrar» as rutas recentes deixaba o foco na páxina; e o do punto 1.3.2. `audit:browser` e `pnpm test`. |
@@ -1717,7 +1729,8 @@ Para activalo: **Settings → Pages → Source: GitHub Actions**. O workflow def
 `BASE_PATH` co nome do repositorio para que as rutas apunten a
 `https://<usuario>.github.io/<repo>/`. Un repositorio chamado `<propietario>.github.io` é o
 sitio do seu propietario, servido na raíz, e o workflow constrúeo para a raíz el só. Con
-dominio propio, pon `BASE_PATH: /`.
+dominio propio hai que cambiar ese paso para que exporte `BASE_PATH="/"` e o `SITE_URL` do
+dominio: o paso calcula os dous el mesmo, así que poñelos como variables non chega.
 
 Este repositorio é dese segundo caso: desde o 13 de outubro de 2026 chámase
 `urbanos-lugo/urbanos-lugo.github.io` (antes `braisbrg/urbanos-lugo`), así que `BASE_PATH`
@@ -1742,7 +1755,7 @@ as sete levaban as da raíz e un buscador vía unha soa páxina sete veces. Cunh
 desde o 21 de setembro: a raíz *é* a pestana de paradas, e `/paradas/` debuxa a mesma
 pantalla, así que Search Console marcouna como «duplicada, Google elixiu outra canónica»
 —a raíz— e tiña razón. `/paradas/` apunta agora á raíz como canónica e non vai no
-sitemap, que queda en seis entradas. As pestanas son
+sitemap, que queda en seis entradas por idioma, dezaoito en total. As pestanas son
 ligazóns (`<a href>`) que un rastrexador pode seguir, o sitemap e «copiar ligazón» usan a
 barra final para non pasar polo 301 de Pages, e a `og:image` é o icono de 512 px. Os
 slugs saen de `src/routes.ts`, que é a única lista: dela len o enrutador, o sitemap e a
@@ -1914,8 +1927,7 @@ Comprobacións con asercións sobre o que xa estivo mal algunha vez: unicidade d
 códigos, coherencia entre `stop.lines` e os itinerarios, xeometría que segue as rúas,
 tramos non máis curtos ca a liña recta, ventás de servizo nocturnas, monotonía das horas
 de paso, flota baleira fóra de servizo, puntos de interese preto da rede, traxectos
-plausibles, que ningunha hora se amose sen dicir de onde vén, que os filtros contra
-posicións falsas rexeiten o que teñen que rexeitar, e que a pantalla da viaxe conte
+plausibles, que ningunha hora se amose sen dicir de onde vén, e que a pantalla da viaxe conte
 paradas sen andar para atrás, soe unha vez por tramo e pregunte —non adiviñe— se se
 perdeu o bus.
 
@@ -1939,9 +1951,9 @@ pnpm reconcile -- --fresh # volve baixar buslugo.com (~30 s)
 Contrasta parada a parada o que publicamos contra **as mesmas páxinas que usa a xente**.
 Non le `official-raw.json`: volve parsear o HTML do operador, porque comparar a saída dun
 build contra a súa propia entrada intermedia sempre daría ben. Comproba a posición de cada
-poste contra a súa propia páxina de parada (a do QR), a fusión de identificadores, o
+poste contra a súa propia páxina de parada en buslugo.com, a fusión de identificadores, o
 itinerario de cada sentido, o nome, as liñas que anuncia cada parada e o cadro horario.
-Con `--fresh-stops` volve ler tamén as 1186 páxinas de parada (~20 min).
+Con `--fresh-stops` volve ler tamén as 1.187 páxinas de parada (~20 min).
 
 Estado a 20/08/2026, contra buslugo.com no mesmo día:
 
@@ -2030,7 +2042,7 @@ pnpm lint
 ```bash
 pnpm build && PORT=3002 pnpm start   # noutra terminal
 pnpm run measure:browser             # start | board | second | map | typing | planner | session | ride
-pnpm run audit:browser               # light | dark
+pnpm run audit:browser               # AUDIT_STATES / AUDIT_PASSES estreitan a pasada
 pnpm run audit:journeys              # cada tarefa por cada entrada, nun teléfono pequeno e nun grande
 pnpm run stress:network              # a API morta, con erro, lenta; e sen rede
 BASE=http://localhost:3002 pnpm run visual:shoot antes/   # cada estado, fotografado
@@ -2162,10 +2174,11 @@ rede ningunha nunha segunda visita. O listón: o taboleiro nunca espera pola API
 le como «non hai incidencias»— máis dos dous segundos que o *hook* concede antes de amosar
 a copia gardada coa súa data (medido: 2.100 ms coa API colgada, 130 con erro; antes
 agardaba os 30 s do prazo), unha resposta tardía substitúe esa copia (a 4.100 ms), e sen
-rede o *service worker* devolve a última resposta que viu (55 ms) e o taboleiro sae da
-caché (130–145 ms). `measure:browser` e `stress:network` non son portas de CI: os orzamentos
+rede sae a copia que gardou o *service worker* coa build (55 ms) e o taboleiro sae da
+caché (130–145 ms). Medido outra vez o 31 de outubro de 2026: 2.094, 128, 4.013 e 55 ms, e o
+taboleiro en 2–171 ms. `measure:browser` e `stress:network` non son portas de CI: os orzamentos
 son relativos á máquina. `audit:browser` si o é desde a rolda 31: o que mide non depende da
-máquina, e corre en cada push despois da build, sen rede ningunha (as outras orixes
+máquina, e corre sobre a build en cada push menos a `main` e en cada proposta, sen rede ningunha (as outras orixes
 rexeitadas, a API con fixtures, o reloxo fixado). `.github/workflows/measure.yml` execútaos
 os tres os luns e garda a saída como artefacto,
 para que unha regresión coma a do mapa —catro veces o orzamento durante días— non dependa
