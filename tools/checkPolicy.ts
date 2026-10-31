@@ -7,7 +7,7 @@
  * not in tools/test.ts; each still names the slip it was written after.
  */
 import assert from 'assert';
-import { readFileSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, readdirSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -298,6 +298,30 @@ ok('a repository named <owner>.github.io deploys at the root', () => {
     'the deploy builds an <owner>.github.io repository under its own name again',
   );
   assert(/export BASE_PATH="\/\$NAME\/"\s+export SITE_URL="https:\/\/\$OWNER\.github\.io\/\$NAME\/"/.test(deploy), 'a project site is no longer built under its repository name');
+});
+
+ok('no tracked file outside the records names the old address', () => {
+  // The site moved from https://braisbrg.github.io/urbanos-lugo/ to https://urbanos-lugo.github.io/
+  // on 13 October 2026, and the old address gives 404 and redirects nowhere. A link, a
+  // canonical, a sample in a script or a line in the README that still named it would send a
+  // reader to a dead page and nothing would say so. The dated records and the move's own guide
+  // keep it on purpose, as what was true then, and the README to say it is dead; this file
+  // keeps it as the thing to look for. Dropped from the suite on 20 October with the checks that
+  // read files, while DECIDIDO.md went on saying a check held it.
+  const RECORDS = ['README.md', 'design/DECIDIDO.md', 'design/REXISTRO-probas.md', 'design/AUDITORIA-seo.md', 'design/NOTAS-fontes-e-autosuficiencia.md', 'design/MUDANZA-organizacion.md', 'tools/checkPolicy.ts'];
+  const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' }).split('\0').filter(Boolean);
+  assert(tracked.length > 100, `git lists ${tracked.length} files, so this is not reading the repository`);
+  const offenders = tracked.filter((file) => {
+    if (RECORDS.includes(file) || !existsSync(join(root, file))) return false;
+    if (/\.(png|jpe?g|gif|webp|ico|woff2?|ttf|pdf|zip|gz)$/i.test(file)) return false;
+    // The old repository too: GitHub redirects it only until somebody creates one by that name.
+    return /braisbrg\.github\.io|github\.com\/braisbrg\/urbanos-lugo/i.test(readFileSync(join(root, file), 'utf8'));
+  });
+  assert(offenders.length === 0, `still names the old site or repository: ${offenders.join(', ')}`);
+  // The README names it once, to say it is dead and does not redirect. Any other paragraph
+  // naming it would be a link to follow.
+  const mentions = read('README.md').split(/\r?\n\s*\n/).filter((paragraph) => /braisbrg\.github\.io/i.test(paragraph));
+  assert(mentions.every((paragraph) => paragraph.includes('404')), 'README.md names braisbrg.github.io outside the paragraph that says it gives 404');
 });
 
 ok('index.html keeps the Search Console verification tag', () => {
