@@ -57,7 +57,8 @@ jobs:
       # Project sites live at https://<user>.github.io/<repo>/. A repository named
       # <owner>.github.io is its owner's own site, served at the root, and is built for the
       # root: under the project rule every asset would go under /<owner>.github.io/. For a
-      # custom domain, set BASE_PATH to "/" and SITE_URL to that domain.
+      # custom domain, change this step to export BASE_PATH="/" and SITE_URL as that domain:
+      # it sets both itself, so an env value is overwritten.
       #
       # Both are derived in the shell from GITHUB_REPOSITORY ("owner/name"), which every
       # workflow run has whatever triggered it, rather than from the webhook payload,

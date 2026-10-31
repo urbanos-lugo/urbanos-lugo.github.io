@@ -196,7 +196,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // The geometry chunk is ~490 KB; the default 2 MB cap would drop it silently.
+        // The largest file, the walking network, is ~1.3 MB (31 October 2026); the default 2 MB
+        // cap drops a file over it silently, and these chunks only grow.
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         // The typeface is served from this origin, so it is precached with everything else;
         // json is the notices snapshot, public/alerts.json, revisioned so a refresh moves only it.
@@ -209,8 +210,8 @@ export default defineConfig({
         runtimeCaching: [
           {
             // Map data: show what was seen before rather than grey squares offline. The
-            // vector tiles, glyphs and sprites come from the one host; the raster is the
-            // fallback for a device with no WebGL2.
+            // vector tiles, glyphs and sprites come from the one host; a device with no WebGL2
+            // gets no map, so there is no raster to keep.
             // The hosts are the policy's own list, so the worker never caches a host it may not fetch.
             urlPattern: new RegExp(`^(${MAP_ORIGINS.map((origin) => origin.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')).join('|')})/.*`, 'i'),
             handler: 'CacheFirst',
@@ -218,7 +219,7 @@ export default defineConfig({
               cacheName: 'map-tiles',
               expiration: { maxEntries: 600, maxAgeSeconds: 60 * 60 * 24 * 30 },
               // 200 only. An opaque response (status 0) is charged at megabytes of quota
-              // whatever its size, and both hosts answer with CORS, so there is none to keep.
+              // whatever its size, and the host answers with CORS, so there is none to keep.
               cacheableResponse: { statuses: [200] },
             },
           },
