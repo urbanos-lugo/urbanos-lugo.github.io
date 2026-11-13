@@ -233,6 +233,23 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
   «Descuberta pero non rastrexada». Se iso non avanza, o seguinte segue sendo o texto
   estático ou o prerender de [`AUDITORIA-seo.md`](AUDITORIA-seo.md) (puntos 5 e 7): sen
   JavaScript, cada páxina é case só o seu título.
+  O 13 de novembro: as primeiras cifras de Search Console están en
+  [`AUDITORIA-seo.md`](AUDITORIA-seo.md#search-console-do-14-de-outubro-ao-10-de-novembro),
+  e do sitemap que non se le descártase, medido ese día:
+  - **O ficheiro.** `sitemap.xml` e `sitemap.xml?v=1` dan 200 e `application/xml`, sen
+    `X-Robots-Tag`, cos mesmos 1248 bytes e 18 `<loc>`, todas en
+    `https://urbanos-lugo.github.io/`; `robots.txt` dá 200 e nomea o sitemap.
+  - **Un repositorio privado.** `gh repo view`: `PUBLIC`.
+  - **Un límite de GitHub Pages (429).** Estatísticas de rastrexo, «Por resposta»: só 200
+    (97 %) e 404 (3 %), ningún 429. Os 404 son tres peticións a `/favicon.ico`, dúas o 14
+    de outubro e unha o 17, e ningunha despois; as páxinas declaran `favicon.svg` e
+    `icon-192.png`.
+
+  Queda o lado de Google: o único intento de lectura que amosa Search Console é o do 14 de
+  outubro. O dono reenviouno o 13 de novembro como `sitemap.xml?v=1`; se ese pasa a
+  «Correcto», bórrase o envío do 29 de outubro. E a «Detección» é o 2 % do rastrexo, o
+  resto é Google volvendo a páxinas que xa coñece: as páxinas por liña do punto 7
+  precisarán ligazóns de verdade, non só o sitemap.
 - **Ubuntu 26.04 no executor sae da lista** (10 de novembro de 2026) mentres 24.04 se poida
   usar sen data de retirada. A medida que o deixou fóra (rolda 59: os pasos de zoom de
   `measure:browser` en 867 ms dun orzamento de 900) está no rexistro; volver a ela cando
