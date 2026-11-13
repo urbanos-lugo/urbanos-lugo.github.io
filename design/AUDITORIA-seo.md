@@ -5,7 +5,10 @@ Cando se escribiu, case nada estaba feito. **Estado o 31 de outubro de 2026:** d
 semana» están feitos todos os puntos agás o 5, aparcado; o trimestre decidiuse non facelo
 polo momento; e o sitio vive desde o 13 de outubro en <https://urbanos-lugo.github.io/>
 ([`MUDANZA-organizacion.md`](MUDANZA-organizacion.md)). As medidas e os problemas de abaixo
-son os de partida, do 14 de setembro, para que quen a retome saiba de onde se partiu.
+son os de partida, do 14 de setembro, para que quen a retome saiba de onde se partiu. A
+excepción vai ao final,
+[Search Console, do 14 de outubro ao 10 de novembro](#search-console-do-14-de-outubro-ao-10-de-novembro):
+as primeiras cifras medidas do sitio nos resultados de Google.
 
 Método: o HTML tal e como o serve Pages (`curl`), as cabeceiras, `robots.txt` e
 `sitemap.xml`; o DOM renderizado no navegador cun viewport de 375×812; e tres buscadores
@@ -270,6 +273,82 @@ présa por competir con ninguén. O dominio propio queda descartado polo momento
 - **As coordenadas das paradas son as do operador** e non se tocan por facer unha páxina
   bonita. (A única excepción, unha parada tomada de OSM porque o pin do operador
   duplicaba a anterior, está en `DATA.md` e non ten que ver co SEO.)
+
+---
+
+## Search Console, do 14 de outubro ao 10 de novembro
+
+Do export de Rendemento de Search Console descargado o 13 de novembro de 2026 (busca web,
+«últimos 3 meses»). A propiedade de `urbanos-lugo.github.io` ten datos desde o 14 de
+outubro, o día que se verificou, ata o 10 de novembro; a do enderezo antigo non entra.
+
+**O sitio xa sae na primeira páxina de Google, ao pé:** posición media 8,06, onde o 14 de
+setembro non saía en ningún buscador.
+
+| Feito | Valor | De onde |
+| :--- | :--- | :--- |
+| Clics e impresións | 48 e 4284 | gráfico diario, sumado |
+| Posición media | 8,06 | posición de cada día ponderada polas súas impresións |
+| Do 14 de outubro ao 2 de novembro | 57,5 impresións ao día, 11 clics, posición 9,12 | ídem |
+| Do 3 ao 10 de novembro | 391,8 impresións ao día, 37 clics, posición 7,66 | ídem |
+| Móbil | 3946 impresións, 39 clics, CTR 0,99 %, posición 7,71 | dispositivos |
+| Ordenador | 319 impresións, 8 clics, CTR 2,51 %, posición 12,56 | ídem |
+| Páxinas `/es/`, galegas e `/en/` | 4100, 351 e 98 impresións | páxinas; unha busca que amosa dúas conta en ambas, así que non suman o total |
+| `/es/lineas/` | 2230 impresións, 21 clics, posición 7,74 | páxinas: a que máis entra |
+| `/es/` | 1096 impresións, 11 clics, posición 8,94 | ídem |
+| Consulta que máis se ve | «bus urbano lugo»: 459 impresións, 3 clics, posición 9,54 | consultas |
+| Consultas que Google amosa | 129, con 1814 impresións e 9 clics | consultas; o resto anonimízao |
+| Aparición en buscas | ningunha | `WebApplication` sen valoracións non dá resultado enriquecido, e as valoracións non se inventan |
+
+As consultas visibles, contra a táboa de [palabras clave](#palabras-clave):
+
+- **Marca do operador** (`buslugo`, `monbus`…): 4 consultas, 202 impresións, ningún clic.
+  Como debe ser: quen busca iso quere buslugo.com.
+- **Número de liña** («horario bus 1.4 lugo», «1.2», «4.1», «línea 2»…): 15 consultas, 52
+  impresións, posición 8,06, ningún clic. Todas caen en `/es/lineas/`, unha páxina para as
+  24. É a primeira demanda medida para o punto 7, aparcado: pouca, e seguramente máis entre
+  as consultas anonimizadas, que este export non deixa contar.
+- **HULA**: 5 consultas, 48 impresións, 1 clic, posición 8,98.
+- **Tarifas e mapa** saen máis arriba (posición 6,86 e 5,38), pero búscanse pouco: 22 e 29
+  impresións.
+- **Preguntas soltas** sen Lugo nin bus («mañana?», «y el 11», «creo que no es asi», «los
+  universitarios»), en posición 2–4: parecen seguimentos dunha conversa co modo IA de
+  Google, que Search Console conta como busca web. Non se comprobou.
+
+**O salto do 3 de novembro son as pestanas, que empezan a saír.** As páxinas `/es/`
+acabaron de indexarse o 24 de outubro, e a semana seguinte case non aparecían. Search
+Console, Páxinas, comparando o 3–10 de novembro co 27 de outubro – 2 de novembro (lido o
+13 de novembro; as oito primeiras filas, por clics):
+
+| Páxina | Impresións antes → despois | Clics antes → despois |
+| :--- | :--- | :--- |
+| `/es/lineas/` | 9 → 2221 | 0 → 21 |
+| `/es/mapa/` | 12 → 366 | 0 → 4 |
+| `/es/avisos/` | 1 → 82 | 0 → 4 |
+| `/es/ruta/` | 1 → 161 | 0 → 3 |
+| `/avisos/` | 4 → 23 | 0 → 3 |
+| `/es/tarifas/` | 5 → 146 | 0 → 2 |
+| `/es/` | 416 → 97 | 3 → 2 |
+| `/linhas/` | 9 → 220 | 1 → 0 |
+
+Indexar non foi aparecer: Google indexou as pestanas o 24 de outubro e non as amosou ata o
+3 de novembro. Ningún cambio do código o explica: o único nas cabeceiras deses días é o
+`WebSite` do 31 de outubro (`7ec824c`, na 1.7.1, etiquetada o 1 de novembro), que serve
+para o nome do sitio no resultado. A portada `/es/` perde o que gañan as pestanas; que
+sexan as mesmas consultas, pasadas á páxina máis concreta, é unha lectura que o filtro por
+páxina en Consultas confirmaría.
+
+**As respostas de IA de Google empezan a citar o sitio no mesmo salto.** O informe de
+funcións de IA xenerativa de Search Console, cos mesmos dous tramos, trae só impresións
+(nin clics, nin posición, nin consultas): en móbil 207 do 3 ao 10 de novembro fronte a 12
+a semana anterior; en ordenador 31 fronte a 0; en tableta 4 fronte a 0. Por páxina, no
+segundo tramo: `/es/lineas/` 130 (2221 na busca web), `/es/tarifas/` 28 (146), `/es/mapa/`
+24 (366), `/es/ruta/` 22 (161), `/en/lines/` 15, `/es/avisos/` 14 (82); as demais, 5 ou
+menos. Sen consultas, este informe non confirma que as preguntas soltas de arriba veñan do
+modo IA.
+
+Lectura, non medida: un CTR arredor do 1 % na posición 8 é o habitual ao pé da primeira
+páxina, así que o que move os clics é subir de posición, non reescribir títulos.
 
 ---
 
