@@ -62,6 +62,19 @@ export function rowKeys(arrivals: readonly Pick<StopArrival, 'lineId' | 'etaTime
   });
 }
 
+/**
+ * Which way of a line to show for a stop it was opened from: the first that can be boarded
+ * there. Where a run ends is no call anybody boards, as on the board; a stop no way boards at
+ * gets the first, as a line opened from its list does.
+ */
+export function directionBoardingAt(line: BusLine, stopId: string): number {
+  const way = line.directions.findIndex((d) => {
+    const at = d.stops.indexOf(stopId);
+    return at >= 0 && at < d.stops.length - 1;
+  });
+  return Math.max(way, 0);
+}
+
 /** Next arrivals at a stop; an empty board outside the service window rather than invented buses. */
 export function getArrivalsForStop(stopIdOrCode: string, now: Date = new Date()): { stop: BusStop | undefined; arrivals: StopArrival[] } {
   const stop = findStop(stopIdOrCode);

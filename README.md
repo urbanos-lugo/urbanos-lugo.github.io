@@ -516,6 +516,12 @@ pregunta adoita ser o luns. Noutro día, as paradas levan a hora sen «en X
 min» nin o bus que o horario pon agora. O dato «Horario hoxe» é sempre o de **hoxe**, lido
 das expedicións de hoxe.
 
+**Aberta desde unha parada, a ficha marca esa parada.** Desde o taboleiro, a folla do mapa,
+unha liña gardada da portada ou un tramo de Ruta, o percorrido abre no sentido que sube
+nela e a súa fila leva «A túa parada»: cun sentido de 23 paradas na mediana dos 48, e de
+ata 47, a hora da expedición que se amosa nese poste lese sen buscalo. Desde a lista de
+liñas ou o buscador, non hai ningunha marcada.
+
 Baixo o nome, que o operador forma coas dúas cabeceiras, vai **por onde pasa**: as catro
 zonas con máis paradas da liña, na orde do percorrido («Pasa por Campus USC · Sur / Ramón
 Ferreiro · Garabolos · O Ceao» na 1.1, que o Concello chama «Campus – Fingoi – O Ceao»).

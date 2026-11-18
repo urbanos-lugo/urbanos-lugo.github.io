@@ -20,7 +20,8 @@ import { requestHeadingPermission } from '../services/heading';
 interface StopHomeProps {
   favoriteStopIds: string[];
   favoriteLineIds: string[];
-  onSelectLine: (line: BusLine) => void;
+  /** A line's page; from a saved line's row, with the stop the row names marked in its route. */
+  onSelectLine: (line: BusLine, at?: BusStop) => void;
   recentStopIds: string[];
   onClearRecent: () => void;
   /** Puts these stops back among the recent ones, newest first: "Borrar" undone. */
@@ -229,7 +230,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                 {/* The name whole, and the minutes under it when the three do not fit: at 200% text the
                     name was an ellipsis with 26 px of words in front of it, and held to two lines it
                     still lost its end at 320 px, at 200 % and under a reader's text spacing. */}
-                <button onClick={() => onSelectLine(line)} style={lineTint(line.color)} className="line-row tint tint-edge tint-strong w-full cursor-pointer text-left">
+                <button onClick={() => onSelectLine(line, stop ?? undefined)} style={lineTint(line.color)} className="line-row tint tint-edge tint-strong w-full cursor-pointer text-left">
                   <LineBadge number={line.number} color={line.color} />
                   <NameStack name={line.name} hint={stop ? t.stopHome.savedLinesAt(stop.name) : t.stopHome.savedLinesNoStop} floor onTint />
                   {next && (

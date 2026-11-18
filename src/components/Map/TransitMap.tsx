@@ -61,7 +61,7 @@ interface TransitMapProps {
   onSelectStop: (stop: BusStop) => void;
   onSelectLine: (line: BusLine) => void;
   /** Leave the map for a line's own page. Selecting a line only filters the map. */
-  onOpenLine: (line: BusLine) => void;
+  onOpenLine: (line: BusLine, at?: BusStop) => void;
   /** Plan a trip to a stop tapped on the map. */
   onPlanTo: (stop: BusStop) => void;
   /** The operator's notices read out, for the tapped stop's sheet. */
@@ -337,7 +337,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                 onChooseLine={chooseLine}
                 onOpenLine={(line) => {
                   setTappedStop(null);
-                  onOpenLine(line);
+                  onOpenLine(line, tappedStop);
                 }}
                 onShowLinesHere={(stop) => {
                   setTappedStop(null);

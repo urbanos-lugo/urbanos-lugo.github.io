@@ -58,7 +58,7 @@ import { POLE_SEEN_AT_OSM } from './lib';
 import { fareFor, planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
 import { answerJob, rejoin } from '../src/utils/plannerJob';
 import { estimateWalk, getNearbyStops, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
-import { getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
+import { directionBoardingAt, getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
 import { getScheduledBuses } from '../src/utils/vehicles';
 import { getDistanceMeters } from '../src/utils/geo';
 import { hydrateGeometry } from './hydrateGeometry';
@@ -2556,6 +2556,26 @@ ok('a planned trip goes out as a link and comes back as the same question, and n
   for (const search of ['?de=HULA', '?a=HULA', '?de=%20&a=HULA']) assert.strictEqual(screenFromLink(search), null, `"${search}" opens a trip with an end missing`);
   // A line or a stop named beside it is what opens, as before.
   assert.strictEqual(screenFromLink(`?linea=${BUS_LINES[0].number}&de=HULA&a=Catedral`)?.tab, 'lines');
+});
+
+ok('a line opened from a stop opens on a way that boards there, whenever one does', () => {
+  // A line's page always opened on its first way, wherever it was opened from: from a stop the
+  // first way only passes as its last stop, or not at all, the stop was not in the list shown.
+  let secondWay = 0;
+  for (const line of BUS_LINES) {
+    const boards = (way: number, stopId: string) => {
+      const at = line.directions[way].stops.indexOf(stopId);
+      return at >= 0 && at < line.directions[way].stops.length - 1;
+    };
+    for (const stopId of new Set(line.directions.flatMap((d) => d.stops))) {
+      const way = directionBoardingAt(line, stopId);
+      if (line.directions.some((_, d) => boards(d, stopId))) assert(boards(way, stopId), `the ${line.number} opened from ${stopId} on a way that does not board there`);
+      else assert.strictEqual(way, 0, `the ${line.number} opened from ${stopId}, where no way boards, on way ${way}`);
+      if (way > 0) secondWay++;
+    }
+  }
+  assert(secondWay > 0, 'no stop opens a line on its second way, so this checks nothing');
+  assert.strictEqual(directionBoardingAt(BUS_LINES[0], 'no-such-stop'), 0, 'a stop off the line opened it on another way than the first');
 });
 
 ok('a code that names no stop resolves to nothing, not to somebody else', () => {

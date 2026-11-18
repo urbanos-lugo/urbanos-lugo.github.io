@@ -426,6 +426,7 @@ export const en: Dict = {
     lineLabel: (number: string) => `Line ${number}`,
     origin: 'Start',
     destination: 'End',
+    yourStop: 'Your stop',
     noService: 'No service',
     passed: 'gone',
     nowAt: 'Now',

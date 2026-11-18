@@ -7,6 +7,7 @@ import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
 import { changesNow, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
 import { BUS_LINES, BUS_STOPS, poleCode, stopById } from '../data/transitData';
 import { getScheduledBuses } from '../utils/vehicles';
+import { directionBoardingAt } from '../utils/arrivals';
 import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDuration, type ScheduledRun } from '../utils/schedule';
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
@@ -28,6 +29,8 @@ interface LinesViewProps {
   selectedLine: BusLine | null;
   /** A line's page is the screen, rather than the list: below lg the two take turns. */
   lineOpen: boolean;
+  /** The stop the page was opened from (a board, a stop on the map, a saved line, a leg of a trip): marked in the route, on the way that boards there. */
+  fromStopId?: string;
   onOpenLine: (line: BusLine) => void;
   /** Back to the list from a line's page. */
   onBack: () => void;
@@ -81,19 +84,23 @@ function RunningBuses({ count, compact = false }: { count: number; compact?: boo
   );
 }
 
-export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, backTo, onSelectStop, onViewLineOnMap, favoriteLineIds = [], onToggleFavoriteLine, notices = [], changes = null, onOpenAlerts, visible = true }: LinesViewProps) {
+export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBack, backTo, onSelectStop, onViewLineOnMap, favoriteLineIds = [], onToggleFavoriteLine, notices = [], changes = null, onOpenAlerts, visible = true }: LinesViewProps) {
   const t = useT();
   const lang = useLang();
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [directionIndex, setDirectionIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   /** "Which run is on the road now" is a function of the time, so it follows the clock. */
   const now = useClock(visible ? TICK_MS : null);
   const buses = useMemo(() => getScheduledBuses(now), [now]);
 
   const currentLine = selectedLine || BUS_LINES[0];
-  // Each line opens on its first direction, wherever it was opened from.
-  useEffect(() => setDirectionIndex(0), [currentLine.id]);
+  // Each line opens on its first direction, or, opened from a stop, on the first that boards there;
+  // a direction chosen holds while that line is open from that place. Worked out in the render: set
+  // by an effect, the other way's stops would be painted first and swapped a frame later.
+  const opening = `${currentLine.id}|${fromStopId ?? ''}`;
+  const [chosenDirection, setChosenDirection] = useState<{ opening: string; index: number } | null>(null);
+  const directionIndex = chosenDirection?.opening === opening ? chosenDirection.index : fromStopId ? directionBoardingAt(currentLine, fromStopId) : 0;
+  const setDirectionIndex = (index: number) => setChosenDirection({ opening, index });
 
   const query = searchQuery.trim();
   const visibleLines = BUS_LINES.filter(
@@ -484,6 +491,8 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, backTo, 
                 const isLast = idx === direction.stops.length - 1;
                 // Where the timetable puts a bus now, which another day's timetable does not show.
                 const busHere = isToday && busesOnLine.some((b) => b.nextStopId === stop.id);
+                // The stop the page was opened from, so a route of up to 47 stops is read from where the reader is.
+                const isFrom = stop.id === fromStopId;
                 const passingMinutes = shownRun?.minutesByStopIndex[idx];
                 // In minutes from now only on today's timetable: on another day's, the time alone.
                 const relativeMinutes = passingMinutes === undefined || !isToday ? null : Math.round(passingMinutes - minutesNow());
@@ -513,13 +522,16 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, backTo, 
                     />
                     {/* Stacked on a phone: beside the name, the time chip left it about 110 px, and
                         "Fonte dos Ranchos 8 (Cafetería Prados)" took four lines. */}
-                    <div className={`px-cap-3 py-2 rounded-control border transition-all flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2.5 ${busHere ? 'bg-surface/lifted border-edge ring-hair ring-official/half shadow-hair' : 'bg-bg border-line hover:border-edge hover:bg-surface/wash shadow-hair'}`}>
+                    <div
+                      className={`px-cap-3 py-2 rounded-control border transition-all flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2.5 ${busHere ? 'bg-surface/lifted ring-hair ring-official/half shadow-hair' : 'bg-bg hover:bg-surface/wash shadow-hair'} ${isFrom ? 'border-accent' : busHere ? 'border-edge' : 'border-line hover:border-edge'}`}
+                    >
                       <div className="min-w-0 flex-1">
                         {/* The stop name is not shortened: it is the only thing on the row a reader has to match against a pole. */}
                         <div className="flex min-w-0 flex-wrap items-center gap-x-2">
                           <span className="min-w-0 break-words font-bold text-body text-ink transition-colors group-hover:text-accent">{stop.name}</span>
                           {isFirst && <span className="tag shrink-0 bg-surface text-accent">{t.lines.origin}</span>}
                           {isLast && <span className="tag shrink-0 bg-ink text-bg">{t.lines.destination}</span>}
+                          {isFrom && <span className="tag shrink-0 bg-accent text-on-accent">{t.lines.yourStop}</span>}
                         </div>
                         <div className="mt-0.5 break-words text-label text-ink-3">
                           {stop.zone}

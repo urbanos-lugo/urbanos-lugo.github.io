@@ -163,9 +163,10 @@ export default function App() {
   };
   /** Back to the list: the history's way if the board or the line was put over it. */
   const backToList = (tab: Tab) => (screen.over || screen.from ? window.history.back() : go({ tab }, true));
-  const openLine = (line: BusLine) => {
+  /** `at`: the stop it was opened from, which the line's route marks. None from the lines' own list or the search. */
+  const openLine = (line: BusLine, at?: BusStop) => {
     setSelectedLine(line);
-    openOnTab({ tab: 'lines', line: line.id });
+    openOnTab({ tab: 'lines', line: line.id, ...(at ? { at: at.id } : {}) });
   };
   /** `viaQr`: the reader got here off the sticker on that pole. Cleared on every other route in. */
   const selectStop = (stop: BusStop, viaQr = false) => {
@@ -311,7 +312,8 @@ export default function App() {
                   visible={activeTab === 'lines'}
                   selectedLine={BUS_LINES.find((l) => l.id === screen.line) ?? selectedLine}
                   lineOpen={!!screen.line}
-                  onOpenLine={openLine}
+                  fromStopId={screen.at}
+                  onOpenLine={(line) => openLine(line)}
                   onBack={() => backToList('lines')}
                   backTo={screen.from}
                   onSelectStop={selectStop}

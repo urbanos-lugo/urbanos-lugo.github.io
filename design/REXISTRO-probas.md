@@ -5499,3 +5499,27 @@ partes, e «Obras públicas» fronte a «Rda. Muralla (Obras Públicas)» dá 2 
 - O guión do lector de pantalla (`PROBA-lector-de-pantalla.md`, 5.5) proba só o «Desfacer»
   de Ruta.
 - Nada desta rolda está en `develop` remoto nin en `main`.
+
+### A liña aberta desde unha parada — 18 de novembro
+
+A última idea da revisión de fóra: a ficha dunha liña abría sempre no seu primeiro sentido e
+sen marcar nada, viñese de onde viñese.
+
+- `Screen.at`: a parada desde a que se abriu a ficha, no estado da entrada, así que volver e
+  recargar a conservan. Pásana o taboleiro (a súa parada, ou o poste de «Outras liñas
+  preto»), a folla do mapa, unha liña gardada da portada (a parada que nomea a fila) e un
+  tramo de Ruta (onde sobe). A lista de liñas e o buscador non.
+- `directionBoardingAt` (`arrivals.ts`): o primeiro sentido que sobe nesa parada; onde só
+  remata, ou onde non pasa, o primeiro. A ficha cálcao no render, non nun efecto, para non
+  pintar un sentido e cambialo no seguinte.
+- A fila da parada leva «A túa parada» e o bordo de acento. Os sentidos teñen de 8 a 47
+  paradas, 23 na mediana dos 48 (medido no conxunto de datos).
+- Unha comprobación nova sobre todo o conxunto de datos (174): para cada liña e cada parada
+  súa, o sentido escollido sobe alí sempre que algún o faga.
+
+Comprobado: as cinco portas (lint, 174, 26 políticas, `check:deep`, build). No panel, contra
+a build: a 1.2 desde o taboleiro de HULA (Ent. Principal) abre en «Sentido As Pedreiras», o
+que sae de alí, coa fila «Origen · Tu parada» e a súa hora (20:02); a mesma liña desde a
+lista abre no primeiro sentido sen ningunha marca. Ningún erro na consola. `audit:browser`
+non se pasou despois deste cambio: queda para a rolda das páxinas por liña, que volve tocar
+`LinesView`.

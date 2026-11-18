@@ -29,7 +29,8 @@ import { watchForStop, ringAlarm, notify, requestNotificationPermission, ALARM_R
 
 interface StopArrivalsViewProps {
   selectedStop: BusStop;
-  onSelectLine: (line: BusLine) => void;
+  /** A line's page, with the stop it is opened for marked in its route. */
+  onSelectLine: (line: BusLine, at: BusStop) => void;
   onViewOnMap: (stop: BusStop) => void;
   /** Switch to another pole: on the map below, the one across the road is one tap. */
   onSelectStop: (stop: BusStop) => void;
@@ -317,14 +318,15 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   );
   const provenance = (a: StopArrival) => <Provenance precision={a.precision} extra={a.etaTime} title={a.precision === 'published' ? t.arrivals.publishedHint : t.arrivals.estimatedHint} />;
   // The line is in the name, not only on the badge: fourteen in a row read as "7, button".
-  const lineButton = (id: string, number: string, color: string) => (
+  // `at` is the stop its page marks: this one, or the pole nearby where that line passes.
+  const lineButton = (id: string, number: string, color: string, at: BusStop = selectedStop) => (
     <LineBadge
       number={number}
       color={color}
       aria-label={`${t.arrivals.seeLine} ${number}`}
       onClick={() => {
         const line = lineById(id);
-        if (line) onSelectLine(line);
+        if (line) onSelectLine(line, at);
       }}
     />
   );
@@ -439,7 +441,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
             <ul className="mt-2.5 flex flex-col gap-1.5">
               {nearbyLines.map(({ line, nearestStop, walkMeters }) => (
                 <li key={line.id} style={lineTint(line.color)} className="line-row tint tint-edge">
-                  {lineButton(line.id, line.number, line.color)}
+                  {lineButton(line.id, line.number, line.color, nearestStop)}
                   {/* That pole's board, as in the poles nearby below: what somebody at this one wants of the other line is when it passes there. */}
                   <button onClick={() => onSelectStop(nearestStop)} className="flex min-h-tap min-w-0 flex-1 items-center text-left">
                     <NameStack name={nearestStop.name} hint={t.common.walkDistance(walkMeters)} floor onTint />

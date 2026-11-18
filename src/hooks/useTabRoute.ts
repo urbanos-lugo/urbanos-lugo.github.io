@@ -19,6 +19,8 @@ export interface Screen {
   qr?: boolean;
   /** The line whose page is open on the lines tab. */
   line?: string;
+  /** The stop that line's page was opened from (a board, a stop on the map, a saved line, a leg of a trip): marked in its route. */
+  at?: string;
   /** The planner's answer is up, to this question; below `lg` it is folded over the form. */
   trip?: { from: string; to: string; mode: 'now' | 'depart' | 'arrive'; at: string };
   /** The ride is following this trip: the planner's entries under it are not stops on the way back. */
@@ -72,7 +74,7 @@ export function tabLink(tab: Tab, go: (tab: Tab) => void, lang: PathLang) {
 
 /** The same screen: what is open on the same tab, whatever else the entry holds (its scroll, a layer over it). */
 const sameScreen = (a: Screen, b: Screen): boolean =>
-  a.tab === b.tab && a.stop === b.stop && !!a.qr === !!b.qr && a.line === b.line && !!a.ride === !!b.ride && JSON.stringify(a.trip) === JSON.stringify(b.trip);
+  a.tab === b.tab && a.stop === b.stop && !!a.qr === !!b.qr && a.line === b.line && a.at === b.at && !!a.ride === !!b.ride && JSON.stringify(a.trip) === JSON.stringify(b.trip);
 
 /**
  * The screen, how it was last reached (`popped` when by back or forward), and the way to

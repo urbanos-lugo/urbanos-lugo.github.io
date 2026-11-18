@@ -70,7 +70,7 @@ type Trip = NonNullable<Screen['trip']>;
 
 interface RoutePlannerViewProps {
   onSelectStop: (stop: BusStop) => void;
-  onSelectLine: (line: BusLine) => void;
+  onSelectLine: (line: BusLine, at?: BusStop) => void;
   /** A place picked in the search box. The counter makes asking twice two requests. */
   destinationRequest?: { query: string; nonce: number } | null;
   /** "Vou nesta": hand the plan on screen to the trip companion. */

@@ -415,6 +415,7 @@ export const es: Dict = {
     lineLabel: (number: string) => `Línea ${number}`,
     origin: 'Origen',
     destination: 'Destino',
+    yourStop: 'Tu parada',
     noService: 'Sin servicio',
     passed: 'pasó',
     nowAt: 'Ahora',

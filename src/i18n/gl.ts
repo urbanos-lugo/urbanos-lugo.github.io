@@ -470,6 +470,7 @@ export const gl = {
     lineLabel: (number: string) => `Liña ${number}`,
     origin: 'Orixe',
     destination: 'Destino',
+    yourStop: 'A túa parada',
     noService: 'Sen servizo',
     passed: 'pasou',
     nowAt: 'Agora',

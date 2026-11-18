@@ -9,7 +9,8 @@ import { NameStack } from '../ui/NameStack';
 interface ItineraryProps {
   segments: TripSegment[];
   onSelectStop: (stop: BusStop) => void;
-  onSelectLine: (line: BusLine) => void;
+  /** A line's page, with the stop the leg boards it at marked in its route. */
+  onSelectLine: (line: BusLine, at?: BusStop) => void;
 }
 
 const NODE = { bus: 'bg-accent text-on-accent', wait: 'bg-warn text-warn-ink', walk: 'bg-ink text-bg' };
@@ -46,7 +47,7 @@ function BusStep({ seg, onSelectStop, onSelectLine }: { seg: TripSegment & { lin
     <div>
       {/* The duration goes under the destination when both do not fit: at 200% text it was 39 px off the screen. */}
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <LineBadge number={seg.line.number} color={seg.line.color} title={seg.line.name} onClick={() => onSelectLine(seg.line)} />
+        <LineBadge number={seg.line.number} color={seg.line.color} title={seg.line.name} onClick={() => onSelectLine(seg.line, seg.fromStop)} />
         {/* Where this bus is going, not what the line is called: the name is its two termini and did not fit. */}
         <NameStack
           floor
