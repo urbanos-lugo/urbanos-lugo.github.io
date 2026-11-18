@@ -259,7 +259,15 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
   parámetro non o move. Ese día, ás 19:37, a proba en tempo real da Inspección de URL sobre
   `sitemap.xml` di «La URL está disponible para Google»: Googlebot descárgao. Queda só que
   Search Console non o volveu procesar. As páxinas en inglés que faltan por indexar son as
-  que non se pediron aínda, pola cota diaria de solicitudes.
+  que non se pediron aínda, pola cota diaria de solicitudes; pedidas todas o 18 de
+  novembro.
+- **PageSpeed de novo** (18 de novembro de 2026), o que deixara pendente a rolda 48: a
+  portada dá 99 no teléfono e 100 no escritorio, e 100 en accesibilidade, prácticas e SEO
+  nos dous. No escritorio, FCP e LCP 0,2 s, bloqueo 40 ms e CLS 0,014, que é a franxa dos
+  avisos que a rolda 48 decidiu deixar; no teléfono, FCP e LCP 1,7 s, bloqueo 10 ms e CLS
+  0. Aínda sen datos de usuarios reais. O que suxire non se toca: a caché de 10 minutos é a
+  de Pages, e 150 ms de bloqueo do render, 60 KiB de JavaScript sen usar e unha tarefa
+  longa non moven un 99.
 - **Ubuntu 26.04 no executor sae da lista** (10 de novembro de 2026) mentres 24.04 se poida
   usar sen data de retirada. A medida que o deixou fóra (rolda 59: os pasos de zoom de
   `measure:browser` en 867 ms dun orzamento de 900) está no rexistro; volver a ela cando
