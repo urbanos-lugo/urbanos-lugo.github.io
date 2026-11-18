@@ -255,6 +255,11 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
   «Correcto», bórrase o envío do 29 de outubro. E a «Detección» é o 2 % do rastrexo, o
   resto é Google volvendo a páxinas que xa coñece: as páxinas por liña do punto 7
   precisarán ligazóns de verdade, non só o sitemap.
+  O 18 de novembro, `sitemap.xml?v=1` segue «Non se puido ler», coma o envío do 29: o
+  parámetro non o move. Ese día, ás 19:37, a proba en tempo real da Inspección de URL sobre
+  `sitemap.xml` di «La URL está disponible para Google»: Googlebot descárgao. Queda só que
+  Search Console non o volveu procesar. As páxinas en inglés que faltan por indexar son as
+  que non se pediron aínda, pola cota diaria de solicitudes.
 - **Ubuntu 26.04 no executor sae da lista** (10 de novembro de 2026) mentres 24.04 se poida
   usar sen data de retirada. A medida que o deixou fóra (rolda 59: os pasos de zoom de
   `measure:browser` en 867 ms dun orzamento de 900) está no rexistro; volver a ela cando

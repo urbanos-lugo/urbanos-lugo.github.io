@@ -247,6 +247,8 @@ présa por competir con ninguén. O dominio propio queda descartado polo momento
    `src/data/*.json`, enrutador lendo `/linhas/<nº>/`, sitemap a 31 URL. Só horas do
    cadro publicado; nada de «próximo bus» no HTML estático. Ataca a metade da táboa de
    palabras clave.
+   *O 18 de novembro sae do aparcado, co que mediu Search Console (abaixo): vai nunha rolda
+   propia.*
 8. **Páxinas por parada.** Un día máis sobre a 7. O «copiar ligazón» pasa a dar unha URL
    con título e previsualización; o sitemap sobe a 448.
 9. **Ligazóns.** Custa tempo, non código: nota de prensa a El Progreso e La Voz de Lugo,
@@ -335,8 +337,11 @@ Indexar non foi aparecer: Google indexou as pestanas o 24 de outubro e non as am
 3 de novembro. Ningún cambio do código o explica: o único nas cabeceiras deses días é o
 `WebSite` do 31 de outubro (`7ec824c`, na 1.7.1, etiquetada o 1 de novembro), que serve
 para o nome do sitio no resultado. A portada `/es/` perde o que gañan as pestanas; que
-sexan as mesmas consultas, pasadas á páxina máis concreta, é unha lectura que o filtro por
-páxina en Consultas confirmaría.
+sexan as mesmas consultas, pasadas á páxina máis concreta, segue sendo lectura. O filtro
+por páxina (as que levan `/es`, do 27 de outubro ao 2 de novembro fronte ao 3–17 de
+novembro, tramos de 7 e 15 días) amosa as mesmas consultas de cabeza antes e despois
+(«bus urbano lugo» 22 → 738 impresións, «buslugo» 41 → 208, «autobuses urbanos lugo»
+9 → 313), pero non cruza consulta e páxina.
 
 **As respostas de IA de Google empezan a citar o sitio no mesmo salto.** O informe de
 funcións de IA xenerativa de Search Console, cos mesmos dous tramos, trae só impresións
@@ -346,6 +351,14 @@ segundo tramo: `/es/lineas/` 130 (2221 na busca web), `/es/tarifas/` 28 (146), `
 24 (366), `/es/ruta/` 22 (161), `/en/lines/` 15, `/es/avisos/` 14 (82); as demais, 5 ou
 menos. Sen consultas, este informe non confirma que as preguntas soltas de arriba veñan do
 modo IA.
+
+**A semana do 10 ao 17 de novembro, fronte á do 3 ao 10** (export do 18 de novembro; os
+dous tramos, tal como os rotula Search Console, levan o 10): clics 37 → 61, impresións
+3134 → 3797, posición 7,68 → 7,63; en móbil o CTR pasa do 1,07 % ao 1,6 %. `/es/lineas/`
+vai de 21 a 37 clics (2221 → 2756 impresións) e `/es/mapa/` de 4 a 12 (366 → 610). As
+consultas por número de liña, 18 contadas co mesmo criterio nas dúas semanas: 38 → 61
+impresións, ningún clic, posición 7,63 → 7,38. Seguen aparecendo preguntas soltas de
+conversa («lo digo por la huelga», «estan trabajando los buses hoy», «hoy es sabado»).
 
 Lectura, non medida: un CTR arredor do 1 % na posición 8 é o habitual ao pé da primeira
 páxina, así que o que move os clics é subir de posición, non reescribir títulos.
