@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useRef, type CSSProperties, type TouchEvent } from 'react';
-import { Bell, Check, Clock, Map as MapIcon, Share2 } from 'lucide-react';
+import { Bell, Check, Clock, Map as MapIcon, Navigation, Share2 } from 'lucide-react';
 import { BusStop, BusLine, DayKind, ServiceAlert, StopArrival } from '../types';
 import { dayKind, daysUntilKind, formatMinutes, minutesNow } from '../utils/schedule';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
-import { changesNow, closedAt, pastTimetable, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
+import { atStop, type NoticeChanges } from '../utils/noticeChanges';
+import { NoticeHere, NotHere } from './ui/NoticeHere';
 import { LazyNearbyMiniMap } from './Map/LazyNearbyMiniMap';
 import { lineById, poleCode } from '../data/transitData';
 import { getArrivalsForStop, nextServiceAtStop, rowKeys, timingPointStopCount } from '../utils/arrivals';
@@ -44,6 +45,8 @@ interface StopArrivalsViewProps {
   /** What those notices change, read out of their words; which of it holds depends on the board's moment. */
   changes?: NoticeChanges | null;
   onOpenAlerts?: () => void;
+  /** Ruta, with this stop as the destination. */
+  onPlanTo: (stop: BusStop) => void;
 }
 
 /** The operator's label for a service, not shouted: they call one AVENIDA where we say 5.1, and the mapping is not published. */
@@ -79,7 +82,7 @@ interface LineGroup {
 }
 
 
-export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSelectStop, onBack, backTo, isFavorite, onToggleFavorite, viaQr, notices = [], changes = null, onOpenAlerts }: StopArrivalsViewProps) {
+export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSelectStop, onBack, backTo, isFavorite, onToggleFavorite, viaQr, notices = [], changes = null, onOpenAlerts, onPlanTo }: StopArrivalsViewProps) {
   const t = useT();
   const lang = useLang();
   // The lines here that a notice names; with a notice and none of them named, the strip still shows, since its
@@ -187,19 +190,11 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
   // What the operator's notice changes here at that moment: lines that skip this stop, a stop
   // moved, lines running past their timetable. Its words, with no departure made up for them.
-  const moment = boardMoment();
-  const noticeNow = changesNow(changes, moment);
-  const closedHere = closedAt(noticeNow, selectedStop.id);
-  const movedHere = (noticeNow?.lines ?? []).flatMap((c) => c.moved.filter((m) => m.stopId === selectedStop.id).map((m) => ({ line: c.line, to: m.to })));
-  const numbersHere = new Set(selectedStop.lines.map((id) => lineById(id)?.number));
-  const lateHere = (noticeNow?.lines ?? []).flatMap((c) => {
-    const end = numbersHere.has(c.line) && !closedHere.lines.includes(c.line) ? runsUntil(c, moment) : undefined;
-    return end ? [{ line: c.line, ...end, now: pastTimetable(c, selectedStop.id, moment) }] : [];
-  });
+  const here = atStop(changes, selectedStop, boardMoment());
+  const { holding: noticeNow, skips: skipsHere } = here;
   // Past its last printed call here, the notice is all there is: said folded or not, with whose word it is.
-  const lateNow = lateHere.filter((l) => l.now);
-  const lateLater = lateHere.filter((l) => !l.now);
-  const skipsHere = (lineNumber: string) => closedHere.lines.includes(lineNumber);
+  const lateLater = here.late.filter((l) => !l.now);
+  const lateNow = here.late.filter((l) => l.now);
 
   /** When a finger came down on the board (performance.now, which no clock change moves), or 0. */
   const fingerSince = useRef(0);
@@ -321,8 +316,6 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
     </span>
   );
   const provenance = (a: StopArrival) => <Provenance precision={a.precision} extra={a.etaTime} title={a.precision === 'published' ? t.arrivals.publishedHint : t.arrivals.estimatedHint} />;
-  // The timetable still has these buses here; the operator's notice says they will not stop. Both are said, the time struck through.
-  const notHereChip = <span className="tag bg-warn text-warn-ink">{t.arrivals.noticeNotHere}</span>;
   // The line is in the name, not only on the badge: fourteen in a row read as "7, button".
   const lineButton = (id: string, number: string, color: string) => (
     <LineBadge
@@ -374,6 +367,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
         <div className="flex shrink-0 flex-wrap gap-1.5">
           <SaveStar key={selectedStop.id} on={isFavorite} label={isFavorite ? t.arrivals.unfav : t.arrivals.fav} onToggle={() => onToggleFavorite(selectedStop.id)} />
           <IconButton icon={MapIcon} label={t.arrivals.map} onClick={() => onViewOnMap(selectedStop)} />
+          <IconButton icon={Navigation} label={t.arrivals.planTo} onClick={() => onPlanTo(selectedStop)} />
           <IconButton
             icon={Bell}
             label={alarmOn ? t.arrivals.alarmOn : t.arrivals.alarmCta}
@@ -410,21 +404,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           summary={
             <>
               <span className="block font-semibold">{t.arrivals.operatorNoticeFor(noticeLines)}</span>
-              {closedHere.lines.length > 0 && <span className="mt-1 block font-semibold">{t.arrivals.noticeClosedHere(closedHere.lines, closedHere.instead)}</span>}
-              {movedHere.length > 0 && (
-                <span className="mt-1 block font-semibold">
-                  {t.arrivals.noticeMovedHere(
-                    movedHere.map((m) => m.line),
-                    movedHere[0].to,
-                  )}
-                </span>
-              )}
-              {lateNow.map((l) => (
-                <span key={l.line} className="mt-1 block font-semibold">
-                  {t.arrivals.noticeRunsUntil(l.line, l.time, l.to)}
-                </span>
-              ))}
-              {lateNow.length > 0 && <span className="block">{t.arrivals.noticeNoDepartures}</span>}
+              <NoticeHere here={here} />
             </>
           }
         >
@@ -460,7 +440,10 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               {nearbyLines.map(({ line, nearestStop, walkMeters }) => (
                 <li key={line.id} style={lineTint(line.color)} className="line-row tint tint-edge">
                   {lineButton(line.id, line.number, line.color)}
-                  <NameStack name={nearestStop.name} hint={t.common.walkDistance(walkMeters)} floor onTint />
+                  {/* That pole's board, as in the poles nearby below: what somebody at this one wants of the other line is when it passes there. */}
+                  <button onClick={() => onSelectStop(nearestStop)} className="flex min-h-tap min-w-0 flex-1 items-center text-left">
+                    <NameStack name={nearestStop.name} hint={t.common.walkDistance(walkMeters)} floor onTint />
+                  </button>
                 </li>
               ))}
             </ul>
@@ -553,7 +536,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               </div>
               <div className="mt-2.5 flex flex-wrap items-center gap-2">
                 {provenance(a)}
-                {skipsHere(a.lineNumber) && notHereChip}
+                {skipsHere(a.lineNumber) && <NotHere />}
                 <span className="flex-1" />
                 {watchButton(a)}
               </div>
@@ -575,7 +558,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
               {/* The rest of this line's departures, so "I'll catch the one after" needs no second tap. */}
               <div className="flex flex-wrap items-center gap-2.5 border-t border-line-soft px-3 py-2.5">
                 {provenance(g.departures[0])}
-                {skipsHere(g.lineNumber) && notHereChip}
+                {skipsHere(g.lineNumber) && <NotHere />}
                 {g.departures.slice(1).map((d) => (
                   <span key={d.etaTime} className="tnum text-body text-ink-2">
                     <Approx on={d.precision === 'estimated'} />

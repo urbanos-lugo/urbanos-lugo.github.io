@@ -35,9 +35,9 @@ import { RECENT_ROUTES, remembered, toggled } from '../src/hooks/useStoredList';
 import { SNAPSHOT_AFTER_MS, readSnapshot } from '../src/hooks/useServiceAlerts';
 import { readOperatorTimes } from '../src/hooks/useOperatorTimes';
 import { noticeLink } from '../src/utils/operatorNotices';
-import { changesNow, matchStop, noticeOver, pastTimetable, readNoticeChanges, runsAt, runsUntil, serviceDay, setsOff, stopSkipper, underNotice } from '../src/utils/noticeChanges';
+import { atStop, changesNow, matchStop, noticeOver, pastTimetable, readNoticeChanges, runsAt, runsUntil, serviceDay, setsOff, stopSkipper, underNotice } from '../src/utils/noticeChanges';
 import { escapeHtml, plainText } from '../src/utils/html';
-import { screenFromLink } from '../src/utils/links';
+import { screenFromLink, tripSearch } from '../src/utils/links';
 import { badgeHtml } from '../src/components/Map/popupHtml';
 import { STORAGE_KEYS, readJson, readString, writeJson, writeString } from '../src/utils/storage';
 import { LANG_PREFIX, PATHS, SLUGS, isCrawler, parsePath, pathFor, pickLang } from '../src/routes';
@@ -1673,6 +1673,75 @@ ok('an operator notice becomes changes the app uses: stops closed and moved, lin
   assert(matchStop('Rúa que non existe', ofLine('10')) === undefined, 'a stop nobody serves was matched to one');
 });
 
+ok('what the notice does at one stop is read one way for the board, the map and the saved stops', () => {
+  // The board struck through the 1.2 at Praza Bretaña on San Froilán; the map's stop sheet and
+  // the saved stops on the home screen did not read the notice, and gave the 1.2 in minutes there
+  // as if it would stop.
+  const changes = readNoticeChanges([SAN_FROILAN], 2026);
+  const stop = (id: string) => BUS_STOPS.find((s) => s.id === id)!;
+  const day = new Date(2026, 9, 9, 10, 0);
+  const bretana = atStop(changes, stop('s15'), day);
+  assert(bretana.skips('1.2') && !bretana.skips('1.1') && bretana.speaks, 'Praza Bretaña lost the 1.2, or closed it for the 1.1 too');
+  assert(bretana.closed.instead === 'Celso Emilio Ferreiro esquina Avda. Ramón Ferreiro', `where to go instead came out as ${bretana.closed.instead}`);
+  const moved = atStop(changes, stop('s71'), day);
+  assert(moved.moved.some((m) => m.line === '10' && m.to === 'Avda. Ramón Ferreiro, 14') && moved.speaks && !moved.skips('10'), 'the 10 moved off Ramón Ferreiro read as closed there, or not at all');
+  const offDay = atStop(changes, stop('s15'), new Date(2026, 9, 8, 10, 0));
+  assert(offDay.holding === null && !offDay.skips('1.2') && !offDay.speaks, 'on a day the notice does not name, it still kept the 1.2 off Praza Bretaña');
+  // A line running late says nothing while the timetable still answers for it, and is said once it is past its last call.
+  const head13 = stop(BUS_LINES.find((l) => l.number === '13')!.directions[0].stops[0]);
+  const late13 = (at: Date) => atStop(changes, head13, at).late.find((l) => l.line === '13');
+  assert(late13(new Date(2026, 9, 10, 20, 0))?.now === false && late13(new Date(2026, 9, 10, 23, 30))?.now === true, 'the 13 was handed to the notice at the wrong moment');
+  assert(atStop(changes, head13, new Date(2026, 9, 10, 23, 30)).speaks, 'the 13 past its timetable said nothing');
+});
+
+/** The works notice of November 2026 as /api/alerts served it on the 13th: the 12's closed stops come as a list, by short names. */
+const OBRAS_NOV_2026: ServiceAlert = {
+  id: 'nav-notice-1',
+  title: 'Cambios líneas 7, 8, 9 y 12 por obras',
+  description: 'Cambios líneas 7, 8, 9 y 12 por obras',
+  severity: 'warning',
+  linesAffected: ['Todas'],
+  date: '2026-11-13',
+  active: true,
+  source: 'operator',
+  sections: [
+    {
+      heading: 'Línea 7: Bolaño Rivadeneira – A Ponte',
+      lines: ['7'],
+      paragraphs: ['(queda suprimido el tramo Bolaño Rivadeneira – Ronda Muralla)', 'Desde R/Anduriñas (en la cual se creará una parada esquina con Rda. Muralla) seguirá por R/Dourtor Xermán Alonso y su recorrido habitual.'],
+    },
+    {
+      heading: 'Línea 12: Bolaño Rivadeneira – Pol. Gándaras',
+      lines: ['12'],
+      paragraphs: [
+        '(quedan suprimidas las paradas de Rda. Muralla, Obras públicas y R/Montevideo)',
+        'Desde Rda. Muralla irá por R/Ourense, R/Betanzos, R/Castro Gil, R/García Abad (en la cual se creará una parada esquina Avda. Coruña) y seguirá su recorrido habitual',
+      ],
+    },
+  ],
+};
+
+ok('a notice that closes stops in a list closes each one it names clearly, and no other', () => {
+  // The works of November 2026 closed three stops for the 12 in one bracket; the notice was read
+  // as nothing at all, and every screen and the planner went on boarding the 12 at Obras Públicas
+  // and Montevideo. Only «Se suprime la parada de …» was read, and its short names matched no stop.
+  const changes = readNoticeChanges([OBRAS_NOV_2026], 2026);
+  const twelve = changes?.lines.find((c) => c.line === '12');
+  const named = (id: string) => BUS_STOPS.find((s) => s.id === id)!.name;
+  assert.deepStrictEqual(twelve?.closed.map((s) => named(s.stopId)), ['Rda. Muralla (Obras Públicas)', 'Rúa Montevideo 7 (Sanatorio NSOG)'], `the 12's closed stops came out as ${JSON.stringify(twelve?.closed)}`);
+  // «Rda. Muralla» is three of the 12's stops: it stays in the notice's words, and nothing is closed for it.
+  const ofLine = (n: string) => BUS_STOPS.filter((s) => s.lines.some((id) => BUS_LINES.find((l) => l.id === id)?.number === n));
+  assert(ofLine('12').filter((s) => /muralla/i.test(s.name)).length > 1 && matchStop('Rda. Muralla', ofLine('12')) === undefined, '«Rda. Muralla» was matched to one stop of several');
+  // A stretch is not a stop: the 7 changes nothing it can be held to, and no line is closed but the 12.
+  assert(!changes?.lines.some((c) => c.line !== '12'), `lines other than the 12 changed: ${changes?.lines.map((c) => c.line).join(' ')}`);
+  // It names no day, so it holds while it is up; and only the 12 is kept off the stop the other ten lines still call at.
+  const montevideo = BUS_STOPS.find((s) => s.name === 'Rúa Montevideo 7 (Sanatorio NSOG)')!;
+  const here = atStop(changes, montevideo, new Date(2026, 10, 18, 10, 0));
+  assert(here.skips('12') && !here.skips('7') && here.speaks, 'Montevideo did not keep the 12 away, or kept the 7 away too');
+  const skips = stopSkipper(changes, new Date(2026, 10, 18, 10, 0));
+  assert(skips && BUS_LINES.filter((l) => l.number === '12').every((l) => skips(l.id, montevideo.id)) && !skips('7', montevideo.id), 'the planner was not kept off the 12 at Montevideo');
+});
+
 ok('the planner never boards or leaves a line at a stop the notice closes', () => {
   // The 1.2 and the 1.4 did not call at Praza Bretaña on San Froilán; the planner proposed
   // boarding the 1.4 there all the same.
@@ -2461,6 +2530,32 @@ ok('a link opens the screen it names, as the entry it arrived on, and nothing fo
   assert.deepStrictEqual(screenFromLink(`?line=${line.id.toUpperCase()}`), { tab: 'lines', line: line.id });
   assert.deepStrictEqual(screenFromLink(`?parada=${pole.id}&linea=${line.number}`), { tab: 'lines', line: line.id });
   for (const search of ['', '?parada=ZZZZ', '?linea=99.9', '?q=catedral']) assert.strictEqual(screenFromLink(search), null, `"${search}" opens something`);
+});
+
+ok('a planned trip goes out as a link and comes back as the same question, and never as a position', () => {
+  // A stop and a line could be sent; Ruta's answer could not. The link carries the question as
+  // typed and the planner on the other phone asks it again on arrival (its first effect).
+  const trips = [
+    { from: 'Praza Maior', to: 'HULA', mode: 'now', at: '' },
+    { from: 'Estación de autobuses', to: 'Campus & Fingoi?', mode: 'depart', at: '08:30' },
+    { from: 'Avda. Ramón Ferreiro, 14', to: 'Catedral', mode: 'arrive', at: '23:59' },
+  ] as const;
+  for (const trip of trips) {
+    const search = tripSearch(trip);
+    assert(search, `${trip.from} → ${trip.to} gave no link`);
+    assert.deepStrictEqual(screenFromLink(search), { tab: 'plan', trip }, `${search} came back as another question`);
+  }
+  // "Now" is the opener's now: the clock the field held when it was shared stays behind.
+  assert.strictEqual(tripSearch({ from: 'HULA', to: 'Catedral', mode: 'now', at: '14:05' }), '?de=HULA&a=Catedral');
+  // "My location" is a position on this phone: no link is made from it, either end.
+  assert.strictEqual(tripSearch({ from: 'my_location', to: 'HULA', mode: 'now', at: '' }), null, 'a link was made from the reader\'s position');
+  assert.strictEqual(tripSearch({ from: 'HULA', to: 'my_location', mode: 'depart', at: '08:00' }), null, 'a link was made to the reader\'s position');
+  // A clock that is no clock is a trip for now; a field longer than a field takes is cut there; an end missing is no trip.
+  assert.deepStrictEqual(screenFromLink('?de=HULA&a=Catedral&saida=25:00'), { tab: 'plan', trip: { from: 'HULA', to: 'Catedral', mode: 'now', at: '' } });
+  assert.strictEqual(screenFromLink(`?de=${'x'.repeat(5000)}&a=HULA`)?.trip?.from.length, MAX_QUERY_LENGTH);
+  for (const search of ['?de=HULA', '?a=HULA', '?de=%20&a=HULA']) assert.strictEqual(screenFromLink(search), null, `"${search}" opens a trip with an end missing`);
+  // A line or a stop named beside it is what opens, as before.
+  assert.strictEqual(screenFromLink(`?linea=${BUS_LINES[0].number}&de=HULA&a=Catedral`)?.tab, 'lines');
 });
 
 ok('a code that names no stop resolves to nothing, not to somebody else', () => {

@@ -1,17 +1,22 @@
 import { useMemo } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Navigation } from 'lucide-react';
 import { BusStop, BusLine, StopArrival } from '../../types';
 import { lineById, poleCode } from '../../data/transitData';
-import { getArrivalsForStop, rowKeys } from '../../utils/arrivals';
-import { useT } from '../../i18n';
+import { getArrivalsForStop, nextServiceAtStop, rowKeys } from '../../utils/arrivals';
+import { atStop, type NoticeChanges } from '../../utils/noticeChanges';
+import { dayWord } from '../../utils/serviceLabels';
+import { useLang, useT } from '../../i18n';
 import { useClock } from '../../hooks/useClock';
 import { MapSheet } from './MapSheet';
 import { LineBadge } from '../ui/LineBadge';
 import { Approx, Provenance } from '../ui/Provenance';
-import { IconButton } from '../ui/controls';
+import { NoticeHere, NotHere } from '../ui/NoticeHere';
+import { IconButton, Notice } from '../ui/controls';
 
 interface StopSheetProps {
   stop: BusStop;
+  /** The operator's notices read out, as the board gets them: a line they keep away from this stop is struck through here too. */
+  changes?: NoticeChanges | null;
   onClose: () => void;
   /** Pick the line out on the map, as a row of the lines under a tap does. */
   onChooseLine: (line: BusLine) => void;
@@ -20,6 +25,8 @@ interface StopSheetProps {
   onShowLinesHere: (stop: BusStop) => void;
   /** The full stop board, with the operator's own minutes and everything else. */
   onOpenFullBoard: (stop: BusStop) => void;
+  /** Ruta, with this stop as the destination. */
+  onPlanTo: (stop: BusStop) => void;
   /** The sheet's height once drawn (MapSheet). */
   onHeight?: (px: number) => void;
 }
@@ -34,12 +41,16 @@ const REFRESH_MS = 30_000;
  * departures and a way through to the full board. A panel inside the map container, so
  * the same markup is a sheet on a phone and a panel over the map card on a desktop.
  */
-export function StopSheet({ stop, onClose, onChooseLine, onOpenLine, onShowLinesHere, onOpenFullBoard, onHeight }: StopSheetProps) {
+export function StopSheet({ stop, changes = null, onClose, onChooseLine, onOpenLine, onShowLinesHere, onOpenFullBoard, onPlanTo, onHeight }: StopSheetProps) {
   const t = useT();
+  const lang = useLang();
 
   const now = useClock(REFRESH_MS);
   const arrivals = useMemo(() => getArrivalsForStop(stop.id, now).arrivals.slice(0, SHOWN), [stop.id, now]);
   const keys = rowKeys(arrivals);
+  const here = atStop(changes, stop, now);
+  // Nothing in the next hours: when the first one is, as the board and the saved stops say.
+  const next = arrivals.length ? null : nextServiceAtStop(stop.id, now);
 
   const code = poleCode(stop);
   const when = (a: StopArrival) => {
@@ -72,8 +83,16 @@ export function StopSheet({ stop, onClose, onChooseLine, onOpenLine, onShowLines
       onHeight={onHeight}
     >
       <div className="mt-2 border-t border-line">
+        {here.speaks && (
+          <Notice warn className="mx-3.5 mt-3">
+            <NoticeHere here={here} />
+          </Notice>
+        )}
         {arrivals.length === 0 ? (
-          <p className="px-3.5 py-4 text-note text-ink-2">{t.arrivals.noArrivals}</p>
+          <p className="px-3.5 py-4 text-note text-ink-2">
+            {t.arrivals.noArrivals}
+            {next && <span className="mt-1 block font-semibold text-ink">{t.arrivals.nextServiceAt(next.lineNumber, `${next.precision === 'estimated' ? '~' : ''}${next.time}`, next.destination, dayWord(lang, next.daysAhead))}</span>}
+          </p>
         ) : (
           <ul className="divide-y divide-line">
             {arrivals.map((a, i) => (
@@ -96,7 +115,8 @@ export function StopSheet({ stop, onClose, onChooseLine, onOpenLine, onShowLines
                       <Provenance precision={a.precision} extra={a.etaTime} title={a.precision === 'published' ? t.arrivals.publishedHint : t.arrivals.estimatedHint} />
                     </span>
                   </span>
-                  <span className="ml-auto shrink-0 text-emph">{when(a)}</span>
+                  <span className={`ml-auto shrink-0 text-emph ${here.skips(a.lineNumber) ? 'line-through opacity-struck' : ''}`}>{when(a)}</span>
+                  {here.skips(a.lineNumber) && <NotHere />}
                 </button>
                 <IconButton
                   icon={ChevronRight}
@@ -119,9 +139,16 @@ export function StopSheet({ stop, onClose, onChooseLine, onOpenLine, onShowLines
           {t.map.viewStopDepartures}
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </button>
-        <button type="button" onClick={() => onShowLinesHere(stop)} className="btn btn-secondary btn-dense w-full">
-          {t.map.onlyLinesHere}
-        </button>
+        {/* Side by side while both fit, one under the other when they do not: a third full row made the sheet taller than the stop it is for. */}
+        <div className="flex flex-wrap gap-1.5">
+          <button type="button" onClick={() => onShowLinesHere(stop)} className="btn btn-secondary btn-dense min-w-floor-name flex-1">
+            {t.map.onlyLinesHere}
+          </button>
+          <button type="button" onClick={() => onPlanTo(stop)} className="btn btn-secondary btn-dense min-w-floor-name flex-1">
+            <Navigation className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {t.arrivals.planTo}
+          </button>
+        </div>
       </div>
     </MapSheet>
   );

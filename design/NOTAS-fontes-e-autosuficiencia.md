@@ -224,6 +224,11 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
 
 ## Feito dende que se escribiu isto
 
+- **As paradas suprimidas en lista** (18 de novembro de 2026, rolda 68): o aviso de obras
+  de novembro, «quedan suprimidas las paradas de Rda. Muralla, Obras públicas y
+  R/Montevideo» para a 12, líase como nada. Agora a 12 non para en Obras Públicas nin en
+  Montevideo en ningunha pantalla nin en Ruta; «Rda. Muralla», tres paradas da 12, queda en
+  palabras.
 - **Probada nun iPhone e nun Android de verdade** (novembro de 2026), a man. O guión para
   repetila, coa lista curta do iPhone que estaba aquí, é
   [`PROBA-no-telefono.md`](PROBA-no-telefono.md).

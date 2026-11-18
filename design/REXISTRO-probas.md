@@ -5415,3 +5415,87 @@ directorio de traballo da sesión; o resto das lecturas fixéronse sobre esa cop
 - A auditoría non ve os sitios: vai sen rede e o mapa base non carga.
 - Das dez portas da Muralla, OSM só marca tres como atracción; as outras non saen.
 - Nada desta rolda está en `develop` remoto nin en `main`.
+
+## Rolda 68: o aviso en toda parada, Desfacer, e unha ruta que se comparte — 13 de novembro de 2026
+
+Pedido: unha revisión feita fóra, valorada contra o código, e despois facer o que dela se
+recomendou. Dos cinco achados, catro eran certos; o da organización das tres vistas non
+(dous bloques e non tres, e distintos entre si: o común xa estaba en `noticeChanges.ts`).
+
+### Lido no código
+
+- A folla dunha parada no mapa non recibía o aviso do operador: unha liña que o aviso
+  aparta dunha parada saía alí en minutos, coma se parase. Sen saídas, dicía só que non
+  había. A revisión non viu que a portada fai o mesmo: as paradas gardadas e as liñas
+  gardadas tampouco lían o aviso.
+- «Borrar» as paradas vistas hai pouco non tiña volta e levaba o foco con el; a rolda 31
+  arranxara só o de Ruta. A papeleira dun gardado no panel, o mesmo, sen anuncio.
+- En «Outras liñas preto», o nome do poste onde pasa a outra liña era texto.
+
+### Feito
+
+- `atStop` en `noticeChanges.ts`: o que fai o aviso nunha parada nun momento (as liñas que
+  a deixan, as que paran noutro sitio, as que van tarde e se xa pasaron a súa última saída
+  impresa alí). O taboleiro, a folla do mapa e a portada lense con el, e as súas frases son
+  un compoñente, `ui/NoticeHere.tsx`, co «Non para aquí» de antes. A folla di tamén cal é a
+  seguinte saída, coma o taboleiro. Unha liña gardada non dá os seus minutos nunha parada
+  que deixa.
+- «Desfacer» na portada, coma en Ruta; no panel de favoritos, a papeleira pasa a
+  «Desfacer» mentres está aberto, e anúnciase. O botón é o mesmo, así que o foco non se move.
+- O nome do poste en «Outras liñas preto» abre o seu taboleiro.
+- «Como chegar aquí» no taboleiro e na folla do mapa: Ruta coa parada de destino, polo
+  mesmo camiño que un lugar escollido no buscador. Vai polo nome, coma ese buscador.
+- «Compartir esta ruta» baixo o paso a paso: `?de=&a=`, con `saida=` ou `chegada=`, na
+  ligazón da pestana; quen a abre ve a pregunta calculada co seu reloxo. Nunca desde «a
+  miña localización». A canónica segue sendo a da pestana (consultado coa sesión do SEO:
+  a escribe o build, e nada a cambia no navegador).
+- Dúas comprobacións novas (172). En `checkPolicy.ts`, a que compara os dous «Borrar» atopa
+  o da portada igual que o de Ruta, xa que deixou de ser un `onClick={onClearRecent}`.
+
+### Comprobado
+
+- As cinco portas: lint, 172 comprobacións, 26 políticas, `check:deep` e a build.
+- No panel, contra a build en 3002, en castelán: a ligazón
+  `/es/ruta/?de=Praza%20Maior&a=HULA&saida=08:30` abre a resposta (08:36 → ~09:05); o
+  botón copia `?de=Praza+Maior&a=HULA&saida=08%3A30` e di «Copiado» sen mover o foco. O
+  nome de San Roque 72 en «Outras liñas preto» abre o seu taboleiro. «Borrar» deixa o foco
+  en «Deshacer» e anúnciao; «Deshacer» devolve as dúas paradas na súa orde. No panel, a
+  papeleira deixa o foco en «Deshacer» dentro do diálogo, a conta baixa a 0, e Intro volve
+  gardala. De madrugada, sen servizo, a folla de Praza Bretaña no mapa di «La siguiente es la línea 1.1 a
+  las ~07:11»; «Cómo llegar aquí» abre Ruta con ela de destino. Ningún erro na consola.
+- O riscado na folla e na portada non se viu o 13: o aviso dese día non se lía (o seguinte).
+
+### O aviso de obras, lido — 18 de novembro
+
+O aviso «Cambios líneas 7, 8, 9 y 12 por obras» seguía publicado o 13 e o 18, co mesmo
+texto (a resposta de `/api/alerts` deses días). Para a 12 di «(quedan suprimidas las
+paradas de Rda. Muralla, Obras públicas y R/Montevideo)»; `CLOSED` só lía «Se suprime la
+parada de …», e `readNoticeChanges` daba `null`: ningunha pantalla, nin Ruta, apartaba a 12
+desas paradas. Nin lendo a lista casaban: `matchStop` pedía o 0,75 das palabras das dúas
+partes, e «Obras públicas» fronte a «Rda. Muralla (Obras Públicas)» dá 2 de 3, e
+«R/Montevideo» fronte a «Rúa Montevideo 7 (Sanatorio NSOG)» 1 de 4.
+
+- `CLOSED_LIST` le a lista, separada por comas e «y»/«e», e cada nome emparéllase.
+- `matchStop`, cando a regra de antes non dá ningunha: o nome curto vale se todas as súas
+  palabras están nunha soa parada da liña. «Rda. Muralla» está en tres das 37 da 12 e queda
+  en palabras. Pode ler tamén «Rda. Muralla, Obras públicas» como unha soa parada: as dúas
+  lecturas pechan as mesmas dúas.
+- Os tramos da 7, a 8 e a 9 («queda suprimido el tramo …») non se len: non son paradas.
+- Unha comprobación nova co texto dese día (173): as dúas paradas da 12, «Rda. Muralla» sen
+  parada, ningunha outra liña, só a 12 fóra de Montevideo, e o planificador igual.
+- As cinco portas: lint, 173 comprobacións, 26 políticas, `check:deep` e a build. No panel,
+  contra a build e co aviso vivo do 18: o taboleiro de Rúa Montevideo 7 di «Estos días la
+  línea 12 no para aquí» e risca as dúas saídas da 12 (19:15 e 19:45) coa etiqueta; a
+  tarxeta da portada, gardada, e a folla do mapa din o mesmo. Ningún erro na consola.
+- `audit:browser` enteiro contra a build, coa outra sesión parada (deu o «go»), sen
+  `AUDIT_RUNNER`: 0 achados de WCAG 2.2 A/AA en 242 medidas de 162 estados, en 685 s;
+  as viaxes, ningunha tarefa sen rematar e ningún volver mal. A barra da casa, 25 controis
+  baixo 44 px, sen comparar coa rolda anterior.
+
+### Queda
+
+- A ligazón dunha ruta leva o que se escribiu nos campos (unha rúa, se é iso). Compártea
+  quen a ten, como a dun poste; PRIVACY.md non fala de ningunha das dúas.
+- O guión do lector de pantalla (`PROBA-lector-de-pantalla.md`, 5.5) proba só o «Desfacer»
+  de Ruta.
+- Nada desta rolda está en `develop` remoto nin en `main`.

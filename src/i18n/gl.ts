@@ -68,6 +68,7 @@ export const gl = {
     saved: 'Paradas gardadas',
     recent: 'Vistas hai pouco',
     clearRecent: 'Borrar',
+    recentCleared: 'Borráronse as paradas vistas hai pouco.',
     near: 'Preto de min',
     locate: 'Buscar preto de min',
     youAreHere: 'Estás aquí',
@@ -201,6 +202,8 @@ export const gl = {
     toSr: 'ata',
     undoClear: 'Desfacer',
     recentCleared: 'Borráronse as rutas recentes.',
+    shareTrip: 'Compartir esta ruta',
+    copyTrip: 'Copiar a ligazón desta ruta',
     departureLabel: 'Saída',
     arrivalLabel: 'Chegada',
     board: 'Sube en',
@@ -402,6 +405,7 @@ export const gl = {
     noFavoriteLines: 'Aínda non engadiches liñas ás túas favoritas.',
     noFavoriteLinesHint: 'Preme na estrela da cabeceira dunha liña, «Gardar liña en favoritos», para gardala aquí.',
     remove: 'Eliminar de favoritos',
+    removed: 'Eliminada de favoritos.',
   },
 
   rules: {
@@ -581,6 +585,7 @@ export const gl = {
     shareSheet: 'Compartir',
     copyFailed: 'Non se puido copiar. Esta é a ligazón:',
     copied: 'Copiada',
+    planTo: 'Como chegar aquí',
     nearbyLinesTitle: 'Outras liñas preto',
     nearbyLinesHint: 'Non paran aquí, pero pasan a poucos minutos a pé.',
     seeLine: 'Ver percorrido da liña',

@@ -4,6 +4,7 @@ import { LocateFixed, Navigation2, SlidersHorizontal } from 'lucide-react';
 import { CloseButton, Notice, Scrim } from '../ui/controls';
 import { useT } from '../../i18n';
 import { BusStop, BusLine } from '../../types';
+import type { NoticeChanges } from '../../utils/noticeChanges';
 import { BUS_STOPS, BUS_LINES, LUGO_CENTER, lineById, poleCode } from '../../data/transitData';
 import { getScheduledBuses } from '../../utils/vehicles';
 import { getNearbyLines, NearbyLine } from '../../utils/places';
@@ -61,11 +62,15 @@ interface TransitMapProps {
   onSelectLine: (line: BusLine) => void;
   /** Leave the map for a line's own page. Selecting a line only filters the map. */
   onOpenLine: (line: BusLine) => void;
+  /** Plan a trip to a stop tapped on the map. */
+  onPlanTo: (stop: BusStop) => void;
+  /** The operator's notices read out, for the tapped stop's sheet. */
+  changes?: NoticeChanges | null;
   /** False while another tab is on screen: the map stays mounted, and its clock stops. */
   visible?: boolean;
 }
 
-export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelectStop, onSelectLine, onOpenLine, visible = true }: TransitMapProps) {
+export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelectStop, onSelectLine, onOpenLine, onPlanTo, changes = null, visible = true }: TransitMapProps) {
   const t = useT();
   const containerRef = useRef<HTMLDivElement>(null);
   const colors = mapColors(useIsDark());
@@ -322,6 +327,11 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
             {tappedStop && (
               <StopSheet
                 stop={tappedStop}
+                changes={changes}
+                onPlanTo={(stop) => {
+                  setTappedStop(null);
+                  onPlanTo(stop);
+                }}
                 onHeight={(px) => keepAbove([tappedStop.lat, tappedStop.lng], px)}
                 onClose={() => setTappedStop(null)}
                 onChooseLine={chooseLine}

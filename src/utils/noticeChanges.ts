@@ -65,6 +65,9 @@ const UNTIL = /\b(?:hasta|ata)\s+(?:las|as)\s+(\d{1,2}:\d{2})(?:\s*\(([^)]+)\))?
 const ENDS = /(?:final del servicio|final do servizo)[^.]*?\b(?:a la|a las|á|ás)\s+(\d{1,2}:\d{2})/i;
 const CLOSED = /\b(?:se suprime la parada de|suprímese a parada de)\s+([^.;]+?)(?:\s+(?:y se habilitará una en|e habilitarase unha en)\s+([^.;]+))?\s*(?:[.;]|$)/i;
 const MOVED = /\bmodificaci[óo]n de la parada\s+(.+?)\s+pasará a ubicarse provisionalmente en\s+([^.;]+)/i;
+/** «(quedan suprimidas las paradas de Rda. Muralla, Obras públicas y R/Montevideo)», the works of November 2026: a list, in brackets. */
+const CLOSED_LIST = /\bquedan?\s+suprimidas?\s+(?:las?|as?)\s+paradas?\s+de\s+([^.;)]+)/i;
+const LIST_SEP = /\s*,\s*|\s+(?:y|e)\s+/;
 
 /**
  * The period of a street abbreviation is not the end of a sentence: «esquina Avda. Ramón
@@ -126,7 +129,16 @@ export function matchStop(name: string, candidates: BusStop[]): string | undefin
       tied = false;
     } else if (score === best.score) tied = true;
   }
-  return best && best.score >= 0.75 && !tied ? best.id : undefined;
+  if (best && best.score >= 0.75 && !tied) return best.id;
+  // A short name for a long one: every word the notice gives is in one stop of the line and in
+  // no other. «Obras públicas» is «Rda. Muralla (Obras Públicas)» (2 of its 3 words, under the
+  // bar above) and «R/Montevideo» «Rúa Montevideo 7 (Sanatorio NSOG)»; «Rda. Muralla», in
+  // three of the 12's stops, is none of them.
+  const covering = candidates.filter((stop) => {
+    const have = words(stop.name);
+    return want.every((w) => have.some((h) => sameWord(w, h)));
+  });
+  return covering.length === 1 ? covering[0].id : undefined;
 }
 
 const stopsOfLine = (number: string): BusStop[] => {
@@ -157,6 +169,11 @@ export function readNoticeChanges(alerts: ServiceAlert[], year: number): NoticeC
         const closed = CLOSED.exec(paragraph);
         const closedId = closed && matchStop(unmask(closed[1])!, candidates);
         if (closedId) change.closed.push({ stopId: closedId, instead: unmask(closed[2]) });
+        const listed = CLOSED_LIST.exec(paragraph);
+        for (const name of listed ? listed[1].split(LIST_SEP) : []) {
+          const id = matchStop(unmask(name)!, candidates);
+          if (id && !change.closed.some((c) => c.stopId === id)) change.closed.push({ stopId: id });
+        }
         const moved = MOVED.exec(paragraph);
         const movedId = moved && matchStop(unmask(moved[1])!, candidates);
         if (movedId) change.moved.push({ stopId: movedId, to: unmask(moved[2])! });
@@ -269,6 +286,29 @@ export function closedAt(changes: NoticeChanges | null, stopId: string): { lines
   const here = (changes?.lines ?? []).flatMap((c) => c.closed.filter((s) => s.stopId === stopId).map((s) => ({ line: c.line, instead: s.instead })));
   return { lines: here.map((h) => h.line), instead: here.find((h) => h.instead)?.instead };
 }
+
+/**
+ * What the notice holding at a moment does at one stop: the lines that skip it, the lines that
+ * call somewhere else instead, and the lines running past their timetable, with whether the
+ * timetable has nothing more for them here. One reading for the board, the map's sheet and the
+ * saved stops: the sheet and the saved stops once showed a bus the notice had stopped calling.
+ */
+export function atStop(changes: NoticeChanges | null, stop: Pick<BusStop, 'id' | 'lines'>, at: Date) {
+  const holding = changesNow(changes, at);
+  const closed = closedAt(holding, stop.id);
+  const lines = holding?.lines ?? [];
+  const moved = lines.flatMap((c) => c.moved.filter((m) => m.stopId === stop.id).map((m) => ({ line: c.line, to: m.to })));
+  const numbers = new Set(stop.lines.map((id) => lineById(id)?.number));
+  const late = lines.flatMap((c) => {
+    const end = numbers.has(c.line) && !closed.lines.includes(c.line) ? runsUntil(c, at) : undefined;
+    return end ? [{ line: c.line, ...end, now: pastTimetable(c, stop.id, at) }] : [];
+  });
+  // Whether there is a sentence to say here and now; a line running late after its timetable's
+  // last call is not one yet, while the timetable still answers for it.
+  const speaks = closed.lines.length + moved.length > 0 || late.some((l) => l.now);
+  return { holding, closed, moved, late, speaks, skips: (lineNumber: string) => closed.lines.includes(lineNumber) };
+}
+export type StopNotice = ReturnType<typeof atStop>;
 
 /** Whether a line, by id or number, skips a stop under the notice. */
 export function isClosed(changes: NoticeChanges | null, line: { id: string; number: string }, stopId: string): boolean {

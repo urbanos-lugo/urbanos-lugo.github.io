@@ -145,6 +145,10 @@ despois da súa hora, marcada como «hai 3 min» e non como «Chegando», porque
 sabe onde está o bus e só sabe que a hora pasou. Cinco minutos, e non outro número, porque
 son os que cobren o 84% dos atrasos medidos contra o seguimento do propio operador.
 
+**Outras liñas preto**, pregado, son as que non paran nese poste pero si a menos de 400 m
+a pé: o número abre a liña, e o nome do poste onde pasa abre o seu taboleiro, que é o que
+quere saber quen está agardando noutro.
+
 ### Avisos de bus e de baixada
 Dous avisos, os dous opcionais:
 
@@ -165,7 +169,8 @@ custa cero toques e cero escritura. Nunha gardada onde hoxe xa non queda ningún
 tarxeta di cal é o seguinte —a liña, o día se non é hoxe e a hora co seu `~` se é
 calculada—, como fai o taboleiro da mesma parada, en lugar de quedar nun nome sen máis. Debaixo, as **vistas hai pouco** —as últimas seis que
 abriches, gardadas só como identificadores— porque buscar unha parada faino todo o mundo
-e gardala case ninguén, e a segunda visita non debería custar escribir outra vez. E
+e gardala case ninguén, e a segunda visita non debería custar escribir outra vez.
+«Borrar» vacíaas e o mesmo botón pasa a dicir «Desfacer», como en Ruta. E
 debaixo, **preto de min**, que precisa permiso de localización e non inventa distancias
 se llo negas.
 
@@ -230,7 +235,8 @@ ficha da liña, deixando claro que as paradas e as horas seguen a ser as oficiai
 é inferido é a forma entre elas.
 
 **O que se toca no mapa abre unha folla desde abaixo, a mesma para todo.** Unha parada, a
-súa: o nome, o código, as próximas saídas, o taboleiro enteiro. Unha liña, «Liñas por
+súa: o nome, o código, as próximas saídas —ou, se xa non queda ningunha, cal é a
+seguinte, como no taboleiro—, o taboleiro enteiro. Unha liña, «Liñas por
 aquí»: as que pasan onde tocaches, a máis próxima ao dedo primeiro, cunha frase que di que
 é a lista; escoller unha pecha a folla, debúxaa por riba das outras e encádraa enteira,
 coma desde as fichas de arriba, e a frecha abre a súa páxina. O que se
@@ -341,6 +347,16 @@ non fai «en servizo» o primeiro bus do día seguinte.
 
 **«Usar a miña localización» sen permiso dío e non calcula**, igual que a pantalla de
 paradas se nega a inventar unha posición que o móbil non deu.
+
+**Unha parada como destino, dun toque.** «Como chegar aquí», no taboleiro dunha parada e
+na súa folla do mapa, abre Ruta con esa parada de destino, calculada desde a orixe que
+houbese, como un lugar escollido no buscador de arriba.
+
+**Unha resposta compártese como pregunta.** Baixo o paso a paso, «Compartir esta ruta»
+(nun ordenador, «Copiar a ligazón») dá `?de=…&a=…` na ligazón da pestana, con `saida=` ou
+`chegada=` se se pediu unha hora: quen a abre ve a resposta calculada co seu reloxo, non a
+captura dunha hora xa pasada. Desde «a miña localización» non se ofrece: sería unha
+posición, e noutro teléfono non sería ningunha.
 
 Non devolve unha soa resposta: amosa as **opcións distintas** de facer o traxecto,
 agrupadas por combinación de liñas e ordenadas pola hora á que chegas, a que di cada fila:
@@ -513,7 +529,8 @@ Escaneo pola cámara usando `BarcodeDetector`, a API nativa do navegador (dispo�
 Chromium; noutros navegadores queda a entrada manual do código). Acepta tanto o código
 impreso no poste como a URL completa que codifica o QR.
 
-Tamén se resolven parámetros na URL: `?parada=…`, `?stop=…`, `?ps=…`, `?qr=…`.
+Tamén se resolven parámetros na URL: `?parada=…`, `?stop=…`, `?ps=…`, `?qr=…`; e
+`?de=…&a=…`, a pregunta de Ruta (no [planificador](#planificador-de-traxectos)).
 
 A quen chega escaneando o poste —e só a esa persoa— amósaselle tamén **o que di a páxina
 do operador para esa parada**, que é a mesma que abriría o código. En calquera outro sitio
@@ -545,16 +562,24 @@ cambia, queda só o titular da campá.
 
 E o que o aviso cambia, a app tamén o usa (`src/utils/noticeChanges.ts`). Le del os días
 («os días 3, 4, 5, 9, 10, 11 e 12 de outubro»), ata que hora segue cada liña, que paradas
-deixa e onde para no seu lugar, e que paradas se trasladan. O nome que dá o aviso emparéllase
-coas paradas desa liña, e só cando o emparellamento é claro: «Praza de Bretaña» é «Praza
-Bretaña», e «Avda. Ramón Ferreiro (Femenino)» é «Ramón Ferreiro (Feminino)» e non
-«(Anexa)». Eses días:
+deixa e onde para no seu lugar —unha a unha ou nunha lista, «quedan suprimidas las paradas
+de …»—, e que paradas se trasladan. O nome que dá o aviso emparéllase coas paradas desa
+liña, e só cando o emparellamento é claro: «Praza de Bretaña» é «Praza Bretaña», e «Avda.
+Ramón Ferreiro (Femenino)» é «Ramón Ferreiro (Feminino)» e non «(Anexa)». Un nome curto
+vale se todas as súas palabras están nunha soa parada da liña: no aviso de obras de
+novembro de 2026, «Obras públicas» é «Rda. Muralla (Obras Públicas)» e «R/Montevideo»
+«Rúa Montevideo 7 (Sanatorio NSOG)», mentres «Rda. Muralla», que son tres paradas da 12,
+queda nas palabras do aviso. Un tramo suprimido non é unha parada, e tampouco se le. Eses
+días, ou mentres estea publicado se non nomea ningún:
 
 - No **taboleiro** dunha parada que unha liña deixa, dísese e dise onde para; as súas
   saídas seguen na lista, riscadas, marcadas e sen campá. A franxa do aviso vai pregada: á
   vista quedan o titular e o que cambia nesa parada, e os días, as horas finais e os cortes
   de tráfico, a un toque. Desde a última saída impresa dunha liña nesa parada, a súa hora
   final e de quen é a palabra despréganse soas: a esa hora son a única resposta que hai.
+- Na **folla da parada no mapa** e nas **paradas gardadas** da portada, o mesmo: a saída
+  riscada e marcada, e as mesmas frases do taboleiro. Unha liña gardada non dá os seus
+  minutos nunha parada que deixa. As tres len o aviso dunha soa maneira (`atStop`).
 - **Ruta** non propón subir nin baixar desa liña alí. A súa franxa vai pregada igual, coa
   mesma regra na parada onde o traxecto sobe a cada liña.
 - A **ficha** da liña resume os seus cambios; o texto do operador vai pregado debaixo.
@@ -786,6 +811,7 @@ queira usar; a app non chama ningunha.
 │   │   │   ├── SectionTitle.tsx    o título dunha sección ou dunha tarxeta
 │   │   │   ├── NameStack.tsx       un nome e, debaixo, a liña que di cal ou onde
 │   │   │   ├── PoleCode.tsx        o código impreso no poste
+│   │   │   ├── NoticeHere.tsx      o que fai o aviso nunha parada, as mesmas frases en taboleiro, mapa e portada
 │   │   │   ├── StopRank.tsx        o número dunha parada pola súa distancia, o mesmo no mapa pequeno
 │   │   │   ├── CountBadge.tsx      a conta de avisos
 │   │   │   ├── Figure.tsx          o número grande dunha pantalla, coa súa unidade
@@ -848,7 +874,7 @@ queira usar; a app non chama ningunha.
 │   │   ├── plannerJob.ts           unha pregunta ao planificador como datos, para cruzar ao worker
 │   │   ├── vehicles.ts             onde van os autobuses, derivado do cadro horario
 │   │   ├── places.ts               camiñada estimada, lugares, resolver o que se escribe, paradas preto
-│   │   ├── links.ts                o que abre unha ligazón: ?parada= e ?linea=
+│   │   ├── links.ts                o que abre unha ligazón: ?parada=, ?linea= e a pregunta de Ruta, ?de=&a=
 │   │   ├── serviceLabels.ts        días, frecuencia e sentido no idioma da IU
 │   │   ├── operatorNotices.ts      o aviso do operador repartido por liñas, coa súa lingua
 │   │   ├── noticeChanges.ts        o que cambia un aviso, lido das súas palabras: días, horas finais, paradas
@@ -1512,7 +1538,7 @@ de pantalla de verdade, hai un guión para seguir a man:
 | 2.3.1 Tres escintileos | A | Cumpre | Nada escintila: os únicos bucles son os tres puntos de «Calculando» e os indicadores de espera, que rematan coa espera, e a marca da seguinte parada en «Vou nesta» late dúas veces e para. |
 | 2.4.1 Saltar bloques | A | Cumpre | Ligazón «Ir ao contido» e rexións. axe. |
 | 2.4.2 Titulado das páxinas | A | Cumpre | Cada pantalla, parada e liña ten o seu título. `audit:browser`. |
-| 2.4.3 Orde do foco | A | Arranxado | Un diálogo aberto devolvía o foco ao seu primeiro control cada vez que a páxina de detrás se repintaba (no mapa, cada 3 s); cada bus que saía reconstruía todas as filas seguintes do taboleiro e o foco ía ao principio da páxina; o globo dun bus reconstruíase baixo o foco; «Borrar» as rutas recentes deixaba o foco na páxina; e o do punto 1.3.2. `audit:browser` e `pnpm test`. |
+| 2.4.3 Orde do foco | A | Arranxado | Un diálogo aberto devolvía o foco ao seu primeiro control cada vez que a páxina de detrás se repintaba (no mapa, cada 3 s); cada bus que saía reconstruía todas as filas seguintes do taboleiro e o foco ía ao principio da páxina; o globo dun bus reconstruíase baixo o foco; «Borrar» as rutas recentes, «Borrar» as paradas vistas hai pouco e a papeleira dun gardado no panel deixaban o foco na páxina; e o do punto 1.3.2. `audit:browser` e `pnpm test`. |
 | 2.4.4 Propósito das ligazóns | A | Cumpre | axe; `audit:browser` le o destino de cada ligazón. |
 | 2.4.5 Múltiples vías | AA | Arranxado | Cada pantalla só se alcanzaba pola navegación: agora a busca atópaas tamén polo seu nome. |
 | 2.4.6 Encabezados e etiquetas | AA | Cumpre | `audit:browser` lista os títulos de cada estado; as palabras, no guión manual. |
@@ -1534,11 +1560,11 @@ de pantalla de verdade, hai un guión para seguir a man:
 | 3.3.1 Identificación de erros | A | Arranxado | Un código de poste que non existe dicíase só debaixo do campo: agora o campo é `aria-invalid`, o erro anúnciase e queda ligado a el. `audit:browser`. |
 | 3.3.2 Etiquetas ou instrucións | A | Arranxado | O campo do código do poste non tiña nome. |
 | 3.3.3 Suxestións ante erros | AA | Cumpre | Dun código que non existe non se pode saber cal se quería; o formato está escrito ao lado do campo, con paradas de exemplo. |
-| 3.3.4 Prevención de erros | AA | Arranxado | «Borrar» as rutas recentes non tiña volta: agora o mesmo botón di «Desfacer». Os gardados quítanse e volven coa mesma estrela. Nada máis borra, envía ou compromete. `audit:browser`. |
+| 3.3.4 Prevención de erros | AA | Arranxado | «Borrar» as rutas recentes e as paradas vistas hai pouco non tiña volta: agora o mesmo botón di «Desfacer». Os gardados quítanse e volven coa mesma estrela, e no panel a papeleira pasa a dicir «Desfacer» mentres está aberto. Nada máis borra, envía ou compromete. `audit:browser`. |
 | 3.3.7 Entrada redundante | A | Cumpre | Non hai procesos en varios pasos; o planificador lembra as últimas rutas. |
 | 3.3.8 Autenticación accesible (mínima) | AA | Non aplica | Non hai contas nin acceso. |
 | 4.1.2 Nome, función, valor | A | Arranxado | As saídas, os destinos rápidos e os filtros din agora se están premidos (`aria-pressed`); as frechas das saídas e o campo do QR tiñan nome. axe e `audit:browser`. |
-| 4.1.3 Mensaxes de estado | AA | Arranxado | «Comprobar» os avisos non dicía que comprobaba nin que atopara; o erro do QR non se anunciaba. `audit:browser` comproba cada mensaxe. |
+| 4.1.3 Mensaxes de estado | AA | Arranxado | «Comprobar» os avisos non dicía que comprobaba nin que atopara; o erro do QR non se anunciaba; quitar un gardado no panel non dicía nada. `audit:browser` comproba cada mensaxe. |
 
 4.1.1 (Análise) xa non está en WCAG 2.2. Por riba de AA, e sen que o criterio o pida, cores
 forzadas (o modo de alto contraste de Windows): o premido, a pestana actual e o foco seguen

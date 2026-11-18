@@ -552,8 +552,10 @@ ok('an underline sits 2 px under its text everywhere, and "clear recent" is one 
   }
   assert(flush.length === 0, `an underline without its 2 px: ${flush.join(' | ')}`);
   assert(/\.link-text, \.link \{[^}]*text-decoration-line: underline;[^}]*text-underline-offset: var\(--text-underline-offset-link\)/.test(read('src/index.css')), 'the link classes no longer underline 2 px under the text');
-  const home = /<button onClick=\{onClearRecent\} className="([^"]*)"/.exec(read('src/components/StopHome.tsx'))?.[1];
-  const planner = /className="([^"]*)"\s*>\s*\{[^}]*t\.stopHome\.clearRecent/.exec(read('src/components/RoutePlannerView.tsx'))?.[1];
+  // Both are "Borrar" turning into "Desfacer", one button found the same way in each.
+  const clearButton = /className="([^"]*)"\s*>\s*\{[^}]*t\.stopHome\.clearRecent/;
+  const home = clearButton.exec(read('src/components/StopHome.tsx'))?.[1];
+  const planner = clearButton.exec(read('src/components/RoutePlannerView.tsx'))?.[1];
   assert(home && planner, 'could not find the two "clear recent" buttons, so this is reading the wrong thing');
   assert(home === planner, `"clear recent" is drawn two ways: "${home}" and "${planner}"`);
 });

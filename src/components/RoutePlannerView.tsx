@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useReducer, useRef, lazy, Suspense } from 'react';
-import { Navigation, MapPin, ArrowDownUp, Clock, Bus, Footprints, AlertCircle, ArrowRight, ChevronDown } from 'lucide-react';
+import { Navigation, MapPin, ArrowDownUp, Clock, Bus, Footprints, AlertCircle, ArrowRight, ChevronDown, Check, Share2 } from 'lucide-react';
 import { useLang, useT } from '../i18n';
 import { BusStop, BusLine, RoutePlanResult } from '../types';
 import { planTrips, plannedFrom } from '../utils/planner';
@@ -13,6 +13,8 @@ import { fetchWalkingPath, walkHopKey, walkHopsOf, type Hop, type WalkPaths } fr
 import { useRecentRoutes, type RecentRoute } from '../hooks/useStoredList';
 import { useWalkPaths } from '../hooks/useWalkPaths';
 import { useClock } from '../hooks/useClock';
+import { useShareLink } from '../hooks/useShareLink';
+import { tripSearch } from '../utils/links';
 import { boardingIsNow, type TripPlace } from '../utils/tripProgress';
 import type { Screen } from '../hooks/useTabRoute';
 import { SectionLabel } from './ui/SectionLabel';
@@ -320,7 +322,8 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     setOriginQuery(from);
     setDestQuery(to);
     setTimeMode(mode);
-    setTimeValue(at);
+    // A shared link for "now" carries no clock: the field is this moment's, as when the screen opens.
+    setTimeValue(at || clockNow());
     if (from === 'my_location' || to === 'my_location') onEditTrip();
     else calculate(from, to, undefined, true, false, { mode, at });
   }, []);
@@ -433,6 +436,8 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     </button>
   );
   const folded = asked && !formOpen;
+  const link = useShareLink();
+  const sharedSearch = lastTrip.current && tripSearch(lastTrip.current);
   // Folded and unfolded by back and forward too, not only by the row: clipped while it moves.
   const wasFolded = useRef(folded);
   useEffect(() => {
@@ -847,6 +852,24 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 <SectionLabel className="mb-2">{t.planner.stepByStepTitle}</SectionLabel>
                 <Itinerary segments={planResult.segments} onSelectStop={onSelectStop} onSelectLine={onSelectLine} />
               </div>
+
+              {/* The question as a link, after the trip it answers: whoever opens it gets it asked again from their own clock. */}
+              {sharedSearch && lastTrip.current && (
+                <div>
+                  <button type="button" onClick={() => lastTrip.current && link.share(`${window.location.origin}${window.location.pathname}${sharedSearch}`, `${lastTrip.current.from} → ${lastTrip.current.to}`)} className="btn btn-secondary w-full">
+                    {link.copied ? <Check className="anim-tick-in h-4 w-4 shrink-0 text-official stroke-bold" aria-hidden="true" /> : <Share2 className="h-4 w-4 shrink-0" aria-hidden="true" />}
+                    {link.copied ? t.arrivals.copied : link.viaSheet ? t.planner.shareTrip : t.planner.copyTrip}
+                  </button>
+                  <span role="status" className="sr-only">
+                    {link.copied ? t.arrivals.copied : ''}
+                  </span>
+                  {link.failedUrl && (
+                    <Notice className="mt-2">
+                      {t.arrivals.copyFailed} <span className="tnum block break-all pt-1 text-ink select-all">{link.failedUrl}</span>
+                    </Notice>
+                  )}
+                </div>
+              )}
 
               <Notice warn icon={AlertCircle}>
                 {t.planner.transferFreeNotice}

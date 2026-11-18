@@ -1,9 +1,11 @@
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { Compass, History, QrCode, Route, Star, type LucideIcon } from 'lucide-react';
 import { BusLine, BusStop } from '../types';
 import { lineById, stopById } from '../data/transitData';
 import { NEARBY_STOP_LIMIT_METRES, NearbyStop, getNearbyStops } from '../utils/places';
 import { getArrivalsForStop, nextServiceAtStop } from '../utils/arrivals';
+import { atStop, type NoticeChanges } from '../utils/noticeChanges';
+import { NoticeHere, NotHere } from './ui/NoticeHere';
 import { dayWord } from '../utils/serviceLabels';
 import { useLang, useT } from '../i18n';
 import { useClock } from '../hooks/useClock';
@@ -21,8 +23,12 @@ interface StopHomeProps {
   onSelectLine: (line: BusLine) => void;
   recentStopIds: string[];
   onClearRecent: () => void;
+  /** Puts these stops back among the recent ones, newest first: "Borrar" undone. */
+  onRestoreRecent: (stopIds: string[]) => void;
   onSelectStop: (stop: BusStop) => void;
   onOpenQrScanner: () => void;
+  /** The operator's notices read out, as the board gets them: a saved stop's bus that will not call there is struck through here too. */
+  changes?: NoticeChanges | null;
 }
 
 /** How many departures to show per saved stop before it becomes a wall of numbers. */
@@ -68,10 +74,17 @@ function StopRow({ stop, onSelect, trailing, rank }: { stop: BusStop; onSelect: 
  * already showing their next departures. Saved stops sit above "near me" on purpose:
  * geolocation takes a second, needs a permission and can be refused.
  */
-export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recentStopIds, onClearRecent, onSelectStop, onOpenQrScanner }: StopHomeProps) {
+export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recentStopIds, onClearRecent, onRestoreRecent, onSelectStop, onOpenQrScanner, changes = null }: StopHomeProps) {
   const t = useT();
   const lang = useLang();
-  useClock(30_000); // the boards below recompute on every render, so a tick is enough
+  const now = useClock(30_000); // the boards below recompute on every render, so a tick is enough
+  // What "Borrar" took, until it is undone or a stop is opened, as in Ruta's recent trips (3.3.4,
+  // 2.4.3): it wiped the list at a tap and took the focused button with it. The same button
+  // says "Desfacer" now, so the focus stays where it was.
+  const [cleared, setCleared] = useState<string[]>([]);
+  useEffect(() => {
+    if (recentStopIds.length) setCleared((was) => (was.length ? [] : was));
+  }, [recentStopIds]);
 
   const [nearby, setNearby] = useState<NearbyStop[]>([]);
   /** Where the phone said it was, and how sure it was, in metres. */
@@ -107,9 +120,9 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
     .map(stopById)
     .filter((s): s is BusStop => !!s)
     .map((stop) => {
-      const arrivals = getArrivalsForStop(stop.id).arrivals.slice(0, PER_STOP);
+      const arrivals = getArrivalsForStop(stop.id, now).arrivals.slice(0, PER_STOP);
       // Nothing within the hour: when the next one is, as the board says, rather than only that there is none.
-      return { stop, arrivals, next: arrivals.length ? null : nextServiceAtStop(stop.id) };
+      return { stop, arrivals, next: arrivals.length ? null : nextServiceAtStop(stop.id, now), here: atStop(changes, stop, now) };
     });
   const recent = recentStopIds.filter((id) => !favoriteStopIds.includes(id)).map(stopById).filter((s): s is BusStop => !!s);
 
@@ -120,8 +133,9 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
     .filter((l): l is BusLine => !!l)
     .map((line) => {
       for (const stop of known) {
-        if (!stop.lines.includes(line.id)) continue;
-        const next = getArrivalsForStop(stop.id).arrivals.find((a) => a.lineId === line.id);
+        // A stop the notice keeps this line away from is no answer to "when does my line come".
+        if (!stop.lines.includes(line.id) || atStop(changes, stop, now).skips(line.number)) continue;
+        const next = getArrivalsForStop(stop.id, now).arrivals.find((a) => a.lineId === line.id);
         if (next) return { line, stop, next };
       }
       return { line, stop: null, next: null };
@@ -151,13 +165,18 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
         </EmptyState>
       ) : (
         <ul className="mt-3 flex flex-col gap-2">
-          {saved.map(({ stop, arrivals, next }) => (
+          {saved.map(({ stop, arrivals, next, here }) => (
             <li key={stop.id}>
               <button onClick={() => onSelectStop(stop)} className="w-full rounded-card border border-edge bg-surface py-3.5 px-cap-3.5 text-left">
                 {/* The name whole, on as many lines as it takes: it is what the reader matches
                     against the pole. The zone shared its line and cut it -- "Rda. Muralla 56 (Si…"
                     on a phone, "Rda. Muralla …" at 320 px, and nothing at all at 200% text. */}
                 <NameStack name={stop.name} hint={stop.zone} size="emph" />
+                {here.speaks && (
+                  <span className="mt-2.5 block rounded-control bg-warn px-2.5 py-1.5 text-label text-warn-ink">
+                    <NoticeHere here={here} />
+                  </span>
+                )}
                 {arrivals.length === 0 ? (
                   next ? (
                     <span className="mt-2.5 flex flex-wrap items-center gap-1.5 text-body">
@@ -177,7 +196,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                     {arrivals.map((a, i) => (
                       <span key={`${a.lineId}-${i}`} className="flex items-center gap-1.5">
                         <LineBadge number={a.lineNumber} color={a.lineColor} size="row" />
-                        <span className="tnum text-body font-semibold">
+                        <span className={`tnum text-body font-semibold ${here.skips(a.lineNumber) ? 'line-through opacity-struck' : ''}`}>
                           {a.etaMinutes === 0 ? (
                             t.common.arrivingNow
                           ) : (
@@ -188,6 +207,7 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                             </>
                           )}
                         </span>
+                        {here.skips(a.lineNumber) && <NotHere />}
                       </span>
                     ))}
                   </span>
@@ -228,19 +248,31 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
         </section>
       )}
 
-      {recent.length > 0 && (
+      {(recent.length > 0 || cleared.length > 0) && (
         <>
           <Heading
             icon={History}
             tint="text-ink-2"
             action={
-              <button onClick={onClearRecent} className="link min-w-tap justify-end">
-                {t.stopHome.clearRecent}
+              <button
+                onClick={() => {
+                  if (cleared.length) onRestoreRecent(cleared);
+                  else {
+                    setCleared(recentStopIds);
+                    onClearRecent();
+                  }
+                }}
+                className="link min-w-tap justify-end"
+              >
+                {cleared.length ? t.planner.undoClear : t.stopHome.clearRecent}
               </button>
             }
           >
             {t.stopHome.recent}
           </Heading>
+          <span role="status" className="sr-only">
+            {cleared.length ? t.stopHome.recentCleared : ''}
+          </span>
           <ul className="mt-1 flex flex-col gap-1.5">
             {recent.map((stop) => (
               <StopRow key={stop.id} stop={stop} onSelect={onSelectStop} />

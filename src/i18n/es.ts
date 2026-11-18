@@ -52,6 +52,7 @@ export const es: Dict = {
     saved: 'Paradas guardadas',
     recent: 'Vistas hace poco',
     clearRecent: 'Borrar',
+    recentCleared: 'Se borraron las paradas vistas hace poco.',
     near: 'Cerca de mí',
     locate: 'Buscar cerca de mí',
     youAreHere: 'Estás aquí',
@@ -167,6 +168,8 @@ export const es: Dict = {
     toSr: 'hasta',
     undoClear: 'Deshacer',
     recentCleared: 'Se borraron las rutas recientes.',
+    shareTrip: 'Compartir esta ruta',
+    copyTrip: 'Copiar el enlace de esta ruta',
     departureLabel: 'Salida',
     arrivalLabel: 'Llegada',
     board: 'Sube en',
@@ -348,6 +351,7 @@ export const es: Dict = {
     noFavoriteLines: 'Todavía no has añadido líneas a tus favoritas.',
     noFavoriteLinesHint: 'Pulsa la estrella de la cabecera de una línea, «Guardar línea en favoritos», para guardarla aquí.',
     remove: 'Eliminar de favoritos',
+    removed: 'Eliminada de favoritos.',
   },
 
   rules: {
@@ -518,6 +522,7 @@ export const es: Dict = {
     shareSheet: 'Compartir',
     copyFailed: 'No se pudo copiar. Este es el enlace:',
     copied: 'Copiado',
+    planTo: 'Cómo llegar aquí',
     nearbyLinesTitle: 'Otras líneas cerca',
     nearbyLinesHint: 'No paran aquí, pero pasan a pocos minutos a pie.',
     seeLine: 'Ver recorrido de la línea',

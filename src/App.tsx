@@ -178,6 +178,11 @@ export default function App() {
   useEffect(() => {
     if (activeTab === 'stops' && !boardStop) setStopWasChosen(false);
   }, [activeTab, boardStop]);
+  /** A place as the planner's destination, planned at once from whatever origin is set: the search box's places and a stop's "Como chegar". */
+  const planTo = (query: string) => {
+    setPlaceRequest((prev) => ({ query, nonce: (prev?.nonce ?? 0) + 1 }));
+    go({ tab: 'plan' });
+  };
   const viewStopOnMap = (stop: BusStop) => {
     setSelectedStop(stop);
     setStopWasChosen(true);
@@ -211,10 +216,7 @@ export default function App() {
             savedCount={favoriteStopIds.length + favoriteLineIds.length}
             onSelectStop={selectStop}
             onSelectLine={openLine}
-            onSelectPlace={(query) => {
-              setPlaceRequest((prev) => ({ query, nonce: (prev?.nonce ?? 0) + 1 }));
-              go({ tab: 'plan' });
-            }}
+            onSelectPlace={planTo}
             onOpenQrScanner={() => setIsQrModalOpen(true)}
             onOpenMenu={() => setIsMenuOpen(true)}
             onOpenTab={goToTab}
@@ -270,7 +272,17 @@ export default function App() {
                 <div className={activeTab === 'stops' ? 'contents' : 'hidden'}>
                 <div className="page h-full lg:grid lg:grid-cols-12 lg:gap-6 lg:px-6 lg:pt-4">
                   <Pane side="list" shown={!boardStop}>
-                    <StopHome favoriteStopIds={favoriteStopIds} favoriteLineIds={favoriteLineIds} onSelectLine={openLine} recentStopIds={recentStopIds} onClearRecent={clearRecentStops} onSelectStop={selectStop} onOpenQrScanner={() => setIsQrModalOpen(true)} />
+                    <StopHome
+                      favoriteStopIds={favoriteStopIds}
+                      favoriteLineIds={favoriteLineIds}
+                      onSelectLine={openLine}
+                      recentStopIds={recentStopIds}
+                      onClearRecent={clearRecentStops}
+                      onRestoreRecent={(ids) => [...ids].reverse().forEach(rememberStop)}
+                      onSelectStop={selectStop}
+                      onOpenQrScanner={() => setIsQrModalOpen(true)}
+                      changes={noticeChanges}
+                    />
                   </Pane>
                   <Pane side="detail" shown={!!boardStop}>
                     <StopArrivalsView
@@ -286,6 +298,7 @@ export default function App() {
                       notices={operatorNotices}
                       changes={noticeChanges}
                       onOpenAlerts={openAlerts}
+                      onPlanTo={(stop) => planTo(stop.name)}
                     />
                   </Pane>
                 </div>
@@ -321,7 +334,7 @@ export default function App() {
                       </div>
                     }
                   >
-                    <InteractiveMap selectedStop={stopWasChosen ? selectedStop : undefined} selectedLine={selectedLine} focus={mapFocus} onSelectStop={selectStop} onSelectLine={setSelectedLine} onOpenLine={openLine} visible={activeTab === 'map'} />
+                    <InteractiveMap selectedStop={stopWasChosen ? selectedStop : undefined} selectedLine={selectedLine} focus={mapFocus} onSelectStop={selectStop} onSelectLine={setSelectedLine} onOpenLine={openLine} onPlanTo={(stop) => planTo(stop.name)} changes={noticeChanges} visible={activeTab === 'map'} />
                   </Suspense>
                 </div>
               )}
@@ -369,8 +382,8 @@ export default function App() {
           favoriteLineIds={favoriteLineIds}
           onSelectStop={selectStop}
           onSelectLine={openLine}
-          onRemoveFavoriteStop={toggleFavoriteStop}
-          onRemoveFavoriteLine={toggleFavoriteLine}
+          onToggleFavoriteStop={toggleFavoriteStop}
+          onToggleFavoriteLine={toggleFavoriteLine}
         />
         <QrScannerModal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} onSelectStop={(stop) => selectStop(stop, true)} />
       </div>
