@@ -555,8 +555,9 @@ export const JOURNEYS: Journey[] = [
         wait: linePicked,
       },
     ],
-    // The map, not the chip: the strip does not scroll to a chip picked from elsewhere.
-    answer: `css('.maplibregl-map canvas.maplibregl-canvas')`,
+    // The chip itself: the line is one the strip did not list, so it lands far down the 24, and the
+    // strip has to bring it into view. Until it did, the answer here was the map.
+    answer: linePicked,
   },
   {
     task: 'the map, where am I',
@@ -1326,8 +1327,8 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
   if (run.findings.some((f) => f.kind === 'flow' && /never|nothing|no field|no map/.test(f.detail))) return run;
 
   // The answer: on screen, and not under anything.
-  const answer = await page.call<{ top: number; bottom: number; covered: string | null; outside?: number } | null>(
-    `async function (T) {${HELP} const el = await (async () => (${j.answer}))(); if (!el || el === true) return null; await settle(); const r = el.getBoundingClientRect(); const main = document.querySelector('main'), m = main.getBoundingClientRect(); if (main.contains(el) && (r.bottom < m.top + 8 || r.top > m.bottom - 8)) return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: null, outside: Math.round(r.top < m.top ? r.top - m.top : r.top - m.bottom) }; const hit = document.elementFromPoint(Math.min(innerWidth - 1, r.left + Math.min(r.width / 2, 20)), Math.min(innerHeight - 1, Math.max(0, r.top + Math.min(r.height / 2, 12)))); return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: !!hit && !el.contains(hit) && !hit.contains(el) ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().replace(/\s+/g, ' ').slice(0, 40) : null }; }`,
+  const answer = await page.call<{ top: number; bottom: number; left: number; what: string; covered: string | null; outside?: number } | null>(
+    `async function (T) {${HELP} const el = await (async () => (${j.answer}))(); if (!el || el === true) return null; await settle(); const r = el.getBoundingClientRect(); const main = document.querySelector('main'), m = main.getBoundingClientRect(); if (main.contains(el) && (r.bottom < m.top + 8 || r.top > m.bottom - 8)) return { top: Math.round(r.top), bottom: Math.round(r.bottom), covered: null, outside: Math.round(r.top < m.top ? r.top - m.top : r.top - m.bottom) }; const hit = document.elementFromPoint(Math.min(innerWidth - 1, r.left + Math.min(r.width / 2, 20)), Math.min(innerHeight - 1, Math.max(0, r.top + Math.min(r.height / 2, 12)))); return { top: Math.round(r.top), bottom: Math.round(r.bottom), left: Math.round(r.left), what: (el.getAttribute('aria-label') || el.textContent || el.tagName).trim().replace(/\s+/g, ' ').slice(0, 40), covered: !!hit && !el.contains(hit) && !hit.contains(el) ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().replace(/\s+/g, ' ').slice(0, 40) : null }; }`,
     T,
   );
   if (!answer) flow('the journey ended without its answer on screen');
@@ -1338,7 +1339,8 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     const fold = opts.text200 || opts.turned ? thumb : flow;
     if (answer.outside !== undefined) (answer.outside < 0 ? flow : fold)(answer.outside < 0 ? `the screen opened scrolled ${-answer.outside} px past its answer` : `the answer starts ${answer.outside} px below the bottom of the screen`);
     else if (answer.top < 0 || answer.top > H - 60) fold(`the answer is off the screen, its top at ${answer.top} of ${H} px`);
-    else if (answer.covered) fold(`the answer, ${answer.top} px down, is under "${answer.covered}"`);
+    // Which element was taken for the answer, and how far across: a chip scrolled off the side of a strip reads as covered.
+    else if (answer.covered) fold(`the answer, ${answer.top} px down, is under "${answer.covered}" (the answer: "${answer.what}", ${answer.left} px across)`);
   }
 
   await flush();

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useT } from '../../i18n';
 import { BUS_LINES } from '../../data/transitData';
@@ -42,12 +42,24 @@ export function LineChips({ listed, picked, onToggle, onAll }: LineChipsProps) {
   // Asking for a line is asking to see it: whatever covers the map gets out of the way.
   // Keyed on the picked set rather than the tap, so a line picked from the sheet folds it too.
   useEffect(() => setExpanded(false), [picked]);
+  // Then the picked chip into the strip, folded: picked from a stop's sheet, a line far down the
+  // list stayed off the right edge, and the strip seemed to show nothing picked. Again when the
+  // lines listed change, as the map moves to the line: keyed on which they are, since the list
+  // is a new array on every three-second render and a scroll by hand would be undone.
+  const strip = useRef<HTMLDivElement>(null);
+  const listedKey = listed.map((line) => line.id).join();
+  useEffect(() => {
+    if (expanded) return;
+    const on = strip.current?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    // At once: asked to scroll smoothly, the strip over the map did not move at all (Chrome 157).
+    on?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [picked, expanded, listedKey]);
   const branches = useMemo(() => new Map(listed.map((line) => [line.id, sharedNumbers.has(line.number) ? destinationOf(line) : ''])), [listed]);
 
   // One above the buses notice, which follows this in the page and has to stay beneath it when it opens.
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-map-chips lg:hidden">
-      <div className={`no-scrollbar flex gap-1.5 px-3 py-2.5 ${expanded ? 'max-h-chips-max flex-wrap overflow-y-auto' : 'overflow-x-auto'}`}>
+      <div ref={strip} className={`no-scrollbar flex gap-1.5 px-3 py-2.5 scroll-px-3 ${expanded ? 'max-h-chips-max flex-wrap overflow-y-auto' : 'overflow-x-auto'}`}>
         <button type="button" onClick={onAll} aria-pressed={picked.length === 0} className={`${chip} px-4 text-label font-semibold ${picked.length === 0 ? 'border-accent bg-accent text-on-accent' : 'text-ink-2'}`}>
           {t.map.allLines}
         </button>
