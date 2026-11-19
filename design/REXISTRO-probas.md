@@ -5889,3 +5889,36 @@ Pedido: repasar os README e o resto dos documentos e deixalos ao día. Só docum
 ### Queda
 
 - Nada desta rolda está en `develop` remoto.
+
+## Rolda 75: o pé do proxecto, en «Tarifas e info» — 19 de novembro de 2026
+
+Pedido: en vez dun rail tan cargado, levar o pé do proxecto á pestana de info, que para iso
+está.
+
+### Feito
+
+- Unha tarxeta propia, «Sobre esta app» («About this app»), co non oficial, a privacidade,
+  o código, avisar dun erro e o contacto (`ui/AboutProject.tsx`). Vai en «Tarifas e info»,
+  baixo a de atención á cidadanía e contacto e separada dela, para que ninguén tome o noso
+  correo polo do operador ou do Concello. Está en todos os tamaños de pantalla.
+- O rail volve ao da 1.7.10, cos axustes e a liña curta das fontes, sen desprazamento
+  propio. O menú do teléfono segue co mesmo pé, e a raia que o separa das fontes debúxaa
+  agora o menú.
+- No README, a frase do pé do rail da rolda 72 desfíxose, e a sección das tarifas conta a
+  tarxeta.
+
+### Comprobado
+
+- As cinco portas: lint, 176 comprobacións, 26 políticas, `check:deep` e a build.
+- No panel, contra a build en 3002, co service worker e as cachés borrados:
+  - A 1280×720, en castelán, o rail mide 720 de 720 px e non leva ningunha ligazón.
+  - «Sobre esta app» é un `h2`, coas dúas liñas e as tres ligazóns de 44 px, na columna
+    dereita baixo a de contacto.
+  - A 375×812, a tarxeta é a última da pestana, sen desbordamento lateral, e o menú segue
+    coas súas tres ligazóns e a raia.
+  - Ningún erro na consola.
+
+### Queda
+
+- `audit:browser` enteiro non se correu nas roldas 72, 73 e 75; nada delas está en
+  `develop` remoto.
