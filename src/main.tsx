@@ -20,6 +20,12 @@ window.addEventListener('vite:preloadError', (event) => {
   location.reload();
 });
 
+// Every face of both families now, not when a screen first asks for one: until a face loads,
+// its text is laid out in the fallback, so on Chrome 157 the line list and the favourites
+// header drew rows a line taller and moved them under the finger once it arrived. Two files,
+// the ones the service worker precaches anyway; a failure leaves the fallback, as before.
+document.fonts.forEach((face) => void face.load().catch(() => {}));
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
