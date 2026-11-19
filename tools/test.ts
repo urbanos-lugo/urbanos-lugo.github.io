@@ -60,6 +60,7 @@ import { answerJob, rejoin } from '../src/utils/plannerJob';
 import { estimateWalk, getNearbyStops, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
 import { directionBoardingAt, getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
 import { busStopsInOrder, getScheduledBuses } from '../src/utils/vehicles';
+import { squaresOf } from './importSquares';
 import { getDistanceMeters } from '../src/utils/geo';
 import { hydrateGeometry } from './hydrateGeometry';
 import { overpass, stitch } from './osm';
@@ -270,6 +271,31 @@ ok('every drawn bus stays on its own route', () => {
       assert(nearest < 5, `line ${bus.lineNumber} is ${Math.round(nearest)} m off its route at ${hour}:25`);
     }
   }
+});
+
+ok('a square on the map is an area named as one, centred over all its parts', () => {
+  // The tiles carry a square only as its edge, so its name read as the next street's; the
+  // map draws each at the centre importSquares.ts works out from OSM's areas.
+  const box = (lat: number, lon: number, d: number) => [
+    { lat, lon },
+    { lat, lon: lon + d },
+    { lat: lat + d, lon: lon + d },
+    { lat: lat + d, lon },
+    { lat, lon },
+  ];
+  const squares = squaresOf([
+    { type: 'way', id: 1, tags: { place: 'square', name: 'O Recanto' }, geometry: box(43, -7.56, 0.001) },
+    { type: 'way', id: 2, tags: { highway: 'pedestrian', name: 'Praza Aberta' }, geometry: box(43, -7.56, 0.001).slice(0, 3) },
+    { type: 'way', id: 3, tags: { leisure: 'park', name: 'Parque Pequeno' }, geometry: box(43.01, -7.56, 0.001) },
+    { type: 'way', id: 4, tags: { highway: 'pedestrian', area: 'yes', name: 'Praza Partida' }, geometry: box(43.02, -7.56, 0.001) },
+    { type: 'way', id: 5, tags: { leisure: 'park', name: 'Praza Partida' }, geometry: box(43.02, -7.558, 0.002) },
+  ]);
+  const names = squares.map((s) => s.name);
+  assert(names.join() === 'O Recanto,Praza Partida', `kept ${names.join(', ')}: an open line or a park not named as a square got in, or a place=square was dropped`);
+  const split = squares[1];
+  // Parts of 1 and 4 units of area, centred at (43.0205, -7.5595) and (43.021, -7.557): weighted,
+  // 43.0209, -7.5575; the halfway point would be 43.02075, -7.55825.
+  assert(Math.abs(split.lat - 43.0209) < 0.00002 && Math.abs(split.lng - -7.5575) < 0.00002, `a square in two parts is centred at ${split.lat}, ${split.lng}`);
 });
 
 ok('"go to the bus" goes first to the bus coming toward the stop the line was opened from', () => {

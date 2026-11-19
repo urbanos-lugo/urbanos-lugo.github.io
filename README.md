@@ -200,8 +200,14 @@ O mapa leva **os sitios polos que se busca unha parada, co seu nome**, por chanz
 non enchelo: desde o zoom 13, os hospitais, a estación de tren, a de autobuses, o campus e
 as súas escolas, o concello e a Catedral; desde o 15, un pouco máis pequenos, os seis
 parques grandes e os tres museos; desde o 16, as portas da Muralla que trae OSM (Miñá, San
-Pedro e Bispo Aguirre). Son 22 en toda a cidade, escollidos e non todos os que hai: 25
-parques e prazas, 6 museos e salas e cada igrexa están nas teselas. As iconas son as do
+Pedro e Bispo Aguirre) e os outros 15 parques e xardíns con nome. Son 37 en toda a cidade,
+escollidos e non todos os que hai: 25 parques e prazas, 6 museos e salas e cada igrexa están
+nas teselas. Tamén desde o 16, **o nome de cada praza enriba dela**, sen icona: as teselas
+traen unha praza só como a liña do seu bordo, na capa dos nomes das rúas, e o nome líase
+como o da rúa do lado. `tools/importSquares.ts` pide unha vez a OSM as áreas que son prazas
+(`place=square`, e as áreas peonís, os aneis peonís e os parques chamados «Praza…»): 32, co
+seu centro en `src/data/squares.json`, e o bordo xa non repite o nome. As que en OSM son só
+rúas abertas, como Santo Domingo, seguen co nome na rúa. As iconas son as do
 sprite de OpenFreeMap; a estación de tren, que en OSM se chama só «Lugo», di «Estación de
 tren». Unha icona e o seu nome van xuntos ou non van, e onde se tocan gaña o chanzo de
 arriba. As liñas pasan por debaixo deles e os puntos das paradas por riba. Desde o zoom 15
@@ -885,6 +891,7 @@ non chama ningunha.
 │   │   ├── walk-network.json       XERADO — 21.093 cruces, 29.489 arestas
 │   │   ├── map-style-light.json    XERADO — o estilo do mapa base, paleta clara
 │   │   ├── map-style-dark.json     XERADO — o mesmo, paleta escura
+│   │   ├── squares.json            XERADO — nome e centro das prazas, de OSM (ODbL)
 │   │   ├── festivos.json           os festivos que corren como domingos, por ano e coa súa fonte
 │   │   ├── structuralNotices.ts    os avisos permanentes, escritos a man, coa data da súa revisión
 │   │   ├── routeGeometry.ts        carga os trazados baixo demanda
@@ -955,6 +962,7 @@ non chama ningunha.
 ├── tools/
 │   ├── importOfficialData.ts       descarga e axuste viario (lento, cacheado)
 │   ├── importStopAmenities.ts      equipamentos de parada desde OSM
+│   ├── importSquares.ts            as prazas como áreas, desde OSM, para o seu nome no mapa
 │   ├── buildDataset.ts             xera stops.json e lines.json (rápido)
 │   ├── importOsmRoutes.ts          relacións de ruta desde Overpass
 │   ├── importWalkNetwork.ts        as vías camiñables de Lugo desde Overpass

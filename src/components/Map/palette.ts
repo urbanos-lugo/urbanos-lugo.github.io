@@ -125,19 +125,19 @@ export const DRAW = {
   /** The stop names written beside the dots: size, weight, gap from the dot's ring, halo, the screen edge they keep off, how far round one a tap still takes it, the ms one takes to fade in or out (--transition-duration-swap's), and the zoom the network and trip maps start writing them from. */
   names: { size: 12, weight: 600, gap: 5, halo: 3, edge: 4, reach: 8, fade: 160, zoom: 15 },
   /**
-   * The places on the basemap, with their names: its three layers' ids, bottom to top — the
-   * wall's gates, the big parks and museums, then the hospitals, stations, faculties, town hall
-   * and Cathedral (tools/buildMapStyle.ts writes them, the stop names step round what they
-   * draw) — the name's size in the top tier and the two below it, how far it starts from the
-   * icon's centre and the width it wraps at, both in ems, and the icon's size in px, a little
-   * over the sprite's so a stop name keeps off its edge. `railway` is written for the train
-   * station, whose name in OSM is only the city's: the same words in Galician and Spanish, and a
-   * place's name like the others in English. `source` and `covered` are where the landmarks come
-   * from and the feature state that hides one while a stop's name is written over it.
+   * The places on the basemap, with their names: its layers' ids, bottom to top — the squares
+   * (a name over each, no icon), the smaller parks and the wall's gates, the big parks and
+   * museums, then the hospitals, stations, faculties, town hall and Cathedral
+   * (tools/buildMapStyle.ts writes them, the stop names step round what they draw) — the name's
+   * size in the top tier and the ones below it, how far it starts from the icon's centre and
+   * the width it wraps at, both in ems, and the icon's size in px, a little over the sprite's so
+   * a stop name keeps off its edge. `railway` is written for the train station, whose name in
+   * OSM is only the city's: the same words in Galician and Spanish, and a place's name like the
+   * others in English. `covered` is the feature state that hides one while a stop's name is
+   * written over it, set on whichever source the place came from.
    */
   landmarks: {
-    layers: ['urbanos_landmarks_gates', 'urbanos_landmarks_more', 'urbanos_landmarks'],
-    source: { source: 'openmaptiles', sourceLayer: 'poi' },
+    layers: ['urbanos_squares', 'urbanos_landmarks_parks', 'urbanos_landmarks_gates', 'urbanos_landmarks_more', 'urbanos_landmarks'],
     covered: 'covered',
     size: 12,
     minor: 11,

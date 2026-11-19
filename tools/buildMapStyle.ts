@@ -101,9 +101,38 @@ const landmarkLayer = (id: string, minzoom: number, size: number, filter: unknow
   },
 });
 
-const [GATES, MORE, MAIN] = DRAW.landmarks.layers;
+const [SQUARES, PARKS, GATES, MORE, MAIN] = DRAW.landmarks.layers;
+
+/**
+ * The squares, from OpenStreetMap's areas (tools/importSquares.ts): the tiles have a square only
+ * as the line of its edge, so its name ran along a side and read as the next street's. A source
+ * of their own, each feature with an id for the state that hides it under a stop's name.
+ */
+const SQUARES_SOURCE = 'urbanos-squares';
+const SQUARE_LIST: { name: string; lat: number; lng: number }[] = JSON.parse(readFileSync('src/data/squares.json', 'utf8'));
+const squaresSource = () => ({
+  type: 'geojson',
+  data: { type: 'FeatureCollection', features: SQUARE_LIST.map((s, i) => ({ type: 'Feature', id: i + 1, properties: { name: s.name }, geometry: { type: 'Point', coordinates: [s.lng, s.lat] } })) },
+});
+/** The basemap's street-name layers that wrote a square's name along its edge, named differently in each theme. */
+const ALONG_THE_EDGE: Record<keyof typeof PUBLISHED, string[]> = {
+  light: ['highway-name-path', 'highway-name-minor', 'highway-name-major'],
+  dark: ['highway_name_other'],
+};
+
 /** Bottom to top, as they go into the style: the top one is placed first. */
 const LANDMARKS: Layer[] = [
+  {
+    id: SQUARES,
+    type: 'symbol',
+    source: SQUARES_SOURCE,
+    minzoom: 16,
+    // Over the square, with no icon: the name is the place.
+    layout: { 'text-field': ['get', 'name'], 'text-font': ['Noto Sans Regular'], 'text-size': DRAW.landmarks.minor, 'text-max-width': DRAW.landmarks.wrap },
+  },
+  // Every other park with a name, a step after the six that read across the city; not the ones
+  // called "Praza …", which the squares draw.
+  landmarkLayer(PARKS, 16, DRAW.landmarks.minor, ['all', ['==', ['get', 'class'], 'park'], ['!=', nameOf, ''], ['!', ['in', nameOf, ['literal', BIG_PARKS]]], ['!', startsWith('Praza ')]]),
   landmarkLayer(GATES, 16, DRAW.landmarks.minor, ['all', ['==', ['get', 'class'], 'attraction'], startsWith('Porta ')]),
   // "Museo …" only: the others are an exhibition hall, a mosaic house and a site centre, one of
   // them called after the gate beside it.
@@ -275,6 +304,14 @@ function derive(published: Style, edits: readonly Edit[], theme: keyof typeof PU
   const wood = style.layers.findIndex((l) => l.id === PARKS_AFTER);
   if (wood < 0) throw new Error(`${theme}: the published style has no layer ${PARKS_AFTER} to put the parks over. Upstream renamed or dropped it -- fix PARKS_AFTER.`);
   style.layers.splice(wood + 1, 0, parks(PARK_GREEN[theme]));
+  // A square named at its centre is not written again along its edge.
+  const squareNames = ['literal', SQUARE_LIST.map((s) => s.name)];
+  for (const id of ALONG_THE_EDGE[theme]) {
+    const layer = byId.get(id);
+    if (!layer) throw new Error(`${theme}: the published style has no layer ${id} to keep the squares' names off. Upstream renamed it -- fix ALONG_THE_EDGE.`);
+    layer.filter = ['all', layer.filter, ['!', ['in', nameOf, squareNames]]];
+  }
+  style.sources[SQUARES_SOURCE] = squaresSource();
   style.layers.push(...LANDMARKS.map((layer) => ({ ...layer, paint: LANDMARK_PAINT[theme] })));
 
   // The credit travels with the file as well as with the map control.
