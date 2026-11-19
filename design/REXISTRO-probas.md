@@ -5975,3 +5975,60 @@ ter. Eran do 28 de outubro, e cada un mirouse contra o código.
 ### Queda
 
 - Nada desta rolda está en `develop` remoto.
+
+## Rolda 77: o aviso estrutural revisado, e a tira das liñas — 19 de novembro de 2026
+
+Pedido: seguir co pendente que se pode facer xa, e revisar os avisos estruturais.
+
+### O aviso estrutural, revisado o 19
+
+Revisado igual ca o 13 e o 29 de outubro:
+- `lines.json` fai saír a 7, a 8, a 9 e a 12 de Bolaño Ribadeneira 1.
+- Desde o 29 de outubro, o único cambio do conxunto de datos é `cb10956`. Deixa as oito
+  lonxitudes destas catro liñas como estaban, ao metro (a ida da 12, un metro máis). A 7, a 8
+  e a 12 gañaron un, un e tres vértices na ida, lonxe da muralla.
+- O traballo do luns 16 de novembro volveu ler as páxinas das liñas e os trazados de OSM,
+  cos metros por rúas peonís, e pasou.
+
+Dúas cousas que o texto dicía mal:
+- «As catro liñas rematan en Bolaño Ribadeneira»: a volta da 7 remata en Rúa Montevideo 7
+  (Sanatorio NSOG), e xa era así nas revisións de outubro. Agora di que teñen alí a
+  cabeceira, que é o que xa dicía o título.
+- O aviso do operador deste mes, lido unha vez ás 16:05 a través do noso worker, suprime na
+  7, a 8 e a 9 «el tramo Bolaño Rivadeneira – Ronda Muralla». O aviso estrutural dicía o
+  contrario na mesma pantalla. Agora engade que, mentres o operador teña publicado ese aviso,
+  a 7, a 8 e a 9 non fan ese tramo, e que manda o del.
+
+As portas de Bispo Odoario e San Fernando non veñen nas teselas como punto, así que non se
+mediron contra o trazado: valen porque o trazado destas catro non cambiou desde que se
+escribiron. `NOTICES_REVIEWED_ON` pasa ao 19 de novembro, e o README tamén (`062b263`).
+
+### A tira das liñas sobre o mapa
+
+- A rolda 60 deixara que unha liña escollida desde a folla dunha parada podía quedar fóra da
+  tira, pola dereita. Ao escoller unha que a tira non listaba, o mapa abre ás 24, e a ficha
+  quedaba lonxe.
+- `LineChips` leva agora a ficha escollida á vista. Faino cando cambia o escollido, o
+  pregado ou as liñas listadas. As listadas van por clave de texto, porque a lista é unha
+  matriz nova en cada render de tres segundos e desfaría un desprazamento feito a man.
+- O desprazamento é de golpe. Pedido suave, nesta tira sobre o mapa non se movía nada en
+  Chrome 157 (medido no panel: `smooth` deixou o scroll en 0 e `auto` levouno a 1220).
+  `scroll-px-3` deixa a ficha onde empeza a marxe da tira.
+- A viaxe «the map, one line · map tab, a stop’s sheet» respondía co mapa, «porque a tira
+  non se despraza», e volve responder coa ficha. O primeiro intento fallou nela porque o
+  mapa quedaba «debaixo» dunha ficha. Para atopalo, o achado dun obxecto tapado di agora que
+  elemento tomou como resposta e en que x.
+- `bb9e241`.
+
+### Comprobado
+
+- As cinco portas: lint, 176 comprobacións, 26 políticas, `check:deep` e a build.
+- No panel, contra a build en 3002, a 375×812, escollendo a 13 por JavaScript: a tira baixa
+  1232 px e a ficha queda entre 319 e 363 px, sen mover a páxina. Ningún erro na consola.
+- `AUDIT_RUNNER=1 JOURNEYS=map` con Chrome 157: 22 viaxes, 0 achados.
+
+### Queda
+
+- `audit:browser` enteiro non se correu nesta rolda; nada dela está en `develop` remoto.
+- Durante as obras, os taboleiros de Bolaño Ribadeneira 1 seguen dando saídas da 7, a 8 e
+  a 9: o lector dos avisos non le os tramos (rolda 68), só a franxa do aviso leva a el.
