@@ -37,7 +37,8 @@ tocar nada; e o día que cambien, salta.
 - **As obras e avisos municipais.** Non hai fonte lexible por máquina. `datosabertos.lugo.gal`
   devolve 503 nos endpoints CKAN e 404 nos catálogos; a web do Concello é HTML pensado para
   ler, e raspala é un proxecto propio que ademais obriga a ler os seus termos. Quedan
-  escritos a man, **con data de revisión e cun aviso que salta aos seis meses**. Iso é o
+  escritos a man, **con data de revisión**: a comprobación semanal falla cando pasan cinco
+  semanas sen revisalos, e a pantalla dillo a quen le aos dous meses. Iso é o
   máximo que se pode automatizar: que a app admita soa que ninguén mirou.
 - **Os nomes das paradas e das liñas.** Veñen do scrape. Cambialos é unha decisión, non un
   refresco.

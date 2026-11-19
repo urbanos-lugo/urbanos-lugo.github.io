@@ -2260,6 +2260,8 @@ A lista de traballo, co detalle e as medidas de cada punto, é unha soa:
 - **Un lector de pantalla de verdade nun teléfono**, VoiceOver e TalkBack
   ([`design/PROBA-lector-de-pantalla.md`](design/PROBA-lector-de-pantalla.md)): a
   auditoría mide nomes, estados e orde, pero non como soan.
+- **Unha páxina por parada**, á espera do que diga Search Console en decembro das páxinas
+  de liña: se Google as indexa e se lles leva as buscas polo número.
 
 ### Ideas
 
@@ -2361,15 +2363,17 @@ O de máis impacto e o menos técnico: o Concello concede o servizo e pode esixi
 publique GTFS e GTFS-Realtime. Iso resolvería de golpe os datos e o tempo real, e o
 proxecto está preparado para lelo ([Por que non se usa GTFS](#por-que-non-se-usa-gtfs)).
 
-#### Unha páxina por liña e por parada
+#### Unha páxina por parada
 
 O que depende de nós para os buscadores está feito: título, descrición e canónica por
 pestana e idioma, pestanas como ligazóns, `og:image`, datos estruturados, `robots.txt` e
-sitemap na raíz do dominio, e o sitio dado de alta en Search Console e en Bing. O seguinte
-paso sería que cada liña e cada parada tivesen o seu enderezo, que hoxe non teñen: está
-descrito, coas medidas e o plan, en [`design/AUDITORIA-seo.md`](design/AUDITORIA-seo.md),
-e non se fai por agora, porque non hai présa por competir con ninguén. Nada diso cambia as
-regras: ningún título prometerá tempo real, e «non oficial» vai na descrición.
+sitemap na raíz do dominio, o sitio dado de alta en Search Console e en Bing, e desde a
+1.7.10 cada liña co seu enderezo, nos tres idiomas. O paso seguinte sería o mesmo para as
+417 paradas. Está descrito en [`design/AUDITORIA-seo.md`](design/AUDITORIA-seo.md) (punto
+8), e espera ao export de decembro: antes hai que ver se as páxinas de liña se indexan e
+levan as buscas polo número. Hoxe, ademais, un rastrexador non chegaría ás paradas: na
+páxina dunha liña non son ligazóns. Nada diso cambia as regras: ningún título prometerá
+tempo real, e «non oficial» vai na descrición.
 
 #### Un panel físico nunha Raspberry Pi
 
