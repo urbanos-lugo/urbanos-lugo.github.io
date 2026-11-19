@@ -285,7 +285,7 @@ export const en: Dict = {
       {
         title: 'Old town terminus (lines 7, 8, 9 and 12)',
         description:
-          'All four lines end at Bolaño Ribadeneira, inside the walls. They come in through Porta do Bispo Odoario, beside Hospital Quirónsalud, and leave through Porta de San Fernando — always that way round, all four. Between 230 and 385 metres of each route run along streets OpenStreetMap marks pedestrian, without the bus exception they should carry. Seen on 2 September 2026: what is missing is the tag, not the passage.',
+          'All four lines have their terminus at Bolaño Ribadeneira, inside the walls. They come in through Porta do Bispo Odoario, beside Hospital Quirónsalud, and leave through Porta de San Fernando — always that way round, all four. Between 230 and 385 metres of each route run along streets OpenStreetMap marks pedestrian, without the bus exception they should carry. Seen on 2 September 2026: what is missing is the tag, not the passage. While the operator’s November 2026 works notice is up, the 7, 8 and 9 skip the stretch between Bolaño Ribadeneira and Ronda Muralla: that notice is the one to follow.',
       },
     ],
   },

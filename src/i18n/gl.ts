@@ -323,7 +323,7 @@ export const gl = {
       {
         title: 'Cabeceira no casco histórico (liñas 7, 8, 9 e 12)',
         description:
-          'As catro liñas rematan en Bolaño Ribadeneira, dentro da muralla. Entran pola Porta do Bispo Odoario, a carón do Hospital Quirónsalud, e saen pola Porta de San Fernando: sempre nese sentido, as catro. Entre 230 e 385 metros de cada percorrido van por rúas que OpenStreetMap ten como peonís, sen a excepción de bus que lles tocaría. Visto o 2 de setembro de 2026: o que falta é a etiqueta, non o paso.',
+          'As catro liñas teñen a cabeceira en Bolaño Ribadeneira, dentro da muralla. Entran pola Porta do Bispo Odoario, a carón do Hospital Quirónsalud, e saen pola Porta de San Fernando: sempre nese sentido, as catro. Entre 230 e 385 metros de cada percorrido van por rúas que OpenStreetMap ten como peonís, sen a excepción de bus que lles tocaría. Visto o 2 de setembro de 2026: o que falta é a etiqueta, non o paso. Mentres o operador teña publicado o seu aviso de obras de novembro de 2026, a 7, a 8 e a 9 non fan o tramo entre Bolaño Ribadeneira e Ronda Muralla: manda ese aviso.',
       },
     ],
   },

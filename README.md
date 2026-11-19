@@ -574,8 +574,9 @@ ou unha restrición. Unha nota de prensa municipal non é unha incidencia do ser
 Ademais, os avisos estruturais escritos neste proxecto, cada un coa súa data de revisión.
 Revísanse cada mes contra as súas fontes: «Check the sources» falla o luns en que a última
 revisión pasa das cinco semanas, e a pantalla avisa a quen le cando pasa dos dous meses.
-Queda un, a cabeceira das liñas 7, 8, 9 e 12 no casco histórico, revisado o 29 de outubro
-de 2026.
+Queda un, a cabeceira das liñas 7, 8, 9 e 12 no casco histórico, revisado o 19 de novembro
+de 2026: mentres o operador teña publicado o seu aviso de obras dese mes, di tamén que a 7,
+a 8 e a 9 non fan o tramo entre Bolaño Ribadeneira e Ronda Muralla.
 
 Cando o operador escribe un aviso liña a liña na súa portada —o do San Froilán de 2026
 chegou así, e a campá só dicía «Cambios en las líneas por San Froilán»—, a app le esa
