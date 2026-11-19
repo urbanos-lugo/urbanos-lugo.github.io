@@ -6032,3 +6032,52 @@ escribiron. `NOTICES_REVIEWED_ON` pasa ao 19 de novembro, e o README tamén (`06
 - `audit:browser` enteiro non se correu nesta rolda; nada dela está en `develop` remoto.
 - Durante as obras, os taboleiros de Bolaño Ribadeneira 1 seguen dando saídas da 7, a 8 e
   a 9: o lector dos avisos non le os tramos (rolda 68), só a franxa do aviso leva a el.
+
+## Rolda 78: un tramo suprimido tamén se le — 19 de novembro de 2026
+
+Pedido: o que deixou a rolda 77 en «Queda». O aviso de obras de novembro, lido de novo a
+través do noso servidor ás 20:59, trae a 7, a 8 e a 9 con «(queda suprimido el tramo Bolaño
+Rivadeneira – Ronda Muralla)», e despois «Desde R/Anduriñas (en la cual se creará una parada
+esquina con Rda. Muralla) seguirá…». Bolaño Ribadeneira 1 é a primeira parada da ida das
+tres, e o taboleiro seguía dando as súas saídas.
+
+### Onde cae o tramo (contado no conxunto de datos)
+
+- Na ida da 7 e da 8, Bolaño Ribadeneira 1 é a parada 0 e Rda. Muralla 95 (S. Fernando) a
+  1: o tramo é só a cabeceira.
+- A ida da 9 sae de Bolaño pola Avda. da Coruña e non ten ningunha parada da Muralla despois.
+- A volta da 8 e a da 9 rematan en Bolaño, e a da 7 en Montevideo: a chegada final non é
+  unha saída.
+
+### Feito
+
+- `STRETCH` e `stretchStops` en `noticeChanges.ts`. A ponta A emparéllase coma calquera
+  parada (`matchStop`, que xa aceptaba «Rivadeneira» por «Ribadeneira»). Para B abonda con
+  que a parada leve todas as súas palabras, porque é unha rúa con varias paradas. Péchanse A
+  e as seguintes ata a primeira de B no percorrido, que é onde segue. Se non hai ningunha
+  despois de A, só A. Só se mira cara adiante: un tramo que unha volta faga ao revés queda
+  nas palabras do aviso, en vez de pechar paradas que quizais si atende.
+- A comprobación que dicía «un tramo non é unha parada, e só cambia a 12» agora di o
+  contrario do que gardaba: a 7 deixa exactamente Bolaño Ribadeneira 1, só cambian a 7 e a
+  12, e o taboleiro de Bolaño risca a 7 e non a 12. Hai outra nova para o alcance da regra.
+  Ata «Obras públicas», a 7 deixa as tres paradas de antes. Na 9, só Bolaño. Unha ponta que
+  non é parada da liña non pecha nada.
+- O README dicía «Un tramo suprimido non é unha parada, e tampouco se le». Agora conta como
+  se le.
+
+### Comprobado
+
+- As cinco portas: lint, 177 comprobacións, 26 políticas, `check:deep` e a build.
+- No panel, contra a build nun porto propio (3033), co service worker e as cachés
+  borrados. O taboleiro de Bolaño Ribadeneira 1 abriuse polo historial e non con `?parada=`,
+  para non pedir os minutos do QR. Di «Estos días las líneas 7, 8, 9 no paran aquí». As
+  oito saídas desas tres liñas ata as 22:00 saen riscadas, con «No para aquí estos días» e
+  sen campá, e a 12 segue igual. Ningún erro na consola.
+
+### Queda
+
+- A regra saíu dun só aviso. Outro que escriba o tramo doutra maneira (ao revés, sen
+  guión, «entre A e B») queda nas súas palabras, como ata agora.
+- O «Desde R/Anduriñas…» non se le como parada provisional: non hai parada no conxunto de
+  datos, e a franxa do aviso dío nas palabras do operador.
+- `audit:browser` enteiro non se correu; nada desta rolda está en `develop` remoto.

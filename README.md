@@ -596,8 +596,12 @@ Ramón Ferreiro (Femenino)» é «Ramón Ferreiro (Feminino)» e non «(Anexa)»
 vale se todas as súas palabras están nunha soa parada da liña: no aviso de obras de
 novembro de 2026, «Obras públicas» é «Rda. Muralla (Obras Públicas)» e «R/Montevideo»
 «Rúa Montevideo 7 (Sanatorio NSOG)», mentres «Rda. Muralla», que son tres paradas da 12,
-queda nas palabras do aviso. Un tramo suprimido non é unha parada, e tampouco se le. Eses
-días, ou mentres estea publicado se non nomea ningún:
+queda nas palabras do aviso. Un tramo suprimido, «queda suprimido el tramo A – B», tamén se
+le: deixa a parada de A e as seguintes ata a primeira parada de B no percorrido, que é onde
+segue. B é unha rúa, así que abonda con que a parada leve as súas palabras. No mesmo aviso
+de obras, «el tramo Bolaño Rivadeneira – Ronda Muralla» deixa Bolaño Ribadeneira 1, de onde
+saen a 7, a 8 e a 9. Se despois de A non hai ningunha parada de B, como na 9, que sae pola
+Avda. da Coruña, só se deixa A. Eses días, ou mentres estea publicado se non nomea ningún:
 
 - No **taboleiro** dunha parada que unha liña deixa, dísese e dise onde para; as súas
   saídas seguen na lista, riscadas, marcadas e sen campá. A franxa do aviso vai pregada: á

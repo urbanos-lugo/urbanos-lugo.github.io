@@ -68,6 +68,8 @@ const MOVED = /\bmodificaci[óo]n de la parada\s+(.+?)\s+pasará a ubicarse prov
 /** «(quedan suprimidas las paradas de Rda. Muralla, Obras públicas y R/Montevideo)», the works of November 2026: a list, in brackets. */
 const CLOSED_LIST = /\bquedan?\s+suprimidas?\s+(?:las?|as?)\s+paradas?\s+de\s+([^.;)]+)/i;
 const LIST_SEP = /\s*,\s*|\s+(?:y|e)\s+/;
+/** «(queda suprimido el tramo Bolaño Rivadeneira – Ronda Muralla)», the same works on the 7, the 8 and the 9: a stretch, by its two ends. */
+const STRETCH = /\bqueda\s+suprimido\s+(?:el|o)\s+tramo\s+(?:de\s+)?(.+?)\s+[–—-]\s+([^.;)]+)/i;
 
 /**
  * The period of a street abbreviation is not the end of a sentence: «esquina Avda. Ramón
@@ -146,6 +148,31 @@ const stopsOfLine = (number: string): BusStop[] => {
   return BUS_STOPS.filter((s) => s.lines.some((id) => ids.has(id)));
 };
 
+/**
+ * The stops a dropped stretch takes off a line: the stop at its first end, and every one after
+ * it on the way to the first stop of the other end, where the route goes on. The other end only
+ * needs every word it gives, because it is a road: «Ronda Muralla» is several of the 7's stops,
+ * and the first one along the route is where the stretch stops. With no such stop after the
+ * first end, as on the 9, which leaves by Avda. Coruña, only the first end is closed.
+ * Bolaño Ribadeneira 1, where the 7, the 8 and the 9 start, kept their departures through the
+ * works of November 2026: a stretch was read as nothing.
+ */
+function stretchStops(line: string, from: string, to: string, candidates: BusStop[]): string[] {
+  const start = matchStop(from, candidates);
+  const want = words(to);
+  if (!start || !want.length) return [];
+  const names = new Map(candidates.map((s) => [s.id, words(s.name)]));
+  const reaches = (id: string) => want.every((w) => (names.get(id) ?? []).some((h) => sameWord(w, h)));
+  const closed = new Set<string>();
+  for (const direction of BUS_LINES.filter((l) => l.number === line || l.id === line).flatMap((l) => l.directions)) {
+    const at = direction.stops.indexOf(start);
+    if (at < 0) continue;
+    const resume = direction.stops.findIndex((id, i) => i > at && reaches(id));
+    for (const id of direction.stops.slice(at, resume < 0 ? at + 1 : resume)) closed.add(id);
+  }
+  return [...closed];
+}
+
 /** Everything the operator's sectioned notices change, or null when none says anything this can use. */
 export function readNoticeChanges(alerts: ServiceAlert[], year: number): NoticeChanges | null {
   const notices = alerts.filter((a) => a.source !== 'concello' && (a.sections?.length ?? 0) > 0);
@@ -173,6 +200,10 @@ export function readNoticeChanges(alerts: ServiceAlert[], year: number): NoticeC
         for (const name of listed ? listed[1].split(LIST_SEP) : []) {
           const id = matchStop(unmask(name)!, candidates);
           if (id && !change.closed.some((c) => c.stopId === id)) change.closed.push({ stopId: id });
+        }
+        const stretch = STRETCH.exec(paragraph);
+        for (const id of stretch ? stretchStops(line, unmask(stretch[1])!, unmask(stretch[2])!, candidates) : []) {
+          if (!change.closed.some((c) => c.stopId === id)) change.closed.push({ stopId: id });
         }
         const moved = MOVED.exec(paragraph);
         const movedId = moved && matchStop(unmask(moved[1])!, candidates);

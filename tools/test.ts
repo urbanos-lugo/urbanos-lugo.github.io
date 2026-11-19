@@ -1745,14 +1745,35 @@ ok('a notice that closes stops in a list closes each one it names clearly, and n
   // «Rda. Muralla» is three of the 12's stops: it stays in the notice's words, and nothing is closed for it.
   const ofLine = (n: string) => BUS_STOPS.filter((s) => s.lines.some((id) => BUS_LINES.find((l) => l.id === id)?.number === n));
   assert(ofLine('12').filter((s) => /muralla/i.test(s.name)).length > 1 && matchStop('Rda. Muralla', ofLine('12')) === undefined, '«Rda. Muralla» was matched to one stop of several');
-  // A stretch is not a stop: the 7 changes nothing it can be held to, and no line is closed but the 12.
-  assert(!changes?.lines.some((c) => c.line !== '12'), `lines other than the 12 changed: ${changes?.lines.map((c) => c.line).join(' ')}`);
+  // The 7's dropped stretch closes its terminus, where its departures start, and no other line changes.
+  // Bolaño Ribadeneira 1 kept the 7, the 8 and the 9 through the works: a stretch was read as nothing.
+  const seven = changes?.lines.find((c) => c.line === '7');
+  assert.deepStrictEqual(seven?.closed.map((s) => named(s.stopId)), ['Bolaño Ribadeneira 1'], `the 7's stretch closed ${JSON.stringify(seven?.closed)}`);
+  assert.deepStrictEqual(changes?.lines.map((c) => c.line), ['7', '12'], `lines changed: ${changes?.lines.map((c) => c.line).join(' ')}`);
+  const bolano = BUS_STOPS.find((s) => s.name === 'Bolaño Ribadeneira 1')!;
+  const atBolano = atStop(changes, bolano, new Date(2026, 10, 18, 10, 0));
+  assert(atBolano.skips('7') && !atBolano.skips('12') && atBolano.speaks, 'the board at Bolaño kept the 7, or lost the 12');
   // It names no day, so it holds while it is up; and only the 12 is kept off the stop the other ten lines still call at.
   const montevideo = BUS_STOPS.find((s) => s.name === 'Rúa Montevideo 7 (Sanatorio NSOG)')!;
   const here = atStop(changes, montevideo, new Date(2026, 10, 18, 10, 0));
   assert(here.skips('12') && !here.skips('7') && here.speaks, 'Montevideo did not keep the 12 away, or kept the 7 away too');
   const skips = stopSkipper(changes, new Date(2026, 10, 18, 10, 0));
   assert(skips && BUS_LINES.filter((l) => l.number === '12').every((l) => skips(l.id, montevideo.id)) && !skips('7', montevideo.id), 'the planner was not kept off the 12 at Montevideo');
+});
+
+ok('a dropped stretch closes its first end and the stops before the road it names, nothing past it', () => {
+  // The same rule as the 7's, read where it reaches further. On the 7's outward way Bolaño
+  // Ribadeneira 1, Rda. Muralla 95 and 118, then Obras Públicas: a stretch to «Obras Públicas»
+  // closes the first three. The 9 leaves Bolaño by Avda. Coruña, with no «Muralla» after it:
+  // only Bolaño closes, rather than the whole way.
+  const read = (line: string, text: string) => readNoticeChanges([{ ...OBRAS_NOV_2026, sections: [{ heading: `Línea ${line}`, lines: [line], paragraphs: [text] }] }], 2026)?.lines.find((c) => c.line === line);
+  const named = (c: ReturnType<typeof read>) => c?.closed.map((s) => BUS_STOPS.find((b) => b.id === s.stopId)!.name);
+  const way = BUS_LINES.find((l) => l.number === '7')!.directions[0].stops.slice(0, 4).map((id) => BUS_STOPS.find((s) => s.id === id)!.name);
+  assert.deepStrictEqual(way, ['Bolaño Ribadeneira 1', 'Rda. Muralla 95 (S. Fernando)', 'Rda. Muralla 118', 'Rda. Muralla (Obras Públicas)'], `the 7 starts another way now, so this proves nothing: ${way.join(' | ')}`);
+  assert.deepStrictEqual(named(read('7', '(queda suprimido el tramo Bolaño Rivadeneira – Obras públicas)')), way.slice(0, 3));
+  assert.deepStrictEqual(named(read('9', '(queda suprimido el tramo Bolaño Rivadeneira – Ronda Muralla)')), ['Bolaño Ribadeneira 1']);
+  // An end that names no stop of the line closes nothing.
+  assert.strictEqual(read('7', '(queda suprimido el tramo Praza Maior – Ronda Muralla)'), undefined, 'a stretch from a stop the 7 never calls at closed something');
 });
 
 ok('the planner never boards or leaves a line at a stop the notice closes', () => {
