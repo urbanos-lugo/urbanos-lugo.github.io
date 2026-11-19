@@ -2,6 +2,7 @@ import { asideSections, navSections, type Tab } from './navSections';
 import { tabLink } from '../hooks/useTabRoute';
 import { useLang, useT } from '../i18n';
 import { Settings, type SettingsProps } from './ui/Settings';
+import { AboutProject } from './ui/AboutProject';
 import { CountBadge } from './ui/CountBadge';
 import { OnTripMark } from './ui/OnTripMark';
 import { Wordmark } from './ui/Wordmark';
@@ -18,7 +19,8 @@ const row = (on: boolean) => `flex h-tap items-center gap-3 rounded-control px-3
 
 /**
  * The desktop shell's left rail: the same four destinations as the phone's bottom bar,
- * where a pointer lives instead of where a thumb reaches, with the settings at its foot.
+ * where a pointer lives instead of where a thumb reaches, with the settings and the
+ * project's note (AboutProject) at its foot, as the phone's menu has them.
  * Never rendered below lg.
  */
 export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = false, ...settings }: SideNavProps) {
@@ -26,7 +28,8 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
   const lang = useLang();
   return (
     // A landmark, so a screen reader moving by landmark does not meet a rail with holes in it.
-    <aside aria-label={t.nav.appName} className="hidden w-rail shrink-0 flex-col border-r border-line bg-bg lg:flex">
+    // Scrolls on its own: with the project's foot, a short window would otherwise cut the rail.
+    <aside aria-label={t.nav.appName} className="hidden w-rail shrink-0 flex-col overflow-y-auto border-r border-line bg-bg lg:flex">
       <div className="px-5 pb-4 pt-5">
         <Wordmark />
       </div>
@@ -57,7 +60,10 @@ export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = fals
 
       <div className="mt-auto flex flex-col gap-3 border-t border-line p-3.5">
         <Settings {...settings} />
-        <p className="px-1 text-note text-ink-3">{t.menu.sourceShort}</p>
+        <div className="flex flex-col gap-1 px-1 text-note text-ink-3">
+          <p>{t.menu.sourceShort}</p>
+          <AboutProject />
+        </div>
       </div>
     </aside>
   );

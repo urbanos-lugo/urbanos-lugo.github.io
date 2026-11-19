@@ -41,7 +41,7 @@ export const gl = {
     sourceNoGps: 'Horas calculadas, non medidas',
     sourceShort: 'Horarios oficiais de buslugo.com. As horas desta app son calculadas.',
     unofficial: 'Proxecto non oficial: nin AULUSA / Monbus nin o Concello de Lugo o fan nin o avalan.',
-    privacy: 'A túa localización non sae deste móbil. Nin sequera para trazar o camiño a pé.',
+    privacy: 'A túa localización non sae deste dispositivo. Nin sequera para trazar o camiño a pé.',
     sourceCode: 'Código, licenzas e privacidade',
     reportProblem: 'Avisar dun erro na app',
     contact: (email: string) => `Contacto: ${email}`,

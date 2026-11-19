@@ -842,6 +842,7 @@ queira usar; a app non chama ningunha.
 │   │   │   ├── EmptyState.tsx      o que se amosa onde iría unha lista ou unha resposta
 │   │   │   ├── OnTripMark.tsx      o punto da viaxe en curso, na barra e no rail
 │   │   │   ├── Wordmark.tsx        o nome da app á cabeza da navegación
+│   │   │   ├── AboutProject.tsx    non oficial, privacidade, código e contacto, ao pé do menú e do rail
 │   │   │   └── Settings.tsx        tema, idioma e a pestana de entrada, os mesmos no menú e no rail
 │   │   ├── TopBar.tsx              buscador único + escáner QR
 │   │   ├── BottomNav.tsx           navegación en móbil
@@ -1675,7 +1676,9 @@ Medido a 390 px: a resposta empeza no píxel 103, e a pantalla de ruta mide 3,18
 de alto. O que queda é o itinerario paso a paso, que é unha lista.
 
 **Escritorio (`lg` en diante).** Rail esquerdo fixo con os catro destinos etiquetados e,
-ao pé, avisos, tarifas, tema e idioma. Paradas e Liñas son dous paneis con **scroll
+ao pé, avisos, tarifas, tema, idioma e a pestana de entrada, e o mesmo pé que o menú do
+teléfono: que o proxecto non é oficial, a privacidade, o código, avisar dun erro e o
+contacto. Paradas e Liñas son dous paneis con **scroll
 independente**: escoller unha parada non che fai perder o sitio na lista. No planificador
 o formulario queda fixo mentres o itinerario baixa ao lado. A barra inferior desaparece.
 No **mapa** a páxina non baixa: o mapa enche o alto que queda, e os controis do lado

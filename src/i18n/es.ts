@@ -27,7 +27,7 @@ export const es: Dict = {
     sourceNoGps: 'Horas calculadas, no medidas',
     sourceShort: 'Horarios oficiales de buslugo.com. Las horas de esta app son calculadas.',
     unofficial: 'Proyecto no oficial: ni AULUSA / Monbus ni el Ayuntamiento de Lugo lo hacen ni lo avalan.',
-    privacy: 'Tu ubicación no sale de este móvil. Ni siquiera para trazar el camino a pie.',
+    privacy: 'Tu ubicación no sale de este dispositivo. Ni siquiera para trazar el camino a pie.',
     sourceCode: 'Código, licencias y privacidad',
     reportProblem: 'Avisar de un error en la app',
     contact: (email: string) => `Contacto: ${email}`,

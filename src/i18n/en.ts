@@ -38,7 +38,7 @@ export const en: Dict = {
     sourceNoGps: 'Times computed, not measured',
     sourceShort: "Official timetables from buslugo.com. This app's times are computed.",
     unofficial: 'Unofficial project: not made or endorsed by AULUSA / Monbus or Lugo city council.',
-    privacy: 'Your location stays on this phone. Not even to trace the walking route.',
+    privacy: 'Your location stays on this device. Not even to trace the walking route.',
     sourceCode: 'Code, licences and privacy',
     reportProblem: 'Report a problem with the app',
     contact: (email: string) => `Contact: ${email}`,

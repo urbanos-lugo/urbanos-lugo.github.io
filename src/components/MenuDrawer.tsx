@@ -7,7 +7,7 @@ import { Wordmark } from './ui/Wordmark';
 import { tabLink } from '../hooks/useTabRoute';
 import { useLang, useT } from '../i18n';
 import { asideSections, type Tab } from './navSections';
-import { CONTACT_EMAIL, REPO_URL } from '../project';
+import { AboutProject } from './ui/AboutProject';
 import { Settings, type SettingsProps } from './ui/Settings';
 
 interface MenuDrawerProps extends SettingsProps {
@@ -67,19 +67,7 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
         <span>{t.menu.sourceTimetables}</span>
         <span>{t.menu.sourceGeometry}</span>
         <span>{t.menu.sourceNoGps}</span>
-        <span className="mt-2 border-t border-line pt-2 text-ink-2">{t.menu.unofficial}</span>
-        <span>{t.menu.privacy}</span>
-        {/* On its own line, so the 44 px applies to it. */}
-        <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex min-h-tap items-center self-start underline decoration-dotted underline-offset-link">
-          {t.menu.sourceCode}
-        </a>
-        {/* The chooser, not a blank issue: it sends a complaint about the service to buslugo.com first. */}
-        <a href={`${REPO_URL}/issues/new/choose`} target="_blank" rel="noopener noreferrer" className="flex min-h-tap items-center self-start underline decoration-dotted underline-offset-link">
-          {t.menu.reportProblem}
-        </a>
-        <a href={`mailto:${CONTACT_EMAIL}`} className="flex min-h-tap items-center self-start underline decoration-dotted underline-offset-link">
-          {t.menu.contact(CONTACT_EMAIL)}
-        </a>
+        <AboutProject />
       </div>
     </Drawer>
   );
