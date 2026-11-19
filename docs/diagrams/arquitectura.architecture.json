@@ -10,10 +10,13 @@
           "label": "No navegador"
         },
         "backend": {
-          "label": "Servidor Node"
+          "label": "A API, polo CORS"
         },
         "database": {
           "label": "Datos xerados"
+        },
+        "cloud": {
+          "label": "Aloxamento estático"
         },
         "external": {
           "label": "Servizos de fóra"
@@ -23,16 +26,30 @@
   },
   "components": [
     {
-      "id": "sw",
-      "type": "frontend",
-      "label": "Service Worker",
-      "sublabel": "App Shell precacheado",
+      "id": "pages",
+      "type": "cloud",
+      "label": "GitHub Pages",
+      "sublabel": "a app; alerts.json cada hora",
       "pos": [
-        40,
+        30,
         220
       ],
       "size": [
-        180,
+        170,
+        64
+      ]
+    },
+    {
+      "id": "sw",
+      "type": "frontend",
+      "label": "Service Worker",
+      "sublabel": "garda a app para sen rede",
+      "pos": [
+        290,
+        220
+      ],
+      "size": [
+        170,
         64
       ]
     },
@@ -40,13 +57,13 @@
       "id": "datos",
       "type": "database",
       "label": "src/data/*.json",
-      "sublabel": "xerado, viaxa no paquete",
+      "sublabel": "xerado na build",
       "pos": [
-        40,
+        290,
         380
       ],
       "size": [
-        180,
+        170,
         64
       ],
       "tag": "nada escrito a man"
@@ -55,13 +72,13 @@
       "id": "mapa",
       "type": "frontend",
       "label": "Mapa MapLibre GL",
-      "sublabel": "WebGL; xira, co compás",
+      "sublabel": "WebGL2; xira, co compás",
       "pos": [
-        380,
+        580,
         60
       ],
       "size": [
-        180,
+        170,
         64
       ]
     },
@@ -71,11 +88,11 @@
       "label": "SPA React 19",
       "sublabel": "TypeScript + Tailwind v4",
       "pos": [
-        380,
+        580,
         220
       ],
       "size": [
-        180,
+        170,
         64
       ]
     },
@@ -83,13 +100,13 @@
       "id": "motor",
       "type": "frontend",
       "label": "Motor de horarios",
-      "sublabel": "arrivals, planner + schedule",
+      "sublabel": "o planificador, nun worker",
       "pos": [
-        380,
+        580,
         380
       ],
       "size": [
-        180,
+        170,
         64
       ]
     },
@@ -99,11 +116,25 @@
       "label": "OpenFreeMap",
       "sublabel": "teselas vectoriais",
       "pos": [
-        740,
+        870,
         60
       ],
       "size": [
-        180,
+        170,
+        64
+      ]
+    },
+    {
+      "id": "worker",
+      "type": "backend",
+      "label": "Worker de Deno",
+      "sublabel": "/api/alerts e /api/paradas",
+      "pos": [
+        870,
+        220
+      ],
+      "size": [
+        170,
         64
       ]
     },
@@ -111,9 +142,23 @@
       "id": "express",
       "type": "backend",
       "label": "Express 5",
-      "sublabel": "API REST + estáticos",
+      "sublabel": "o mesmo src/services",
       "pos": [
-        740,
+        870,
+        380
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "buslugo",
+      "type": "external",
+      "label": "buslugo.com",
+      "sublabel": "avisos do operador",
+      "pos": [
+        1150,
         220
       ],
       "size": [
@@ -122,13 +167,13 @@
       ]
     },
     {
-      "id": "buslugo",
+      "id": "qr",
       "type": "external",
-      "label": "buslugo.com",
-      "sublabel": "portal do operador",
+      "label": "info.urbanoslugo.com",
+      "sublabel": "minutos detrás do QR",
       "pos": [
-        1080,
-        220
+        1150,
+        380
       ],
       "size": [
         180,
@@ -141,8 +186,8 @@
       "label": "Concello de Lugo",
       "sublabel": "feed de tráfico",
       "pos": [
-        1080,
-        380
+        1150,
+        540
       ],
       "size": [
         180,
@@ -164,7 +209,14 @@
     },
     {
       "kind": "region",
-      "label": "Servidor Node (opcional)",
+      "label": "Deno Deploy (o publicado)",
+      "wraps": [
+        "worker"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Node (autoaloxado, opcional)",
       "wraps": [
         "express"
       ]
@@ -172,16 +224,29 @@
   ],
   "connections": [
     {
+      "id": "pages-sw",
+      "from": "pages",
+      "to": "sw",
+      "label": "estáticos"
+    },
+    {
+      "id": "sw-spa",
+      "from": "sw",
+      "to": "spa",
+      "label": "serve sen rede",
+      "variant": "dashed"
+    },
+    {
       "id": "datos-motor",
       "from": "datos",
       "to": "motor",
-      "label": "stops.json + lines.json"
+      "label": "horarios e paradas"
     },
     {
       "id": "motor-spa",
       "from": "motor",
       "to": "spa",
-      "label": "chegadas, vehículos, plans"
+      "label": "chegadas e plans"
     },
     {
       "id": "spa-mapa",
@@ -190,30 +255,36 @@
       "label": "trazados baixo demanda"
     },
     {
-      "id": "sw-spa",
-      "from": "sw",
-      "to": "spa",
-      "label": "serve sen conexión",
-      "variant": "dashed"
-    },
-    {
       "id": "mapa-tiles",
       "from": "mapa",
       "to": "tiles",
       "label": "teselas"
     },
     {
-      "id": "spa-express",
+      "id": "spa-worker",
       "from": "spa",
-      "to": "express",
+      "to": "worker",
       "label": "/api",
       "variant": "emphasis"
     },
     {
-      "id": "express-buslugo",
-      "from": "express",
+      "id": "spa-express",
+      "from": "spa",
+      "to": "express",
+      "label": "/api, autoaloxada",
+      "variant": "dashed"
+    },
+    {
+      "id": "worker-buslugo",
+      "from": "worker",
       "to": "buslugo",
-      "label": "avisos e minutos"
+      "label": "avisos"
+    },
+    {
+      "id": "worker-qr",
+      "from": "worker",
+      "to": "qr",
+      "label": "minutos do poste"
     },
     {
       "id": "express-concello",
@@ -228,17 +299,17 @@
       "title": "No navegador",
       "items": [
         "Todo o cálculo de horas ocorre no cliente",
-        "stops.json e lines.json viaxan no paquete",
-        "O Service Worker deixa a app usable sen rede"
+        "Horarios no paquete; trazados e rede peonil, ao pedilos",
+        "O Service Worker garda a app para usala sen rede"
       ]
     },
     {
       "dot": "emerald",
-      "title": "No servidor (opcional)",
+      "title": "A API, só polo CORS",
       "items": [
-        "A API REST le eses mesmos JSON",
-        "Consulta buslugo e o Concello porque o navegador non pode (CORS)",
-        "Sen servidor: build estática coa instantánea de avisos"
+        "Dúas cousas: os avisos e os minutos dun poste",
+        "Publicada, un worker en Deno Deploy",
+        "Autoaloxada, Express: as mesmas dúas e o feed do Concello"
       ]
     },
     {
@@ -246,7 +317,7 @@
       "title": "Fóra",
       "items": [
         "Teselas de OpenFreeMap; sen WebGL2, un aviso no sitio do mapa",
-        "O camiño a pé calcúlase no dispositivo, sen enrutador de fóra",
+        "Sen API, os avisos saen da copia que a build toma cada hora",
         "Ningunha fonte do dataset se chama en execución"
       ]
     }

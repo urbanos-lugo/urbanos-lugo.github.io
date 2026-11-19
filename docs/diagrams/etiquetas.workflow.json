@@ -236,8 +236,8 @@
       "title": "Cobertura hoxe (pnpm validate:times)",
       "items": [
         "386 paradas quedan suxeitas por horas oficiais a ambos os lados",
-        "797 dependen do modelo de estrada",
-        "Erro mediano de 0,1 min nos 21 tramos contrastables; 8,3 min no peor"
+        "798 dependen do modelo de estrada",
+        "Erro mediano de 0,1 min nos 21 tramos contrastables; de −8,6 a +8,3 nos extremos"
       ]
     },
     {
@@ -246,7 +246,7 @@
       "items": [
         "O operador publica os seus propios minutos por parada detrás do QR",
         "Amósanse nun bloque aparte: «segundo o operador», nunca «en directo»",
-        "Sen servidor amósase a instantánea e cando se tomou"
+        "Sen API non hai minutos do QR; dos avisos, a copia e cando se tomou"
       ]
     }
   ]

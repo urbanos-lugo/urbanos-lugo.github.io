@@ -675,7 +675,7 @@ Non hai datos escritos a man. `stops.json` e `lines.json` xéranse a partir de:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/datos-dark.png">
-  <img src="docs/diagrams/datos-light.png" alt="Diagrama do fluxo de datos: buslugo.com e OSRM alimentan importOfficialData.ts, e Overpass a importOsmRoutes.ts e importStopAmenities.ts; cada un deixa a súa instantánea en data/, e buildDataset.ts constrúe desde aí stops.json, lines.json e route-geometry.json en src/data/.">
+  <img src="docs/diagrams/datos-light.png" alt="Diagrama de onde sae cada ficheiro de src/data/: buslugo.com e OSRM alimentan importOfficialData.ts; Overpass, importOsmRoutes.ts e importStopAmenities.ts; Overpass e o MDT05 do IGN, importWalkNetwork.ts e importElevation.ts. Cada un deixa a súa instantánea en data/ (as alturas, en .cache/), e desde aí buildDataset.ts constrúe stops.json, lines.json e route-geometry.json, e buildWalkGraph.ts walk-network.json.">
 </picture>
 
 O operador **non publica ningún trazado**, só listas de paradas e cadros horarios. Non
@@ -787,15 +787,18 @@ expedicións, as dos tres tipos de día, corra o día que corra). Medidas o 31 d
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/arquitectura-dark.png">
-  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: no navegador, src/data/*.json alimenta o motor de horarios, e este a SPA de React e o mapa de MapLibre, co Service Worker servindo a app sen conexión; a SPA fala cun servidor Express opcional que consulta buslugo.com e o feed de tráfico do Concello; fóra quedan as teselas de OpenFreeMap.">
+  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: GitHub Pages serve a app e a copia de avisos ao navegador, onde o Service Worker a garda para usala sen rede; src/data/*.json alimenta o motor de horarios, co planificador nun worker, e este a SPA de React, que pide os trazados ao mapa de MapLibre, e o mapa as teselas a OpenFreeMap. A SPA pide /api ao worker de Deno Deploy, que le os avisos de buslugo.com e os minutos dun poste de info.urbanoslugo.com; autoaloxada, pídea a Express 5, co mesmo código, que le ademais o feed de tráfico do Concello.">
 </picture>
 
 O reparto que importa é ese: **todo o cálculo de horas ocorre no navegador**, sobre os
-JSON que viaxan no paquete. A app só lle pide ao servidor o que o navegador non pode
-facer por si mesmo —os avisos a buslugo.com e ao Concello, e os minutos dun poste á páxina
-do operador detrás do seu QR, que non serven CORS— e segue funcionando sen el: iso é o
-despregue en GitHub Pages. As outras rutas da [API REST](#api-rest) son para quen as
-queira usar; a app non chama ningunha.
+JSON que viaxan no paquete. A app só lle pide á API o que o navegador non pode facer por
+si mesmo, porque esas páxinas non serven CORS: os avisos de buslugo.com e os minutos dun
+poste na páxina do operador detrás do seu QR. E segue funcionando sen ela. No sitio
+publicado en GitHub Pages, a API é un worker en Deno Deploy (`worker/index.ts`), e sen
+el os avisos saen da copia que a build toma cada hora. Quen a aloxe el mesmo ten Express
+(`server.ts`), co mesmo `src/services`, que ademais le o feed de tráfico do Concello. As
+outras rutas da [API REST](#api-rest) son de Express, para quen as queira usar; a app
+non chama ningunha.
 
 ---
 

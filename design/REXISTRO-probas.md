@@ -5922,3 +5922,56 @@ está.
 
 - `audit:browser` enteiro non se correu nas roldas 72, 73 e 75; nada delas está en
   `develop` remoto.
+
+## Rolda 76: os tres diagramas do README, outra vez fieis — 19 de novembro de 2026
+
+Pedido: revisar os diagramas do README, se seguen sendo fieis e se é o mellor que se pode
+ter. Eran do 28 de outubro, e cada un mirouse contra o código.
+
+### Mirado
+
+- **Arquitectura.** Só tiña Express, e o sitio publicado pide `/api` a un worker en Deno
+  Deploy: era o camiño real o que faltaba. Os minutos do poste poñíaos en buslugo.com, e
+  saen de `info.urbanoslugo.com` (`src/services/operatorTimes.ts`). Debuxaba o feed do
+  Concello como se o lesen os dous, e só o le Express. Tampouco saían a copia de avisos que
+  a build toma cada hora, o planificador nun worker nin os ficheiros que se cargan ao
+  pedilos.
+- **Datos.** Dicía `src/data/alerts.json`, e é `public/alerts.json`. Contaba só de onde
+  saen as paradas, as liñas e os trazados. «48 sentidos, 45 de OSM» segue certo (45 `osm`
+  e 3 `osrm`, contados).
+- **Etiquetas.** A lóxica é a do código, e as cadencias son de 30 e 60 min (contadas).
+  `pnpm run validate:times`: 386 paradas suxeitas aos dous lados (igual), 798 alén do
+  último punto (dicía 797), mediana 0,1 min, e nos extremos −8,6 e +8,3. Dicía «8,3 no
+  peor», e o peor é o adiantado.
+
+### Feito
+
+- **Arquitectura**, debuxada de novo:
+  - GitHub Pages á esquerda serve a app e a copia de avisos.
+  - No navegador, o Service Worker, os datos, o motor (co planificador nun worker), a SPA e
+    o mapa.
+  - Á dereita, o worker de Deno (o publicado) e Express (o autoaloxado), e as súas fontes.
+  - Tres tarxetas: que fai o navegador, que fai a API e por que, e o que vén de fóra.
+- **Datos**: «De onde sae cada ficheiro de src/data/». Engade a rede peonil: Overpass e o
+  MDT05 do IGN → `importWalkNetwork.ts` e `importElevation.ts` →
+  `osm-walk-network.json`, coas alturas en `.cache/mdt` → `buildWalkGraph.ts` →
+  `walk-network.json`. Nas tarxetas, o estilo do mapa (`buildMapStyle.ts`, desde
+  OpenFreeMap) e o que se escribe a man (`festivos.json`, `structuralNotices.ts`). O estilo
+  ía nunha quinta fila, pero a imaxe saía máis alta ca unha pantalla de 1440×900: 1189 px
+  de alto, medido por `visual-check`.
+- **Etiquetas**: só as tres cifras, e que sen API non hai minutos do QR.
+- No README, os tres textos alternativos que describían o debuxo vello, e o parágrafo da
+  arquitectura, que dicía que o Concello o lía a API publicada.
+
+### Comprobado
+
+- `archify validate --quality showcase` en cada un: 9 comprobacións, 0 erros e 0 avisos.
+  Despois, `pnpm run diagrams` co Chrome for Testing 157 de Puppeteer (`ARCHIFY_CHROME`):
+  `deliver` pasa os tres. `visual-check` mide no tema claro que caben sen rolar a 1440×900,
+  1600×1000, 1920×1080 e 2048×1320, e fai as capturas en claro e en escuro.
+- As seis imaxes, miradas unha a unha: nada tapado, e os textos lense nos dous temas.
+- `pnpm run check:policy`: 26.
+
+### Queda
+
+- Nada desta rolda está en `develop` remoto.

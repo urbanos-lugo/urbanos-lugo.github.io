@@ -2,12 +2,8 @@
   "schema_version": 1,
   "diagram_type": "dataflow",
   "meta": {
-    "title": "De onde saen stops.json e lines.json",
+    "title": "De onde sae cada ficheiro de src/data/",
     "quality_profile": "showcase",
-    "viewBox": [
-      1080,
-      604
-    ],
     "legend": {
       "entries": {
         "emphasis": {
@@ -20,7 +16,11 @@
           "label": "ficheiro no repositorio"
         }
       }
-    }
+    },
+    "viewBox": [
+      1080,
+      624
+    ]
   },
   "stages": [
     {
@@ -30,10 +30,10 @@
       "label": "Importadores"
     },
     {
-      "label": "Instantáneas en data/"
+      "label": "Instantáneas"
     },
     {
-      "label": "Xerador"
+      "label": "Xeradores"
     },
     {
       "label": "src/data/ (vai no paquete)"
@@ -70,6 +70,16 @@
       "width": 140
     },
     {
+      "id": "ign",
+      "type": "external",
+      "label": "IGN, MDT05",
+      "sublabel": "alturas do terreo",
+      "stage": 0,
+      "row": 3,
+      "width": 140,
+      "yOffset": 20
+    },
+    {
       "id": "impOficial",
       "type": "backend",
       "label": "importOfficialData.ts",
@@ -82,16 +92,16 @@
       "id": "impOsm",
       "type": "backend",
       "label": "importOsmRoutes.ts",
-      "sublabel": "relacións de ruta",
+      "sublabel": "+ importStopAmenities.ts",
       "stage": 1,
       "row": 2,
       "width": 165
     },
     {
-      "id": "impEquip",
+      "id": "impWalk",
       "type": "backend",
-      "label": "importStopAmenities.ts",
-      "sublabel": "marquesiñas e bancos",
+      "label": "importWalkNetwork.ts",
+      "sublabel": "+ importElevation.ts",
       "stage": 1,
       "row": 3,
       "width": 165
@@ -103,7 +113,7 @@
       "sublabel": "+ routes.json (OSRM)",
       "stage": 2,
       "row": 0,
-      "width": 145,
+      "width": 150,
       "tag": "commiteado"
     },
     {
@@ -113,8 +123,17 @@
       "sublabel": "+ stop-amenities.json",
       "stage": 2,
       "row": 2,
-      "width": 145,
+      "width": 150,
       "tag": "commiteado"
+    },
+    {
+      "id": "snapWalk",
+      "type": "database",
+      "label": "osm-walk-network.json",
+      "sublabel": "alturas en .cache/mdt",
+      "stage": 2,
+      "row": 3,
+      "width": 150
     },
     {
       "id": "build",
@@ -123,7 +142,16 @@
       "sublabel": "pnpm data:build",
       "stage": 3,
       "row": 1,
-      "width": 130
+      "width": 140
+    },
+    {
+      "id": "walkgraph",
+      "type": "backend",
+      "label": "buildWalkGraph.ts",
+      "sublabel": "pnpm data:walkgraph",
+      "stage": 3,
+      "row": 3,
+      "width": 140
     },
     {
       "id": "dataset",
@@ -132,16 +160,25 @@
       "sublabel": "+ lines.json",
       "stage": 4,
       "row": 0,
-      "width": 145
+      "width": 150
     },
     {
       "id": "trazados",
       "type": "database",
       "label": "route-geometry.json",
-      "sublabel": "cargado baixo demanda",
+      "sublabel": "baixo demanda",
       "stage": 4,
       "row": 2,
-      "width": 145
+      "width": 150
+    },
+    {
+      "id": "peonil",
+      "type": "database",
+      "label": "walk-network.json",
+      "sublabel": "baixo demanda",
+      "stage": 4,
+      "row": 3,
+      "width": 150
     }
   ],
   "flows": [
@@ -168,7 +205,7 @@
       "id": "f-osm-rutas",
       "from": "overpass",
       "to": "impOsm",
-      "label": "relacións de ruta",
+      "label": "rutas e equipamentos",
       "classification": "OSM",
       "labelAt": [
         120,
@@ -176,11 +213,22 @@
       ]
     },
     {
-      "id": "f-osm-equip",
+      "id": "f-osm-camins",
       "from": "overpass",
-      "to": "impEquip",
-      "label": "equipamentos",
+      "to": "impWalk",
+      "label": "camiños",
       "classification": "OSM"
+    },
+    {
+      "id": "f-ign",
+      "from": "ign",
+      "to": "impWalk",
+      "label": "alturas",
+      "classification": "IGN",
+      "labelAt": [
+        201,
+        519
+      ]
     },
     {
       "id": "f-snap-op",
@@ -193,23 +241,22 @@
       "id": "f-snap-osm",
       "from": "impOsm",
       "to": "snapOsm",
-      "label": "trazado por sentido",
+      "label": "por sentido",
       "classification": "instantánea",
-      "route": "straight",
       "labelAt": [
-        353,
-        430
+        426,
+        428
       ]
     },
     {
-      "id": "f-snap-equip",
-      "from": "impEquip",
-      "to": "snapOsm",
-      "label": "só o levantado",
+      "id": "f-snap-walk",
+      "from": "impWalk",
+      "to": "snapWalk",
+      "label": "as vías",
       "classification": "instantánea",
       "labelAt": [
-        480,
-        430
+        426,
+        542
       ]
     },
     {
@@ -228,6 +275,17 @@
       "classification": "local"
     },
     {
+      "id": "f-walkgraph",
+      "from": "snapWalk",
+      "to": "walkgraph",
+      "label": "vías e alturas",
+      "classification": "local",
+      "labelAt": [
+        640,
+        542
+      ]
+    },
+    {
       "id": "f-dataset",
       "from": "build",
       "to": "dataset",
@@ -241,6 +299,17 @@
       "to": "trazados",
       "label": "48 sentidos, 45 de OSM",
       "classification": "xerado"
+    },
+    {
+      "id": "f-peonil",
+      "from": "walkgraph",
+      "to": "peonil",
+      "label": "21.093 cruces",
+      "classification": "xerado",
+      "labelAt": [
+        850,
+        542
+      ]
     }
   ],
   "cards": [
@@ -248,7 +317,7 @@
       "dot": "cyan",
       "title": "Nada escrito a man",
       "items": [
-        "stops.json e lines.json saen enteiros do xerador",
+        "Os ficheiros xerados saen enteiros do seu xerador, e non se tocan",
         "Un poste leva moitos ids oficiais e consérvanse todos en officialIds"
       ]
     },
@@ -257,15 +326,17 @@
       "title": "Por que as instantáneas se commitean",
       "items": [
         "Sen elas o dataset non é reproducible",
-        "Volver pedilas cada vez machacaría servizos alleos e gratuítos"
+        "Volver pedilas cada vez machacaría servizos alleos e gratuítos",
+        "As alturas do IGN quedan en .cache/: walk-network.json xa as leva"
       ]
     },
     {
       "dot": "violet",
       "title": "O que non se ve aquí",
       "items": [
-        "importStopAmenities le stops.json para saber que postes consultar",
-        "fetchAlerts refresca src/data/alerts.json desde CI, á parte"
+        "festivos.json e structuralNotices.ts escríbense a man",
+        "map-style-*.json: buildMapStyle.ts adapta o estilo de OpenFreeMap",
+        "fetchAlerts escribe public/alerts.json cada hora, fóra de src/data/"
       ]
     }
   ]
