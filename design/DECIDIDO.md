@@ -94,7 +94,7 @@ de afirmar. Cada decisión de abaixo se tomou contra unha cifra, non contra un g
   aforra tres kilobytes e estropea o mapa a quen se afaste).
 - **O basemap non é CARTO desde agosto de 2026**: comezou a estampar «API KEY REQUIRED»
   nas teselas sen chave. OpenFreeMap, sen chave e sen conta; a decisión vive en
-  `src/components/Map/basemap.ts`.
+  `src/components/Map/mapStyle.ts` (era `basemap.ts`, que marchou con Leaflet en outubro).
 
 ## A pantalla Ruta e o modo «vou no bus» — 7 a 13 de setembro de 2026
 
@@ -133,7 +133,9 @@ de afirmar. Cada decisión de abaixo se tomou contra unha cifra, non contra un g
   o aviso di «A pé non chegas a tempo a este bus»: dúas filas iguais coa frase do «paseo
   medido» debaixo da resposta non se entendían nin se podían usar.
 - `zoomSnap = 0` e o encaixe da ruta en `basemap.ts`, o único sitio polo que pasan os
-  tres mapas: o traxecto debuxábase ao 46 % dun mapa nacido en `display:none`.
+  tres mapas: o traxecto debuxábase ao 46 % dun mapa nacido en `display:none`. Desde
+  outubro, con MapLibre, o zoom non vai a saltos e `RouteMap.tsx` volve encaixar o traxecto
+  cada vez que o mapa cambia de tamaño.
 
 ### O modo (estado B)
 
