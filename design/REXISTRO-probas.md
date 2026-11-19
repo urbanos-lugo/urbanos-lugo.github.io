@@ -5774,3 +5774,48 @@ Pedido: no escritorio non se atopaba o GitHub do proxecto nin o contacto.
 ### Queda
 
 - `audit:browser` non se correu nesta rolda; nada desta rolda está en `develop` remoto.
+
+## Rolda 73: ir onde vai o bus, segundo o horario — 19 de novembro de 2026
+
+Pedido: na ficha dunha liña, un botón que leve á parada onde estaría o bus nese momento.
+
+### Lido no código
+
+- A lista xa marcaba, en cada parada á que se dirixe un bus de ese sentido segundo o
+  horario, «Segundo o horario, o bus estaría chegando aquí» (`busesOnLine`, de
+  `getScheduledBuses`). Faltaba chegar a esa fila: un sentido ten ata 47 paradas.
+- Desde unha parada (a rolda 70), o bus que lle importa a quen le é o que vén cara a ela, non
+  o primeiro da lista. Apuntouno a outra sesión.
+
+### Feito
+
+- `busStopsInOrder` en `vehicles.ts`: as paradas marcadas en orde, ou, desde unha parada, a
+  máis próxima por detrás dela primeiro, despois as de máis atrás e ao final as que xa a
+  pasaron. Ningún dos 48 sentidos repite parada (medido), así que cada marca é unha fila.
+- O botón, baixo o selector da expedición, só hoxe e só se hai buses nese sentido. Centra a
+  fila e pásalle o foco; sen animación se se pide movemento reducido. Con varios buses,
+  «(1 de 2)», e cada toque vai ao seguinte. A volta empeza de novo ao cambiar de liña, de
+  sentido, de día ou de parada.
+- «Ir onde vai o bus, segundo o horario» nos tres dicionarios: leva a unha marca do cadro,
+  non a un bus que alguén vise.
+- Unha comprobación nova (176), coa orde desde unha parada, desde a última e desde a cabeceira.
+- Unha viaxe nova en `journeys.ts` (50): a 1.2, porque ás 09:12 da auditoría o seu primeiro
+  sentido ten un bus na estrada e o da 1.1 ningún (medido en todas as liñas: ningunha ten
+  máis dun nese sentido a esa hora). Despois do toque esíxese a marca; ao final, só a fila
+  co foco, porque uns segundos despois o bus pode ir xa na seguinte.
+
+### Comprobado
+
+- As cinco portas: lint, 176 comprobacións, 26 políticas, `check:deep` e a build.
+- `AUDIT_RUNNER=1 JOURNEYS='^(a line|where the bus)'` contra a build en 3002, con Chrome 157:
+  18 viaxes, 0 achados. A nova, en tres toques nos dous teléfonos.
+- No panel, contra a build, ás 16:42 dun xoves: na 1.2 o botón mide 44 px, e un toque deixa
+  o foco na fila marcada e baixa 3232 px, coa fila no medio da pantalla. Ningún erro na
+  consola. Cunha pestana do panel en segundo plano, o desprazamento suave non avanza; ao
+  frente, si.
+
+### Queda
+
+- O «(1 de 2)» só o garda a comprobación: ás 09:12 da auditoría ningunha liña ten dous buses
+  no seu primeiro sentido.
+- `audit:browser` enteiro non se correu; nada disto está en `develop` remoto.
