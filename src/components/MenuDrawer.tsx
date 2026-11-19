@@ -67,7 +67,9 @@ export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }
         <span>{t.menu.sourceTimetables}</span>
         <span>{t.menu.sourceGeometry}</span>
         <span>{t.menu.sourceNoGps}</span>
-        <AboutProject />
+        <div className="mt-2 flex flex-col gap-1 border-t border-line pt-2">
+          <AboutProject />
+        </div>
       </div>
     </Drawer>
   );

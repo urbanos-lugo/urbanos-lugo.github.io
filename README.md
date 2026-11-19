@@ -643,7 +643,11 @@ app publicada, logo, os avisos do Concello só aparecen cando se amosa esa copia
 **cada un coa súa fonte enlazada**: billete ordinario, bono ordinario e bono social da
 Tarxeta Cidadá, e a **Tarxeta do Transporte Metropolitano de Galicia (TMG)**, válida na rede
 urbana de Lugo desde que a cidade entrou na Área de Transporte Metropolitano en 2012. Máis
-as normas a bordo, as preguntas frecuentes e os contactos.
+as normas a bordo, as preguntas frecuentes e os contactos. Os do Concello e do operador van
+nunha tarxeta, e os deste proxecto noutra debaixo, **«Sobre esta app»**: que non é oficial,
+que a localización non sae do dispositivo, o código, avisar dun erro e o correo. É o mesmo
+pé que o menú do teléfono, e no escritorio, onde o menú non ten botón, o único sitio onde
+están.
 
 ---
 
@@ -849,7 +853,7 @@ queira usar; a app non chama ningunha.
 │   │   │   ├── EmptyState.tsx      o que se amosa onde iría unha lista ou unha resposta
 │   │   │   ├── OnTripMark.tsx      o punto da viaxe en curso, na barra e no rail
 │   │   │   ├── Wordmark.tsx        o nome da app á cabeza da navegación
-│   │   │   ├── AboutProject.tsx    non oficial, privacidade, código e contacto, ao pé do menú e do rail
+│   │   │   ├── AboutProject.tsx    non oficial, privacidade, código e contacto, ao pé do menú e en Tarifas e info
 │   │   │   └── Settings.tsx        tema, idioma e a pestana de entrada, os mesmos no menú e no rail
 │   │   ├── TopBar.tsx              buscador único + escáner QR
 │   │   ├── BottomNav.tsx           navegación en móbil
@@ -1683,9 +1687,8 @@ Medido a 390 px: a resposta empeza no píxel 103, e a pantalla de ruta mide 3,18
 de alto. O que queda é o itinerario paso a paso, que é unha lista.
 
 **Escritorio (`lg` en diante).** Rail esquerdo fixo con os catro destinos etiquetados e,
-ao pé, avisos, tarifas, tema, idioma e a pestana de entrada, e o mesmo pé que o menú do
-teléfono: que o proxecto non é oficial, a privacidade, o código, avisar dun erro e o
-contacto. Paradas e Liñas son dous paneis con **scroll
+ao pé, avisos, tarifas, tema, idioma e a pestana de entrada.
+Paradas e Liñas son dous paneis con **scroll
 independente**: escoller unha parada non che fai perder o sitio na lista. No planificador
 o formulario queda fixo mentres o itinerario baixa ao lado. A barra inferior desaparece.
 No **mapa** a páxina non baixa: o mapa enche o alto que queda, e os controis do lado

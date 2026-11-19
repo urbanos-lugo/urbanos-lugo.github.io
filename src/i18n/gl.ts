@@ -150,6 +150,7 @@ export const gl = {
     notAffiliated: 'Web non oficial, sen relación con Monbus nin co Concello de Lugo.',
     faqTitle: 'Preguntas frecuentes',
     contactTitle: 'Atención á cidadanía e contacto',
+    aboutTitle: 'Sobre esta app',
     refreshBtn: 'Comprobar avisos',
     refreshing: 'Sincronizando...',
     cooldownText: (seconds: number) => `Agarde (${seconds}s)`,

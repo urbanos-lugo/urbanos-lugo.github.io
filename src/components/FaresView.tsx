@@ -1,7 +1,8 @@
-import { CreditCard, Info, Phone, Globe, HelpCircle, type LucideIcon } from 'lucide-react';
+import { CreditCard, Info, Phone, Globe, HelpCircle, Smartphone, type LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useT } from '../i18n';
 import { FARE_CARDS } from '../data/transitData';
+import { AboutProject } from './ui/AboutProject';
 import { NotAffiliated } from './ui/Provenance';
 import { SectionLabel } from './ui/SectionLabel';
 import { SectionTitle } from './ui/SectionTitle';
@@ -97,33 +98,45 @@ export function FaresView() {
           </div>
         </div>
 
-        <div className={`${card} space-y-4`}>
-          <SectionTitle icon={Info} small>
-            {t.fares.contactTitle}
-          </SectionTitle>
-          <div className="space-y-3 text-label text-ink-2">
-            <div className="inset-panel flex items-start gap-3">
-              <Phone className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-              <div>
-                <div className="font-bold text-ink">{t.fares.phones}</div>
-                <div className="mt-0.5">Concello de Lugo - Mobilidade: 982 29 74 00</div>
-                <div>Monbus Lugo: 982 24 16 00</div>
+        <div className="space-y-6">
+          <div className={`${card} space-y-4`}>
+            <SectionTitle icon={Info} small>
+              {t.fares.contactTitle}
+            </SectionTitle>
+            <div className="space-y-3 text-label text-ink-2">
+              <div className="inset-panel flex items-start gap-3">
+                <Phone className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-bold text-ink">{t.fares.phones}</div>
+                  <div className="mt-0.5">Concello de Lugo - Mobilidade: 982 29 74 00</div>
+                  <div>Monbus Lugo: 982 24 16 00</div>
+                </div>
+              </div>
+              <div className="inset-panel flex items-start gap-3">
+                <Globe className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <div className="font-bold text-ink">{t.fares.portals}</div>
+                  <ul className="mt-1 space-y-0.5">
+                    {PORTALS.map((portal) => (
+                      <li key={portal.href}>
+                        <a href={portal.href} target="_blank" rel="noopener noreferrer" className="link">
+                          {portal.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
-            <div className="inset-panel flex items-start gap-3">
-              <Globe className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-              <div className="min-w-0">
-                <div className="font-bold text-ink">{t.fares.portals}</div>
-                <ul className="mt-1 space-y-0.5">
-                  {PORTALS.map((portal) => (
-                    <li key={portal.href}>
-                      <a href={portal.href} target="_blank" rel="noopener noreferrer" className="link">
-                        {portal.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          </div>
+
+          {/* Ours, under the operator's and the council's and apart from them: whoever writes here should not take this address for theirs. */}
+          <div className={`${card} space-y-4`}>
+            <SectionTitle icon={Smartphone} small>
+              {t.fares.aboutTitle}
+            </SectionTitle>
+            <div className="flex flex-col gap-1 text-label text-ink-2">
+              <AboutProject />
             </div>
           </div>
         </div>

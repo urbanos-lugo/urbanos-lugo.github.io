@@ -118,6 +118,7 @@ export const es: Dict = {
     notAffiliated: 'Web no oficial, sin relación con Monbus ni con el Ayuntamiento de Lugo.',
     faqTitle: 'Preguntas frecuentes',
     contactTitle: 'Atención a la ciudadanía y contacto',
+    aboutTitle: 'Sobre esta app',
     refreshBtn: 'Comprobar avisos',
     refreshing: 'Sincronizando...',
     cooldownText: (seconds: number) => `Espere (${seconds}s)`,

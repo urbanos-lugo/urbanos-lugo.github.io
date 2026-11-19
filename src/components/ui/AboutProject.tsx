@@ -5,16 +5,16 @@ import { CONTACT_EMAIL, REPO_URL } from '../../project';
 const link = 'flex min-h-tap items-center self-start underline decoration-dotted underline-offset-link';
 
 /**
- * Who made this and what it does with you, at the foot of the phone's menu and of the desktop
- * rail. It lived in the menu alone, and the menu has no button from lg up: on a computer the
- * reader was never told the app is unofficial, nor shown the code or a way to write.
- * A fragment, so it falls into the column of whichever foot holds it.
+ * Who made this and what it does with you: at the foot of the phone's menu, and in «Tarifas e
+ * info» on every screen size. It lived in the menu alone, and the menu has no button from lg
+ * up, so on a computer the reader was never told the app is unofficial, nor shown the code or
+ * a way to write. A fragment, so it falls into the column of whichever block holds it.
  */
 export function AboutProject() {
   const t = useT();
   return (
     <>
-      <span className="mt-2 border-t border-line pt-2 text-ink-2">{t.menu.unofficial}</span>
+      <span className="text-ink-2">{t.menu.unofficial}</span>
       <span>{t.menu.privacy}</span>
       <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className={`mt-0.5 ${link}`}>
         {t.menu.sourceCode}

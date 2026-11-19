@@ -129,6 +129,7 @@ export const en: Dict = {
     notAffiliated: 'Unofficial site, not connected to Monbus or Lugo city council.',
     faqTitle: 'Frequently asked questions',
     contactTitle: 'Contact and passenger information',
+    aboutTitle: 'About this app',
     refreshBtn: 'Check for notices',
     refreshing: 'Syncing...',
     cooldownText: (seconds: number) => `Please wait (${seconds}s)`,
