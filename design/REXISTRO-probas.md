@@ -5734,3 +5734,43 @@ romper nada; e, de paso, estudar un mapa sen conexión con teselas de Lugo.
 - No CI, o run 44547596827, sobre a mesma 20261111.370, saíu verde enteiro. Nas viaxes, ningunha
   tarefa sen rematar e 0 achados de WCAG 2.2 A/AA. É un run só; os oito anteriores sobre esa
   imaxe fallaran todos.
+- O run do commit deste rexistro (`6851a1e`) fallou unha vez en `phone-es-en`: «mapa/filtros»
+  sen alcanzar, «no controls button», en castelán e claro. Lanzado de novo só ese job, pasou.
+  Nos 20 runs anteriores, ese estado non faltara nunca; o outro fallo desa parte, o 12 de
+  novembro, foi que o navegador non chegou a arrincar.
+- A 1.7.10 saíu o 19 de novembro: `main` = `develop` = `3d5b7e3`, etiqueta v1.7.10, cos sete
+  jobs en verde á primeira, e Pages e o worker despregados.
+
+## Rolda 72: o pé do menú, tamén no escritorio — 19 de novembro de 2026
+
+Pedido: no escritorio non se atopaba o GitHub do proxecto nin o contacto.
+
+### Lido no código
+
+- O código, «Avisar dun erro» e o contacto, xunto co «Proxecto non oficial» e a frase da
+  privacidade, ían só ao pé do menú (`MenuDrawer.tsx`). Desde `lg`, o botón do menú leva
+  `lg:hidden` (`TopBar.tsx`), e o rail só tiña os axustes e a liña curta das fontes. No
+  ordenador ninguén lía que o proxecto non é oficial nin tiña por onde escribir.
+- A frase da privacidade dicía «deste móbil», tamén onde se le nun ordenador.
+
+### Feito
+
+- `ui/AboutProject.tsx`: o non oficial, a privacidade e as tres ligazóns, nun compoñente. O
+  menú lévao baixo as súas tres liñas das fontes, e o rail baixo a curta.
+- O rail desprázase só (`overflow-y-auto`). A 1280×720 o seu contido mide 980 px; sen isto,
+  o pé cortaríase nunha xanela baixa.
+- «Deste dispositivo», «este dispositivo» e «this device» nos tres dicionarios.
+- O README describe o pé do rail, e a árbore de ficheiros leva o compoñente novo.
+
+### Comprobado
+
+- As cinco portas: lint, 175 comprobacións, 26 políticas, `check:deep` e a build.
+- No panel, contra a build en 3002, co service worker e as cachés borrados. A 1280×720, en
+  castelán, o rail trae o non oficial, a privacidade e as tres ligazóns. Cada ligazón mide
+  44 px de alto e vai onde debe (o repositorio, o selector de incidencias e `mailto:`).
+  Baixado ata o fondo, vese enteiro. A 375×812, o menú trae as mesmas liñas e ligazóns ca
+  antes, coa privacidade nova. Ningún erro na consola.
+
+### Queda
+
+- `audit:browser` non se correu nesta rolda; nada desta rolda está en `develop` remoto.
