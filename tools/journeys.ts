@@ -912,14 +912,40 @@ const FRAMES = `(() => {
   };
   let round = 0;
   window.__laidOut = (el) => { let x = 0, y = 0; for (let n = el; n; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; } return [x, y]; };
+  // What a control that moved had above it: every earlier sibling of it and of each ancestor,
+  // with its size, the faces loaded and the scroller's width. Read only to name the cause.
+  const above = (el) => {
+    const boxes = [];
+    for (let n = el; n && n !== document.body; n = n.parentElement)
+      for (let s = n.previousElementSibling; s; s = s.previousElementSibling) boxes.push([s, s.offsetWidth, s.offsetHeight]);
+    const m = document.querySelector('main');
+    return { boxes, fonts: [...document.fonts].filter((f) => f.status === 'loaded').length, main: m ? m.clientWidth : 0 };
+  };
+  const named = (s) => (s.tagName.toLowerCase() + '.' + String(s.className).split(' ').slice(0, 2).join('.') + ' "' + (s.textContent || '').trim().slice(0, 24) + '"');
+  const grew = (el, then, start) => {
+    const now = above(el), had = new Set(then.boxes.map(([s]) => s)), out = [];
+    for (const [s, w, h] of then.boxes) {
+      if (!s.isConnected) out.push(named(s) + ' gone (' + h + ' px)');
+      else if (s.offsetWidth !== w || s.offsetHeight !== h) out.push(named(s) + ' ' + w + 'x' + h + ' to ' + s.offsetWidth + 'x' + s.offsetHeight);
+    }
+    for (const [s, , h] of now.boxes) if (!had.has(s)) out.push(named(s) + ' appeared (' + h + ' px)');
+    return Math.round(performance.now() - start) + ' ms after the tap: ' + (out.slice(0, 4).join('; ') || 'nothing above changed') + '; faces loaded ' + then.fonts + ' to ' + now.fonts + '; main ' + then.main + ' to ' + now.main + ' px wide';
+  };
   window.__watchFrames = () => {
-    const mine = ++round, before = new Set(shown().keys()), drawn = new Map(), until = performance.now() + 4000;
+    const mine = ++round, before = new Set(shown().keys()), drawn = new Map(), start = performance.now(), until = start + 4000;
+    const first = new Map(), why = new Map();
     window.__drawn = drawn;
+    window.__why = why;
     const frame = () => {
       if (mine !== round || performance.now() > until) return;
       for (const [l, el] of shown()) {
         if (!el || before.has(l)) continue;
         const [x, y] = window.__laidOut(el), seen = drawn.get(l) || [], last = seen[seen.length - 1];
+        // Never allowed to stop the frames being watched: it only explains a finding.
+        try {
+          if (!last) first.set(l, above(el));
+          else if ((last[0] !== x || last[1] !== y) && !why.has(l)) why.set(l, grew(el, first.get(l), start));
+        } catch (e) { why.set(l, 'no reason read: ' + e); }
         if (!last || last[0] !== x || last[1] !== y) seen.push([x, y]);
         drawn.set(l, seen);
       }
@@ -1117,7 +1143,10 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     if (Math.hypot(now.x - at.x, now.y - at.y) > 4) flow(`"${at.label}" moved ${Math.round(Math.hypot(now.x - at.x, now.y - at.y))} px between being seen and being tapped`);
     if (now.covered) flow(`"${at.label}" is under "${now.covered}" where the finger lands`);
     const drewElsewhere = await page.call<number>(`function (label) { const el = window.__jt, seen = window.__drawn && window.__drawn.get(label); if (!el || !seen || !window.__laidOut) return 0; const [x, y] = window.__laidOut(el); return Math.round(Math.max(...seen.map(([sx, sy]) => Math.hypot(sx - x, sy - y)))); }`, at.label);
-    if (drewElsewhere > 4) flow(`"${at.label}" was drawn ${drewElsewhere} px from where it came to rest, before the finger got to it`);
+    if (drewElsewhere > 4) {
+      const why = await page.call<string | null>(`function (label) { return (window.__why && window.__why.get(label)) || null; }`, at.label);
+      flow(`"${at.label}" was drawn ${drewElsewhere} px from where it came to rest, before the finger got to it${why ? ` (${why})` : ''}`);
+    }
     const zone = now.y < H * 0.25 ? 'hard' : now.y < H * 0.5 ? 'stretch' : 'easy';
     run.zones[zone]++;
     if (zone === 'hard') thumb(`"${at.label}" is tapped in the top quarter of the screen, at ${Math.round(now.y)} of ${H} px`);
