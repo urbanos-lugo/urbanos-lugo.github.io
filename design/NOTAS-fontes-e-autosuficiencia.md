@@ -223,8 +223,9 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    avisos en castelán, só se sabe escoitando.
 2. **Páxinas por parada** (punto 8 de [`AUDITORIA-seo.md`](AUDITORIA-seo.md)), á espera do
    export de Search Console de decembro. As 72 páxinas de liña da rolda 69 son a mesma aposta
-   en pequeno, un enderezo, un título e unha canónica para cada cousa concreta, e aínda non
-   están publicadas. Nas pestanas, a indexación tardou dez días en verse nos resultados (do 24
+   en pequeno, un enderezo, un título e unha canónica para cada cousa concreta, e
+   publicáronse coa 1.7.10 o 19 de novembro. Nas pestanas, a indexación tardou dez días en
+   verse nos resultados (do 24
    de outubro ao 3 de novembro). Antes de multiplicala polas 417 paradas hai que ver dúas
    cousas: que Google indexa as páxinas de liña e que as buscas polo número dunha liña pasan a
    elas (18 consultas na semana do 10 ao 17 de novembro: 61 impresións, ningún clic, posición
