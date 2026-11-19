@@ -2826,6 +2826,8 @@ ok('an address names its language, and a search engine reads a bare one in Galic
   assert(pickLang({ ...visit, stored: 'constructor', browser: 'fr-FR' }) === 'gl', 'a stored value that is no language, or a browser in none of the three, does not fall back to Galician');
   const googlebot = 'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
   assert(isCrawler(googlebot) && isCrawler('Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'), 'Googlebot or Bingbot is not taken for a crawler');
+  // Search Console's live test names itself without "Googlebot", and drew a bare address in its own browser's language.
+  assert(isCrawler(googlebot.replace('Googlebot/2.1; +http://www.google.com/bot.html', 'Google-InspectionTool/1.0')), 'URL Inspection\'s live test is not taken for a crawler');
   assert(!isCrawler('Mozilla/5.0 (Linux; Android 13; CUBOT KingKong 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36'), 'a phone whose make ends in "bot" is taken for a crawler');
 });
 

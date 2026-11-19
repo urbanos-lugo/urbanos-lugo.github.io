@@ -94,6 +94,10 @@ export function pickLang(visit: { address: PathLang | null; crawler: boolean; st
   return isPathLang(browser) ? browser : 'gl';
 }
 
-/** Search engines, by the names they give themselves in the User-Agent. */
+/**
+ * Search engines, by the names they give themselves in the User-Agent. Search Console's live
+ * test is Google-InspectionTool, with no "Googlebot" in it: unlisted, it drew a bare address
+ * in its own browser's language.
+ */
 export const isCrawler = (userAgent: string): boolean =>
-  /googlebot|bingbot|duckduckbot|applebot|yandexbot|baiduspider|slurp|crawler|spider/i.test(userAgent);
+  /googlebot|google-inspectiontool|bingbot|duckduckbot|applebot|yandexbot|baiduspider|slurp|crawler|spider/i.test(userAgent);
