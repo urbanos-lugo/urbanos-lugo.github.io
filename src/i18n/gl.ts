@@ -526,6 +526,9 @@ export const gl = {
     nextRun: 'Expedición seguinte',
     savedSr: 'gardada',
     busScheduledHere: 'Segundo o horario, o bus estaría chegando aquí',
+    // "Segundo o horario" in the button too: it goes to a row the timetable marks, not to a bus anyone has seen.
+    goToBus: 'Ir onde vai o bus, segundo o horario',
+    busCount: (n: number, of: number) => `${n} de ${of}`,
   },
 
   arrivals: {

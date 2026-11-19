@@ -147,3 +147,17 @@ export function getScheduledBuses(now: Date = new Date()): ScheduledBus[] {
   }
   return buses;
 }
+
+/**
+ * The stops of a way that the timetable has a bus heading to, in the order a reader looking for
+ * one wants them: down the list; or, with the way opened from a stop on it, first the bus coming
+ * toward that stop, then those further back, then those already past it. The first in the list
+ * was a bus that had left the reader behind as often as one on its way to them.
+ */
+export function busStopsInOrder(stops: string[], heading: ReadonlySet<string>, fromIndex = -1): string[] {
+  const marked = stops.flatMap((id, i) => (heading.has(id) ? [{ id, i }] : []));
+  if (fromIndex < 0) return marked.map((m) => m.id);
+  const coming = marked.filter((m) => m.i <= fromIndex).reverse();
+  const gone = marked.filter((m) => m.i > fromIndex);
+  return [...coming, ...gone].map((m) => m.id);
+}

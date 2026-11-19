@@ -6,7 +6,7 @@ import { lineZones, mainZones } from '../utils/places';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
 import { atStop, changesNow, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
 import { BUS_LINES, BUS_STOPS, poleCode, stopById } from '../data/transitData';
-import { getScheduledBuses } from '../utils/vehicles';
+import { busStopsInOrder, getScheduledBuses } from '../utils/vehicles';
 import { directionBoardingAt } from '../utils/arrivals';
 import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, nextRunAt, scheduledDuration, type ScheduledRun } from '../utils/schedule';
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
@@ -131,6 +131,8 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
 
   /** Set when the reader steps through the timetable by hand; null means "follow the clock". */
   const [pickedRunIndex, setPickedRunIndex] = useState<number | null>(null);
+  /** Which of the buses on the road "go to the bus" goes to next, counted round. */
+  const [busTurn, setBusTurn] = useState(0);
   const currentRunIndex = useMemo(() => {
     // Another day has no "now": it opens on its first run.
     if (!isToday) return 0;
@@ -145,10 +147,24 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
   const nowRunIndex = yourStopIndex !== null && isToday ? nextRunAt(runs, yourStopIndex, minutesNow()) : currentRunIndex;
   const runIndex = Math.min(pickedRunIndex ?? nowRunIndex, Math.max(0, runs.length - 1));
   const shownRun = runs[runIndex];
-  // A hand-picked run belongs to the line, direction, day and stop it was picked in.
-  useEffect(() => setPickedRunIndex(null), [currentLine.id, direction.id, day, fromStopId]);
+  // A hand-picked run, and the bus last gone to, belong to the line, direction, day and stop they were picked in.
+  useEffect(() => {
+    setPickedRunIndex(null);
+    setBusTurn(0);
+  }, [currentLine.id, direction.id, day, fromStopId]);
 
   const busesOnLine = buses.filter((b) => b.lineId === currentLine.id && (b.direction === direction.id || currentLine.directions.length === 1));
+  // The rows the list marks "the bus would be arriving here", in the order the button visits them.
+  const busStops = isToday ? busStopsInOrder(direction.stops, new Set(busesOnLine.map((b) => b.nextStopId)), fromIndex) : [];
+  const busNumber = busStops.length ? (busTurn % busStops.length) + 1 : 0;
+  // To the row, and the focus with it: a screen reader hears the stop and that the bus is there by the timetable.
+  const goToBus = () => {
+    const row = document.getElementById(`line-stop-${busStops[busNumber - 1]}`);
+    if (!row) return;
+    row.focus({ preventScroll: true });
+    row.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    setBusTurn(busNumber);
+  };
   /**
    * Whether a run's time at a stop is the operator's own or worked out. The board has always
    * said so on every row; this screen said it only for times still to come, so 1,077 of the
@@ -502,6 +518,17 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
               </div>
             )}
 
+            {/* A way runs to 47 stops: the bus the timetable puts on the road can be screens down the list. */}
+            {busStops.length > 0 && (
+              <div className="flex">
+                <button type="button" onClick={goToBus} className="btn btn-secondary btn-dense">
+                  <Bus className="h-3.5 w-3.5 shrink-0 text-official" aria-hidden="true" />
+                  {t.lines.goToBus}
+                  {busStops.length > 1 ? ` (${t.lines.busCount(busNumber, busStops.length)})` : null}
+                </button>
+              </div>
+            )}
+
             {/* Keyed on the direction, so the other way's stops fade in as a new list rather than the rows changing names under the eye. */}
             <div key={directionIdx} className="anim-fade relative pl-6 space-y-1.5 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-surface">
               {direction.stops.map((stopId, idx) => {
@@ -519,6 +546,7 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
                 return (
                   <div
                     key={stop.id}
+                    id={`line-stop-${stop.id}`}
                     role="button"
                     tabIndex={0}
                     onClick={() => onSelectStop(stop)}

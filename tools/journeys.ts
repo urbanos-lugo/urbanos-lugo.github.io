@@ -139,6 +139,12 @@ const tab = (name: string): Step => ({ tap: `tabLink(${name})`, stack: 'push', w
 const board = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.closest('header')) && document.querySelector('main ul li .figure')`;
 const firstDeparture = `[...document.querySelectorAll('main ul li .figure')].find(shown)`;
 const lineHeading = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.classList.contains('text-emph'))`;
+/** A line's "go to the bus" button: its words lead, and a count follows when there are more. */
+const goToBus = `[...document.querySelectorAll('main button')].find((b) => shown(b) && b.textContent.startsWith(T.lines.goToBus))`;
+/** Where it went: a stop's row has the focus, and the timetable puts a bus there. */
+const atTheBus = `(() => { const a = document.activeElement; return a && a.id.startsWith('line-stop-') && a.textContent.includes(T.lines.busScheduledHere) ? a : null; })()`;
+/** The same row at the end: a few seconds on, the bus may have moved on to the next stop. */
+const stopRowFocused = `(() => { const a = document.activeElement; return a && a.id.startsWith('line-stop-') ? a : null; })()`;
 const answerFigure = `[...document.querySelectorAll('main .figure')].find(shown)`;
 /** In the answer's step by step, the stop the trip boards at: a button under its "board at" label. */
 const boardingStop = `[...document.querySelectorAll('main button[title]')].find((b) => shown(b) && b.previousElementSibling?.firstElementChild?.textContent === T.planner.board)`;
@@ -348,6 +354,19 @@ export const JOURNEYS: Journey[] = [
       { tap: `all().filter(shown).find((e) => (e.getAttribute('aria-label') || '').startsWith(T.arrivals.seeLine))`, wait: lineHeading },
     ],
     answer: lineHeading,
+  },
+  {
+    // A way runs to 47 stops, and the bus the timetable puts on the road can be screens down.
+    // The 1.2: at the audit's 09:12 its first way has a bus on the road, where the 1.1's has none.
+    task: 'where the bus would be',
+    entry: 'a line, its button',
+    start: {},
+    steps: [
+      tab('T.nav.lines'),
+      { tap: `document.getElementById('line-card-1.2')`, wait: lineHeading },
+      { tap: goToBus, stack: 'none', wait: atTheBus },
+    ],
+    answer: stopRowFocused,
   },
   {
     task: 'a line',

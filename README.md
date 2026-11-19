@@ -533,6 +533,13 @@ cada liña en cada parada que non é a primeira nin a última). Se o aviso do op
 esa parada para esa liña, o cadro dío. Desde a lista de liñas ou o buscador, non hai
 ningunha marcada.
 
+**«Ir onde vai o bus, segundo o horario».** Hoxe, cando o horario pon buses na estrada
+nese sentido, un botón sobre o percorrido leva á fila que marca «o bus estaría chegando
+aquí» e pásalle o foco, así que tamén se usa co teclado e co lector de pantalla. Con varios
+buses, cada toque vai ao seguinte («1 de 2»). Aberta desde unha parada, o primeiro é o que
+vén cara a ela, e despois os de máis atrás; os que xa a pasaron, ao final. Non é unha
+posición medida: é a mesma marca que a lista xa levaba, calculada do cadro.
+
 Baixo o nome, que o operador forma coas dúas cabeceiras, vai **por onde pasa**: as catro
 zonas con máis paradas da liña, na orde do percorrido («Pasa por Campus USC · Sur / Ramón
 Ferreiro · Garabolos · O Ceao» na 1.1, que o Concello chama «Campus – Fingoi – O Ceao»).

@@ -59,7 +59,7 @@ import { fareFor, planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFE
 import { answerJob, rejoin } from '../src/utils/plannerJob';
 import { estimateWalk, getNearbyStops, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
 import { directionBoardingAt, getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
-import { getScheduledBuses } from '../src/utils/vehicles';
+import { busStopsInOrder, getScheduledBuses } from '../src/utils/vehicles';
 import { getDistanceMeters } from '../src/utils/geo';
 import { hydrateGeometry } from './hydrateGeometry';
 import { overpass, stitch } from './osm';
@@ -270,6 +270,19 @@ ok('every drawn bus stays on its own route', () => {
       assert(nearest < 5, `line ${bus.lineNumber} is ${Math.round(nearest)} m off its route at ${hour}:25`);
     }
   }
+});
+
+ok('"go to the bus" goes first to the bus coming toward the stop the line was opened from', () => {
+  // The button in a line visits the rows the timetable marks with a bus. Opened from a stop, the
+  // first of them down the list was as often a bus that had already left the reader behind.
+  const stops = ['a', 'b', 'c', 'd', 'e', 'f'];
+  const heading = new Set(['a', 'c', 'e']);
+  const order = (from?: number) => busStopsInOrder(stops, heading, from).join();
+  assert(order() === 'a,c,e', `with no stop to read from, not down the list: ${order()}`);
+  assert(order(3) === 'c,a,e', `from d, not the nearest bus behind it first, then further back, then past it: ${order(3)}`);
+  assert(order(4) === 'e,c,a', `from e, not the bus arriving there first: ${order(4)}`);
+  assert(order(0) === 'a,c,e', `from the terminus, not the one there and then down the list: ${order(0)}`);
+  assert(busStopsInOrder(stops, new Set(), 3).length === 0, 'a bus where the timetable puts none');
 });
 
 ok('measured leg distances are at least the straight-line distance', () => {
