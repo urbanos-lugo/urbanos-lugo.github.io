@@ -6081,3 +6081,72 @@ tres, e o taboleiro seguía dando as súas saídas.
 - O «Desde R/Anduriñas…» non se le como parada provisional: non hai parada no conxunto de
   datos, e a franxa do aviso dío nas palabras do operador.
 - `audit:browser` enteiro non se correu; nada desta rolda está en `develop` remoto.
+
+## Rolda 79: pnpm 12, e os nomes das prazas e dos parques no mapa — 19 de novembro de 2026
+
+Pedido: o pendente que se pode facer xa. Para as prazas, os seus centros sacados de OSM cunha
+ferramenta; os parques, coma as prazas.
+
+### pnpm 12.21.0 (`5e8c3a5`)
+
+- Lidas as notas da 12.0.0, ningún dos cambios que rompen chega aquí:
+  - non hai dependencias de git;
+  - ningún workflow usa `--frozen-lockfile false`;
+  - non hai `engineStrict`;
+  - `allowBuilds` e `overrides`, as dúas claves de `pnpm-workspace.yaml`, recoñéceas.
+- Nun worktree propio, a instalación fixa colle o lockfile tal cal. pnpm engádelle un primeiro
+  documento que fixa o propio pnpm 12.21.0 e os seus binarios por integrity: 167 liñas, todas
+  novas. As cinco portas, en verde.
+- A barreira dos scripts de instalación, probada outra vez. Esta máquina ten
+  `ignore-scripts = true` na configuración global, e con iso as tres probas saen en 0 con
+  pnpm 11.25 e con pnpm 12, que non proba nada. Con `--config.ignore-scripts=false` e
+  `--force`, en pnpm 12 as tres paran con `ERR_PNPM_IGNORED_BUILDS`: sen o axuste, co seu
+  nome de pnpm 10 e co marcador que escribe pnpm. Con `esbuild: false`, a instalación pasa.
+  O que di o README segue sendo certo.
+- Levado a `develop` por avance rápido. No árbol principal, `pnpm install --frozen-lockfile`
+  tardou 240 ms e reutilizou `node_modules`.
+
+### As prazas e os parques (`46fa9a7`)
+
+- As teselas traen unha praza só como a liña do seu bordo, na capa dos nomes das rúas, e o
+  nome lía como o da rúa do lado (medido nas teselas do 14 da cidade). Fóra dalgunhas que
+  OSM ten como parque, ningunha trae un punto no medio.
+- `tools/importSquares.ts` pregunta a Overpass, á man, polas áreas que son prazas e garda o
+  seu centro en `src/data/squares.json` (ODbL, en DATA.md). O centro pondérase polas áreas
+  de todas as partes que levan o mesmo nome.
+  - A primeira consulta (`place=square` e as áreas peonís) deu 29, sen Praza Maior.
+  - A segunda engade os aneis peonís e os parques co nome dunha praza: 32, con Praza Maior,
+    Eixo Atlántico e Viana do Castelo.
+  - Santo Domingo, Pío XII e Ferrol son en OSM só rúas abertas, e seguen co nome na rúa.
+- Desde o zoom 16, o nome de cada praza vai enriba dela, en texto centrado e sen icona.
+  Vén dunha fonte GeoJSON metida nos dous estilos, e as capas dos nomes das rúas xa non o
+  escriben polo bordo. Esas capas chámanse distinto en cada tema: `highway-name-*` no claro
+  e `highway_name_other` no escuro.
+- Desde o 16 tamén os outros 15 parques e xardíns con nome que traen as teselas, coa súa
+  icona. As teselas teñen 25: os 6 grandes, que xa saían desde o 15, os 4 que se chaman
+  «Praza…», que van coas prazas, e estes 15.
+- As dúas capas van por baixo das outras e entran no xogo dos nomes das paradas.
+  `StopNames` garda agora a fonte de cada sitio, pon alí o estado que o apaga, e dálle a
+  unha praza unha caixa centrada e sen icona.
+- Unha comprobación do lector (177; 178 con a da rolda 78). A ferramenta nova vai en
+  CLAUDE.md e na lista de rede de `checkPolicy`.
+
+### Comprobado
+
+- As cinco portas, sobre `develop` coa rolda 78: lint, 178 comprobacións, 26 políticas,
+  `check:deep` e a build.
+- Os estilos volven saír iguais da caché antes do cambio, e despois só cambian estes dous
+  ficheiros.
+- No panel, contra a build en 3033, en escuro:
+  - «Praza Maior» sae no medio do seu verde, e o seu bordo xa non leva o nome.
+  - En cinco vistas no zoom 16 viñeron 12 prazas e 3 parques da capa nova.
+  - «Praza Agro do Rolo» quedou apagada baixo o nome dunha parada.
+  - Ningún erro na consola.
+- `AUDIT_STATES=mapa`: sen erros de consola. Dá catro achados 2.4.2 de títulos, e os mesmos
+  catro saen na build sen as prazas, así que veñen de estreitar a auditoría.
+  `JOURNEYS=map`: 22 viaxes, 0 achados.
+
+### Queda
+
+- O tema claro non se mirou no panel.
+- `audit:browser` enteiro non se correu; nada desta rolda está en `develop` remoto.
