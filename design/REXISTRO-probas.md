@@ -5708,6 +5708,29 @@ romper nada; e, de paso, estudar un mapa sen conexión con teselas de Lugo.
   non vai na web, e a 11 xa moveu claves (`allowBuilds`). Vai nunha rolda propia, lendo
   antes o seu changelog, porque `packageManager` e o CI van con ela.
 - O CI: os runs de Dependabot do 12 de novembro fallaron nas viaxes. O do grupo de
-  dev-dependencies pasou no run de `pull_request` e fallou no de `push` do mesmo commit, así
-  que non está dito que sexa a imaxe nova do runner. Mírase co push de `develop` que leva
-  esta rolda.
+  dev-dependencies pasou no run de `pull_request` e fallou no de `push` do mesmo commit.
+  Resolto: era a imaxe do runner, mirada job por job, e unha cara da fonte (embaixo).
+
+### As viaxes no CI: unha cara da fonte que chegaba tarde — 19 de novembro
+
+- O push de `develop` desta rolda (`b519cae`) fallou nas viaxes cos mesmos tres achados ca o
+  12, e cos mesmos píxeles. Primeiro, a fila da 13 «debuxada a 37 px de onde quedou» no
+  teléfono pequeno e a 18 no grande. Despois, «Liñas (1)» en favoritos, a 22.
+- A imaxe, lida no job das viaxes de cada un dos 16 últimos runs (non no primeiro job do
+  run, que enganara): os 8 sobre 20261103.629 fallaron e os 8 sobre 20261028.624 pasaron,
+  entre eles o PR que só cambia unha Action. As notas da 20261111.370 levan Google Chrome
+  de 156.0.8078.79 a 157.0.8103.50, e ningún paquete de fontes.
+- Aquí non saía. Con Chrome 152 e con Chrome for Testing 157 en Windows, e coa CPU a 4× e 8×,
+  `AUDIT_RUNNER=1`, deu 0 achados.
+- Por iso o achado di agora que tiña enriba o control que se moveu (`c4968a1`). No runner
+  (run 44546013475), dúas filas pasaron de 74 a 55 e de 100 a 81 px aos 305 ms do toque, e
+  as caras cargadas, de 4 a 5. En favoritos, a cabeceira pasou de 76 a 54 aos 109 ms, e as
+  caras, de 5 a 7.
+- A causa: `fonts.css` declara unha cara por peso, e cada unha cárgase cando algún texto a
+  pide por primeira vez. Ata entón, ese texto colócase coa fonte de reserva. Medido aquí, a
+  portada en frío ten 4 das 8 caras cargadas: Next 400, 500 e 600, e Mono 700.
+- O arranxo (`714e9a7`): `main.tsx` carga as oito ao arrancar. Na portada, 8 de 8. Os dous
+  ficheiros baixan unha vez, 34 296 e 18 052 bytes, e son os que a precaché xa leva.
+- No CI, o run 44547596827, sobre a mesma 20261111.370, saíu verde enteiro. Nas viaxes, ningunha
+  tarefa sen rematar e 0 achados de WCAG 2.2 A/AA. É un run só; os oito anteriores sobre esa
+  imaxe fallaran todos.
