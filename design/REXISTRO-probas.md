@@ -5656,3 +5656,58 @@ porqué. Sobre `7a0b578`, a actualización de dependencias, que a outra sesión 
 ### Queda
 
 - Nada desta rolda está en `develop` remoto nin en `main`.
+
+## Rolda 71: as dependencias ao día, dentro das súas maiores — 18 e 19 de novembro de 2026
+
+Pedido: que versións leva a app e por que non as últimas; pór ao día o que se poida sen
+romper nada; e, de paso, estudar un mapa sen conexión con teselas de Lugo.
+
+### Feito
+
+- `7a0b578`: vite 8.3.5 → 8.3.8, @vitejs/plugin-react 6.1.2 → 6.3.0, tailwindcss e
+  @tailwindcss/vite 4.3.3 → 4.3.5, axe-core 4.14.0 → 4.14.1, maplibre-gl 6.16.0 → 6.19.0 e
+  lucide-react 1.61.0 → 1.74.0. React, Express, TypeScript, esbuild, tsx, @types/node e
+  vite-plugin-pwa xa ían na última.
+- MapLibre 6.19 garda o estado da cámara nun almacén de zustand, que entra como dependencia
+  nova (só a súa entrada vanilla); a app usa só a API pública. Desde a 1.72, lucide debuxa
+  a icona `Route` en espello: un cambio de debuxo, non un fallo.
+- `pnpm/action-setup` 6.1.0 → 6.1.1 nos cinco workflows, as mesmas liñas ca o PR #45 de
+  Dependabot. O SHA é o commit da etiqueta v6.1.1 (preguntado á API de GitHub).
+- `DECIDIDO.md` citaba `src/components/Map/basemap.ts`, que marchou con Leaflet. Agora cita
+  `mapStyle.ts`, e unha liña conta como se encaixa hoxe a ruta.
+
+### Comprobado
+
+- Nun worktree aparte, porque outra sesión tiña ficheiros sen commitear no árbol
+  principal: as cinco portas (174 comprobacións, 26 políticas) e `pnpm audit` limpo.
+- JS e CSS da build en brotli: de 1 037 231 a 1 049 735 bytes, case todo no worker de
+  MapLibre.
+- `audit:browser` enteiro contra esa build, coa outra sesión parada: 0 achados de WCAG 2.2
+  A/AA en 242 medidas de 162 estados, en 669 s. A barra da casa (25, 3 e 64) trae as mesmas
+  entradas ca o último CI verde de `develop`.
+- Rebasada sobre `45b9ef8`, as páginas por liña: as cinco portas outra vez. A primeira
+  pasada de `pnpm test` fallou porque o `dist/` do worktree era da build anterior, sen as
+  copias por liña; despois da build, 174. Entrou en `develop` por avance rápido, e no árbol
+  principal pasaron `pnpm install` e as cinco portas. O primeiro audit da actualización
+  xunto con `45b9ef8` é o da rolda 70.
+
+### Mirado e descartado (non volver mirar sen motivo)
+
+- **Mapa sen conexión con teselas de Lugo.** Medido sobre as teselas de OpenFreeMap: a
+  cidade (zooms 11 a 14), os glifos 0–255 das tres fontes e os sprites son 100 ficheiros e
+  2199 KB en brotli. Os zooms 0 a 10 serían outros 1873 KB. Hoxe toda a precaché son 34
+  entradas e 1153 KB. Só a cidade xa pesa máis ca toda a precaché, e por iso se descarta.
+- **lucide-react 1.75**, publicada o 18. Non cambia ningunha das iconas que usa a app (só
+  `spray-can`, e engade dúas), pero toca `hasA11yProp`, que decide o `aria-hidden` de cada
+  icona, e a mestura de clases. Probala pide outro `audit:browser` sen nada que se vexa.
+  Que veña cando Dependabot a traia con algo máis.
+
+### Queda
+
+- pnpm 12 (12.21.0 fronte á 11.25.0 de agora): é unha versión maior dunha ferramenta que
+  non vai na web, e a 11 xa moveu claves (`allowBuilds`). Vai nunha rolda propia, lendo
+  antes o seu changelog, porque `packageManager` e o CI van con ela.
+- O CI: os runs de Dependabot do 12 de novembro fallaron nas viaxes. O do grupo de
+  dev-dependencies pasou no run de `pull_request` e fallou no de `push` do mesmo commit, así
+  que non está dito que sexa a imaxe nova do runner. Mírase co push de `develop` que leva
+  esta rolda.
