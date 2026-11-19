@@ -355,8 +355,14 @@ houbese, como un lugar escollido no buscador de arriba.
 **Unha resposta compártese como pregunta.** Baixo o paso a paso, «Compartir esta ruta»
 (nun ordenador, «Copiar a ligazón») dá `?de=…&a=…` na ligazón da pestana, con `saida=` ou
 `chegada=` se se pediu unha hora: quen a abre ve a resposta calculada co seu reloxo, non a
-captura dunha hora xa pasada. Desde «a miña localización» non se ofrece: sería unha
-posición, e noutro teléfono non sería ningunha.
+captura dunha hora xa pasada. Desde «a miña localización» a ligazón leva só o destino: esa
+orixe é unha posición, non vai en ningunha ligazón, e quen a abre pon a súa.
+
+**«Como chegar en bus» desde calquera páxina.** `?a=…` só (con `saida=` ou `chegada=` se
+se quere) abre Ruta con ese destino e a orixe baleira: unha festa, un comercio ou o propio
+Concello poden ligar `…/ruta/?a=Pazo de Feiras&chegada=20:00`, e cada quen calcula desde
+onde está, escribíndoo ou coa súa localización. Non se pide a posición sen que se prema; ata
+que hai orixe, a columna da resposta di que falta, en vez de amosar o traxecto de exemplo.
 
 Non devolve unha soa resposta: amosa as **opcións distintas** de facer o traxecto,
 agrupadas por combinación de liñas e ordenadas pola hora á que chegas, a que di cada fila:
@@ -527,8 +533,10 @@ zonas con máis paradas da liña, na orde do percorrido («Pasa por Campus USC �
 Ferreiro · Garabolos · O Ceao» na 1.1, que o Concello chama «Campus – Fingoi – O Ceao»).
 Son as zonas do conxunto de datos, non nomes do Concello, e o buscador de liñas atopa
 tamén por elas: «Fingoi» non está no nome de ningunha das liñas que o serven. A ficha
-comparte a súa ligazón (`?linea=`) como o taboleiro a súa (`?parada=`): nun teléfono, co
-panel de compartir do propio sistema; noutro sitio, copiándoa.
+comparte o seu enderezo (`/linhas/1.4/`, [abaixo](#nun-aloxamento-estático-github-pages)) como
+o taboleiro a súa ligazón (`?parada=`): nun teléfono, co panel de compartir do propio
+sistema; noutro sitio, copiándoa. Cando ía polo número, a ligazón dunha das tres variantes
+do 11 abría o 11.
 
 ### Códigos QR das marquesiñas
 Escaneo pola cámara usando `BarcodeDetector`, a API nativa do navegador (dispoñible en
@@ -536,7 +544,7 @@ Chromium; noutros navegadores queda a entrada manual do código). Acepta tanto o
 impreso no poste como a URL completa que codifica o QR.
 
 Tamén se resolven parámetros na URL: `?parada=…`, `?stop=…`, `?ps=…`, `?qr=…`; e
-`?de=…&a=…`, a pregunta de Ruta (no [planificador](#planificador-de-traxectos)).
+`?de=…&a=…`, a pregunta de Ruta, ou `?a=…` só, o seu destino (no [planificador](#planificador-de-traxectos)).
 
 A quen chega escaneando o poste —e só a esa persoa— amósaselle tamén **o que di a páxina
 do operador para esa parada**, que é a mesma que abriría o código. En calquera outro sitio
@@ -860,7 +868,7 @@ queira usar; a app non chama ningunha.
 │   │   ├── walkingPath.ts          onde camiña un plan; a ruta faina walkRouter
 │   │   └── apiUrl.ts               onde pedir `/api/…`: co servidor ao lado ou co worker
 │   ├── hooks/
-│   │   ├── useTabRoute.ts          a pantalla no historial: a pestana no enderezo, o aberto nela e o desprazamento no estado
+│   │   ├── useTabRoute.ts          a pantalla no historial: a pestana e a ficha dunha liña no enderezo, o aberto e o desprazamento no estado
 │   │   ├── useServiceAlerts.ts     avisos, ou a instantánea coa súa data
 │   │   ├── useOperatorTimes.ts     os minutos do operador, se hai servidor
 │   │   ├── useTheme.ts             clara / escura / automática
@@ -880,7 +888,7 @@ queira usar; a app non chama ningunha.
 │   │   ├── plannerJob.ts           unha pregunta ao planificador como datos, para cruzar ao worker
 │   │   ├── vehicles.ts             onde van os autobuses, derivado do cadro horario
 │   │   ├── places.ts               camiñada estimada, lugares, resolver o que se escribe, paradas preto
-│   │   ├── links.ts                o que abre unha ligazón: ?parada=, ?linea= e a pregunta de Ruta, ?de=&a=
+│   │   ├── links.ts                o que abre unha ligazón: ?parada=, as ?linea= vellas, a pregunta de Ruta (?de=&a=, ou ?a= só), e a liña dun slug
 │   │   ├── serviceLabels.ts        días, frecuencia e sentido no idioma da IU
 │   │   ├── operatorNotices.ts      o aviso do operador repartido por liñas, coa súa lingua
 │   │   ├── noticeChanges.ts        o que cambia un aviso, lido das súas palabras: días, horas finais, paradas
@@ -902,8 +910,8 @@ queira usar; a app non chama ningunha.
 │   │   ├── rateLimit.ts            teito de peticións por enderezo, no servidor Express
 │   │   └── themeInit.ts            o script do tema antes do primeiro pintado, e o seu hash
 │   ├── project.ts                  onde vive este proxecto, nun sitio: a ligazón das incidencias, o correo de contacto e o User-Agent
-│   ├── routes.ts                   os slugs das pestanas, nunha soa lista
-│   ├── seo.ts                      título, descrición e canónica por pestana, sitemap, datos estruturados
+│   ├── routes.ts                   os slugs das pestanas, nunha soa lista, e o dunha liña
+│   ├── seo.ts                      título, descrición e canónica por pestana e por liña, sitemap, datos estruturados
 │   ├── types.ts
 │   ├── App.tsx
 │   └── main.tsx
@@ -1596,16 +1604,17 @@ castelán en `/es/…` e o inglés en `/en/…`, cada un coas súas palabras (`/
 `/en/lines/`, `/en/stops/`; `SLUGS` en `src/routes.ts`). Unha palabra doutro idioma
 tamén abre a pestana, e a app reescribe o enderezo. Cada copia leva o `lang`, o título e a
 descrición no seu idioma, a súa canónica e as outras dúas como alternativas (`hreflang`,
-co galego como `x-default`), e `sitemap.xml` lista as dezaoito. Así un buscador pode
-amosar a cada quen o resultado no idioma en que buscou.
+co galego como `x-default`), e `sitemap.xml` lista as dezaoito e as 72 páxinas das liñas
+(abaixo). Así un buscador pode amosar a cada quen o resultado no idioma en que buscou.
 
 O enderezo decide o idioma: unha ligazón compartida ábrese no idioma en que se copiou, e
 cambiar de idioma no menú cambia o enderezo sen engadir un paso ao historial. Nun enderezo
 sen prefixo vale a última elección, despois o idioma do navegador, despois o galego; un
 buscador le sempre galego aí, porque non ten elección gardada e o seu navegador di inglés.
-O título da pestana sae da mesma táboa ca o das copias (`src/seo.ts`), porque un buscador
-toma o título que pon a páxina ao correr. As copias en castelán e inglés non van na
-precaché: sen rede, a navegación cae en `index.html` e a app le o idioma do enderezo.
+O título da pestana sae da mesma táboa ca o das copias (`src/seo.ts`), e o dunha liña
+aberta, o da súa páxina, porque un buscador toma o título que pon a páxina ao correr. As
+copias en castelán e inglés, e as das liñas, non van na precaché: sen rede, a navegación
+cae en `index.html` e a app le o idioma e a liña do enderezo.
 
 ### Como está feito
 
@@ -1708,6 +1717,18 @@ As pestanas son ligazóns (`<a href>`) que un rastrexador pode seguir, o sitemap
 ligazón» usan a barra final para non pasar polo 301 de Pages, e a `og:image` é o icono de
 512 px. Os slugs saen de `src/routes.ts`, que é a única lista: dela len o enrutador, o
 sitemap e a build.
+
+**Cada liña ten a súa páxina**, `/linhas/1.4/`, `/es/lineas/1.4/`, `/en/lines/1.4/`: 24
+liñas en tres idiomas, 72 copias máis, e o sitemap pasa de dezaoito entradas a noventa. As
+buscas polo número dunha liña («horario bus 1.4 lugo», «línea 2») caían todas en
+`/es/lineas/`, unha páxina para as 24 (`design/AUDITORIA-seo.md`, punto 7). O slug é o id da
+liña en ASCII (`1.4`, `5ds`, `11-igrexa-de-boveda`): catro liñas son un «11» no bus, e cada
+unha ten o seu enderezo e o seu título. O título leva o número, e a variante do 11 detrás;
+a descrición, o nome que o operador forma coas dúas cabeceiras, e nada que non estea no
+cadro publicado. As filas da lista de liñas son ligazóns (`<a href>`), que é por onde un
+rastrexador chega a elas sen depender do sitemap, e abrir unha liña escribe o seu enderezo,
+que é o que se comparte. As ligazóns vellas, `?linea=`, seguen abrindo a liña, e o
+enderezo pasa a ser o novo.
 
 O único que cambia sen servidor son os **avisos oficiais**: o navegador non pode ler
 buslugo.com por CORS, así que se usa a copia que deixa a tarefa programada e

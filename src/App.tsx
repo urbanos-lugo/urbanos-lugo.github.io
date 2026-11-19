@@ -132,12 +132,14 @@ export default function App() {
 
   // Each copy of index.html ships its language's head; once the app knows who is reading, the
   // page and the tab title say so, from the same table, because a search engine takes the
-  // title the running page sets. The stops tab is the root's screen and has the root's title.
+  // title the running page sets. The stops tab is the root's screen and has the root's title,
+  // and a line's page its line's, as its static copy does.
+  const titledLine = activeTab === 'lines' ? screen.line : undefined;
   useEffect(() => {
     document.documentElement.lang = lang;
-    document.title = pageHead(activeTab === 'stops' ? '' : PATHS[activeTab], lang).title;
+    document.title = pageHead(activeTab === 'stops' ? '' : PATHS[activeTab], lang, titledLine).title;
     writeString(LANG_KEY, lang);
-  }, [lang, activeTab]);
+  }, [lang, activeTab, titledLine]);
 
   /**
    * A tab from the bar, the menu or the search: what was last open on it, as a step of its own.
@@ -358,6 +360,7 @@ export default function App() {
                     changes={noticeChanges}
                     onOpenAlerts={openAlerts}
                     answerShown={screen.trip}
+                    goingTo={screen.goingTo}
                     onAnswer={(trip, inPlace) => {
                       const replace = inPlace || sideBySide() || !!screen.trip;
                       go({ tab: 'plan', trip, over: screen.trip ? screen.over : !replace }, replace);

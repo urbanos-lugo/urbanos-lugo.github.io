@@ -181,6 +181,7 @@ export const en: Dict = {
     recentCleared: 'Recent routes cleared.',
     shareTrip: 'Share this trip',
     copyTrip: 'Copy a link to this trip',
+    chooseOrigin: 'Type where you are leaving from, or use your location, and the trip is worked out.',
     departureLabel: 'Depart',
     arrivalLabel: 'Arrive',
     board: 'Get on at',

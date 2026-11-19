@@ -5523,3 +5523,77 @@ que sae de alí, coa fila «Origen · Tu parada» e a súa hora (20:02); a mesma
 lista abre no primeiro sentido sen ningunha marca. Ningún erro na consola. `audit:browser`
 non se pasou despois deste cambio: queda para a rolda das páxinas por liña, que volve tocar
 `LinesView`.
+
+## Rolda 69: unha páxina por liña — 18 de novembro de 2026
+
+Pedido: o punto 7 da auditoría SEO, sacado do aparcado polo que mediu Search Console: as
+buscas polo número dunha liña caían todas en `/es/lineas/`, unha páxina para as 24, e Google
+prefire a páxina concreta (a sesión do SEO deixou as cifras en `AUDITORIA-seo.md`). O
+sitemap segue sen lerse en Google, así que o requisito eran ligazóns de verdade.
+
+### Feito
+
+- `lineSlug` en `routes.ts`, que segue sen importar nada: o id en ASCII, `1.4`, `5ds`,
+  `11-igrexa-de-boveda`. `parsePath` le o segmento detrás da palabra das liñas, e `pathFor`
+  escríbeo.
+- O enrutador: unha liña aberta escribe o seu enderezo, `/es/lineas/1.4/`; un enderezo así
+  abre a liña ao cargar e ao volver; unha `?linea=` vella ábrea e pasa ao enderezo novo, sen
+  a consulta; un slug que non é ningunha liña abre a lista.
+- `seo.ts`: `LINE_PAGES` desde `lines.json`, e por liña o título (o número e a variante do
+  11), a descrición (o nome do operador), a canónica e os `hreflang`. O título máis longo
+  dos 72 ten 60 caracteres e a descrición máis longa 149 (medido). `pageHtml` escapa o
+  texto e substitúe con funcións, porque o nome vén do conxunto de datos. Sitemap: 90.
+- A build escribe as 72 copias; a precaché non as leva, coma as de `es/` e `en/`.
+- A app pon o título da liña aberta, o mesmo da súa copia.
+- As filas da lista de liñas son `<a href>` (`lineLink`, o mesmo xeito ca `tabLink`), e
+  «Compartir» dá o enderezo da liña. Ía polo número, `?linea=11`, así que as tres variantes
+  do 11 abrían o 11.
+- O selector das filas en `auditBrowser.ts` e `journeys.ts` era `main button[id^="line-card-"]`;
+  agora vale para calquera etiqueta.
+- As comprobacións: as 72 páxinas pasan polas mesmas ca as das pestanas (bus no título, 60 e
+  155 caracteres, «Non oficial.», nada de «en vivo», títulos sen repetir, canónica e
+  alternativas), o sitemap conta 90, os slugs son únicos, en ASCII e volven á súa liña, e
+  a build ten cada copia baixo o título da súa liña. Seguen 174: ampliáronse as que había.
+
+### Comprobado
+
+- As cinco portas: lint, 174 comprobacións, 26 políticas, `check:deep` e a build; na build,
+  72 copias de liña e ningunha na precaché.
+- No panel, contra a build: `/es/lineas/11-calde/` abre a 11 Calde co seu título; unha fila
+  da lista é `<a href="/es/lineas/1.4/">` e o clic queda na app e escribe o enderezo;
+  `/linhas/?linea=5DS` remata en `/es/lineas/5ds/` (castelán por ser a elección gardada no
+  panel); no teléfono, abrir a 3.1 e volver deixa `/es/lineas/` no mesmo documento;
+  «Copiar ligazón» na 11 Santa Comba copia `/es/lineas/11-santa-comba/`. Ningún erro na consola.
+- `audit:browser` enteiro contra esta build, coas outras tres sesións paradas (deron o
+  «go»): 0 achados de WCAG 2.2 A/AA en 242 medidas de 162 estados, en 702 s; as viaxes,
+  ningunha tarefa sen rematar. A barra da casa, como na rolda 68: 25 controis baixo 44 px, 3
+  entre as barras e 64 toques no cuarto de arriba. Cubre tamén a liña aberta desde unha
+  parada, que non pasara por el.
+
+### «Como chegar en bus»: unha ligazón só co destino — 18 e 19 de novembro
+
+Unha das portas que abría o feito ata aquí: que calquera páxina poida ligar Ruta cun
+destino, e que cada quen calcule desde onde está.
+
+- `?a=` só (con `saida=` ou `chegada=` se se quere) abre Ruta coa orixe baleira e ese
+  destino (`Screen.goingTo`). Non se pide a posición sen que se prema; ata que hai orixe, a
+  columna da resposta di que falta, en vez do traxecto de exemplo, que no escritorio está
+  ao lado e respondería outra pregunta.
+- «Compartir esta ruta» desde «a miña localización», que non se ofrecía, dá a ligazón só co
+  destino: a posición segue sen ir en ningunha ligazón.
+- A comprobación da ligazón dunha ruta, escrita nesta rolda, cambia con iso: `?a=` só xa non
+  é «un extremo que falta», e desde a localización sae o destino; segue comprobando que
+  `my_location` non vai na ligazón.
+
+Comprobado: as cinco portas (lint, 174, 26 políticas, `check:deep`, build). No panel, contra
+a build, co service worker e as cachés borrados antes (a primeira proba servira a build
+anterior): `/es/ruta/?a=Pazo%20de%20Feiras&chegada=20:00` abre coa orixe baleira, o destino,
+«Llegar antes» ás 20:00 e o aviso de que falta a orixe; con «Praza Maior» calcula a ruta e o
+aviso vai. Ningún erro na consola. `audit:browser` enteiro despois disto, coas outras dúas
+sesións paradas: 0 achados de WCAG 2.2 A/AA en 242 medidas de 162 estados, en 669 s; as
+viaxes, ningunha tarefa sen rematar; a barra da casa, a mesma (25, 3, 64).
+
+### Queda
+
+- Do dono, tras publicar: pedir a indexación dalgunhas páxinas de liña en Inspección de URL.
+- Nada desta rolda está en `develop` remoto nin en `main`.

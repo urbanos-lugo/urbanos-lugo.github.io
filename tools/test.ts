@@ -20,7 +20,7 @@ import { apiUrl } from '../src/services/apiUrl';
 import { createHash } from 'node:crypto';
 import { buildSync } from 'esbuild';
 import { REPO_URL } from '../src/project';
-import { ROOT_HEAD, SITE_LANGS, SITE_PATHS, canonicalUrl, pageHead, pageHtml, robotsTxt, siteHeadTags, siteUrl, sitemapXml, structuredData, websiteData } from '../src/seo';
+import { LINE_PAGES, ROOT_HEAD, SITE_LANGS, SITE_PATHS, canonicalUrl, pageHead, pageHtml, robotsTxt, siteHeadTags, siteUrl, sitemapXml, structuredData, websiteData } from '../src/seo';
 import { CACHE_TTL_MS as ALERTS_CACHE_MS, MIN_OUTBOUND_INTERVAL_MS as ALERTS_MIN_OUTBOUND_MS, extractAlertsFromHtml, extractConcelloNotices } from '../src/services/alertSyncService';
 import { clockDriftFromTimetable, lugoOffsetByRule } from '../src/utils/clock';
 import { MAX_QUERY_LENGTH, calculateRelevanceScore, matchesQuery, normalizeText, withinEditDistance } from '../src/utils/searchUtils';
@@ -37,10 +37,10 @@ import { readOperatorTimes } from '../src/hooks/useOperatorTimes';
 import { noticeLink } from '../src/utils/operatorNotices';
 import { atStop, changesNow, matchStop, noticeOver, pastTimetable, readNoticeChanges, runsAt, runsUntil, serviceDay, setsOff, stopSkipper, underNotice } from '../src/utils/noticeChanges';
 import { escapeHtml, plainText } from '../src/utils/html';
-import { screenFromLink, tripSearch } from '../src/utils/links';
+import { lineBySlug, screenFromLink, tripSearch } from '../src/utils/links';
 import { badgeHtml } from '../src/components/Map/popupHtml';
 import { STORAGE_KEYS, readJson, readString, writeJson, writeString } from '../src/utils/storage';
-import { LANG_PREFIX, PATHS, SLUGS, isCrawler, parsePath, pathFor, pickLang } from '../src/routes';
+import { LANG_PREFIX, PATHS, SLUGS, isCrawler, lineSlug, parsePath, pathFor, pickLang } from '../src/routes';
 import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src/services/walkingPath';
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
 import { projectOnto, routeOnFoot } from '../src/utils/walkRouter';
@@ -2547,13 +2547,19 @@ ok('a planned trip goes out as a link and comes back as the same question, and n
   }
   // "Now" is the opener's now: the clock the field held when it was shared stays behind.
   assert.strictEqual(tripSearch({ from: 'HULA', to: 'Catedral', mode: 'now', at: '14:05' }), '?de=HULA&a=Catedral');
-  // "My location" is a position on this phone: no link is made from it, either end.
-  assert.strictEqual(tripSearch({ from: 'my_location', to: 'HULA', mode: 'now', at: '' }), null, 'a link was made from the reader\'s position');
+  // "My location" is a position on this phone and never goes in a link. From it, the link is the
+  // destination alone, which whoever opens it plans from where they are; to it, there is none.
+  const fromHere = tripSearch({ from: 'my_location', to: 'HULA', mode: 'arrive', at: '09:00' });
+  assert(fromHere === '?a=HULA&chegada=09%3A00' && !fromHere.includes('my_location'), `a trip from the reader's position went out as ${fromHere}`);
+  assert.deepStrictEqual(screenFromLink(fromHere), { tab: 'plan', goingTo: { to: 'HULA', mode: 'arrive', at: '09:00' } }, 'the destination alone came back as another question');
   assert.strictEqual(tripSearch({ from: 'HULA', to: 'my_location', mode: 'depart', at: '08:00' }), null, 'a link was made to the reader\'s position');
-  // A clock that is no clock is a trip for now; a field longer than a field takes is cut there; an end missing is no trip.
+  // A page's own "how to get here": ?a= alone, or with a blank origin, is the destination; ?de= alone is nothing.
+  assert.deepStrictEqual(screenFromLink('?a=Pazo%20de%20Feiras'), { tab: 'plan', goingTo: { to: 'Pazo de Feiras', mode: 'now', at: '' } });
+  assert.deepStrictEqual(screenFromLink('?de=%20&a=HULA'), { tab: 'plan', goingTo: { to: 'HULA', mode: 'now', at: '' } }, 'a blank origin was taken for one');
+  // A clock that is no clock is a trip for now; a field longer than a field takes is cut there; no destination is no trip.
   assert.deepStrictEqual(screenFromLink('?de=HULA&a=Catedral&saida=25:00'), { tab: 'plan', trip: { from: 'HULA', to: 'Catedral', mode: 'now', at: '' } });
   assert.strictEqual(screenFromLink(`?de=${'x'.repeat(5000)}&a=HULA`)?.trip?.from.length, MAX_QUERY_LENGTH);
-  for (const search of ['?de=HULA', '?a=HULA', '?de=%20&a=HULA']) assert.strictEqual(screenFromLink(search), null, `"${search}" opens a trip with an end missing`);
+  for (const search of ['?de=HULA', '?a=', '?a=%20']) assert.strictEqual(screenFromLink(search), null, `"${search}" opens a trip with no destination`);
   // A line or a stop named beside it is what opens, as before.
   assert.strictEqual(screenFromLink(`?linea=${BUS_LINES[0].number}&de=HULA&a=Catedral`)?.tab, 'lines');
 });
@@ -2680,9 +2686,10 @@ ok('the structured data does not pass this off as the operator', () => {
   assert(canonicalUrl(site, 'linhas') === `${site}linhas/`, 'a tab that is its own screen lost its canonical');
   const full = sitemapXml(site);
   assert(!/paradas\//.test(full), 'the sitemap still lists a /paradas/, which is its language root under another name');
-  // Six screens in each of three languages, so a search can return the one in the searcher's.
-  assert((full.match(/<loc>/g) ?? []).length === 18, `the sitemap has ${(full.match(/<loc>/g) ?? []).length} entries, expected 18`);
-  for (const url of [site, `${site}es/`, `${site}en/`, `${site}en/lines/`, `${site}es/lineas/`]) assert(full.includes(`<loc>${url}</loc>`), `the sitemap is missing ${url}`);
+  // Six screens and the 24 lines in each of three languages, so a search can return the one in the searcher's.
+  const entries = (full.match(/<loc>/g) ?? []).length;
+  assert(entries === 3 * (6 + LINE_PAGES.length) && LINE_PAGES.length === 24, `the sitemap has ${entries} entries for ${LINE_PAGES.length} lines, expected 90 for 24`);
+  for (const url of [site, `${site}es/`, `${site}en/`, `${site}en/lines/`, `${site}es/lineas/`, `${site}linhas/1.4/`, `${site}es/lineas/11-igrexa-de-boveda/`, `${site}en/lines/5ds/`]) assert(full.includes(`<loc>${url}</loc>`), `the sitemap is missing ${url}`);
 });
 
 ok('every tab page has its own title, description and canonical', () => {
@@ -2698,11 +2705,13 @@ ok('every tab page has its own title, description and canonical', () => {
   // 155 is where a result cuts the description, and 60 the title.
   const OPENER = { gl: /^Non oficial\./, es: /^No oficial\./, en: /^Unofficial\./ };
   const withCanonical = html.replace('<meta name="theme-color"', `<link rel="canonical" href="${site}" />\n    <meta name="theme-color"`);
+  // The 24 lines' pages too, each under its line: "horario bus 1.4 lugo" and "línea 2" landed on one page for all 24.
+  const pages = [...SITE_PATHS.map((route) => ({ route, line: undefined as string | undefined })), ...LINE_PAGES.map((l) => ({ route: PATHS.lines, line: l.id }))];
   for (const lang of SITE_LANGS) {
     const seen = new Set<string>();
-    for (const route of SITE_PATHS) {
-      const head = pageHead(route, lang);
-      const where = `${lang} ${route || 'root'}`;
+    for (const { route, line } of pages) {
+      const head = pageHead(route, lang, line);
+      const where = `${lang} ${line ?? (route || 'root')}`;
       assert(/\bbus\b/i.test(head.title), `"${head.title}" does not say bus`);
       assert(head.title.length <= 60, `"${head.title}" is ${head.title.length} characters; 60 is where a result cuts it`);
       assert(OPENER[lang].test(head.description), `the ${where} description does not open by saying it is not official`);
@@ -2712,7 +2721,7 @@ ok('every tab page has its own title, description and canonical', () => {
       seen.add(head.title);
 
       // Injected the way the build does it, on a page carrying the root canonical.
-      const page = pageHtml(withCanonical, route, site, lang);
+      const page = pageHtml(withCanonical, route, site, lang, line);
       assert(page.includes(`<html lang="${lang}"`), `the ${where} page does not say its language`);
       assert(page.includes(`<title>${head.title}</title>`), `the ${where} page did not get its title`);
       assert(page.includes(`<meta name="description" content="${head.description}"`), `the ${where} page did not get its description`);
@@ -2720,12 +2729,19 @@ ok('every tab page has its own title, description and canonical', () => {
       assert(page.includes(`>${head.title}</h1>`), `the ${where} page did not get its own <h1>`);
       assert(page.includes(`<meta property="og:locale" content="${{ gl: 'gl_ES', es: 'es_ES', en: 'en_GB' }[lang]}" />`), `the ${where} page names another locale`);
       // Its own address, except the stops tab, which is its language root's screen and says so.
-      assert(page.includes(`<link rel="canonical" href="${canonicalUrl(site, route, lang)}" />`), `the ${where} page canonical is not ${canonicalUrl(site, route, lang)}`);
+      assert(page.includes(`<link rel="canonical" href="${canonicalUrl(site, route, lang, line)}" />`), `the ${where} page canonical is not ${canonicalUrl(site, route, lang, line)}`);
       assert((page.match(/rel="canonical"/g) ?? []).length === 1, `the ${where} page has more than one canonical`);
       // And the same screen in the other two, which is what lets a search show each reader theirs.
-      for (const other of SITE_LANGS) assert(page.includes(`<link rel="alternate" hreflang="${other}" href="${canonicalUrl(site, route, other)}" />`), `the ${where} page does not name its ${other} version`);
-      assert(page.includes(`<link rel="alternate" hreflang="x-default" href="${canonicalUrl(site, route, 'gl')}" />`), `the ${where} page has no x-default`);
+      for (const other of SITE_LANGS) assert(page.includes(`<link rel="alternate" hreflang="${other}" href="${canonicalUrl(site, route, other, line)}" />`), `the ${where} page does not name its ${other} version`);
+      assert(page.includes(`<link rel="alternate" hreflang="x-default" href="${canonicalUrl(site, route, 'gl', line)}" />`), `the ${where} page has no x-default`);
     }
+  }
+
+  // A line's page is the line's own: its number and the ends the operator gives it, and its address.
+  for (const line of LINE_PAGES) {
+    const head = pageHead(PATHS.lines, 'es', line.id);
+    assert(head.title.includes(`Línea ${line.number}`) && head.description.includes(line.name), `the ${line.id} page does not carry its number in the title and its name in the description: ${head.title} / ${head.description}`);
+    assert(canonicalUrl(site, PATHS.lines, 'es', line.id) === `${site}es/lineas/${line.slug}/`, `the ${line.id} page is not its own canonical`);
   }
 
   // The preview image the build injects is a file that ships.
@@ -2748,6 +2764,10 @@ ok('an address names its language, and a search engine reads a bare one in Galic
   // A tab's word from another language still opens it, and the router rewrites the address.
   assert.deepStrictEqual(parsePath('en/linhas/'), { lang: 'en', tab: 'lines' }, '/en/linhas/ does not open the lines');
   assert.deepStrictEqual(parsePath('gl/linhas/'), { lang: null, tab: null }, 'Galician has no prefix, so /gl/ is not an address');
+  // A line's page is its own address under the lines word, in any of them.
+  assert.deepStrictEqual(parsePath('es/lineas/1.4/'), { lang: 'es', tab: 'lines', line: '1.4' }, '/es/lineas/1.4/ is not the 1.4 in Spanish');
+  assert.deepStrictEqual(parsePath('linhas/11-igrexa-de-boveda/'), { lang: null, tab: 'lines', line: '11-igrexa-de-boveda' }, 'a variant of the 11 is not read from its address');
+  assert.deepStrictEqual(parsePath('es/paradas/1.4/'), { lang: 'es', tab: 'stops' }, 'a segment under another tab was read as a line');
   // Every word names one tab, in every language, and none is a language prefix.
   const owner = new Map<string, string>();
   for (const [lang, words] of Object.entries(SLUGS)) {
@@ -2778,6 +2798,18 @@ ok('every tab has a path, and the sitemap lists exactly those', () => {
   for (const slug of slugs) {
     assert(SITE_PATHS.includes(slug), `"${slug}" is a tab route but is not in the sitemap`);
   }
+  // Every line has an address of its own that leads back to it, plain ASCII, the same in every
+  // language. Four lines are an "11": by the number, a link to a variant opened the plain 11.
+  const lineSlugs = BUS_LINES.map((l) => lineSlug(l.id));
+  assert(new Set(lineSlugs).size === BUS_LINES.length, `two lines share an address: ${lineSlugs.join(' ')}`);
+  for (const line of BUS_LINES) {
+    const slug = lineSlug(line.id);
+    assert(/^[a-z0-9][a-z0-9.-]*$/.test(slug), `the ${line.id} address, "${slug}", is not plain ASCII`);
+    assert(lineBySlug(slug)?.id === line.id, `"${slug}" does not lead back to the ${line.id}`);
+  }
+  assert(lineSlug('1.4') === '1.4' && lineSlug('5DS') === '5ds' && lineSlug('11-Igrexa de Bóveda') === '11-igrexa-de-boveda', 'a line address is not the one the sitemap and the shared links carry');
+  assert(pathFor('es', 'linhas', '1.4') === 'es/lineas/1.4/' && pathFor('gl', 'linhas', '1.4') === 'linhas/1.4/', 'a line page lost its tab word or its slash');
+  assert(lineBySlug('99.9') === undefined, 'an address naming no line opened one');
 
   // Without 404.html a mistyped link lands on GitHub's own page; without a page per tab every
   // path in sitemap.xml answers 404 and link previews are skipped. Asked of what the build
@@ -2789,6 +2821,12 @@ ok('every tab has a path, and the sitemap lists exactly those', () => {
       const page = join(root, 'dist', pathFor(lang, route), 'index.html');
       const title = `<title>${pageHead(route, lang).title}</title>`;
       assert(existsSync(page) && readFileSync(page, 'utf8').includes(title), `/${pathFor(lang, route)} was not built under its own title, so the sitemap lists a 404 or a copy of the root`);
+    }
+    for (const line of LINE_PAGES) {
+      const dir = pathFor(lang, PATHS.lines, line.slug);
+      const page = join(root, 'dist', dir, 'index.html');
+      const title = `<title>${pageHead(PATHS.lines, lang, line.id).title}</title>`;
+      assert(existsSync(page) && readFileSync(page, 'utf8').includes(title), `/${dir} was not built under its line's title`);
     }
   }
 });

@@ -170,6 +170,7 @@ export const es: Dict = {
     recentCleared: 'Se borraron las rutas recientes.',
     shareTrip: 'Compartir esta ruta',
     copyTrip: 'Copiar el enlace de esta ruta',
+    chooseOrigin: 'Escribe de dónde sales, o usa tu ubicación, y se calcula la ruta.',
     departureLabel: 'Salida',
     arrivalLabel: 'Llegada',
     board: 'Sube en',

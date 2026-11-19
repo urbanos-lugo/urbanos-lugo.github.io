@@ -5,7 +5,32 @@
  * exist. Without `SITE_URL` the tags are omitted rather than guessed.
  */
 import type { Tab } from './components/navSections';
-import { LANG_PREFIX, PATHS, pathFor, type PathLang } from './routes';
+import rawLines from './data/lines.json';
+import { LANG_PREFIX, PATHS, lineSlug, pathFor, type PathLang } from './routes';
+
+/** A line's page: its id and slug, the number on the bus, and the name the operator forms from its two ends. */
+export interface LinePage {
+  id: string;
+  slug: string;
+  number: string;
+  name: string;
+  /** What tells it apart from the other lines with its number: only the 11's three variants have one. */
+  variant: string;
+}
+
+/**
+ * One page per line, from the dataset, so a search for "horario bus 1.4 lugo" can land on
+ * the 1.4 rather than on one page for all 24. Four lines are an "11" on the bus, and the
+ * variant is the part of the id after the number («Igrexa de Bóveda», «Calde», «Santa
+ * Comba»): four pages with one title would read as one.
+ */
+export const LINE_PAGES: LinePage[] = rawLines.map((line) => ({
+  id: line.id,
+  slug: lineSlug(line.id),
+  number: line.number,
+  name: line.name,
+  variant: line.id.startsWith(`${line.number}-`) ? line.id.slice(line.number.length + 1) : '',
+}));
 
 /** The site's own address, with a trailing slash, or null when nothing was configured. */
 export function siteUrl(raw: string | undefined): string | null {
@@ -77,9 +102,9 @@ export const SITE_PATHS = ['', ...Object.values(PATHS)];
 /** The three languages with addresses of their own, Galician first: it is the bare one and the x-default. */
 export const SITE_LANGS = Object.keys(LANG_PREFIX) as PathLang[];
 
-/** With the trailing slash: each tab is a directory with an index.html, and Pages 301s `/linhas` to `/linhas/`. */
-export function routeUrl(site: string, route: string, lang: PathLang = 'gl'): string {
-  return `${site}${pathFor(lang, route)}`;
+/** With the trailing slash: each tab and each line's page is a directory with an index.html, and Pages 301s `/linhas` to `/linhas/`. */
+export function routeUrl(site: string, route: string, lang: PathLang = 'gl', line?: string): string {
+  return `${site}${pathFor(lang, route, line && lineSlug(line))}`;
 }
 
 /**
@@ -87,15 +112,22 @@ export function routeUrl(site: string, route: string, lang: PathLang = 'gl'): st
  * tab: `/` and `/paradas/` draw the same screen, and Search Console read two canonicals as
  * "Duplicate, Google chose a different canonical", rightly. So the stops tab points at its
  * language's root and stays out of the sitemap; the page still answers 200 with its own title.
+ * A line's page is its own address.
  */
-export function canonicalUrl(site: string, route: string, lang: PathLang = 'gl'): string {
-  return routeUrl(site, route === PATHS.stops ? '' : route, lang);
+export function canonicalUrl(site: string, route: string, lang: PathLang = 'gl', line?: string): string {
+  return line ? routeUrl(site, PATHS.lines, lang, line) : routeUrl(site, route === PATHS.stops ? '' : route, lang);
 }
 
-/** Eighteen entries: in each language, the root and the five tabs that are not the root by another name. */
-export function sitemapXml(site: string, paths: string[] = SITE_PATHS, langs: PathLang[] = SITE_LANGS): string {
+/**
+ * Ninety entries: in each language, the root, the five tabs that are not the root by another
+ * name, and the 24 lines' pages.
+ */
+export function sitemapXml(site: string, paths: string[] = SITE_PATHS, langs: PathLang[] = SITE_LANGS, lines: string[] = LINE_PAGES.map((l) => l.id)): string {
   const urls = langs
-    .flatMap((lang) => paths.filter((p) => canonicalUrl(site, p, lang) === routeUrl(site, p, lang)).map((p) => routeUrl(site, p, lang)))
+    .flatMap((lang) => [
+      ...paths.filter((p) => canonicalUrl(site, p, lang) === routeUrl(site, p, lang)).map((p) => routeUrl(site, p, lang)),
+      ...lines.map((line) => routeUrl(site, PATHS.lines, lang, line)),
+    ])
     .map((url) => `  <url><loc>${url}</loc></url>`)
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
@@ -232,13 +264,39 @@ const HEADS: Record<PathLang, { root: PageHead; tabs: Record<Tab, PageHead> }> =
   },
 };
 
+/**
+ * A line's page: the number in the title, as it is searched ("horario bus 1.4 lugo", "línea
+ * 2"), with the 11's variant after it; the line's name, its two ends as the operator writes
+ * them, in the description. The title has no room for the name and the site: 60 is the cut.
+ */
+const LINE_HEADS: Record<PathLang, (label: string, line: LinePage) => PageHead> = {
+  gl: (label, line) => ({
+    title: `Liña ${label} do bus de Lugo: horario e paradas`,
+    description: `Non oficial. Liña ${line.number} do bus urbano de Lugo, ${line.name}: percorrido, paradas e horario de buslugo.com.`,
+  }),
+  es: (label, line) => ({
+    title: `Línea ${label} del bus de Lugo: horario y paradas`,
+    description: `No oficial. Línea ${line.number} del bus urbano de Lugo, ${line.name}: recorrido, paradas y horario de buslugo.com.`,
+  }),
+  en: (label, line) => ({
+    title: `Lugo city bus line ${label}: timetable and stops`,
+    description: `Unofficial. Lugo city bus line ${line.number}, ${line.name}: route, stops and timetable from buslugo.com.`,
+  }),
+};
+
 /** The root's head in Galician: index.html carries exactly this, and the build re-heads every copy from it. */
 export const ROOT_HEAD: PageHead = HEADS.gl.root;
 
-export function pageHead(route: string, lang: PathLang = 'gl'): PageHead {
+/** A route's head in a language; with a line's id, that line's page. */
+export function pageHead(route: string, lang: PathLang = 'gl', line?: string): PageHead {
+  const page = line ? LINE_PAGES.find((l) => l.id === line) : undefined;
+  if (page) return LINE_HEADS[lang](page.variant ? `${page.number} ${page.variant}` : page.number, page);
   const tab = (Object.keys(PATHS) as Tab[]).find((t) => PATHS[t] === route);
   return tab ? HEADS[lang].tabs[tab] : HEADS[lang].root;
 }
+
+/** For an attribute or a title: a line's name comes from the dataset, not from this file. */
+const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 /** Open Graph's names for the three, which want a region. */
 const OG_LOCALE: Record<PathLang, string> = { gl: 'gl_ES', es: 'es_ES', en: 'en_GB' };
@@ -247,28 +305,31 @@ const OG_LOCALE: Record<PathLang, string> = { gl: 'gl_ES', es: 'es_ES', en: 'en_
  * The built index.html, re-headed for one route in one language: its `lang`, title,
  * description, Open Graph locale, canonical and static <h1>, and the alternates that tell a
  * search engine which page is the same screen in the other two languages, so it can show
- * each searcher theirs. The root's Galician tags are the anchors, so index.html has to
- * carry exactly `ROOT_HEAD`; tools/test.ts holds the two together.
+ * each searcher theirs. With a line's id, that line's page, whose alternates are the same
+ * line in the other two. The root's Galician tags are the anchors, so index.html has to
+ * carry exactly `ROOT_HEAD`; tools/test.ts holds the two together. Replaced by functions, so
+ * a `$` in a line's name is not read as a pattern.
  */
-export function pageHtml(html: string, route: string, site: string | null, lang: PathLang = 'gl'): string {
-  const head = pageHead(route, lang);
+export function pageHtml(html: string, route: string, site: string | null, lang: PathLang = 'gl', line?: string): string {
+  const head = pageHead(route, lang, line);
+  const title = escapeHtml(head.title);
+  const description = escapeHtml(head.description);
   const locales = [OG_LOCALE[lang], ...SITE_LANGS.filter((l) => l !== lang).map((l) => OG_LOCALE[l])];
   const out = html
-    .replace(/<html lang="[^"]*"/, `<html lang="${lang}"`)
-    .replace(/<title>[^<]*<\/title>/, `<title>${head.title}</title>`)
-    .replace(/(<meta name="description" content=")[^"]*/, `$1${head.description}`)
-    .replace(/(<meta property="og:title" content=")[^"]*/, `$1${head.title}`)
-    .replace(/(<meta property="og:description" content=")[^"]*/, `$1${head.description}`)
-    .replace(
-      /<meta property="og:locale" content="[^"]*" \/>(\s*<meta property="og:locale:alternate" content="[^"]*" \/>)*/,
+    .replace(/<html lang="[^"]*"/, () => `<html lang="${lang}"`)
+    .replace(/<title>[^<]*<\/title>/, () => `<title>${title}</title>`)
+    .replace(/(<meta name="description" content=")[^"]*/, (_, open: string) => open + description)
+    .replace(/(<meta property="og:title" content=")[^"]*/, (_, open: string) => open + title)
+    .replace(/(<meta property="og:description" content=")[^"]*/, (_, open: string) => open + description)
+    .replace(/<meta property="og:locale" content="[^"]*" \/>(\s*<meta property="og:locale:alternate" content="[^"]*" \/>)*/, () =>
       locales.map((l, i) => `<meta property="og:locale${i ? ':alternate' : ''}" content="${l}" />`).join('\n    '),
     )
-    .replace(/(<h1[^>]*>)[^<]*(<\/h1>)/, `$1${head.title}$2`);
+    .replace(/(<h1[^>]*>)[^<]*(<\/h1>)/, (_, open: string, close: string) => open + title + close);
   if (!site) return out;
   const links = [
-    `<link rel="canonical" href="${canonicalUrl(site, route, lang)}" />`,
-    ...SITE_LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonicalUrl(site, route, l)}" />`),
-    `<link rel="alternate" hreflang="x-default" href="${canonicalUrl(site, route, 'gl')}" />`,
+    `<link rel="canonical" href="${canonicalUrl(site, route, lang, line)}" />`,
+    ...SITE_LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonicalUrl(site, route, l, line)}" />`),
+    `<link rel="alternate" hreflang="x-default" href="${canonicalUrl(site, route, 'gl', line)}" />`,
   ];
-  return out.replace(`<link rel="canonical" href="${site}" />`, links.join('\n    '));
+  return out.replace(`<link rel="canonical" href="${site}" />`, () => links.join('\n    '));
 }

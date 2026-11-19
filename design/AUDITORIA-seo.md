@@ -249,6 +249,16 @@ présa por competir con ninguén. O dominio propio queda descartado polo momento
    palabras clave.
    *O 18 de novembro sae do aparcado, co que mediu Search Console (abaixo): vai nunha rolda
    propia.*
+   *Feito o 18 de novembro de 2026 (REXISTRO, rolda 69), sen xerador aparte: a build escribe
+   unha copia por liña e idioma, `/linhas/<slug>/`, `/es/lineas/<slug>/` e
+   `/en/lines/<slug>/`, 72 en total, co slug en ASCII (`1.4`, `5ds`, `11-igrexa-de-boveda`)
+   porque catro liñas son un «11». Cada unha co seu título (o número e, nas variantes do 11,
+   a variante), a súa descrición (o nome que o operador lle dá), o seu `<h1>` estático, a
+   súa canónica e as outras dúas linguas como alternativas. O sitemap pasa a 90. A copia non
+   leva horas: o corpo é o da app, como no punto 5, que é o que Google renderiza. As filas
+   da lista de liñas son `<a href>` ao enderezo de cada unha, que é como chega un
+   rastrexador sen sitemap, e abrir unha liña escribe o enderezo que se comparte. Pendente
+   do dono, tras publicar: pedir a indexación dalgunhas en Inspección de URL.*
 8. **Páxinas por parada.** Un día máis sobre a 7. O «copiar ligazón» pasa a dar unha URL
    con título e previsualización; o sitemap sobe a 448.
 9. **Ligazóns.** Custa tempo, non código: nota de prensa a El Progreso e La Voz de Lugo,

@@ -80,6 +80,8 @@ interface RoutePlannerViewProps {
   onOpenAlerts?: () => void;
   /** The answer is the screen, to this question; below lg it is folded over the form. */
   answerShown: Trip | undefined;
+  /** A link's destination with no origin (`?a=`): the form opens with it, and the origin empty for the reader to give. */
+  goingTo?: Screen['goingTo'];
   /**
    * A question answered, folding the form: the answer becomes the screen, over the form, or in
    * its place when the form was never on screen (a place picked in the search box).
@@ -91,7 +93,7 @@ interface RoutePlannerViewProps {
   onShowAnswer: (trip: Trip) => void;
 }
 
-export function RoutePlannerView({ onSelectStop, onSelectLine, destinationRequest, onStartTrip, changes = null, onOpenAlerts, answerShown, onAnswer, onEditTrip, onShowAnswer }: RoutePlannerViewProps) {
+export function RoutePlannerView({ onSelectStop, onSelectLine, destinationRequest, onStartTrip, changes = null, onOpenAlerts, answerShown, goingTo, onAnswer, onEditTrip, onShowAnswer }: RoutePlannerViewProps) {
   const t = useT();
   const lang = useLang();
   const [originQuery, setOriginQuery] = useState(DEFAULT_ORIGIN);
@@ -317,6 +319,13 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
   // entry's, asked again, for now if it was for now. Not from a GPS origin, which would ask for
   // the position nobody pressed for: the fields come back, and the screen is the form.
   useEffect(() => {
+    // A link with the destination only: the form with it, and no position asked for nobody pressed for.
+    if (!answerShown && goingTo) {
+      setOriginQuery('');
+      setDestQuery(goingTo.to);
+      setTimeMode(goingTo.mode);
+      setTimeValue(goingTo.at || clockNow());
+    }
     if (!answerShown) return;
     const { from, to, mode, at } = answerShown;
     setOriginQuery(from);
@@ -436,6 +445,8 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     </button>
   );
   const folded = asked && !formOpen;
+  /** Opened by a link with a destination only, and no origin given yet. */
+  const waitingForOrigin = !!goingTo && !answerShown && !asked;
   const link = useShareLink();
   const sharedSearch = lastTrip.current && tripSearch(lastTrip.current);
   // Folded and unfolded by back and forward too, not only by the row: clipped while it moves.
@@ -644,7 +655,12 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
         </div>
 
         <div ref={answerRef} tabIndex={-1} className={`anim-rise space-y-4 lg:animate-none lg:col-span-7 lg:block ${folded ? '' : 'hidden'}`}>
-          {planResult && shown ? (
+          {/* Beside the form from lg up, the example trip would answer a question the link did not ask. */}
+          {waitingForOrigin ? (
+            <EmptyState icon={MapPin}>
+              <p className="text-body text-ink-2">{t.planner.chooseOrigin}</p>
+            </EmptyState>
+          ) : planResult && shown ? (
             /* The column owns the rhythm; the blocks say nothing about spacing. */
             <div className="card space-y-4 py-4 px-cap-4 sm:p-6">
               {!planResult.isServiceActive && planResult.serviceNotice && (

@@ -1,7 +1,11 @@
 import { BUS_LINES } from '../data/transitData';
+import { lineSlug } from '../routes';
 import { findStop } from './places';
 import { MAX_QUERY_LENGTH } from './searchUtils';
 import type { Screen } from '../hooks/useTabRoute';
+
+/** The line whose page an address names by its slug (/es/lineas/1.4/), or undefined. */
+export const lineBySlug = (slug: string) => BUS_LINES.find((l) => lineSlug(l.id) === slug.toLowerCase());
 
 type Trip = NonNullable<Screen['trip']>;
 
@@ -13,7 +17,8 @@ const CLOCK = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
  * `?parada=`, `?stop=`, `?qr=` or `?ps=` a stop's board as its pole's sticker opens it,
  * resolved the way the scanner resolves a code; `?de=` and `?a=` Ruta's answer to that
  * question, asked again on arrival, leaving at `saida=` or there by `chegada=` when either is
- * a clock. Null when it names nothing.
+ * a clock; `?a=` alone, Ruta with that destination and the origin left to whoever opens it,
+ * which is the link a page can give for "how to get here by bus". Null when it names nothing.
  */
 export function screenFromLink(search: string): Screen | null {
   const params = new URLSearchParams(search);
@@ -26,21 +31,21 @@ export function screenFromLink(search: string): Screen | null {
   // As typed into the fields, and held to what a field takes: the planner reads them as it reads those.
   const from = params.get('de')?.trim().slice(0, MAX_QUERY_LENGTH);
   const to = params.get('a')?.trim().slice(0, MAX_QUERY_LENGTH);
-  if (!from || !to) return null;
+  if (!to) return null;
   const depart = params.get('saida') ?? '';
   const arrive = params.get('chegada') ?? '';
-  const trip: Trip = CLOCK.test(depart) ? { from, to, mode: 'depart', at: depart } : CLOCK.test(arrive) ? { from, to, mode: 'arrive', at: arrive } : { from, to, mode: 'now', at: '' };
-  return { tab: 'plan', trip };
+  const when = CLOCK.test(depart) ? { mode: 'depart' as const, at: depart } : CLOCK.test(arrive) ? { mode: 'arrive' as const, at: arrive } : { mode: 'now' as const, at: '' };
+  return from ? { tab: 'plan', trip: { from, to, ...when } } : { tab: 'plan', goingTo: { to, ...when } };
 }
 
 /**
  * A planned trip as a link's search string, the question rather than the answer: whoever opens
- * it is answered from their own clock. None from "my location", which is a position on this
- * phone and would be nothing on another.
+ * it is answered from their own clock. From "my location", the destination alone: that origin
+ * is a position on this phone, never put in a link, and whoever opens it gives their own.
  */
 export function tripSearch(trip: Trip): string | null {
-  if (trip.from === 'my_location' || trip.to === 'my_location') return null;
-  const params = new URLSearchParams({ de: trip.from, a: trip.to });
+  if (trip.to === 'my_location') return null;
+  const params = new URLSearchParams(trip.from === 'my_location' ? { a: trip.to } : { de: trip.from, a: trip.to });
   if (trip.mode !== 'now') params.set(trip.mode === 'depart' ? 'saida' : 'chegada', trip.at);
   return `?${params}`;
 }

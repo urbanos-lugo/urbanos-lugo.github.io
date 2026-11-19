@@ -18,6 +18,7 @@ import { Approx } from './ui/Provenance';
 import { LineBadge, lineTint } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
 import { useShareLink } from '../hooks/useShareLink';
+import { lineHref, lineLink } from '../hooks/useTabRoute';
 import type { Tab } from '../routes';
 
 /** The categories the dataset actually uses, in the order the lines declare them. */
@@ -148,9 +149,10 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
   const derived = (run: ScheduledRun | undefined, stopIndex: number) => !!run && !run.publishedStopIndices.includes(stopIndex);
   const departures = runs.map((r) => ({ time: formatMinutes(r.minutesByStopIndex[0]), derived: derived(r, 0) }));
   const isSaved = favoriteLineIds.includes(currentLine.id);
-  // The page read `?linea=` from a link and had no way to make one.
+  // The page read `?linea=` from a link and had no way to make one. Now its own address: by the
+  // number, the 11's three variants all opened the plain 11.
   const link = useShareLink();
-  const shareLine = () => link.share(`${window.location.origin}${window.location.pathname}?linea=${encodeURIComponent(currentLine.number)}`, t.lines.lineLabel(currentLine.number));
+  const shareLine = () => link.share(`${window.location.origin}${lineHref(currentLine.id, lang)}`, t.lines.lineLabel(currentLine.number));
   const duration = scheduledDuration(currentLine, directionIdx, BUS_STOPS);
 
   return (
@@ -195,12 +197,12 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
                 const running = buses.filter((b) => b.lineId === line.id).length;
                 const parts = line.name.split(' - ');
                 return (
-                  <button
+                  // A link to the line's own page, which a search engine can follow; a plain click stays in the app.
+                  <a
                     key={line.id}
-                    type="button"
                     id={`line-card-${line.id}`}
                     aria-current={isCurrent ? 'true' : undefined}
-                    onClick={() => onOpenLine(line)}
+                    {...lineLink(line.id, () => onOpenLine(line), lang)}
                     style={lineTint(line.color)}
                     className={`line-row tint tint-strong w-full justify-between cursor-pointer transition-all text-left ${isCurrent ? 'border-accent shadow-hair' : 'tint-edge'}`}
                   >
@@ -236,7 +238,7 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform shrink-0 ${isCurrent ? 'text-accent translate-x-0.5' : 'text-ink-3'}`} aria-hidden="true" />
-                  </button>
+                  </a>
                 );
               })}
             </div>

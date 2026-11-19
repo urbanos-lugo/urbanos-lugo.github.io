@@ -204,6 +204,7 @@ export const gl = {
     recentCleared: 'Borráronse as rutas recentes.',
     shareTrip: 'Compartir esta ruta',
     copyTrip: 'Copiar a ligazón desta ruta',
+    chooseOrigin: 'Escribe de onde saes, ou usa a túa localización, e calcúlase a ruta.',
     departureLabel: 'Saída',
     arrivalLabel: 'Chegada',
     board: 'Sube en',

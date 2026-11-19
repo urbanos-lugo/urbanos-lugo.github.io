@@ -7,8 +7,8 @@ import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { CSP_META, MAP_ORIGINS } from './src/security/csp';
 import { THEME_INIT_SOURCE } from './src/security/themeInit';
-import { SITE_LANGS, SITE_PATHS, pageHtml, robotsTxt, siteHeadTags, siteUrl, sitemapXml } from './src/seo';
-import { pathFor } from './src/routes';
+import { LINE_PAGES, SITE_LANGS, SITE_PATHS, pageHtml, robotsTxt, siteHeadTags, siteUrl, sitemapXml } from './src/seo';
+import { PATHS, pathFor } from './src/routes';
 
 // GitHub Pages project sites live under /<repo>/, so every asset URL needs that prefix.
 // Set BASE_PATH in the workflow; locally and on a root domain it stays '/'.
@@ -60,7 +60,8 @@ const emitCompressedAssets: Plugin = {
  * One copy per tab and per language, each with its own title, canonical and alternates
  * (seven identical heads read as one page listed seven times), and 404.html still catches
  * a mistyped path. The root is index.html itself, re-headed in place to carry its
- * alternates too. Runs before emit-compressed-assets on purpose, so the copies get their
+ * alternates too. And one per line, /es/lineas/1.4/, under that line's title: 24 lines in
+ * three languages. Runs before emit-compressed-assets on purpose, so the copies get their
  * .br and .gz too.
  */
 const emitSpaFallback: Plugin = {
@@ -71,12 +72,13 @@ const emitSpaFallback: Plugin = {
     if (!existsSync(built)) return;
     copyFileSync(built, path.resolve(outDir, '404.html'));
     const html = readFileSync(built, 'utf8');
+    const write = (dir: string, page: string) => {
+      mkdirSync(path.resolve(outDir, dir), { recursive: true });
+      writeFileSync(path.resolve(outDir, dir, 'index.html'), page);
+    };
     for (const lang of SITE_LANGS) {
-      for (const route of SITE_PATHS) {
-        const dir = path.resolve(outDir, pathFor(lang, route));
-        mkdirSync(dir, { recursive: true });
-        writeFileSync(path.join(dir, 'index.html'), pageHtml(html, route, site, lang));
-      }
+      for (const route of SITE_PATHS) write(pathFor(lang, route), pageHtml(html, route, site, lang));
+      for (const line of LINE_PAGES) write(pathFor(lang, PATHS.lines, line.slug), pageHtml(html, PATHS.lines, site, lang, line.id));
     }
   },
 };
@@ -189,9 +191,10 @@ export default defineConfig({
         // The typeface is served from this origin, so it is precached with everything else;
         // json is the notices snapshot, public/alerts.json, revisioned so a refresh moves only it.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,json}'],
-        // The Spanish and English copies of each page are for crawlers and first loads; offline,
-        // a navigation falls back to index.html and the app reads the language from the address.
-        globIgnores: ['es/**', 'en/**'],
+        // The Spanish and English copies of each page, and the 24 lines' pages, are for crawlers
+        // and first loads; offline, a navigation falls back to index.html and the app reads the
+        // language and the line from the address.
+        globIgnores: ['es/**', 'en/**', 'linhas/*/**'],
         navigateFallback: `${base}index.html`,
         navigateFallbackDenylist: [/\/api\//],
         runtimeCaching: [

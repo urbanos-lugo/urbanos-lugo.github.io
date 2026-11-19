@@ -1097,7 +1097,7 @@ export const STATES: State[] = [
   {
     screen: 'linhas',
     name: 'linha aberta',
-    setup: `const c = document.querySelector('main button[id^="line-card-"]'); if (!c) return 'no line card'; c.click(); await pause(1000); return true;`,
+    setup: `const c = document.querySelector('main [id^="line-card-"]'); if (!c) return 'no line card'; c.click(); await pause(1000); return true;`,
   },
   {
     screen: 'linhas',
