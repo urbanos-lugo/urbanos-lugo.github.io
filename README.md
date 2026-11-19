@@ -1282,9 +1282,10 @@ tomou.
 ### Tamaño de descarga
 
 A xeometría viaria, o renderizador do mapa e a rede peonil cárganse só cando fan falta.
-`index.html` só pide tres cousas: o anaco de entrada, unha folla de estilos e o rexistro
-do service worker; o script que fixa o tema antes do primeiro pintado vai inline, co seu
-hash na política de seguridade. O rexistro vai con `defer`, e unha comprobación da build
+`index.html` só pide catro cousas: o anaco de entrada, o anaco que este comparte co que
+se carga despois (React vai nel, e pídese á vez, con `modulepreload`), unha folla de
+estilos e o rexistro do service worker. O script que fixa o tema antes do primeiro
+pintado vai inline, co seu hash na política de seguridade. O rexistro vai con `defer`, e unha comprobación da build
 mira que ningún script que a páxina pide deteña o primeiro pintado.
 
 E a build escribe un `.br` e un `.gz` ao lado de cada activo, que o servidor entrega cando
@@ -1292,20 +1293,21 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 
 | | sen comprimir | gzip | brotli |
 | :--- | ---: | ---: | ---: |
-| Anaco de entrada | 630 KB | 176 KB | **146 KB** |
-| Folla de estilos | 67 KB | 13 KB | **12 KB** |
+| Anaco de entrada | 554 KB | 153 KB | **127 KB** |
+| Anaco compartido, con React | 89 KB | 28 KB | **23 KB** |
+| Folla de estilos | 67 KB | 14 KB | **12 KB** |
 | `index.html` | 5 KB | 2 KB | **2 KB** |
-| **Primeira carga** | **702 KB** | ~192 KB | **~159 KB** |
+| **Primeira carga** | **715 KB** | ~197 KB | **~164 KB** |
 | Tipografía | 51 KB | — | 51 KB, en paralelo |
-| Renderizador do mapa, co estilo e a paleta | 1.111 KB | 292 KB | 238 KB, ao abrir un mapa |
+| Renderizador do mapa, co estilo e a paleta | 1.119 KB | 298 KB | 245 KB, ao abrir un mapa |
 | Estilos do renderizador | 70 KB | 10 KB | 8 KB, ao abrir un mapa |
-| Worker do renderizador | 507 KB | 144 KB | 119 KB, ao abrir un mapa |
-| Xeometría viaria | 511 KB | 82 KB | 28 KB, ao abrir un mapa |
+| Worker do renderizador | 538 KB | 154 KB | 127 KB, ao abrir un mapa |
+| Xeometría viaria | 512 KB | 83 KB | 28 KB, ao abrir un mapa |
 | Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
-| Worker do planificador, coa súa copia de paradas e liñas | 233 KB | 55 KB | 44 KB, ao calcular a primeira ruta |
+| Worker do planificador, coa súa copia de paradas e liñas | 237 KB | 56 KB | 45 KB, ao calcular a primeira ruta |
 
-Medido o 31 de outubro de 2026 (rolda 52), con Vite 8.3 e MapLibre 6.15, e o 2 de novembro
-outra vez con MapLibre 6.16, que só move o renderizador (1.101 KB e 236 brotli con 6.15). Un KB son 1.024
+Medido o 19 de novembro de 2026 sobre a build de `728c1dd`, con Vite 8.3.8 e MapLibre
+6.19; as anteriores, do 31 de outubro (rolda 52) e do 2 de novembro, están no rexistro. Un KB son 1.024
 bytes, gzip ao nivel 9 e brotli á calidade 11. MapLibre non vai no anaco de entrada,
 senón enteiro no do renderizador, que baixa ao abrir un mapa.
 A instantánea de avisos tampouco: é un ficheiro á parte, `alerts.json`, e o motivo está
@@ -1314,21 +1316,24 @@ xusto debaixo.
 A tipografía non leva columnas: o `woff2` xa vén comprimido e volver comprimilo non aforra
 nada, así que a build nin o intenta. Son dous ficheiros e non oito —son fontes variables,
 e o navegador instánciaas no peso que faga falta—, e van no propio sitio, non nunha CDN.
+As oito caras que declara `fonts.css` cárganse ao arrancar (`main.tsx`). Cargadas cando
+un texto as pedía por primeira vez, ese texto colocábase antes coa fonte de reserva e
+movíase ao chegar a súa, e no executor de GitHub iso movía filas baixo un toque.
 
 GitHub Pages comprime por si mesmo; `pnpm start` entrega o `.br` ou o `.gz` que a build
 deixa ao lado de cada ficheiro.
 
 **O que si baixa enteiro, en segundo plano.** «Só cando fan falta» describe o que a
 páxina pide para pintarse; o service worker é outra cousa. Para que a app funcione sen
-cobertura, na primeira visita garda **todo** o que a app usa —fóra quedan só as copias en
-castelán e inglés de cada páxina, que son para os buscadores, `robots.txt` e
-`sitemap.xml`—: 30 ficheiros distintos (o manifesto lista 34: catro iconas van dúas veces e
-baixan unha), 4,48 MB sen comprimir, 1,30 MB en gzip e 1,07 MB en brotli, medidos sobre
-`dist/sw.js` o 2 de novembro de 2026, sen esperar a que
+cobertura, na primeira visita garda **todo** o que a app usa —fóra quedan só as copias das
+páxinas que son para os buscadores (as de castelán e inglés e as das liñas), `robots.txt`
+e `sitemap.xml`—: 29 ficheiros distintos (o manifesto lista 33: catro iconas van dúas veces
+e baixan unha), 4,53 MB sen comprimir, 1,32 MB en gzip e 1,09 MB en brotli, medidos sobre
+`dist/sw.js` o 19 de novembro de 2026, sen esperar a que
 se abra un mapa nin se trace un camiño. Non bloquea nada: vai detrás da primeira
 pantalla, e a partir de aí cada anaco sae da caché. É o prezo de que o planificador e o
 mapa vaian dentro do móbil, e está á vista aquí para que ninguén o tome por unha primeira
-carga de ~159 KB.
+carga de ~164 KB.
 
 E cando un despregue cambia os nomes deses ficheiros debaixo dunha páxina aberta, a
 páxina que pide o mapa despois de publicado recarga unha soa vez en lugar de amosar «a
@@ -1368,10 +1373,10 @@ probas; as variantes escollidas, en DECIDIDO.
 
 ### Seguridade
 
-`pnpm audit` (31 de outubro de 2026): **0 vulnerabilidades** nas 5 dependencias de
-produción, e un aviso baixo nas 14 de desenvolvemento: `deepmerge`, dentro de
-workbox-build, só ao compilar e sen arranxo publicado (máis abaixo, «Versións das
-dependencias»). Dependabot revisa semanalmente as dependencias e
+`pnpm audit` (19 de novembro de 2026): **ningunha vulnerabilidade coñecida**, nin nas 5
+dependencias de produción nin nas 14 de desenvolvemento. O aviso baixo que daba o 31 de
+outubro, `deepmerge` dentro de workbox-build, xa non sae, coa mesma 4.3.1 instalada.
+Dependabot revisa semanalmente as dependencias e
 mais as actions, e CodeQL o código en cada push a `main` e unha vez á semana.
 
 **Content Security Policy.** `script-src 'self'` máis o hash do script do tema, sen
@@ -1435,8 +1440,8 @@ arranxo de seguridade se converte nunha caída. A única excepción é `glob`, f
 aínda que workbox-build pide a 11, que o seu autor deu por obsoleta: o arranxo só está na
 14, e o service worker construído con ela é idéntico byte a byte ao de antes. E `jake`,
 que `ejs` trae só para a súa liña de comandos, quítase da árbore: nada aquí o executa, e
-con el marcha unha `minimatch` vella. Queda un aviso aberto, `deepmerge`, dentro de
-workbox-build e só ao compilar, porque non ten arranxo publicado.
+con el marcha unha `minimatch` vella. `deepmerge`, dentro de workbox-build e só ao
+compilar, non se fixa: o seu aviso deixou de saír en `pnpm audit` sen cambiar de versión.
 
 O servidor normaliza todo o que chega pola query string, devolve JSON en caso de erro en
 lugar da páxina de erro de Express, limita o corpo das peticións a 32 KB e envía
@@ -1539,10 +1544,13 @@ pantalla e estado: claro e escuro, galego, castelán e inglés, teléfono e escr
 teclado, texto ao 200 %, 320 px, espazado do texto, teléfono deitado, movemento reducido,
 cores forzadas, sen rede, erros e baleiros: 242 medicións de 162 estados, 0 fallos en
 Windows e no executor de GitHub, e `audit:browser` é unha porta da CI. Os traballos piden
-`ubuntu-24.04` polo seu nome e non `ubuntu-latest`: outra imaxe trae outras letras e outro
-Chrome —ao 200 % a monoespazada do executor xa é máis ancha ca a de Windows—, e cambiala é
-unha decisión con auditoría, non algo que pase un luns. Por que segue en 24.04, coas
-medidas, está no pendente ([`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md)).
+`ubuntu-24.04` polo seu nome e non `ubuntu-latest`: outro sistema trae outras letras e
+outro Chrome —ao 200 % a monoespazada do executor xa é máis ancha ca a de Windows—, e
+cambialo é unha decisión con auditoría, non algo que pase un luns. A imaxe de 24.04 si se
+renova soa cada semana, co seu Chrome: en novembro de 2026 unha levouno da 156 á 157 e as
+viaxes fallaron no CI ata que as caras da fonte pasaron a cargarse ao arrancar (rolda 71
+do rexistro). Por que segue en 24.04, coas medidas, está nas notas
+([`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md), «Feito»).
 «Arranxado» quere dicir que fallaba
 e que agora o comproba algo que falla se volve. Do que unha máquina non pode oír, o lector
 de pantalla de verdade, hai un guión para seguir a man:

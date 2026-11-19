@@ -9,7 +9,7 @@ Tailwind 4 + MapLibre, TypeScript throughout, pnpm, Node >= 22.
 | Path | What lives there |
 | :--- | :--- |
 | `src/components/` | Screens and UI. `Map/` holds every MapLibre surface. |
-| `src/utils/` | The engine: `arrivals.ts`, `planner.ts`, `vehicles.ts`, `places.ts` (one subject each; they were one `transitEngine.ts`), `schedule.ts` (runs and service windows), `searchUtils.ts`, `geo.ts`. Pure functions, no React; `storage.ts`, the guarded browser storage, is the one exception. |
+| `src/utils/` | The engine: `arrivals.ts`, `planner.ts`, `vehicles.ts`, `places.ts` (one subject each; they were one `transitEngine.ts`), `schedule.ts` (runs and service windows), `noticeChanges.ts` (what an operator notice changes, read out of its words), `links.ts` (what a link opens), `walkRouter.ts`, `searchUtils.ts`, `geo.ts`. Pure functions, no React; `storage.ts`, the guarded browser storage, is the one exception. |
 | `src/services/` | The network code shared by browser, `server.ts` and `worker/`. The browser's own two requests, the notices and a pole's minutes, are made in `src/hooks/useServiceAlerts.ts` and `useOperatorTimes.ts`. |
 | `src/data/` | The shipped dataset. **Generated** — see the pipeline block below — but for `festivos.json` and `structuralNotices.ts`, which are kept by hand. |
 | `src/i18n/` | `gl` / `es` / `en` dictionaries. `gl.ts` is the type source. |

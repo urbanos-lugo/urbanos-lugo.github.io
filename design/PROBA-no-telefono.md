@@ -113,7 +113,9 @@ Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e 
    sen barra de Safari, a icona correcta.
 3. Buscar «catedral» tecleando: as filas aparecen letra a letra sen que o teclado tape o
    campo. Abrir unha parada; premer **Compartir**: sae o panel de compartir do iPhone;
-   copiar desde el e pegar en Notas: ten `?parada=`. O mesmo na ficha dunha liña: `?linea=`.
+   copiar desde el e pegar en Notas: ten `?parada=`. Na ficha dunha liña, o enderezo da
+   liña: `/linhas/1.4/` (en castelán, `/es/lineas/1.4/`). Abrir esa ligazón noutra lapela
+   abre a liña, e o título da lapela é o seu.
 4. **Mapa**: debuxa (é MapLibre, WebGL2); pinza e xiro van fluídos; os nomes das paradas
    lense; a folla de controis sobe desde abaixo e non queda tapada pola barra de inicio
    (é onde `100dvh` e as zonas seguras rompen). Xirado con dous dedos aparece o compás
@@ -130,7 +132,10 @@ Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e 
    iOS 16.4+; se non existe, non debe saír erro ningún).
    Despois **Ampliar o mapa** do traxecto: ocupa a pantalla; xirar con dous dedos; o xesto
    de atrás de Safari devolve a tarxeta sen saír da resposta; tocar unha parada do
-   traxecto abre o seu taboleiro, e «Volver ao resultado» volve onde estaba.
+   traxecto abre o seu taboleiro, e «Volver ao resultado» volve onde estaba. Debaixo da
+   resposta, **Compartir esta ruta**: o panel do iPhone, e a ligazón pegada en Notas leva
+   `?de=…&a=…`. Calculada desde «A miña localización», leva só `?a=…`, e abrila pide a
+   orixe en vez de calcular desde onde estás.
 7. Cambiar tema e idioma desde o menú: as cores (`oklch()`) e os textos cambian enteiros.
 8. Modo avión, pechar a app, abrila de novo desde a icona: abre, o taboleiro ten horas, e
    Avisos amosa unha resposta con data (a última ou a copia gardada), non unha lista baleira.

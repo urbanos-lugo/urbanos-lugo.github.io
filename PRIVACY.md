@@ -11,7 +11,7 @@ form one from.
 
 ## Kept on your device, and only there
 
-Six things are saved in your browser's `localStorage`. They never leave it: nothing in
+Seven things are saved in your browser's `localStorage`. They never leave it: nothing in
 this project reads them and sends them anywhere.
 
 | Key | What it holds |
@@ -114,6 +114,27 @@ traffic feed too until October 2026; from there the feed never answered.) It is 
 code and nothing else — no identifier, no position. When it does not answer, or a site is
 built without one, the notices come from a copy the hourly build takes and publishes with
 the site, and the app says on screen when that copy was taken.
+
+## Links you share
+
+A stop, a line and a planned trip each have a share button, and what it hands to your
+phone's share sheet, or copies, is an address. Nothing is sent until you send it, and
+then only to whoever you send it to. What each address carries:
+
+| Link | What is in it |
+| :--- | :--- |
+| a stop | the stop's id in this app's dataset, `?parada=` |
+| a line | the line's own page, such as `/linhas/1.4/` |
+| a trip | both places as you typed them, `?de=…&a=…`, and the time if you set one |
+
+A trip that starts at **"my location"** is shared as its destination alone (`?a=…`), and
+whoever opens it chooses their own starting point: your position is never written into a
+link (`tripSearch` in `src/utils/links.ts`). If you typed your street as the origin, though,
+the link carries your street, as you typed it.
+
+Opening a stop link asks the API for the operator's minutes at that pole, as scanning the
+pole does (`src/utils/links.ts`, `useOperatorTimes`). That request carries the pole's code
+and nothing else.
 
 ## If you run the server yourself
 

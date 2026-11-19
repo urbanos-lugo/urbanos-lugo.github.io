@@ -60,8 +60,9 @@ de afirmar. Cada decisión de abaixo se tomou contra unha cifra, non contra un g
 - **Fóra o amplificador.** `.dark .leaflet-tile-pane { filter: brightness(2.8) }` era de
   cando o basemap era ráster de CARTO; coas teselas vectoriais multiplicou meses cada cor
   do estilo por 2,8, e só o basemap: as rutas ían no outro *pane*, sen multiplicar. Esa
-  era a razón enteira de que unha liña desaparecese na rúa de debaixo. Un check impide
-  que o `tile-pane` volva levar filtro.
+  era a razón enteira de que unha liña desaparecese na rúa de debaixo. Un check impedía
+  que o `tile-pane` volvese levar filtro; marchou con Leaflet en outubro de 2026, e con
+  MapLibre a paleta escura é un estilo seu (`map-style-dark.json`), sen filtro ningún.
 - **Este mapa non é un mapa de Lugo**: é o fondo de 24 cores de liña e 417 paradas, e
   todo o que hai nel recúa. No escuro, as rúas son canles escuras con bordo claro, non
   cintas claras; os edificios a 1,18 sobre o chan, o parque a 1,16, a rúa menor a 1,31 e o
@@ -184,7 +185,7 @@ descrición. Catro regras, e o que quedou fóra:
   «N opcións máis», o mapa do traxecto, o aviso nocturno) vai polo truco de
   `grid-template-rows: 0fr → 1fr`, sen medir alturas; o elemento pregado ten que ser un
   envoltorio sen recheo, ou queda un tallo dos seus 30 px de padding e bordo.
-- **Un control segmentado compartido** (`ui/Segmented.tsx`): o taboleiro e o modo de hora
+- **Un control segmentado compartido** (`Segmented`, hoxe en `ui/controls.tsx`): o taboleiro e o modo de hora
   do planificador debuxaban cada un o seu, con dous recheos distintos. O pulgar esvara;
   o botón premido leva o seu propio recheo en repouso, porque a auditoría de contraste
   le o fondo do botón e non o do irmán que ten debaixo, e con recheo transparente

@@ -62,13 +62,25 @@ Antes de empezar: o teléfono en galego ou non, dá igual; a app en galego desde
 7. «Ver no mapa»: abrir o despregable «Outros postes aquí preto». Debe dicir que está
    pregado ou despregado, e os postes deben lerse coa distancia.
 8. «Avisarme ao chegar»: activar, escoitar que cambia de estado, desactivar.
+9. «Como chegar aquí», na cabeceira do taboleiro: debe dicirse así, e abrir Ruta con esa
+   parada de destino.
+10. Na portada, «Borrar» as paradas vistas hai pouco: debe anunciarse «Borráronse as
+    paradas vistas hai pouco», e o mesmo botón debe dicir agora «Desfacer». Activalo: volven.
+11. Só se hai un aviso do operador que deixa unha parada (Avisos o di): abrir esa parada. A
+    saída riscada debe ler «Non para aquí estes días» xunto á hora: o riscado só non se oe.
 
 ## 3. Liñas
 
-1. Abrir a lista. Cada fila debe dicir número, nome e cantos buses hai en ruta.
+1. Abrir a lista. Cada fila debe dicir número, nome e cantos buses hai en ruta, e
+   anunciarse como ligazón: é o enderezo da liña.
 2. Abrir unha liña. As frechas das saídas deben chamarse «Expedición anterior» e
    «Expedición seguinte», e a saída á vista debe dicir que está seleccionada.
 3. Percorrer as paradas da liña: cada unha co seu nome e a súa hora, e as estimadas dito.
+4. Abrir unha liña desde o taboleiro dunha parada que non sexa a primeira nin a última. O
+   título do horario debe dicir «Pasos pola túa parada» e o nome da parada, e a súa fila,
+   «A túa parada».
+5. «Ir onde vai o bus, segundo o horario»: o foco debe ir á fila que o horario marca e
+   lela, co «segundo o horario» dito.
 
 ## 4. Mapa
 
@@ -102,6 +114,10 @@ Antes de empezar: o teléfono en galego ou non, dá igual; a app en galego desde
 6. «Vou nesta»: a pantalla da viaxe. A barra de abaixo non debe tapar o control que ten o
    foco. Xa no bus, a marca da seguinte parada late dúas veces cada vez que cambia e queda
    quieta; apuntar se o lector di algo dela (non debería).
+7. Debaixo dunha resposta, «Compartir esta ruta» (ou «Copiar a ligazón desta ruta»): debe
+   dicirse así e, ao copiar, anunciarse «Copiada».
+8. Abrir unha ligazón só co destino, `/ruta/?a=Pazo%20de%20Feiras`: a orixe baleira, e
+   debe lerse que falta («Escribe de onde saes, ou usa a túa localización…»).
 
 ## 6. Avisos e tarifas
 
@@ -112,12 +128,17 @@ Antes de empezar: o teléfono en galego ou non, dá igual; a app en galego desde
    voz instalado. Apuntar o que pase.
 3. Cada aviso debe dicir todas as liñas que nomea, sen «+N».
 4. Tarifas: percorrer as tarxetas. Cada prezo debe lerse xunto ao nome do seu billete.
+5. Só se un aviso deixa algunha parada gardada: a caixa «O aviso do operador nas túas
+   paradas gardadas» lese antes dos avisos, e cada parada é un botón co seu nome que abre o
+   seu taboleiro.
 
 ## 7. Diálogos e erros
 
 1. Menú: ábrese como diálogo, o foco entra, non sae cara adiante, pecha co escape e volve
    ao botón do menú. O botón do menú debe dicir cantos avisos hai.
 2. Favoritos, co baleiro: debe dicir «Preme na estrela dunha parada, «Engadir a gardadas»…».
+   Cunha gardada: «Eliminar de favoritos» debe anunciar «Eliminada de favoritos», e o mesmo
+   botón debe dicir agora «Desfacer». Activalo: volve.
 3. Lector QR: o campo chámase «Código do poste». Escribir «zzz» e consultar: o erro debe
    anunciarse só, sen ir buscalo, e o campo debe dicir que non é válido.
 4. Ruta co GPS denegado (permisos do navegador): a negativa debe anunciarse.
@@ -155,7 +176,12 @@ páxina. Logo inglés: 1.1 e 2.4.
 | 2.5 Taboleiro / Por liña | | | |
 | 2.6 Estrela | | | |
 | 2.7 Postes aquí preto | | | |
+| 2.10 Borrar e desfacer as vistas | | | |
+| 2.11 «Non para aquí estes días» | | | |
+| 3.1 Filas como ligazóns | | | |
 | 3.2 Frechas e saída seleccionada | | | |
+| 3.4 Pasos pola túa parada | | | |
+| 3.5 Ir onde vai o bus | | | |
 | 4.1 Rexión do mapa | | | |
 | 4.3 Liñas do mapa | | | |
 | 4.4 Filtros e capas: orde e retención | | | |
@@ -164,8 +190,12 @@ páxina. Logo inglés: 1.1 e 2.4.
 | 5.3 Calculando e foco á resposta | | | |
 | 5.4 «ata» | | | |
 | 5.5 Borrar e desfacer | | | |
+| 5.7 Compartir a ruta | | | |
+| 5.8 Ligazón só co destino | | | |
 | 6.1 Comprobar avisos | | | |
 | 6.2 Voz castelá nos avisos | | | |
+| 6.5 O aviso nas túas paradas | | | |
+| 7.2 Eliminar e desfacer un favorito | | | |
 | 7.3 Erro do QR | | | |
 | 8.1 Texto grande | | | |
 | 8.2 Movemento reducido | | | |

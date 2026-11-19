@@ -13,7 +13,7 @@ service, and saying so is more useful than promising a turnaround nobody is on c
 The app is a reader for a public timetable. It has no accounts, no payments and no
 server-side personal data. What it keeps is in that browser's own storage and never
 leaves the device: favourites, recent stops, the last four trips as typed, the language,
-the theme and the trip in progress. `PRIVACY.md` lists every key, and `audit:browser` holds
+the theme, the screen the app opens on and the trip in progress. `PRIVACY.md` lists every key, and `audit:browser` holds
 that list to what the app writes, screen by screen.
 
 So the interesting surface is small:

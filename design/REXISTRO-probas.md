@@ -5819,3 +5819,73 @@ Pedido: na ficha dunha liña, un botón que leve á parada onde estaría o bus n
 - O «(1 de 2)» só o garda a comprobación: ás 09:12 da auditoría ningunha liña ten dous buses
   no seu primeiro sentido.
 - `audit:browser` enteiro non se correu; nada disto está en `develop` remoto.
+
+## Rolda 74: os documentos ao día — 19 de novembro de 2026
+
+Pedido: repasar os README e o resto dos documentos e deixalos ao día. Só documentos, sobre
+`728c1dd`; o código desta rolda non cambia.
+
+### Como
+
+- Lidos enteiros: `PRIVACY.md`, `SECURITY.md`, `NOTICE.md`, `CONTRIBUTING.md`,
+  `README.es.md` e os dous guións a man de `design/`; de `README.en.md`, a privacidade, a
+  par da castelá. `agy` listou as afirmacións comprobables de nove documentos, e as que
+  estas roldas podían mover miráronse no código.
+- Un guión sacou de quince documentos (todos menos este rexistro) cada nome entre comiñas
+  invertidas que non aparece en ningures do código: 62. Quitando rutas, ligazóns e a
+  historia, que din o que había, quedaron dous de verdade, en `DECIDIDO.md`.
+- As cifras do README, medidas de novo sobre a build de `728c1dd`: as de descarga cun guión
+  (gzip 9, brotli 11), a precaché lendo `dist/sw.js`, e `pnpm audit` unha vez.
+
+### Feito
+
+- **`PRIVACY.md`**: dicía «seis» cousas en `localStorage` e a táboa trae sete (a pestana
+  de entrada). E non dicía que leva unha ligazón compartida, o que quedara pendente na
+  rolda 68: agora unha sección, «Links you share». A dunha parada leva o seu id, a dunha liña
+  o seu enderezo, e a dun traxecto os dous sitios tal como se escribiron. Desde «a miña
+  localización» leva só o destino, e abrir a dunha parada pide os minutos dese poste, coma
+  o QR. Comprobado en `links.ts`, `StopArrivalsView.tsx` e `useOperatorTimes.ts`.
+- **`SECURITY.md`**: a lista do que se garda no dispositivo deixaba fóra a pestana de
+  entrada.
+- **`README.es.md` e `README.en.md`**: «si escaneas un poste, cuál» é tamén «o abres el
+  enlace de una parada», e un traxecto compartido desde a localización leva só o destino.
+- **`README.md`**, catro sitios:
+  - A descarga. `index.html` pide agora catro cousas: un anaco compartido, con React, vai
+    con `modulepreload`. A primeira carga son ~164 KB en brotli (eran ~159), e a táboa
+    enteira mediuse de novo con MapLibre 6.19. O renderizador son 245 KB e o seu worker
+    127 KB (eran 238 e 119).
+  - A precaché: 29 ficheiros (o manifesto, 33), 4,53 MB, 1,32 en gzip e 1,09 en brotli. As
+    copias das liñas tamén quedan fóra dela.
+  - A tipografía: as oito caras cárganse ao arrancar (`714e9a7`), e o README non o dicía.
+  - `pnpm audit`: ningunha vulnerabilidade coñecida, e o aviso de `deepmerge` xa non sae,
+    coa mesma 4.3.1.
+  - `ubuntu-24.04`: dicía que pedilo polo nome evita un Chrome novo, e a imaxe de 24.04
+    renóvase soa cada semana (o fallo das viaxes da rolda 71). Mandaba ao «pendente» das
+    notas, e esa nota está en «Feito».
+- **`DECIDIDO.md`**: «un check impide» que o `tile-pane` leve filtro, e ese check marchou
+  con Leaflet. `ui/Segmented.tsx` é hoxe `Segmented`, en `ui/controls.tsx`.
+- **Os guións a man.** `PROBA-lector-de-pantalla.md` trae os dous «Desfacer» novos, a
+  portada e os favoritos, ademais de «Como chegar aquí», a saída riscada que debe dicir
+  «Non para aquí estes días», as filas das liñas como ligazóns, os pasos pola túa parada, ir
+  onde vai o bus, compartir a ruta, a ligazón só co destino e a caixa de Avisos, cada un
+  coa súa fila no cadro. En `PROBA-no-telefono.md`, a ligazón dunha liña era `?linea=` e é
+  o seu enderezo, e compartir unha ruta entra no paso 6.
+- **`CLAUDE.md`**: o mapa de `src/utils/` nomea tamén `noticeChanges.ts`, `links.ts` e
+  `walkRouter.ts`.
+
+### Mirado e ao día
+
+- `NOTICE.md`, `CONTRIBUTING.md` e `DATA.md`. As cifras da rede peonil (21.093 cruces e
+  29.489 arestas) son as de `walk-network.json`, sen cambios desde setembro. As 512 KB, os
+  20 s e as 120 por minuto son as constantes do código, e as dúas paradas tomadas de OSM
+  son `s133` e `s1065`. O worker de `PRIVACY.md` é o que admite a CSP publicada.
+- `AUDITORIA-seo.md` e `MUDANZA-organizacion.md` falan cada un da súa data: o que nomean e
+  xa non existe (`urlForTab`, o enderezo vello) é o estado dese día, e non se reescribe.
+
+### Comprobado
+
+- `pnpm run check:policy`: 26.
+
+### Queda
+
+- Nada desta rolda está en `develop` remoto.

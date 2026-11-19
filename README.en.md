@@ -50,8 +50,9 @@ No account, no sign-in, no analytics, no advertising, no cookies, and no server 
 that keeps a record of a visit. **Your location is sent to nobody** — not even to draw
 the walking route, because the pedestrian network of Lugo ships inside the app and the
 route is computed on your own device. The only thing that leaves the phone about where you
-are is which map tiles you ask for and, if you scan a pole, which one; PRIVACY.md says to
-whom.
+are is which map tiles you ask for and, if you scan a pole or open a stop's link, which
+one; PRIVACY.md says to whom. A trip shared from "my location" carries only its
+destination.
 
 The full detail, written from the code rather than from intention, is in
 [PRIVACY.md](PRIVACY.md).

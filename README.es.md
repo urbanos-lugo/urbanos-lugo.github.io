@@ -50,8 +50,9 @@ No hay cuenta, ni registro, ni analítica, ni publicidad, ni cookies, ni ningún
 nuestro que guarde constancia de una visita. **Tu ubicación no se envía a nadie** — ni
 siquiera para trazar el camino a pie, porque la red peatonal de Lugo va dentro de la
 aplicación y la ruta se calcula en tu propio dispositivo. Lo único que sale del móvil
-sobre dónde estás es qué teselas del mapa pides y, si escaneas un poste, cuál; PRIVACY.md
-dice a quién.
+sobre dónde estás es qué teselas del mapa pides y, si escaneas un poste o abres el enlace
+de una parada, cuál; PRIVACY.md dice a quién. Un trayecto compartido desde «mi ubicación»
+lleva solo el destino.
 
 El detalle completo, escrito desde el código y no desde la intención, está en
 [PRIVACY.md](PRIVACY.md).
