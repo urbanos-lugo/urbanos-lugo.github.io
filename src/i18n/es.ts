@@ -112,6 +112,7 @@ export const es: Dict = {
     alertsTitle: 'Avisos oficiales e incidencias en Lugo',
     alertsSubtitle:
       'Leídos del portal del operador, buslugo.com; la hora de la última lectura va al pie',
+    yourStopsTitle: 'El aviso del operador en tus paradas guardadas',
     faresTitle: 'Tarifas y Tarjeta Ciudadana',
     faresSubtitle: 'Precios oficiales y títulos de transporte en Lugo (Monbus)',
     notAffiliated: 'Web no oficial, sin relación con Monbus ni con el Ayuntamiento de Lugo.',
@@ -446,6 +447,7 @@ export const es: Dict = {
     approximatePath:
       'El trazado de este sentido en el mapa no está topografiado: se construye con la ruta que haría un coche entre las paradas, así que puede desviarse por donde el bus no pasa. Las paradas y los horarios son los oficiales.',
     scheduleTable: 'Salidas desde cabecera',
+    timesAtYourStop: 'Pasos por tu parada',
     showingRun: 'Expedición mostrada',
     runOf: (index: number, total: number) => `${index} de ${total} del día`,
     backToNow: 'ahora',
@@ -457,6 +459,7 @@ export const es: Dict = {
     holidayToday: 'Hoy es festivo: circula el horario de domingo.',
     estimatedHint: 'Hora estimada desde la salida de cabecera y el tiempo de recorrido medido.',
     derivedDepartures: '~ Salida que el operador no imprime: sale de la frecuencia que publica o del tiempo hasta el primer punto con horario.',
+    derivedAtYourStop: '~ Hora que el operador no imprime en esta parada: sale de su horario y del tiempo de recorrido hasta aquí.',
     estimatedSr: 'hora estimada',
     previousRun: 'Expedición anterior',
     nextRun: 'Expedición siguiente',

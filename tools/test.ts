@@ -47,7 +47,7 @@ import { projectOnto, routeOnFoot } from '../src/utils/walkRouter';
 import { accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
 import { giveWay, nameAt, nameBox, placeNames, placeOn, sideOf } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
-import { HOLIDAY_YEARS, buildRuns, dayKind, daysUntilKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
+import { HOLIDAY_YEARS, buildRuns, dayKind, daysUntilKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, nextRunAt, scheduledDuration } from '../src/utils/schedule';
 import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
 import festivos from '../src/data/festivos.json';
 import { holidaysDue } from './checkHolidaysAhead';
@@ -2582,6 +2582,33 @@ ok('a line opened from a stop opens on a way that boards there, whenever one doe
   }
   assert(secondWay > 0, 'no stop opens a line on its second way, so this checks nothing');
   assert.strictEqual(directionBoardingAt(BUS_LINES[0], 'no-such-stop'), 0, 'a stop off the line opened it on another way than the first');
+});
+
+ok('a line opened from a stop shows the next bus to reach that stop, not the one on the road', () => {
+  // The page opened on the run on the road now, chosen by its terminus times; from a stop halfway
+  // along, that bus had often gone by, and the reader was shown it.
+  let wentBy = 0;
+  let checked = 0;
+  for (const line of BUS_LINES) {
+    for (const [way, direction] of line.directions.entries()) {
+      const runs = buildRuns(line, way, BUS_STOPS, 'laborable');
+      if (!runs.length) continue;
+      for (const now of [7 * 60 + 10, 12 * 60 + 30, 20 * 60 + 45]) {
+        const onTheRoad = runs.find((r) => r.minutesByStopIndex[0] <= now && r.minutesByStopIndex[r.minutesByStopIndex.length - 1] >= now);
+        for (let at = 1; at < direction.stops.length - 1; at++) {
+          const times = runs.map((r) => r.minutesByStopIndex[at]);
+          const next = nextRunAt(runs, at, now);
+          const coming = times.filter((m) => m >= now);
+          if (coming.length) assert.strictEqual(times[next], Math.min(...coming), `the ${line.number} at stop ${at} at ${formatMinutes(now)} opened on ${formatMinutes(times[next])}, not the next bus there`);
+          else assert.strictEqual(next, runs.length - 1, `the ${line.number} at stop ${at} after its last bus opened on run ${next}`);
+          checked++;
+          if (onTheRoad && onTheRoad.minutesByStopIndex[at] < now) wentBy++;
+        }
+      }
+    }
+  }
+  assert(wentBy > 0 && checked > wentBy, `${wentBy} of ${checked}: the run on the road never went by a stop, so this checks nothing`);
+  assert.strictEqual(nextRunAt([], 0, 600), -1, 'no runs gave a run');
 });
 
 ok('a code that names no stop resolves to nothing, not to somebody else', () => {

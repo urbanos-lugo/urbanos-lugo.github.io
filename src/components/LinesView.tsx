@@ -4,17 +4,18 @@ import { useLang, useT } from '../i18n';
 import { BusLine, BusStop, DayKind, ServiceAlert } from '../types';
 import { lineZones, mainZones } from '../utils/places';
 import { NOTICE_LANG, namesLine } from '../utils/operatorNotices';
-import { changesNow, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
+import { atStop, changesNow, runsUntil, type NoticeChanges } from '../utils/noticeChanges';
 import { BUS_LINES, BUS_STOPS, poleCode, stopById } from '../data/transitData';
 import { getScheduledBuses } from '../utils/vehicles';
 import { directionBoardingAt } from '../utils/arrivals';
-import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, scheduledDuration, type ScheduledRun } from '../utils/schedule';
+import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, nextRunAt, scheduledDuration, type ScheduledRun } from '../utils/schedule';
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
 import { BackButton, ChoiceChip, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented, asTyped } from './ui/controls';
 import { Pane } from './ui/Pane';
 import { SectionTitle } from './ui/SectionTitle';
 import { Approx } from './ui/Provenance';
+import { NotHere } from './ui/NoticeHere';
 import { LineBadge, lineTint } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
 import { useShareLink } from '../hooks/useShareLink';
@@ -120,6 +121,12 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
   const day = pickedDay ?? today;
   const isToday = day === today;
   const runsToday = useMemo(() => buildRuns(currentLine, directionIdx, BUS_STOPS, today), [currentLine, directionIdx, today]);
+  // Opened from a stop on this way, the timetable is read at that stop, and opens on the next bus
+  // to reach it: from the terminus's times, a reader halfway along had to add the ride up. Not at
+  // either end: the first is the terminus's own times, and no bus leaves the last.
+  const fromIndex = fromStopId ? direction.stops.indexOf(fromStopId) : -1;
+  const yourStopIndex = fromIndex > 0 && fromIndex < direction.stops.length - 1 ? fromIndex : null;
+  const timedAt = yourStopIndex ?? 0;
   const runs = useMemo(() => (isToday ? runsToday : buildRuns(currentLine, directionIdx, BUS_STOPS, day)), [isToday, runsToday, currentLine, directionIdx, day]);
 
   /** Set when the reader steps through the timetable by hand; null means "follow the clock". */
@@ -134,10 +141,12 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
     const next = runs.findIndex((r) => r.minutesByStopIndex[0] >= now);
     return next >= 0 ? next : Math.max(0, runs.length - 1);
   }, [runs, now, isToday]);
-  const runIndex = Math.min(pickedRunIndex ?? currentRunIndex, Math.max(0, runs.length - 1));
+  /** The run "agora" goes back to: from a stop, the next one to reach it. */
+  const nowRunIndex = yourStopIndex !== null && isToday ? nextRunAt(runs, yourStopIndex, minutesNow()) : currentRunIndex;
+  const runIndex = Math.min(pickedRunIndex ?? nowRunIndex, Math.max(0, runs.length - 1));
   const shownRun = runs[runIndex];
-  // A hand-picked run belongs to the line, direction and day it was picked in.
-  useEffect(() => setPickedRunIndex(null), [currentLine.id, direction.id, day]);
+  // A hand-picked run belongs to the line, direction, day and stop it was picked in.
+  useEffect(() => setPickedRunIndex(null), [currentLine.id, direction.id, day, fromStopId]);
 
   const busesOnLine = buses.filter((b) => b.lineId === currentLine.id && (b.direction === direction.id || currentLine.directions.length === 1));
   /**
@@ -147,7 +156,10 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
    * and the directions whose first stop is not a timing point -- were drawn as if printed.
    */
   const derived = (run: ScheduledRun | undefined, stopIndex: number) => !!run && !run.publishedStopIndices.includes(stopIndex);
-  const departures = runs.map((r) => ({ time: formatMinutes(r.minutesByStopIndex[0]), derived: derived(r, 0) }));
+  const departures = runs.map((r) => ({ time: formatMinutes(r.minutesByStopIndex[timedAt]), derived: derived(r, timedAt) }));
+  const yourStop = yourStopIndex !== null ? stopById(direction.stops[yourStopIndex]) : undefined;
+  // The notice is about these days, so it marks today's timetable only.
+  const skipsYourStop = !!yourStop && isToday && atStop(changes, yourStop, now).skips(currentLine.number);
   const isSaved = favoriteLineIds.includes(currentLine.id);
   // The page read `?linea=` from a link and had no way to make one. Now its own address: by the
   // number, the 11's three variants all opened the plain 11.
@@ -389,8 +401,13 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
 
           <div className="card py-6 px-cap-6">
             <SectionTitle icon={Clock} small as="h3" className="mb-2">
-              {t.lines.scheduleTable} &mdash; {direction.origin} ({departures.length})
+              {yourStop ? t.lines.timesAtYourStop : t.lines.scheduleTable} &mdash; {yourStop?.name ?? direction.origin} ({departures.length})
             </SectionTitle>
+            {skipsYourStop && (
+              <p className="mb-2">
+                <NotHere />
+              </p>
+            )}
             <Segmented
               dense
               label={t.lines.dayKindsLabel}
@@ -417,7 +434,7 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
                 </ChoiceChip>
               ))}
             </div>
-            {departures.some((d) => d.derived) && <p className="mt-2 text-note text-ink-3">{t.lines.derivedDepartures}</p>}
+            {departures.some((d) => d.derived) && <p className="mt-2 text-note text-ink-3">{yourStop ? t.lines.derivedAtYourStop : t.lines.derivedDepartures}</p>}
           </div>
 
           <div className="card @container space-y-4 py-6 px-cap-6">
@@ -457,15 +474,16 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
                 <div className="order-1 basis-full text-center leading-name @min-stepper:order-none @min-stepper:basis-0 @min-stepper:flex-1">
                   <div className="caps-label text-accent">{t.lines.showingRun}</div>
                   <div className="text-body font-black text-accent font-mono">
-                    <Approx on={derived(shownRun, 0)} inherit />
-                    {formatMinutes(shownRun.minutesByStopIndex[0])}
+                    {/* From the stop the timetable is read at, as the chip that picked it says. */}
+                    <Approx on={derived(shownRun, timedAt)} inherit />
+                    {formatMinutes(shownRun.minutesByStopIndex[timedAt])}
                     <span className="text-accent font-bold text-label ml-1.5" title={t.lines.estimatedHint}>
                       &rarr; ~{formatMinutes(shownRun.minutesByStopIndex[shownRun.minutesByStopIndex.length - 1])}
                     </span>
                   </div>
                   <div className="text-label text-accent font-semibold">
                     {t.lines.runOf(runIndex + 1, runs.length)}
-                    {isToday && runIndex !== currentRunIndex && (
+                    {isToday && runIndex !== nowRunIndex && (
                       <button onClick={() => setPickedRunIndex(null)} className="ml-1.5 underline underline-offset-link font-bold">
                         {t.lines.backToNow}
                       </button>

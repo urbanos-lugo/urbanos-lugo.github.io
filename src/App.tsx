@@ -371,7 +371,7 @@ export default function App() {
                 </div>
                 </div>
               )}
-              {activeTab === 'info' && <AlertsView alerts={alerts} />}
+              {activeTab === 'info' && <AlertsView alerts={alerts} changes={noticeChanges} favoriteStopIds={favoriteStopIds} onSelectStop={selectStop} />}
               {activeTab === 'fares' && <FaresView />}
             </ErrorBoundary>
           </main>

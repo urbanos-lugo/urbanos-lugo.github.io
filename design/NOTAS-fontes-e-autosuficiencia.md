@@ -221,6 +221,17 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    outra con TalkBack (rolda 31). `audit:browser` mide nomes, estados, orde e idioma no
    código; como os di cada lector, se le o «~» das horas estimadas e se cambia de voz nos
    avisos en castelán, só se sabe escoitando.
+2. **Páxinas por parada** (punto 8 de [`AUDITORIA-seo.md`](AUDITORIA-seo.md)), á espera do
+   export de Search Console de decembro. As 72 páxinas de liña da rolda 69 son a mesma aposta
+   en pequeno, un enderezo, un título e unha canónica para cada cousa concreta, e aínda non
+   están publicadas. Nas pestanas, a indexación tardou dez días en verse nos resultados (do 24
+   de outubro ao 3 de novembro). Antes de multiplicala polas 417 paradas hai que ver dúas
+   cousas: que Google indexa as páxinas de liña e que as buscas polo número dunha liña pasan a
+   elas (18 consultas na semana do 10 ao 17 de novembro: 61 impresións, ningún clic, posición
+   7,38). Se non pasan, centos de páxinas máis só engaden rastrexo. Ademais, hoxe un
+   rastrexador non chegaría a elas: o sitemap segue sen lerse en Google, e as paradas da
+   páxina dunha liña son `div role="button"`, non ligazóns. Iso tería que cambiar con elas.
+   O 448 do punto 8 contouse antes das páxinas de liña.
 
 ## Feito dende que se escribiu isto
 

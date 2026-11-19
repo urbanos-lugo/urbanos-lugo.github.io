@@ -1,7 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import { AlertTriangle, HelpCircle, Newspaper, RefreshCw, CheckCircle2, Clock } from 'lucide-react';
 import { LOCALE, useLang, useT } from '../i18n';
-import { ServiceAlert } from '../types';
+import { BusStop, ServiceAlert } from '../types';
+import { stopById } from '../data/transitData';
+import { atStop, type NoticeChanges } from '../utils/noticeChanges';
+import { NoticeHere } from './ui/NoticeHere';
+import { Notice } from './ui/controls';
 import { isSnapshotStale } from '../utils/snapshotAge';
 import { NOTICE_LANG } from '../utils/operatorNotices';
 import type { ServiceAlerts } from '../hooks/useServiceAlerts';
@@ -13,6 +17,10 @@ import { SectionTitle } from './ui/SectionTitle';
 interface AlertsViewProps {
   /** Fetched once in App, so this screen and the navigation badge cannot disagree. */
   alerts: ServiceAlerts;
+  /** What those notices change, read out of their words, and the stops the reader saved: the ones it changes something at go first. */
+  changes?: NoticeChanges | null;
+  favoriteStopIds?: string[];
+  onSelectStop?: (stop: BusStop) => void;
 }
 
 /** The notices, three abreast from md up: the incidents and the structural ones. */
@@ -108,7 +116,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
   );
 }
 
-export function AlertsView({ alerts }: AlertsViewProps) {
+export function AlertsView({ alerts, changes = null, favoriteStopIds = [], onSelectStop }: AlertsViewProps) {
   const t = useT();
   const locale = LOCALE[useLang()];
   const { data, snapshotAt, isSyncing, cooldown, refresh } = alerts;
@@ -125,6 +133,14 @@ export function AlertsView({ alerts }: AlertsViewProps) {
   const hour = new Date().getHours();
   const monthsSinceReview = Math.floor((Date.now() - new Date(NOTICES_REVIEWED_ON).getTime()) / (1000 * 60 * 60 * 24 * 30.4));
   const structuralNotices: ServiceAlert[] = NOTICE_META.map((meta, i) => ({ ...meta, ...t.faresContent.notices[i], date: NOTICES_REVIEWED_ON, active: true }));
+  // A notice names its stops among dozens; which of them are the reader's was theirs to work out.
+  // Only what was read out of it: a saved stop not listed here is not one the notice spares.
+  const now = new Date();
+  const yourStops = favoriteStopIds
+    .map(stopById)
+    .filter((s): s is BusStop => !!s)
+    .map((stop) => ({ stop, here: atStop(changes, stop, now) }))
+    .filter(({ here }) => here.speaks);
   const [statusTitle, statusDesc] = unreachable
     ? [t.fares.unknownStatusTitle, t.fares.unknownStatusDesc]
     : stale
@@ -177,6 +193,24 @@ export function AlertsView({ alerts }: AlertsViewProps) {
           <p className={`rounded-card border px-4 py-3 text-note ${stale ? 'border-warn bg-warn/quiet text-warn-ink' : 'border-edge bg-surface text-ink-2'}`}>
             {unreachable && !snapshotAt ? t.fares.unknownStatusDesc : t.fares.snapshotNotice(formatInstant(snapshotAt ?? undefined, locale))}
           </p>
+        )}
+
+        {yourStops.length > 0 && (
+          <Notice warn>
+            <p className="font-semibold">{t.fares.yourStopsTitle}</p>
+            <ul>
+              {yourStops.map(({ stop, here }) => (
+                <li key={stop.id} className="mt-2">
+                  <button onClick={() => onSelectStop?.(stop)} className="link break-words text-left text-warn-ink">
+                    {stop.name}
+                  </button>
+                  <span className="block">
+                    <NoticeHere here={here} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Notice>
         )}
 
         {liveAlerts.length > 0 ? (

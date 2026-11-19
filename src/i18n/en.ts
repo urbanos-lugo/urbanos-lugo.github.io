@@ -123,6 +123,7 @@ export const en: Dict = {
     alertsTitle: 'Official service notices for Lugo',
     alertsSubtitle:
       'Read from the operator’s own portal, buslugo.com; the time of the last read is at the foot',
+    yourStopsTitle: 'The operator’s notice at your saved stops',
     faresTitle: 'Fares and the Tarxeta Cidadá',
     faresSubtitle: 'Official prices and travel passes in Lugo (Monbus)',
     notAffiliated: 'Unofficial site, not connected to Monbus or Lugo city council.',
@@ -457,6 +458,7 @@ export const en: Dict = {
     approximatePath:
       'The path drawn for this direction has not been surveyed: it is built from the route a car would take between the stops, so it may detour where the bus does not. The stops and times are the official ones.',
     scheduleTable: 'Departures from the terminus',
+    timesAtYourStop: 'Times at your stop',
     showingRun: 'Run shown',
     runOf: (index: number, total: number) => `${index} of ${total} in the day`,
     backToNow: 'now',
@@ -468,6 +470,7 @@ export const en: Dict = {
     holidayToday: 'Today is a public holiday: the Sunday timetable runs.',
     estimatedHint: 'Estimated from the departure at the terminus plus the measured driving time.',
     derivedDepartures: '~ Not printed by the operator: worked out from its stated frequency or from the running time to the first timed stop.',
+    derivedAtYourStop: '~ Not printed by the operator for this stop: worked out from its timetable and the running time to here.',
     estimatedSr: 'estimated time',
     previousRun: 'Previous run',
     nextRun: 'Next run',

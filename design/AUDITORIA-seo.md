@@ -261,6 +261,9 @@ présa por competir con ninguén. O dominio propio queda descartado polo momento
    do dono, tras publicar: pedir a indexación dalgunhas en Inspección de URL.*
 8. **Páxinas por parada.** Un día máis sobre a 7. O «copiar ligazón» pasa a dar unha URL
    con título e previsualización; o sitemap sobe a 448.
+   *O 19 de novembro queda á espera do export de decembro: antes hai que ver se Google
+   indexa as páxinas de liña e se lles leva as buscas polo número. O porqué está en
+   `NOTAS-fontes-e-autosuficiencia.md` → «Pendente».*
 9. **Ligazóns.** Custa tempo, non código: nota de prensa a El Progreso e La Voz de Lugo,
    a wiki de OSM (páxina de Lugo, apps que usan datos OSM: lexítimo, xa se atribúe a
    ODbL), a lista `awesome-transit`, r/galicia, GPUL e o Mastodon galego. Non hai portal

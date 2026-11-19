@@ -525,8 +525,13 @@ das expedicións de hoxe.
 **Aberta desde unha parada, a ficha marca esa parada.** Desde o taboleiro, a folla do mapa,
 unha liña gardada da portada ou un tramo de Ruta, o percorrido abre no sentido que sube
 nela e a súa fila leva «A túa parada»: cun sentido de 23 paradas na mediana dos 48, e de
-ata 47, a hora da expedición que se amosa nese poste lese sen buscalo. Desde a lista de
-liñas ou o buscador, non hai ningunha marcada.
+ata 47, a hora da expedición que se amosa nese poste lese sen buscalo. O cadro horario
+tamén se le nela: no canto das «saídas desde cabeceira», os **pasos pola túa parada**, e
+hoxe abre no próximo bus que chega a ela, non no que está na estrada. Ese podía ter pasado
+xa: nun laborable ás 07:10, ás 12:30 e ás 20:45, en 637 dos 3264 casos (cada sentido de
+cada liña en cada parada que non é a primeira nin a última). Se o aviso do operador deixa
+esa parada para esa liña, o cadro dío. Desde a lista de liñas ou o buscador, non hai
+ningunha marcada.
 
 Baixo o nome, que o operador forma coas dúas cabeceiras, vai **por onde pasa**: as catro
 zonas con máis paradas da liña, na orde do percorrido («Pasa por Campus USC · Sur / Ramón
@@ -593,7 +598,12 @@ días, ou mentres estea publicado se non nomea ningún:
   final e de quen é a palabra despréganse soas: a esa hora son a única resposta que hai.
 - Na **folla da parada no mapa** e nas **paradas gardadas** da portada, o mesmo: a saída
   riscada e marcada, e as mesmas frases do taboleiro. Unha liña gardada non dá os seus
-  minutos nunha parada que deixa. As tres len o aviso dunha soa maneira (`atStop`).
+  minutos nunha parada que deixa.
+- En **Avisos**, por riba dos avisos, van as paradas gardadas onde o aviso cambia algo,
+  cada unha coas mesmas frases e un toque ao seu taboleiro. Un aviso nomea as súas paradas
+  entre moitas, e ata agora quen lía tiña que buscar nel as súas. Só sae o que se leu: que
+  unha parada gardada non estea non quere dicir que o aviso non a toque. O taboleiro, a
+  folla, as paradas gardadas e Avisos len o aviso dunha soa maneira (`atStop`).
 - **Ruta** non propón subir nin baixar desa liña alí. A súa franxa vai pregada igual, coa
   mesma regra na parada onde o traxecto sobe a cada liña.
 - A **ficha** da liña resume os seus cambios; o texto do operador vai pregado debaixo.
@@ -1085,7 +1095,8 @@ A regra chega a todas as pantallas, non só ao taboleiro:
   imprime a parada.
 - **A ficha de liña** marca `~08:00` nas «saídas desde cabeceira» que o cadro non imprime
   —as das dez liñas que publican primeira, última e cadencia, e as das direccións cuxa
-  primeira parada non é punto horario— e di por que. O punto de «bus aquí» non latexa: é
+  primeira parada non é punto horario— e di por que. Aberta desde unha parada, fai o mesmo
+  cos pasos por ela. O punto de «bus aquí» non latexa: é
   unha posición tirada do cadro.
 - **O paso a paso** leva a etiqueta baixo a hora de subida, que é a que certifica, e a de
   baixada leva `~` cando é calculada.

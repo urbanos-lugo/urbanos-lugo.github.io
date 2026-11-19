@@ -140,6 +140,8 @@ export const gl = {
     alertsTitle: 'Avisos oficiais e incidencias en Lugo',
     alertsSubtitle:
       'Lidos do portal do operador, buslugo.com; a hora da última lectura vai ao pé',
+    /** Over the saved stops the notice changes something at, read out of its words; the notice itself is below. */
+    yourStopsTitle: 'O aviso do operador nas túas paradas gardadas',
     faresTitle: 'Tarifas e Tarxeta Cidadá',
     faresSubtitle: 'Prezos oficiais e títulos de transporte en Lugo (Monbus)',
     /* Dito nas dúas pantallas que citan o operador polo seu nome, que son onde alguén
@@ -501,6 +503,8 @@ export const gl = {
     approximatePath:
       'O trazado deste sentido no mapa non está topografiado: constrúese coa ruta que faría un coche entre as paradas, así que pode desviarse por onde o bus non pasa. As paradas e as horas son as oficiais.',
     scheduleTable: 'Saídas desde cabeceira',
+    /** The same timetable read at the stop the line was opened from. */
+    timesAtYourStop: 'Pasos pola túa parada',
     showingRun: 'Expedición amosada',
     runOf: (index: number, total: number) => `${index} de ${total} do día`,
     backToNow: 'agora',
@@ -515,6 +519,7 @@ export const gl = {
     holidayToday: 'Hoxe é festivo: circula o horario de domingo.',
     estimatedHint: 'Hora estimada desde a saída de cabeceira e o tempo de percorrido medido.',
     derivedDepartures: '~ Saída que o operador non imprime: sae da frecuencia que publica ou do tempo ata o primeiro punto con horario.',
+    derivedAtYourStop: '~ Hora que o operador non imprime nesta parada: sae do seu horario e do tempo de percorrido ata aquí.',
     estimatedSr: 'hora estimada',
     /** The run navigator's two arrows, and the star that marks a saved line in the list, for a screen reader. */
     previousRun: 'Expedición anterior',

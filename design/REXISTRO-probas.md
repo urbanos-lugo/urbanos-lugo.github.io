@@ -5597,3 +5597,62 @@ viaxes, ningunha tarefa sen rematar; a barra da casa, a mesma (25, 3, 64).
 
 - Do dono, tras publicar: pedir a indexación dalgunhas páxinas de liña en Inspección de URL.
 - Nada desta rolda está en `develop` remoto nin en `main`.
+
+## Rolda 70: o horario na túa parada, e o aviso nas túas paradas — 19 de novembro de 2026
+
+Pedido: dúas das portas que abrían as roldas 68 e 69, e deixar apuntada a terceira co
+porqué. Sobre `7a0b578`, a actualización de dependencias, que a outra sesión xuntou en
+`develop` antes de comezar esta.
+
+### Feito
+
+- **Os pasos pola túa parada.** Unha liña aberta desde unha parada (o taboleiro, a folla do
+  mapa, unha liña gardada, un tramo de Ruta) le o cadro nesa parada. As fichas pasan a ser
+  os pasos por ela e o título «Pasos pola túa parada — <nome>». A expedición amosada vai
+  desde a súa hora alí, e a nota do `~` di de onde sae unha hora que o operador non imprime
+  nesa parada. Hoxe abre no próximo bus que chega a ela (`nextRunAt`, en `schedule.ts`), o
+  primeiro pola súa hora alí e non pola orde da lista. Antes abría no que está na estrada
+  segundo a cabeceira, e ese podía ter pasado: nun laborable ás 07:10, ás 12:30 e ás 20:45,
+  en 637 dos 3264 casos de sentido e parada que non é ningún dos extremos (medido cun guión
+  sobre o conxunto de datos). Nos extremos queda como estaba: a primeira parada é a
+  cabeceira, e na última non sae ningún bus. Se o aviso deixa a parada para esa liña, o
+  cadro de hoxe leva «Non para aquí estes días».
+- **Avisos, nas túas paradas.** Por riba dos avisos do operador, unha caixa coas paradas
+  gardadas onde o aviso cambia algo (`atStop(...).speaks`), cada unha coas frases do
+  taboleiro (`NoticeHere`) e un toque ao seu taboleiro. Só o que se leu: non hai unha frase
+  de «non che afecta», porque o que o aviso non deixa ler segue en prosa.
+- **As páxinas por parada, apuntadas**, en `NOTAS-fontes-e-autosuficiencia.md` → «Pendente»
+  e no punto 8 de `AUDITORIA-seo.md`: á espera do export de decembro, para ver antes se Google
+  indexa as páxinas de liña e se lles leva as buscas polo número. Hoxe, ademais, un
+  rastrexador non chegaría a elas: as paradas da páxina dunha liña non son ligazóns.
+- Unha comprobación nova (175): en cada sentido de cada liña, en cada parada que non é un
+  extremo e ás tres horas de arriba, a expedición que abre é a primeira en chegar alí, e
+  despois do último bus, a última do día. Esixe que a da estrada pasara xa nalgún caso, para
+  que non se comprobe nada en baleiro.
+
+### Comprobado
+
+- As cinco portas: lint, 175 comprobacións, 26 políticas, `check:deep` e a build.
+- No panel, contra a build, co service worker e as cachés borrados e tres paradas gardadas,
+  dúas delas no aviso de obras de novembro. En `/es/avisos/`, a caixa trae Obras Públicas e
+  Montevideo, cada unha con «Estos días la línea 12 no para aquí», e non trae a terceira. Os
+  dous botóns miden 44 px, e un toque abre o taboleiro de Obras Públicas. A 9 aberta desde
+  «Otras líneas cerca» di «Pasos por tu parada — Rúa Doutor Gasalla 3 (30)», marca a parada
+  e abre, de madrugada, na primeira expedición da mañá. A 12 aberta en Obras Públicas leva
+  «No para aquí estos días» baixo o título. A 7 aberta desde a lista segue en «Salidas desde
+  cabecera», sen parada marcada. Ningún erro na consola.
+- Revisando o diff apareceu un fallo, que a madrugada non deixaba ver: «agora» comparaba coa
+  expedición da estrada, así que de día saía sen escoller nada. Agora compara coa
+  expedición pola que abre. Co reloxo da páxina fixado ás 12:30 dun xoves, a 9 en Doutor
+  Gasalla abre na das 12:43 («~13 min (12:43)»), sen «agora». Coa seguinte expedición aparece
+  «agora», e premelo volve á das 12:43. O primeiro `audit:browser` parouse para isto antes
+  de rematar, e non conta.
+- `audit:browser` enteiro contra a build co arranxo, coas outras dúas sesións paradas (deron
+  o «go»): 0 achados de WCAG 2.2 A/AA en 242 medidas de 162 estados, en 674 s. Nas viaxes,
+  ningunha tarefa sen rematar e ningunha volta mal aterrada. A barra da casa, como nas
+  roldas 68 e 69: 25 controis baixo 44 px, 3 entre as barras e 64 toques no cuarto de
+  arriba. É tamén o primeiro audit de `7a0b578`, a actualización de dependencias.
+
+### Queda
+
+- Nada desta rolda está en `develop` remoto nin en `main`.

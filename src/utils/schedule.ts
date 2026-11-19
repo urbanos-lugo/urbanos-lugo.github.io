@@ -97,6 +97,20 @@ export interface ScheduledRun {
   lastTimingPointIndex: number;
 }
 
+/**
+ * The run that reaches a stop next after `now` (minutes of the day), or the day's last once none
+ * is left; -1 with no runs. The earliest by its time at that stop, not by its place in the list:
+ * the run on the road now may already be past the stop a reader is waiting at.
+ */
+export function nextRunAt(runs: ScheduledRun[], stopIndex: number, now: number): number {
+  let next = -1;
+  runs.forEach((run, i) => {
+    const at = run.minutesByStopIndex[stopIndex];
+    if (at >= now && (next < 0 || at < runs[next].minutesByStopIndex[stopIndex])) next = i;
+  });
+  return next >= 0 ? next : runs.length - 1;
+}
+
 const runCache = new Map<string, ScheduledRun[]>();
 
 /**
