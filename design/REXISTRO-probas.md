@@ -6206,3 +6206,91 @@ no mapa, un sitio levaba directo a Ruta (pasoulle tamén a esta sesión, buscand
 - Que ao pechar a folla da parada máis próxima volva a do sitio vese no código; no panel non
   se probou.
 - `audit:browser` enteiro non se correu; nada desta rolda está en `develop` remoto.
+
+## Rolda 81: Ruta atopa calquera rúa e os sitios que nomea OSM — 20 de novembro de 2026
+
+Pedido: que Ruta atope calquera sitio, non só as paradas; os sitios concretos («os Cines
+Cristal»); e comprobar que ninguén queda sen chegar porque o seu destino non sae no buscador
+e non sabe a rúa.
+
+### Medido antes
+
+- O planificador xa non se ata á parada escrita: colle o punto e mira ata 10 paradas a menos
+  de 2 km. Nunha mostra de 199 respostas con bus (60 paradas de orixe, 4 destinos, un
+  mércores ás 10:00), en 147 a mellor sobe noutra parada.
+- A busca atopaba paradas, códigos e os 28 sitios escritos a man. De sete rúas sen parada
+  co seu nome, seis non saían: «Rúa do Teatro», «Rúa San Marcos», «Avenida Infanta Elena»,
+  «Rúa Rof Carballo», «Praza de Avilés» e «Rúa Río Neira 20».
+- O censo, unha petición a Overpass feita a man: 3.575 elementos con nome, dos que 2.429
+  están a un paseo de 1,5 km dunha parada. Entre o que non se atopaba estaban arredor de 260
+  aldeas, lugares e parroquias, 41 farmacias, 45 igrexas e templos, 40 supermercados, 32
+  bancos, 10 cemiterios e a maior parte dos restaurantes, bares e tendas. Elixiuse levalos
+  todos.
+
+### Feito
+
+- **As rúas.** `buildDataset.ts` escribe `src/data/streets.json`: as 794 vías con nome da
+  rede peonil (`data/osm-walk-network.json`), cun punto en cada unha, o da vía máis preto do
+  seu centro. A build de CI xa as rexenera e comproba que non cambian. O número do portal
+  quítase se non hai rúa con ese nome enteiro («Rúa Número 85» é un nome).
+- **Os sitios.** `tools/importPlaces.ts` (`pnpm run data:places`, á man, cacheado en
+  `.cache/`) pide a Overpass os elementos con nome de 14 claves e garda en
+  `src/data/places.json` os que están a un paseo dunha parada: 2.380, xa unidos os que eran
+  o mesmo sitio a menos de 250 m. Os do mesmo nome levan a parada máis próxima, que é onde
+  deixa o bus: «Gadis (Fonte dos Ranchos 29-30)». Primeiro levaban a rúa máis próxima, e ese
+  Gadis, o da praza, saía como «Rúa do Sabugo»: OSM non ten ningún enderezo a menos de 60 m
+  del, e a liña de rúa máis preto era outra. Comparados sen maiúsculas nin acentos: «Frutas
+  el Castillo» e «Frutas El Castillo» son un nome.
+- **Un número non é un código.** Calquera número de tres cifras nunha busca levaba ao poste
+  con ese código: «Caixabank (Avda. Coruña 131)», que leva no nome o da parada, ía ao poste
+  131, no polígono das Gándaras, e «Rúa Río Neira 131» tamén. Agora é código a busca enteira
+  («131») ou o marcado como tal («Cód. 131»), e a comprobación dos sitios garda os tres.
+- **A busca** (`places.ts`, `searchUtils.ts`): `rankPlaces` dá sitios e rúas, e as filas de
+  Ruta mostran as oito mellores entre paradas, sitios escritos a man, sitios de OSM e rúas.
+  Unha palabra casa enteira ou co comezo da outra, «Cines Cristal» é «Cine Cristal». Na
+  resolución, unha rúa ou un sitio que casa mellor ca calquera parada vai primeiro: «A
+  Corredoira» ía a «Pintor Corredoira», a 10 km, e «Camiño da Feira» a Nadela. Un nome
+  escrito enteiro gaña a unha parada que só empeza igual («Rúa J», no polígono das Gándaras,
+  ía a «Rúa de Juana Ibarbourou»), pero non a unha que empeza coas súas palabras, coas
+  abreviaturas lidas: «A Ponte» segue sendo a parada do barrio e non un camiño de aldea, e
+  «Avenida das Américas» a parada «Avda. Américas 36».
+- **O tempo dunha busca.** A memoria das formas normalizadas baleirábase aos 2.000 nomes, e
+  con rúas e sitios pasan de 3.600: cada busca recalculábaos todos, 19,7 ms. Agora vacíase
+  aos 12.000, e son 4,8 ms (medido nun bucle de dez buscas, despois dunha de quentamento).
+
+### Comprobado
+
+- As cinco portas: lint, 179 comprobacións, 26 políticas, `check:deep` e a build. A nova
+  comprobación pasa polas 794 rúas e por un de cada tres sitios: cada un cae en si mesmo ou
+  en algo que leva todas as súas palabras (unha aldea na parada co seu nome). Antes do
+  arranxo das palabras enteiras caían mal 52 rúas, e despois 0. Comproba tamén que ningún
+  nome se repite.
+- Resoltos todos os sitios fóra da suite: 2.380, ningún sen resposta. Nove caen fóra dos
+  400 m, todos nunha parada ou noutro sitio co seu mesmo nome («Conturiz» en «Conturiz
+  (Iglesia)», «Vilar» noutro Vilar). Os nomes sen sentido seguen sen dar nada.
+- O tamaño, medido coas mesmas regras ca a táboa do README, nunha build de `HEAD` sen o
+  cambio feita nun worktree aparte e borrado despois: primeira carga de ~165 a ~202 KB en
+  brotli, e worker do planificador de 45 a 82 KB. O campo do tipo de sitio custaba 5 KB e a
+  app non o usa: só vai no resumo do importador.
+- No panel, contra a build no porto 3034, co service worker e as cachés borrados: escribir
+  «Cines Cristal» no destino ofrece «Cine Cristal», e escollelo calcula a ruta desde o HULA.
+  As filas de «Bosende» son as súas catro aldeas, e as de «Farmacia» e «Igrexa», farmacias e
+  igrexas. As de «Gadis» víronse alí coa etiqueta de rúa; coa de parada, fóra do panel:
+  «gadis fonte» dá «Gadis (Fonte dos Ranchos 29-30)», a 30 m do supermercado.
+
+### Queda
+
+- Os portais: non están nos datos, así que un número leva ao punto da rúa. Afinalo pide
+  importar os enderezos de OSM.
+- Un sitio que OSM non ten non se atopa. Chega coa seguinte importación se alguén o engade.
+- OSM non está todo ao día. Pedidas as datas de edición (unha petición a man): dos 1.473
+  comercios a un paseo dunha parada (tendas, bares, bancos, oficinas, clínicas), 366 non se
+  tocan dende antes de 2023, entre eles un Abanca pechado hai anos. A seguinte rolda trae as
+  sucursais das propias marcas e as listas oficiais de farmacias, centros de saúde e colexios.
+- Varias rúas do polígono industrial teñen nome novo en OSM («Rúa das Comunicacións»),
+  posto despois da nosa copia da rede peonil (`data/osm-walk-network.json`); «Rúa J» e «Rúa
+  D» seguen así tamén alí. Refrescar a copia move as cifras da rede e o grafo de camiñar:
+  rolda aparte.
+- A busca de arriba (`TopBar`) segue cos 28 sitios escritos a man: `rankPlaces` ten os
+  puntos que precisan as súas filas.
+- `audit:browser` enteiro non se correu; nada desta rolda está en `develop` remoto.
