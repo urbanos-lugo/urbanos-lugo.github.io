@@ -4,9 +4,10 @@
 export const MAX_QUERY_LENGTH = 120;
 
 /**
- * Memoise a string reduction: the same 417 names go through these on every keystroke
- * (5.35 ms a keystroke before, 1.34 after). The corpus is 1,343 strings; the map is
- * cleared, not grown, past two thousand.
+ * Memoise a string reduction: the same names go through these on every keystroke (5.35 ms a
+ * keystroke before, 1.34 after, over the 417 stops). With the streets and the places OSM names
+ * the corpus is past 3,600 strings, and a map cleared at two thousand recomputed them all on
+ * every search: 17 ms a query. It is cleared, not grown, past twelve thousand.
  */
 function remembering<T>(compute: (str: string) => T): (str: string) => T {
   const seen = new Map<string, T>();
@@ -14,7 +15,7 @@ function remembering<T>(compute: (str: string) => T): (str: string) => T {
     const found = seen.get(str);
     if (found !== undefined) return found;
     const value = compute(str);
-    if (seen.size >= 2000) seen.clear();
+    if (seen.size >= 12000) seen.clear();
     seen.set(str, value);
     return value;
   };
@@ -134,6 +135,29 @@ const searchForm = remembering((str: string): string => {
   const form = ABBREVIATIONS.reduce((s, [re, to]) => s.replace(re, to), plain).replace(LINK_WORDS, ' ').replace(/\s+/g, ' ').trim();
   return form || plain;
 });
+
+/**
+ * Every word of the query in the name, either one the start of the other: «Cines Cristal» is
+ * «Cine Cristal», «Auditorio Freire» is «Auditorio Municipal Gustavo Freire». A word of under
+ * three letters only matches itself, or «a» would be the start of half the city.
+ */
+export function matchesWordsEitherWay(name: string, query: string): boolean {
+  const have = searchForm(name).split(' ');
+  const want = searchForm(query).split(' ').filter(Boolean);
+  return want.length > 0 && want.every((w) => have.some((h) => h === w || (w.length >= 3 && h.startsWith(w)) || (w.length >= 4 && h.length >= 4 && w.startsWith(h))));
+}
+
+/**
+ * Whether a name begins with every word of the query, whole and in order, abbreviations read
+ * out: «Avda. Américas 36» and «A Ponte (cruce Fluvial)» begin with «Avenida das Américas» and
+ * «A Ponte»; «Rúa de Juana Ibarbourou» does not begin with «Rúa J».
+ */
+export function beginsWithWords(name: string, query: string): boolean {
+  const have = searchForm(name).split(' ');
+  return searchForm(query)
+    .split(' ')
+    .every((w, i) => have[i] === w);
+}
 
 /** User input goes into a RegExp; "[" alone would take the search box down. */
 const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

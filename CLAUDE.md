@@ -75,7 +75,7 @@ class there; `pnpm run check:policy` fails on a one-off value or a pattern spell
 hand.
 
 Hit somebody else's server — see the network block before running any of these:
-`pnpm run data:fetch`, `pnpm run data:osm`, `pnpm run data:amenities`, `pnpm run data:squares`,
+`pnpm run data:fetch`, `pnpm run data:osm`, `pnpm run data:amenities`, `pnpm run data:squares`, `pnpm run data:places`,
 `pnpm run data:alerts`, `pnpm run data:walk`, `pnpm run data:elevation`,
 `pnpm run reconcile`, `pnpm run compare:operator`, `pnpm run compare:walk`,
 `pnpm run calibrate:walking`, `pnpm run check:landmarks`, `pnpm run check:parsers`,
@@ -198,7 +198,7 @@ build-time dataset instead.
 <important if="you are about to run a tool that leaves this machine">
 
 `reconcile.ts`, `checkFares.ts`, `checkOsmGeometry.ts`, `compareOperatorTimes.ts`,
-`importOfficialData.ts`, `importOsmRoutes.ts`, `importStopAmenities.ts`, `importSquares.ts`,
+`importOfficialData.ts`, `importOsmRoutes.ts`, `importStopAmenities.ts`, `importSquares.ts`, `importPlaces.ts`,
 `fetchAlerts.ts`, `calibrateWalking.ts`, `importFonts.ts`, `checkParsersUnchanged.ts`
 (`pnpm run check:parsers`, four to six requests), `importWalkNetwork.ts`,
 `importElevation.ts`, `checkLandmarks.ts`, `compareWalkRouter.ts` and `buildMapStyle.ts

@@ -354,6 +354,19 @@ non fai «en servizo» o primeiro bus do día seguinte.
 **«Usar a miña localización» sen permiso dío e non calcula**, igual que a pantalla de
 paradas se nega a inventar unha posición que o móbil non deu.
 
+**Calquera rúa ou sitio con nome, non só as paradas.** Ruta atopa as 794 rúas da rede
+peonil, tamén co número do portal («Rúa Río Neira 20» vai á rúa, que é o que hai: os
+portais non están nos datos), e 2.380 sitios que OpenStreetMap nomea a menos dun paseo de
+1,5 km dunha parada: aldeas e lugares, farmacias, igrexas, colexios, bancos, oficinas,
+supermercados, restaurantes, tendas. Antes atopaba as paradas e 28 sitios escritos a man, e
+«Rúa do Teatro» ou «Cines Cristal» quedaban sen resposta; nas liñas rurais, a xente sabe o
+nome da súa aldea, non o dunha rúa. Os sitios do mesmo nome levan a parada máis próxima, que
+é onde deixa o bus: «Gadis (Fonte dos Ranchos 29-30)». Unha palabra pode ir enteira ou
+non, «Cines Cristal» é «Cine Cristal». Todo vai dentro da app, polo que funciona sen
+conexión e o que se escribe non sae a ningún buscador de fóra; o que OSM non ten non se
+atopa, e chega coa seguinte importación se alguén o engade alí (`pnpm run data:places`, á
+man). Costa 37 KB en brotli na primeira carga, medidos (táboa de máis abaixo).
+
 **Unha parada como destino, dun toque.** «Como chegar aquí», no taboleiro dunha parada e
 na súa folla do mapa, abre Ruta con esa parada de destino, calculada desde a orixe que
 houbese, como un lugar escollido no buscador de arriba.
@@ -892,6 +905,8 @@ non chama ningunha.
 │   │   ├── map-style-light.json    XERADO — o estilo do mapa base, paleta clara
 │   │   ├── map-style-dark.json     XERADO — o mesmo, paleta escura
 │   │   ├── squares.json            XERADO — nome e centro das prazas, de OSM (ODbL)
+│   │   ├── places.json             XERADO — os 2.380 sitios con nome que atopa Ruta, de OSM (ODbL)
+│   │   ├── streets.json            XERADO — as 794 rúas da rede peonil, un punto en cada unha (ODbL)
 │   │   ├── festivos.json           os festivos que corren como domingos, por ano e coa súa fonte
 │   │   ├── structuralNotices.ts    os avisos permanentes, escritos a man, coa data da súa revisión
 │   │   ├── routeGeometry.ts        carga os trazados baixo demanda
@@ -963,6 +978,7 @@ non chama ningunha.
 │   ├── importOfficialData.ts       descarga e axuste viario (lento, cacheado)
 │   ├── importStopAmenities.ts      equipamentos de parada desde OSM
 │   ├── importSquares.ts            as prazas como áreas, desde OSM, para o seu nome no mapa
+│   ├── importPlaces.ts             os sitios con nome a un paseo dunha parada, desde OSM, para a busca de Ruta
 │   ├── buildDataset.ts             xera stops.json e lines.json (rápido)
 │   ├── importOsmRoutes.ts          relacións de ruta desde Overpass
 │   ├── importWalkNetwork.ts        as vías camiñables de Lugo desde Overpass
@@ -1178,7 +1194,12 @@ servizo que cruzan a medianoite.
 
 `planTrips` en `src/utils/planner.ts` (a primeira opción é a resposta):
 
-1. **Resolución** — texto libre, código de parada, punto de interese ou coordenadas GPS.
+1. **Resolución** — texto libre, código de parada, punto de interese ou coordenadas GPS. O
+   texto busca nas paradas, nos 28 sitios escritos a man, nos 2.380 que nomea OSM e nas 794
+   rúas, nesa orde agás cando unha rúa ou un sitio casa mellor ca calquera parada: «A
+   Corredoira» ía a «Pintor Corredoira», a 10 km. Un nome escrito enteiro gaña a unha
+   parada que só empeza igual («Rúa J» non é «Rúa de Juana Ibarbourou»), pero non a unha que
+   empeza coas súas palabras: «A Ponte» segue sendo a parada do barrio, non un camiño de aldea.
 2. **Candidatas de embarque** — ata 10 paradas servidas a menos de 2 km de cada extremo,
    e nunca unha que obrigue a camiñar máis para coller o bus que para chegar andando.
    **Escóllense pola cobertura de liñas, non pola distancia**: pasadas as catro máis
@@ -1315,21 +1336,24 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 
 | | sen comprimir | gzip | brotli |
 | :--- | ---: | ---: | ---: |
-| Anaco de entrada | 554 KB | 153 KB | **127 KB** |
-| Anaco compartido, con React | 89 KB | 28 KB | **23 KB** |
-| Folla de estilos | 67 KB | 14 KB | **12 KB** |
+| Anaco de entrada | 744 KB | 201 KB | **165 KB** |
+| Anaco compartido, con React | 90 KB | 28 KB | **24 KB** |
+| Folla de estilos | 68 KB | 14 KB | **12 KB** |
 | `index.html` | 5 KB | 2 KB | **2 KB** |
-| **Primeira carga** | **715 KB** | ~197 KB | **~164 KB** |
+| **Primeira carga** | **907 KB** | ~245 KB | **~202 KB** |
 | Tipografía | 51 KB | — | 51 KB, en paralelo |
-| Renderizador do mapa, co estilo e a paleta | 1.119 KB | 298 KB | 245 KB, ao abrir un mapa |
+| Renderizador do mapa, co estilo e a paleta | 1.133 KB | 300 KB | 245 KB, ao abrir un mapa |
 | Estilos do renderizador | 70 KB | 10 KB | 8 KB, ao abrir un mapa |
 | Worker do renderizador | 538 KB | 154 KB | 127 KB, ao abrir un mapa |
 | Xeometría viaria | 512 KB | 83 KB | 28 KB, ao abrir un mapa |
 | Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
-| Worker do planificador, coa súa copia de paradas e liñas | 237 KB | 56 KB | 45 KB, ao calcular a primeira ruta |
+| Worker do planificador, coa súa copia de paradas, liñas, rúas e sitios | 426 KB | 103 KB | 82 KB, ao calcular a primeira ruta |
 
-Medido o 19 de novembro de 2026 sobre a build de `728c1dd`, con Vite 8.3.8 e MapLibre
-6.19; as anteriores, do 31 de outubro (rolda 52) e do 2 de novembro, están no rexistro. Un KB son 1.024
+Medido o 20 de novembro de 2026 sobre a build da busca de rúas e sitios, con Vite 8.3.8 e
+MapLibre 6.19. As 794 rúas e os 2.380 sitios que atopa Ruta van no anaco de entrada e no
+worker do planificador: sen eles, a mesma build medía ~165 KB de primeira carga e 45 KB de
+worker. As medidas anteriores, do 31 de outubro (rolda 52) e do 2 e o 19 de novembro, están
+no rexistro. Un KB son 1.024
 bytes, gzip ao nivel 9 e brotli á calidade 11. MapLibre non vai no anaco de entrada,
 senón enteiro no do renderizador, que baixa ao abrir un mapa.
 A instantánea de avisos tampouco: é un ficheiro á parte, `alerts.json`, e o motivo está
@@ -1350,12 +1374,12 @@ páxina pide para pintarse; o service worker é outra cousa. Para que a app func
 cobertura, na primeira visita garda **todo** o que a app usa —fóra quedan só as copias das
 páxinas que son para os buscadores (as de castelán e inglés e as das liñas), `robots.txt`
 e `sitemap.xml`—: 29 ficheiros distintos (o manifesto lista 33: catro iconas van dúas veces
-e baixan unha), 4,53 MB sen comprimir, 1,32 MB en gzip e 1,09 MB en brotli, medidos sobre
-`dist/sw.js` o 19 de novembro de 2026, sen esperar a que
+e baixan unha), 4,92 MB sen comprimir, 1,42 MB en gzip e 1,17 MB en brotli, medidos sobre
+`dist/sw.js` o 20 de novembro de 2026, sen esperar a que
 se abra un mapa nin se trace un camiño. Non bloquea nada: vai detrás da primeira
 pantalla, e a partir de aí cada anaco sae da caché. É o prezo de que o planificador e o
 mapa vaian dentro do móbil, e está á vista aquí para que ninguén o tome por unha primeira
-carga de ~164 KB.
+carga de ~202 KB.
 
 E cando un despregue cambia os nomes deses ficheiros debaixo dunha páxina aberta, a
 páxina que pide o mapa despois de publicado recarga unha soa vez en lugar de amosar «a

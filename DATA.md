@@ -88,6 +88,16 @@ where no surveyed relation exists.
   written by `tools/importSquares.ts` from the areas OSM maps as squares: `place=square`, and
   pedestrian areas, pedestrian rings and parks named as one. Derivative Database, ODbL. The
   map style embeds it (below), because the tiles carry a square only as the line of its edge.
+- **And to the places Ruta finds.** `src/data/places.json` — 2.380 named places within a
+  1.5 km walk of a stop: villages and hamlets, chemists, churches, schools, offices,
+  restaurants, shops — is written by `tools/importPlaces.ts` (`pnpm run data:places`, by
+  hand) from every feature OSM names under `amenity`, `shop`, `office`, `healthcare`,
+  `leisure`, `tourism`, `historic`, `craft`, `place`, `building`, `landuse`, `man_made`,
+  `club` or `sport`. Two of one name are told apart by the stop nearest them.
+  `src/data/streets.json` — the 794 named ways of the walking network, a point
+  on each — is written by `tools/buildDataset.ts` from `data/osm-walk-network.json`. Both
+  Derivative Databases, ODbL. A place OSM does not have is not found: it is added in OSM, and
+  arrives with the next import.
 
 ## Map tiles — OpenFreeMap
 

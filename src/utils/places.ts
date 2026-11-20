@@ -3,9 +3,11 @@
  * a place, and the stops and lines near a point. Pure functions, no React.
  */
 import { BUS_STOPS, lineById, stopById } from '../data/transitData';
+import PLACES from '../data/places.json';
+import STREETS from '../data/streets.json';
 import { Lang, translations } from '../i18n/translations';
 import { BusStop, BusLine } from '../types';
-import { matchesQuery, calculateRelevanceScore } from './searchUtils';
+import { beginsWithWords, matchesQuery, matchesWordsEitherWay, calculateRelevanceScore, normalizeText } from './searchUtils';
 import { getDistanceMeters } from './geo';
 
 /**
@@ -125,6 +127,32 @@ export function rankStops(q: string): { stop: BusStop; score: number }[] {
     .sort((a, b) => b.score - a.score);
 }
 
+/** A point with a name: a place OSM has (`places.json`, `pnpm run data:places`) or a street of the walking network (`streets.json`). */
+type Named = { name: string; lat: number; lng: number };
+
+/** The house number off the end: the streets carry none, so «Rúa Río Neira 20» is the street. */
+const streetPart = (q: string) => q.replace(/[\s,]+(?:n[º°o.]?\s*)?\d+\s*[a-z]?$/i, '').trim() || q;
+
+/** 1 for a name typed whole, which goes first among equal scores: «Rúa J» before «Rúa de Juana Ibarbourou». */
+const typedWhole = (name: string, q: string) => (normalizeText(name) === normalizeText(q) ? 1 : 0);
+
+/** Named points by relevance to a query, best first: the name's own match, else word by word. */
+function rankNamed(list: Named[], q: string): { place: Named; score: number }[] {
+  return list
+    .map((place) => ({ place, score: calculateRelevanceScore(place.name, '', '', q) || (matchesWordsEitherWay(place.name, q) ? 250 : 0) }))
+    .filter((c) => c.score > 0)
+    .sort((a, b) => b.score - a.score || typedWhole(b.place.name, q) - typedWhole(a.place.name, q));
+}
+
+/**
+ * The places and streets for a query, a place first on a tie: what the search rows offer beside
+ * the stops and landmarks. A street is tried with its number first, «Rúa Número 85» being a name.
+ */
+export function rankPlaces(q: string): { place: Named; score: number }[] {
+  const streets = rankNamed(STREETS, q);
+  return [...rankNamed(PLACES, q), ...(streets.length ? streets : rankNamed(STREETS, streetPart(q)))].sort((a, b) => b.score - a.score || typedWhole(b.place.name, q) - typedWhole(a.place.name, q));
+}
+
 /** Landmarks ranked by relevance to a query, best first. */
 export function rankLandmarks(q: string): { landmark: Landmark; score: number }[] {
   return LUGO_LANDMARKS.map((landmark) => ({ landmark, score: calculateRelevanceScore(landmark.name, '', '', q, landmark.zone) }))
@@ -143,16 +171,30 @@ export function resolveLocationQuery(query: string, userGps?: [number, number], 
     return atPlace(translations(lang).map.myLocation, userGps[0], userGps[1]);
   }
 
-  // An explicit code (e.g. "Cód. 605" or "101").
-  const code = q.match(/\b(?:cód\.?|cod\.?|#)?\s*(\d{3})\b/i)?.[1];
+  // An explicit code: the whole query ("101") or one marked as a code ("Cód. 605"). Not any
+  // number in a name: «Avda. Coruña 131», a house number, went to the pole whose code is 131.
+  const code = q.match(/^#?\s*(\d{3})$/)?.[1] ?? q.match(/(?:\bc[óo]d\.?|#)\s*(\d{3})\b/i)?.[1];
   const byCode = code && BUS_STOPS.find((s) => s.code === code);
   if (byCode) return atStop(byCode);
 
   const stops = rankStops(q);
-  if (stops.length > 0 && stops[0].score >= 300) return atStop(stops[0].stop);
+  const stopScore = stops[0]?.score ?? 0;
+  // A place OSM names or a street of the walking network, its number aside. One that matches
+  // better than any stop goes first: «A Corredoira» went to «Pintor Corredoira», 10 km away.
+  const named = rankPlaces(q)[0];
+  // So does a name typed whole over a stop that only begins like it: «Rúa J», in the As
+  // Gándaras estate, went to «Rúa de Juana Ibarbourou».
+  const whole = !!named && typedWhole(named.place.name, q) === 1;
+  const namedFirst = !!named && (named.score > stopScore || (whole && !!stops[0] && !beginsWithWords(stops[0].stop.name, q)));
+  if (!namedFirst && stopScore >= 300) return atStop(stops[0].stop);
 
   const landmarks = rankLandmarks(q);
-  if (landmarks.length > 0) return atPlace(landmarks[0].landmark.name, landmarks[0].landmark.lat, landmarks[0].landmark.lng);
+  const lm = landmarks[0]?.landmark;
+  const namedOverLandmark = namedFirst && (named.score > landmarks[0]?.score || (whole && !!lm && !beginsWithWords(lm.name, q)));
+  if (lm && !namedOverLandmark) return atPlace(lm.name, lm.lat, lm.lng);
+  // At least as good as any stop: «Cines Cristal», «Rúa do Teatro» and «Rúa San Marcos» found
+  // nothing, and most of the city's streets name no stop.
+  if (named && named.score >= stopScore) return atPlace(named.place.name, named.place.lat, named.place.lng);
   if (stops.length > 0) return atStop(stops[0].stop);
 
   // Last chance: match on words rather than prefix score — "Campus USC" against

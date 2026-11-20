@@ -23,7 +23,9 @@ import { REPO_URL } from '../src/project';
 import { LINE_PAGES, ROOT_HEAD, SITE_LANGS, SITE_PATHS, canonicalUrl, pageHead, pageHtml, robotsTxt, siteHeadTags, siteUrl, sitemapXml, structuredData, websiteData } from '../src/seo';
 import { CACHE_TTL_MS as ALERTS_CACHE_MS, MIN_OUTBOUND_INTERVAL_MS as ALERTS_MIN_OUTBOUND_MS, extractAlertsFromHtml, extractConcelloNotices } from '../src/services/alertSyncService';
 import { clockDriftFromTimetable, lugoOffsetByRule } from '../src/utils/clock';
-import { MAX_QUERY_LENGTH, calculateRelevanceScore, matchesQuery, normalizeText, withinEditDistance } from '../src/utils/searchUtils';
+import { MAX_QUERY_LENGTH, calculateRelevanceScore, matchesQuery, matchesWordsEitherWay, normalizeText, withinEditDistance } from '../src/utils/searchUtils';
+import PLACES from '../src/data/places.json';
+import STREETS from '../src/data/streets.json';
 import { LANGS, translations } from '../src/i18n';
 import type { RoutePlanResult, ServiceAlert, TripSegment } from '../src/types';
 import { tripProgress, rememberPassed, AT_STOP_RADIUS_M, MISSED_AFTER_MIN, BOARDING_SOON_MIN, boardingIsNow, startTrip, advanceTrip, tripPhase, currentLeg, legTimes, shouldAskIfMissed, confirmBoarded, missedBus, packTrip, unpackTrip } from '../src/utils/tripProgress';
@@ -814,6 +816,43 @@ ok('a place the app does not know resolves to nothing, not to a random stop', ()
     assert(resolveLocationQuery(q) === null, `"${q}" resolved to something`);
   }
   assert(planTrips('zzzzqqqq', 'HULA', { now: new Date(2026, 7, 20, 9, 30) }).length === 0, 'planned a trip from a place that does not exist');
+});
+
+ok('a street or a place OSM names is found, and lands on itself or on what carries its name', () => {
+  // Ruta found only stops and 28 places written by hand: «Rúa do Teatro», «Rúa San Marcos» and
+  // «Cines Cristal» found nothing, and «A Corredoira» went to «Pintor Corredoira», 10 km away.
+  const at = (q: string) => resolveLocationQuery(q);
+  const near = (q: string, name: string, list: { name: string; lat: number; lng: number }[]) => {
+    const want = list.find((p) => p.name === name)!;
+    const got = at(q);
+    return !!got && metresBetween(got.lat, got.lng, want.lat, want.lng) < 400;
+  };
+  for (const q of ['Rúa do Teatro', 'Rúa San Marcos', 'A Corredoira']) assert(near(q, q, STREETS), `«${q}» did not land on the street`);
+  assert(near('Rúa Río Neira 20', 'Rúa Río Neira', STREETS), 'a house number kept the street from being found');
+  // A house number that is also a pole's code is still a house number: «Avda. Coruña 131» went
+  // to pole 131, in Gándaras. The code alone, or marked as one, still goes to the pole.
+  assert(near('Rúa Río Neira 131', 'Rúa Río Neira', STREETS), 'a house number was read as a pole code');
+  const pole131 = BUS_STOPS.find((s) => s.code === '131')!;
+  for (const q of ['131', 'Cód. 131']) assert(at(q)?.name === pole131.name, `«${q}» did not go to pole 131`);
+  assert(near('Cines Cristal', 'Cine Cristal', PLACES), '«Cines Cristal» did not find the cinema');
+  // «Rúa J», in an industrial estate, went to «Rúa de Juana Ibarbourou»; «A Ponte» still goes to
+  // the neighbourhood's stop and not to a lane of that name in the country.
+  assert(near('Rúa J', 'Rúa J', STREETS), '«Rúa J» landed on a street that only begins like it');
+  assert(at('A Ponte')?.name === 'A Ponte (cruce Fluvial)', `«A Ponte» landed on ${at('A Ponte')?.name}`);
+  // Over the lot: each lands on itself, or on a stop or a place that carries its every word (a
+  // village on the stop named after it). Every street; every third place, for the time.
+  const lands = (p: { name: string; lat: number; lng: number }) => {
+    const got = at(p.name);
+    return !!got && (metresBetween(got.lat, got.lng, p.lat, p.lng) < 400 || matchesWordsEitherWay(got.name, p.name));
+  };
+  for (const s of STREETS) assert(lands(s), `the street «${s.name}» landed on ${at(s.name)?.name}`);
+  for (const p of PLACES.filter((_, i) => i % 3 === 0)) assert(lands(p), `the place «${p.name}» landed on ${at(p.name)?.name}`);
+  // And a name is one place: a bank's nine branches each carry their street.
+  const seen = new Set<string>();
+  for (const p of PLACES) {
+    assert(!seen.has(normalizeText(p.name)), `two places are called «${p.name}»`);
+    seen.add(normalizeText(p.name));
+  }
 });
 
 ok('a real corridor plans end to end', () => {

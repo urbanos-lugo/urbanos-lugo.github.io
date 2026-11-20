@@ -1,0 +1,11902 @@
+[
+ {
+  "name": "+Kideas",
+  "lat": 43.00391,
+  "lng": -7.55049
+ },
+ {
+  "name": "100,906 km",
+  "lat": 43.00024,
+  "lng": -7.5729
+ },
+ {
+  "name": "11 team sports",
+  "lat": 43.01485,
+  "lng": -7.55822
+ },
+ {
+  "name": "1987",
+  "lat": 43.02448,
+  "lng": -7.56667
+ },
+ {
+  "name": "5 raspado",
+  "lat": 43.02348,
+  "lng": -7.57198
+ },
+ {
+  "name": "6",
+  "lat": 42.99575,
+  "lng": -7.54942
+ },
+ {
+  "name": "60 Ráfagas",
+  "lat": 43.01251,
+  "lng": -7.55561
+ },
+ {
+  "name": "A Adega",
+  "lat": 43.01022,
+  "lng": -7.5586
+ },
+ {
+  "name": "A Airexe (Igrexa Muxa *)",
+  "lat": 43.04894,
+  "lng": -7.52643
+ },
+ {
+  "name": "A Airexe (N-VI (dte. Fábrica de Leche))",
+  "lat": 42.96618,
+  "lng": -7.51609
+ },
+ {
+  "name": "A Barbería",
+  "lat": 43.01134,
+  "lng": -7.56935
+ },
+ {
+  "name": "A Barreira",
+  "lat": 43.0365,
+  "lng": -7.5782
+ },
+ {
+  "name": "A Barrela",
+  "lat": 42.98081,
+  "lng": -7.57613
+ },
+ {
+  "name": "A beleza da auga",
+  "lat": 43.02552,
+  "lng": -7.56909
+ },
+ {
+  "name": "A Brea",
+  "lat": 43.05729,
+  "lng": -7.58679
+ },
+ {
+  "name": "A Calzada TapasGin",
+  "lat": 43.00319,
+  "lng": -7.56385
+ },
+ {
+  "name": "A Campiña",
+  "lat": 43.03384,
+  "lng": -7.53172
+ },
+ {
+  "name": "A Capilla",
+  "lat": 42.99357,
+  "lng": -7.55309
+ },
+ {
+  "name": "A Carballeira",
+  "lat": 42.99655,
+  "lng": -7.55163
+ },
+ {
+  "name": "A Casela",
+  "lat": 42.95687,
+  "lng": -7.48972
+ },
+ {
+  "name": "A Casilla",
+  "lat": 42.9656,
+  "lng": -7.49559
+ },
+ {
+  "name": "A Chanca",
+  "lat": 43.01366,
+  "lng": -7.54603
+ },
+ {
+  "name": "A Chave",
+  "lat": 43.01086,
+  "lng": -7.55245
+ },
+ {
+  "name": "A Cheda",
+  "lat": 43.00604,
+  "lng": -7.56851
+ },
+ {
+  "name": "A Chousiña",
+  "lat": 43.00302,
+  "lng": -7.48249
+ },
+ {
+  "name": "A Cova da Serpe",
+  "lat": 43.04746,
+  "lng": -7.5619
+ },
+ {
+  "name": "A Cova do Raposo",
+  "lat": 43.0108,
+  "lng": -7.55379
+ },
+ {
+  "name": "A Croa (Recimil)",
+  "lat": 42.97919,
+  "lng": -7.47549
+ },
+ {
+  "name": "A Croa (Rúa da Zarra (esq. Rúa Torna))",
+  "lat": 42.98543,
+  "lng": -7.55924
+ },
+ {
+  "name": "A Croa (Rúa Vilisqueiras (esq. Rúa Fisterra))",
+  "lat": 43.02932,
+  "lng": -7.55649
+ },
+ {
+  "name": "A despensa do Saa",
+  "lat": 43.00623,
+  "lng": -7.55515
+ },
+ {
+  "name": "A Devesa",
+  "lat": 43.03317,
+  "lng": -7.58626
+ },
+ {
+  "name": "A Ermida",
+  "lat": 43.04995,
+  "lng": -7.57986
+ },
+ {
+  "name": "A Estrada (Nadela (ent. Pista Tableros Hispanos))",
+  "lat": 42.95885,
+  "lng": -7.49826
+ },
+ {
+  "name": "A Estrada (Nadela (ent. Pista Tableros Hispanos)) 2",
+  "lat": 42.96382,
+  "lng": -7.48853
+ },
+ {
+  "name": "A Fábrica",
+  "lat": 43.01081,
+  "lng": -7.55906
+ },
+ {
+  "name": "A Galiña Azul",
+  "lat": 43.03416,
+  "lng": -7.56782
+ },
+ {
+  "name": "A Gándara",
+  "lat": 42.96098,
+  "lng": -7.49661
+ },
+ {
+  "name": "A growta",
+  "lat": 43.01096,
+  "lng": -7.57056
+ },
+ {
+  "name": "A Illa",
+  "lat": 42.98841,
+  "lng": -7.54244
+ },
+ {
+  "name": "A las puertas del gato",
+  "lat": 43.01643,
+  "lng": -7.56258
+ },
+ {
+  "name": "A Lavandeira",
+  "lat": 42.9625,
+  "lng": -7.51087
+ },
+ {
+  "name": "A Mera",
+  "lat": 43.0067,
+  "lng": -7.58348
+ },
+ {
+  "name": "A Milagrosa",
+  "lat": 43.01955,
+  "lng": -7.56498
+ },
+ {
+  "name": "A Nosa Terra",
+  "lat": 43.00849,
+  "lng": -7.54429
+ },
+ {
+  "name": "A Pena",
+  "lat": 42.96554,
+  "lng": -7.51224
+ },
+ {
+  "name": "A Pena da Mula",
+  "lat": 42.98942,
+  "lng": -7.56755
+ },
+ {
+  "name": "A Pipa da Lúa",
+  "lat": 43.01117,
+  "lng": -7.54878
+ },
+ {
+  "name": "A Piringalla",
+  "lat": 43.02375,
+  "lng": -7.57041
+ },
+ {
+  "name": "A polbeira",
+  "lat": 43.00952,
+  "lng": -7.55372
+ },
+ {
+  "name": "A Ponte",
+  "lat": 43.00082,
+  "lng": -7.56424
+ },
+ {
+  "name": "A Ponte Nova",
+  "lat": 43.06821,
+  "lng": -7.60105
+ },
+ {
+  "name": "A Ponte-San Lázaro",
+  "lat": 43.00082,
+  "lng": -7.56424
+ },
+ {
+  "name": "A Portela",
+  "lat": 43.04172,
+  "lng": -7.52912
+ },
+ {
+  "name": "Á República",
+  "lat": 43.01124,
+  "lng": -7.55872
+ },
+ {
+  "name": "A Rubiana",
+  "lat": 43.04443,
+  "lng": -7.59294
+ },
+ {
+  "name": "A Tasca",
+  "lat": 43.01016,
+  "lng": -7.55783
+ },
+ {
+  "name": "A Tenda",
+  "lat": 43.00011,
+  "lng": -7.55298
+ },
+ {
+  "name": "A Tolda",
+  "lat": 42.99379,
+  "lng": -7.55864
+ },
+ {
+  "name": "A Tolda de Castela",
+  "lat": 42.99074,
+  "lng": -7.53745
+ },
+ {
+  "name": "A Tolda de Milleirós",
+  "lat": 43.03959,
+  "lng": -7.58103
+ },
+ {
+  "name": "A Torna",
+  "lat": 43.05433,
+  "lng": -7.52478
+ },
+ {
+  "name": "A Travesa",
+  "lat": 42.95665,
+  "lng": -7.59017
+ },
+ {
+  "name": "A Vaqueira",
+  "lat": 43.04562,
+  "lng": -7.59014
+ },
+ {
+  "name": "A Viña",
+  "lat": 43.01353,
+  "lng": -7.58655
+ },
+ {
+  "name": "A Xarra",
+  "lat": 43.01088,
+  "lng": -7.55898
+ },
+ {
+  "name": "A Xesta",
+  "lat": 42.98955,
+  "lng": -7.59915
+ },
+ {
+  "name": "A.M.A",
+  "lat": 43.01048,
+  "lng": -7.55603
+ },
+ {
+  "name": "A&M Lucus Asesores",
+  "lat": 43.00908,
+  "lng": -7.56928
+ },
+ {
+  "name": "AB Fitness Lugo",
+  "lat": 43.01436,
+  "lng": -7.55388
+ },
+ {
+  "name": "AB Fitness Terra",
+  "lat": 43.04314,
+  "lng": -7.5611
+ },
+ {
+  "name": "Abanca (Adolfo Suárez (cr. Serra de Meira))",
+  "lat": 43.01646,
+  "lng": -7.5507
+ },
+ {
+  "name": "Abanca (Avda. Coruña 144)",
+  "lat": 43.01919,
+  "lng": -7.56201
+ },
+ {
+  "name": "Abanca (Avda. Coruña 369)",
+  "lat": 43.02592,
+  "lng": -7.56781
+ },
+ {
+  "name": "Abanca (Fonte dos Ranchos 29-30)",
+  "lat": 43.01114,
+  "lng": -7.56705
+ },
+ {
+  "name": "Abanca (Fontiñas 94)",
+  "lat": 43.01021,
+  "lng": -7.54875
+ },
+ {
+  "name": "Abanca (Rda. Fingoi 15)",
+  "lat": 42.99887,
+  "lng": -7.54903
+ },
+ {
+  "name": "Abanca (Rda. Muralla 25 (Arenal))",
+  "lat": 43.01136,
+  "lng": -7.555
+ },
+ {
+  "name": "Abanca (Rúa dos Artesáns)",
+  "lat": 43.04536,
+  "lng": -7.5695
+ },
+ {
+  "name": "Abanca (Rúa Vilalba 6)",
+  "lat": 43.00967,
+  "lng": -7.55736
+ },
+ {
+  "name": "Abella",
+  "lat": 43.0169,
+  "lng": -7.57051
+ },
+ {
+  "name": "AC Pádel Lugo",
+  "lat": 43.0474,
+  "lng": -7.55772
+ },
+ {
+  "name": "Academia J.M. Rivas",
+  "lat": 43.00592,
+  "lng": -7.55448
+ },
+ {
+  "name": "Academia Minerva 2",
+  "lat": 42.99543,
+  "lng": -7.54927
+ },
+ {
+  "name": "Academia Postal",
+  "lat": 43.01657,
+  "lng": -7.55757
+ },
+ {
+  "name": "Acasti",
+  "lat": 43.02148,
+  "lng": -7.56411
+ },
+ {
+  "name": "Acea de Olga",
+  "lat": 43.002,
+  "lng": -7.55929
+ },
+ {
+  "name": "Acebo",
+  "lat": 42.99786,
+  "lng": -7.54872
+ },
+ {
+  "name": "Aceña do Vilar",
+  "lat": 42.9707,
+  "lng": -7.52649
+ },
+ {
+  "name": "Achicoria",
+  "lat": 43.01148,
+  "lng": -7.56886
+ },
+ {
+  "name": "Aciva3",
+  "lat": 43.0195,
+  "lng": -7.56684
+ },
+ {
+  "name": "Acrópole",
+  "lat": 43.00804,
+  "lng": -7.55159
+ },
+ {
+  "name": "Actitudy",
+  "lat": 43.01028,
+  "lng": -7.55752
+ },
+ {
+  "name": "Acueduto Romano",
+  "lat": 43.0133,
+  "lng": -7.55722
+ },
+ {
+  "name": "Adios Tormenta",
+  "lat": 43.01039,
+  "lng": -7.55691
+ },
+ {
+  "name": "Administración de Lotería As Termas",
+  "lat": 43.03656,
+  "lng": -7.56931
+ },
+ {
+  "name": "Adrián Salgado",
+  "lat": 43.01639,
+  "lng": -7.56
+ },
+ {
+  "name": "Agra da Laxe",
+  "lat": 43.06449,
+  "lng": -7.55714
+ },
+ {
+  "name": "Agra da Roza",
+  "lat": 43.06388,
+  "lng": -7.58573
+ },
+ {
+  "name": "Agra de Bocelos",
+  "lat": 43.05506,
+  "lng": -7.56932
+ },
+ {
+  "name": "Agra de Castelo",
+  "lat": 43.01605,
+  "lng": -7.53643
+ },
+ {
+  "name": "Agra de Codeside",
+  "lat": 43.00681,
+  "lng": -7.52917
+ },
+ {
+  "name": "Agra de Galegos",
+  "lat": 43.02154,
+  "lng": -7.54507
+ },
+ {
+  "name": "Agra de Lamaboa",
+  "lat": 43.06191,
+  "lng": -7.58114
+ },
+ {
+  "name": "Agra de Luxilde",
+  "lat": 43.00348,
+  "lng": -7.50388
+ },
+ {
+  "name": "Agra de Pereiro",
+  "lat": 43.04587,
+  "lng": -7.52714
+ },
+ {
+  "name": "Agra de San Mamede",
+  "lat": 42.98012,
+  "lng": -7.50115
+ },
+ {
+  "name": "Agra de Viador",
+  "lat": 42.97824,
+  "lng": -7.49889
+ },
+ {
+  "name": "Agra de Vilar",
+  "lat": 42.99349,
+  "lng": -7.48983
+ },
+ {
+  "name": "Agra dos Castros",
+  "lat": 43.02368,
+  "lng": -7.57603
+ },
+ {
+  "name": "Agro Botica",
+  "lat": 42.99698,
+  "lng": -7.56627
+ },
+ {
+  "name": "Agro da Gándara",
+  "lat": 43.04665,
+  "lng": -7.60168
+ },
+ {
+  "name": "Agro da Ponte",
+  "lat": 42.997,
+  "lng": -7.56436
+ },
+ {
+  "name": "Agro da Torna",
+  "lat": 42.99607,
+  "lng": -7.55324
+ },
+ {
+  "name": "Agro de Cartemil",
+  "lat": 42.98606,
+  "lng": -7.49996
+ },
+ {
+  "name": "Agro de Fontela",
+  "lat": 43.06672,
+  "lng": -7.54553
+ },
+ {
+  "name": "Agro de Parapar",
+  "lat": 43.00077,
+  "lng": -7.51378
+ },
+ {
+  "name": "Agro de Ramil",
+  "lat": 43.05782,
+  "lng": -7.59564
+ },
+ {
+  "name": "Agro de Requeixos",
+  "lat": 42.96992,
+  "lng": -7.49612
+ },
+ {
+  "name": "Agro do Castiñeiro",
+  "lat": 43.01708,
+  "lng": -7.57046
+ },
+ {
+  "name": "Agro do Castro",
+  "lat": 43.00115,
+  "lng": -7.51799
+ },
+ {
+  "name": "Agro dos Cousos",
+  "lat": 43.0277,
+  "lng": -7.5305
+ },
+ {
+  "name": "Agrotecnia",
+  "lat": 43.02518,
+  "lng": -7.56677
+ },
+ {
+  "name": "Aguia Bimilenaria",
+  "lat": 43.00577,
+  "lng": -7.56085
+ },
+ {
+  "name": "Aguirre XXI correduría de seguros",
+  "lat": 43.00643,
+  "lng": -7.55569
+ },
+ {
+  "name": "Agulla e dedal, arranxos de roupa",
+  "lat": 43.02027,
+  "lng": -7.5592
+ },
+ {
+  "name": "Aires",
+  "lat": 43.02797,
+  "lng": -7.57182
+ },
+ {
+  "name": "Aixam",
+  "lat": 43.0229,
+  "lng": -7.56529
+ },
+ {
+  "name": "AKDmia Log i K",
+  "lat": 42.99772,
+  "lng": -7.54653
+ },
+ {
+  "name": "Alba Conde",
+  "lat": 43.01555,
+  "lng": -7.55932
+ },
+ {
+  "name": "Alba Pernas fotografía",
+  "lat": 43.01926,
+  "lng": -7.56648
+ },
+ {
+  "name": "Albeiros",
+  "lat": 43.02867,
+  "lng": -7.563
+ },
+ {
+  "name": "Albergue Casa da Chanca",
+  "lat": 43.01441,
+  "lng": -7.54663
+ },
+ {
+  "name": "Albergue de pelegrins Municipal de Lugo",
+  "lat": 43.01073,
+  "lng": -7.55389
+ },
+ {
+  "name": "Albergue Nazaret",
+  "lat": 43.00849,
+  "lng": -7.55981
+ },
+ {
+  "name": "Albertia Lugo",
+  "lat": 43.03915,
+  "lng": -7.56867
+ },
+ {
+  "name": "Alborada",
+  "lat": 43.00395,
+  "lng": -7.55072
+ },
+ {
+  "name": "Albroksa",
+  "lat": 43.02866,
+  "lng": -7.57224
+ },
+ {
+  "name": "Alcampo Lugo",
+  "lat": 43.03035,
+  "lng": -7.57092
+ },
+ {
+  "name": "Alcón viajes",
+  "lat": 43.00795,
+  "lng": -7.5566
+ },
+ {
+  "name": "Alecrín Café Bar",
+  "lat": 43.01834,
+  "lng": -7.56028
+ },
+ {
+  "name": "Algodón de azúcar",
+  "lat": 43.00968,
+  "lng": -7.55571
+ },
+ {
+  "name": "Alianz",
+  "lat": 43.02053,
+  "lng": -7.56477
+ },
+ {
+  "name": "Almacén de Curtidos Jañez",
+  "lat": 42.99474,
+  "lng": -7.57721
+ },
+ {
+  "name": "Almacenes Galán",
+  "lat": 43.01293,
+  "lng": -7.55862
+ },
+ {
+  "name": "Aloia",
+  "lat": 43.01739,
+  "lng": -7.56133
+ },
+ {
+  "name": "Alondra",
+  "lat": 43.02363,
+  "lng": -7.56897
+ },
+ {
+  "name": "Altafit",
+  "lat": 43.02158,
+  "lng": -7.56505
+ },
+ {
+  "name": "Alto do Castro",
+  "lat": 43.07211,
+  "lng": -7.5453
+ },
+ {
+  "name": "Aluma",
+  "lat": 42.99532,
+  "lng": -7.55471
+ },
+ {
+  "name": "Aluma Peluqueros",
+  "lat": 43.02069,
+  "lng": -7.53381
+ },
+ {
+  "name": "Aluminios Juan Ignacio",
+  "lat": 43.0238,
+  "lng": -7.56882
+ },
+ {
+  "name": "Aluminios Ozores",
+  "lat": 43.00889,
+  "lng": -7.5649
+ },
+ {
+  "name": "Aluminios Penado",
+  "lat": 43.02346,
+  "lng": -7.5698
+ },
+ {
+  "name": "Álvarez Real Gestoría - Asesoría",
+  "lat": 43.01613,
+  "lng": -7.55978
+ },
+ {
+  "name": "Álvaro Cunqueiro",
+  "lat": 43.00875,
+  "lng": -7.55686
+ },
+ {
+  "name": "Amazon Hub Locker - Florenciano",
+  "lat": 43.02551,
+  "lng": -7.56702
+ },
+ {
+  "name": "Ambigú Lounge Bar",
+  "lat": 43.01038,
+  "lng": -7.55984
+ },
+ {
+  "name": "American",
+  "lat": 43.01092,
+  "lng": -7.55901
+ },
+ {
+  "name": "Amiama",
+  "lat": 43.01909,
+  "lng": -7.56091
+ },
+ {
+  "name": "Ampelos",
+  "lat": 43.01749,
+  "lng": -7.56089
+ },
+ {
+  "name": "Amperis Products S.L.",
+  "lat": 43.03874,
+  "lng": -7.55016
+ },
+ {
+  "name": "AMSlab",
+  "lat": 43.04017,
+  "lng": -7.57312
+ },
+ {
+  "name": "Ana de Frutos del Rio",
+  "lat": 43.0169,
+  "lng": -7.572
+ },
+ {
+  "name": "Ana Latorre",
+  "lat": 43.01468,
+  "lng": -7.55927
+ },
+ {
+  "name": "Anagrama",
+  "lat": 43.00924,
+  "lng": -7.55751
+ },
+ {
+  "name": "Ancares",
+  "lat": 43.0152,
+  "lng": -7.55748
+ },
+ {
+  "name": "Áncora",
+  "lat": 43.0152,
+  "lng": -7.55737
+ },
+ {
+  "name": "Andión",
+  "lat": 43.02581,
+  "lng": -7.56973
+ },
+ {
+  "name": "Anfiteatro da Valgada",
+  "lat": 42.99255,
+  "lng": -7.54764
+ },
+ {
+  "name": "Ángel Castelló Vicedo",
+  "lat": 43.00789,
+  "lng": -7.55658
+ },
+ {
+  "name": "Anguieiro",
+  "lat": 42.983,
+  "lng": -7.52769
+ },
+ {
+  "name": "Antas",
+  "lat": 43.00999,
+  "lng": -7.55889
+ },
+ {
+  "name": "Antena (Alfonso X (Escuela Taller))",
+  "lat": 42.98336,
+  "lng": -7.55692
+ },
+ {
+  "name": "Antena (Alfonso X (Fac. Ciencias))",
+  "lat": 42.98549,
+  "lng": -7.54926
+ },
+ {
+  "name": "Antiguallas",
+  "lat": 43.02298,
+  "lng": -7.57143
+ },
+ {
+  "name": "Ánxel Fole",
+  "lat": 43.00995,
+  "lng": -7.55518
+ },
+ {
+  "name": "Anxo Sánchez, arquitecto",
+  "lat": 43.01084,
+  "lng": -7.55382
+ },
+ {
+  "name": "Aparcadoiro A Perla",
+  "lat": 43.02166,
+  "lng": -7.53696
+ },
+ {
+  "name": "Aparcadoiro Ánxel Fole",
+  "lat": 43.01209,
+  "lng": -7.55472
+ },
+ {
+  "name": "Aparcadoiro do Antigo Seminario",
+  "lat": 43.00805,
+  "lng": -7.55587
+ },
+ {
+  "name": "Aparcadoiro do Centro Integral de Saúde de Lugo",
+  "lat": 43.01155,
+  "lng": -7.57057
+ },
+ {
+  "name": "Aparcadoiro Público da Residencia",
+  "lat": 43.01234,
+  "lng": -7.57322
+ },
+ {
+  "name": "Aparcadoiro público do Complexo de Santa María",
+  "lat": 43.01101,
+  "lng": -7.56296
+ },
+ {
+  "name": "Aparcadoiro Vía Romana",
+  "lat": 43.01114,
+  "lng": -7.56156
+ },
+ {
+  "name": "Apersa Lugo",
+  "lat": 43.02811,
+  "lng": -7.56914
+ },
+ {
+  "name": "APeTéCeMe",
+  "lat": 43.01985,
+  "lng": -7.53346
+ },
+ {
+  "name": "Apex (Avda. Coruña 144)",
+  "lat": 43.01868,
+  "lng": -7.56159
+ },
+ {
+  "name": "Apex (Fonte dos Ranchos 29-30)",
+  "lat": 43.01238,
+  "lng": -7.56671
+ },
+ {
+  "name": "Aporta mobles",
+  "lat": 43.00336,
+  "lng": -7.55033
+ },
+ {
+  "name": "Apoyo Legal Bernedo",
+  "lat": 43.0146,
+  "lng": -7.55732
+ },
+ {
+  "name": "APP Informática (Avda. Coruña 281)",
+  "lat": 43.02364,
+  "lng": -7.56552
+ },
+ {
+  "name": "App Informática (Xosé Castiñeira (Froiz))",
+  "lat": 42.99719,
+  "lng": -7.55011
+ },
+ {
+  "name": "Aqualife",
+  "lat": 42.99247,
+  "lng": -7.57479
+ },
+ {
+  "name": "Arco de Triunfo",
+  "lat": 43.0093,
+  "lng": -7.55692
+ },
+ {
+  "name": "Arco Iris (Rda. Muralla 95 (S. Fernando))",
+  "lat": 43.0148,
+  "lng": -7.55892
+ },
+ {
+  "name": "Arco Iris (San Roque 72 (Rampa Claudio López))",
+  "lat": 43.00669,
+  "lng": -7.55141
+ },
+ {
+  "name": "Arcos",
+  "lat": 43.02745,
+  "lng": -7.569
+ },
+ {
+  "name": "Área de Autocaravanas da Milagrosa",
+  "lat": 43.02438,
+  "lng": -7.55989
+ },
+ {
+  "name": "Área de Autocaravanas de Lugo",
+  "lat": 43.00437,
+  "lng": -7.56159
+ },
+ {
+  "name": "Arenal (As Termas)",
+  "lat": 43.03674,
+  "lng": -7.56924
+ },
+ {
+  "name": "Arenal (Rda. Muralla 25 (Arenal))",
+  "lat": 43.01082,
+  "lng": -7.55283
+ },
+ {
+  "name": "Aresa",
+  "lat": 42.99418,
+  "lng": -7.54196
+ },
+ {
+  "name": "Argallo",
+  "lat": 43.00097,
+  "lng": -7.54612
+ },
+ {
+  "name": "Argerei Castro decoración",
+  "lat": 43.01301,
+  "lng": -7.56276
+ },
+ {
+  "name": "Arias López",
+  "lat": 43.0064,
+  "lng": -7.55134
+ },
+ {
+  "name": "Arias Nadela",
+  "lat": 42.99011,
+  "lng": -7.54384
+ },
+ {
+  "name": "Aromas",
+  "lat": 43.00653,
+  "lng": -7.55469
+ },
+ {
+  "name": "Arquivo Histórico Provincial de Lugo",
+  "lat": 43.00476,
+  "lng": -7.55321
+ },
+ {
+  "name": "Arquivo Xeral da Deputación de Lugo",
+  "lat": 42.98815,
+  "lng": -7.53617
+ },
+ {
+  "name": "Arrocería os Cachivaches",
+  "lat": 42.9935,
+  "lng": -7.55263
+ },
+ {
+  "name": "As Baradas",
+  "lat": 42.9662,
+  "lng": -7.50206
+ },
+ {
+  "name": "As Casas Novas",
+  "lat": 42.98699,
+  "lng": -7.57117
+ },
+ {
+  "name": "As Cruces",
+  "lat": 42.99814,
+  "lng": -7.49222
+ },
+ {
+  "name": "As Gándaras",
+  "lat": 43.02707,
+  "lng": -7.54995
+ },
+ {
+  "name": "As Illas",
+  "lat": 43.00481,
+  "lng": -7.58155
+ },
+ {
+  "name": "As Lendas",
+  "lat": 43.00476,
+  "lng": -7.54689
+ },
+ {
+  "name": "As Machadas",
+  "lat": 43.0675,
+  "lng": -7.59947
+ },
+ {
+  "name": "As Medorras 1",
+  "lat": 43.05389,
+  "lng": -7.60663
+ },
+ {
+  "name": "As Medorras 2",
+  "lat": 43.05351,
+  "lng": -7.60551
+ },
+ {
+  "name": "As Medorras 3",
+  "lat": 43.05318,
+  "lng": -7.60508
+ },
+ {
+  "name": "As Mercedes",
+  "lat": 42.99887,
+  "lng": -7.54586
+ },
+ {
+  "name": "As Miñas Beauty Salón",
+  "lat": 43.00267,
+  "lng": -7.55018
+ },
+ {
+  "name": "As Pedreiras",
+  "lat": 42.99341,
+  "lng": -7.54108
+ },
+ {
+  "name": "As Pumaregas",
+  "lat": 43.07095,
+  "lng": -7.59723
+ },
+ {
+  "name": "As Regas (Igrexa Muxa *)",
+  "lat": 43.05695,
+  "lng": -7.52885
+ },
+ {
+  "name": "As Regas (N-640 (antes rtda. Rda. Norte))",
+  "lat": 43.03383,
+  "lng": -7.53677
+ },
+ {
+  "name": "As Rozas",
+  "lat": 43.04373,
+  "lng": -7.59875
+ },
+ {
+  "name": "As Saamasas",
+  "lat": 43.0085,
+  "lng": -7.57801
+ },
+ {
+  "name": "As Varadas",
+  "lat": 42.98847,
+  "lng": -7.51942
+ },
+ {
+  "name": "Ascensores Enor",
+  "lat": 42.99876,
+  "lng": -7.54894
+ },
+ {
+  "name": "Ascensores Schindler",
+  "lat": 42.99621,
+  "lng": -7.54966
+ },
+ {
+  "name": "Asesoría Carlos Martinez",
+  "lat": 43.0291,
+  "lng": -7.57089
+ },
+ {
+  "name": "Asociación Cultural As-Salam de Lugo",
+  "lat": 43.0232,
+  "lng": -7.56846
+ },
+ {
+  "name": "Asociación de Padres o Tutores de Personas con Discapacidad Intelectual de Lugo",
+  "lat": 43.00583,
+  "lng": -7.54999
+ },
+ {
+  "name": "Asociación de Veciños Gatos Roxos",
+  "lat": 43.02446,
+  "lng": -7.55214
+ },
+ {
+  "name": "Asociación de Veciños, Cultural e Deportiva de San Xoán de Tirimol",
+  "lat": 43.05616,
+  "lng": -7.58831
+ },
+ {
+  "name": "Asociación Radioaficionados",
+  "lat": 43.0259,
+  "lng": -7.5607
+ },
+ {
+  "name": "Astrar",
+  "lat": 43.0307,
+  "lng": -7.52477
+ },
+ {
+  "name": "ATC Transrapido S.L.",
+  "lat": 43.04593,
+  "lng": -7.57064
+ },
+ {
+  "name": "ATL asesores",
+  "lat": 43.00671,
+  "lng": -7.55141
+ },
+ {
+  "name": "Atlántico abogados",
+  "lat": 43.01102,
+  "lng": -7.57093
+ },
+ {
+  "name": "Atrium",
+  "lat": 43.01349,
+  "lng": -7.55075
+ },
+ {
+  "name": "Audi Center Lugo",
+  "lat": 43.04195,
+  "lng": -7.55297
+ },
+ {
+  "name": "Audiencia Provincial de Lugo",
+  "lat": 43.00628,
+  "lng": -7.55806
+ },
+ {
+  "name": "Audinor",
+  "lat": 43.01888,
+  "lng": -7.56203
+ },
+ {
+  "name": "Auditorio Fuxan Os Ventos",
+  "lat": 42.99997,
+  "lng": -7.55759
+ },
+ {
+  "name": "Auditorio Municipal Gustavo Freire",
+  "lat": 43.02296,
+  "lng": -7.5615
+ },
+ {
+  "name": "Auga & Xabón",
+  "lat": 43.02881,
+  "lng": -7.57155
+ },
+ {
+  "name": "Augas de Galicia - Servizo Territorial de Lugo",
+  "lat": 43.0144,
+  "lng": -7.55621
+ },
+ {
+  "name": "Aula Produtos Lácteos",
+  "lat": 42.99874,
+  "lng": -7.54144
+ },
+ {
+  "name": "Aulario",
+  "lat": 42.99383,
+  "lng": -7.54914
+ },
+ {
+  "name": "Aulario I",
+  "lat": 42.99418,
+  "lng": -7.54542
+ },
+ {
+  "name": "Aulario II",
+  "lat": 42.99381,
+  "lng": -7.5454
+ },
+ {
+  "name": "Aulario III",
+  "lat": 42.99335,
+  "lng": -7.54536
+ },
+ {
+  "name": "Aulario IV",
+  "lat": 42.99299,
+  "lng": -7.54532
+ },
+ {
+  "name": "Auto detail",
+  "lat": 43.0193,
+  "lng": -7.56656
+ },
+ {
+  "name": "Auto Repuesto Palacios",
+  "lat": 43.04318,
+  "lng": -7.55908
+ },
+ {
+  "name": "Auto repuestos Palacios",
+  "lat": 43.03798,
+  "lng": -7.57367
+ },
+ {
+  "name": "Autocenter",
+  "lat": 43.04072,
+  "lng": -7.55338
+ },
+ {
+  "name": "Autoescola A Ulloa",
+  "lat": 43.01114,
+  "lng": -7.56459
+ },
+ {
+  "name": "Autoescola Lucus",
+  "lat": 43.00956,
+  "lng": -7.55328
+ },
+ {
+  "name": "Autoescuela Avenida",
+  "lat": 43.01735,
+  "lng": -7.56053
+ },
+ {
+  "name": "Autoescuela Clik",
+  "lat": 42.99881,
+  "lng": -7.54845
+ },
+ {
+  "name": "Autoescuela San Froilán",
+  "lat": 43.0079,
+  "lng": -7.55691
+ },
+ {
+  "name": "Autoescuela SOL",
+  "lat": 43.02855,
+  "lng": -7.57166
+ },
+ {
+  "name": "Autolavado Repsol",
+  "lat": 43.02566,
+  "lng": -7.56701
+ },
+ {
+  "name": "Automecánica Crende, C.B.",
+  "lat": 42.99619,
+  "lng": -7.56741
+ },
+ {
+  "name": "Autos Bernaldo",
+  "lat": 43.02471,
+  "lng": -7.5664
+ },
+ {
+  "name": "Avalon",
+  "lat": 43.02219,
+  "lng": -7.5708
+ },
+ {
+  "name": "Ave Cesar",
+  "lat": 43.01052,
+  "lng": -7.55883
+ },
+ {
+  "name": "Avogadas",
+  "lat": 42.9965,
+  "lng": -7.54862
+ },
+ {
+  "name": "Axa",
+  "lat": 43.01181,
+  "lng": -7.5495
+ },
+ {
+  "name": "Aylen",
+  "lat": 43.02578,
+  "lng": -7.57012
+ },
+ {
+  "name": "B travel",
+  "lat": 43.01593,
+  "lng": -7.5594
+ },
+ {
+  "name": "Babel café lounge bar",
+  "lat": 43.01956,
+  "lng": -7.56306
+ },
+ {
+  "name": "Bagueixos",
+  "lat": 43.05071,
+  "lng": -7.58453
+ },
+ {
+  "name": "Bambán",
+  "lat": 42.99611,
+  "lng": -7.55028
+ },
+ {
+  "name": "Bambola",
+  "lat": 43.02578,
+  "lng": -7.56815
+ },
+ {
+  "name": "Bambudha Lugo",
+  "lat": 43.00861,
+  "lng": -7.55881
+ },
+ {
+  "name": "Banco Santander (Avda. Coruña 131)",
+  "lat": 43.02023,
+  "lng": -7.56313
+ },
+ {
+  "name": "Banco Santander (Bolaño Ribadeneira 1)",
+  "lat": 43.01122,
+  "lng": -7.55709
+ },
+ {
+  "name": "Banco Santander (Prof. Carvalho Calero (Col. Sta. María))",
+  "lat": 42.9942,
+  "lng": -7.54728
+ },
+ {
+  "name": "Banco Santander (Ramón Ferreiro 31)",
+  "lat": 43.00396,
+  "lng": -7.55204
+ },
+ {
+  "name": "Bar a potiña",
+  "lat": 43.02175,
+  "lng": -7.56204
+ },
+ {
+  "name": "Bar Anda",
+  "lat": 43.01013,
+  "lng": -7.55795
+ },
+ {
+  "name": "Bar Azcárraga",
+  "lat": 43.01618,
+  "lng": -7.55045
+ },
+ {
+  "name": "Bar celta",
+  "lat": 43.00962,
+  "lng": -7.55514
+ },
+ {
+  "name": "Bar Cotá",
+  "lat": 43.008,
+  "lng": -7.5583
+ },
+ {
+  "name": "Bar de las Islas",
+  "lat": 43.00353,
+  "lng": -7.57668
+ },
+ {
+  "name": "Bar el nido",
+  "lat": 43.02076,
+  "lng": -7.56784
+ },
+ {
+  "name": "Bar Fonte dos Ranchos",
+  "lat": 43.01262,
+  "lng": -7.56622
+ },
+ {
+  "name": "Bar Gasalla",
+  "lat": 43.01295,
+  "lng": -7.56303
+ },
+ {
+  "name": "Bar Matias",
+  "lat": 43.01498,
+  "lng": -7.55727
+ },
+ {
+  "name": "Bar Mendoza",
+  "lat": 43.02562,
+  "lng": -7.56888
+ },
+ {
+  "name": "Bar Monopoly",
+  "lat": 43.01166,
+  "lng": -7.55953
+ },
+ {
+  "name": "Bar O Pote",
+  "lat": 43.00994,
+  "lng": -7.55918
+ },
+ {
+  "name": "Bar Omega",
+  "lat": 43.0092,
+  "lng": -7.57101
+ },
+ {
+  "name": "Bar Piringalla",
+  "lat": 43.02085,
+  "lng": -7.56773
+ },
+ {
+  "name": "Bar pulpería Catro Camiños",
+  "lat": 43.01269,
+  "lng": -7.56611
+ },
+ {
+  "name": "Bar San Roque",
+  "lat": 43.0084,
+  "lng": -7.55157
+ },
+ {
+  "name": "Bar Silvi",
+  "lat": 43.01624,
+  "lng": -7.563
+ },
+ {
+  "name": "Barabau",
+  "lat": 43.01615,
+  "lng": -7.56698
+ },
+ {
+  "name": "Barbaín",
+  "lat": 43.0037,
+  "lng": -7.51763
+ },
+ {
+  "name": "Barbería Antonio",
+  "lat": 43.00358,
+  "lng": -7.55064
+ },
+ {
+  "name": "Barreiro",
+  "lat": 42.99233,
+  "lng": -7.53968
+ },
+ {
+  "name": "Barxa",
+  "lat": 42.9798,
+  "lng": -7.50752
+ },
+ {
+  "name": "Basic",
+  "lat": 43.05081,
+  "lng": -7.56543
+ },
+ {
+  "name": "Basket",
+  "lat": 43.0058,
+  "lng": -7.55506
+ },
+ {
+  "name": "Bazar Asia",
+  "lat": 43.01914,
+  "lng": -7.56197
+ },
+ {
+  "name": "Bazar Avenida",
+  "lat": 43.01543,
+  "lng": -7.559
+ },
+ {
+  "name": "Bazar Ferretería Gómez",
+  "lat": 43.01497,
+  "lng": -7.55433
+ },
+ {
+  "name": "BB+",
+  "lat": 43.00631,
+  "lng": -7.55504
+ },
+ {
+  "name": "BBVA (Avda. Coruña 131)",
+  "lat": 43.01934,
+  "lng": -7.56241
+ },
+ {
+  "name": "BBVA (Avda. Madrid (Cruz Vermella))",
+  "lat": 43.00106,
+  "lng": -7.54898
+ },
+ {
+  "name": "BBVA (Bolaño Ribadeneira 1)",
+  "lat": 43.01309,
+  "lng": -7.55734
+ },
+ {
+  "name": "BBVA (Rda. Muralla 25 (Arenal))",
+  "lat": 43.01035,
+  "lng": -7.55598
+ },
+ {
+  "name": "Beach Solpor Humanidades - Lugo",
+  "lat": 42.99273,
+  "lng": -7.54249
+ },
+ {
+  "name": "Beauty nails salon",
+  "lat": 43.02049,
+  "lng": -7.56307
+ },
+ {
+  "name": "Bebé ratón",
+  "lat": 43.01986,
+  "lng": -7.56282
+ },
+ {
+  "name": "Beep",
+  "lat": 43.0129,
+  "lng": -7.55107
+ },
+ {
+  "name": "Beep informática",
+  "lat": 43.00329,
+  "lng": -7.54579
+ },
+ {
+  "name": "Begasa",
+  "lat": 43.03634,
+  "lng": -7.55538
+ },
+ {
+  "name": "Bela Vista",
+  "lat": 42.98524,
+  "lng": -7.59
+ },
+ {
+  "name": "Belén Díaz Fisioterapia",
+  "lat": 42.99708,
+  "lng": -7.54595
+ },
+ {
+  "name": "Bello sin Vello",
+  "lat": 42.99621,
+  "lng": -7.5489
+ },
+ {
+  "name": "Belros",
+  "lat": 43.03707,
+  "lng": -7.5698
+ },
+ {
+  "name": "BeOne Fitness & Sport",
+  "lat": 43.00169,
+  "lng": -7.55223
+ },
+ {
+  "name": "Bershka",
+  "lat": 43.03742,
+  "lng": -7.56962
+ },
+ {
+  "name": "Bertini estilistas",
+  "lat": 43.01568,
+  "lng": -7.56152
+ },
+ {
+  "name": "Biblioteca da Milagrosa",
+  "lat": 43.0227,
+  "lng": -7.56234
+ },
+ {
+  "name": "Biblioteca do Centro Asociado da UNED de Lugo",
+  "lat": 42.98837,
+  "lng": -7.53614
+ },
+ {
+  "name": "Biblioteca Intercentros",
+  "lat": 42.99234,
+  "lng": -7.54545
+ },
+ {
+  "name": "Biblioteca Pública",
+  "lat": 43.00451,
+  "lng": -7.55371
+ },
+ {
+  "name": "Biblos",
+  "lat": 43.00623,
+  "lng": -7.5556
+ },
+ {
+  "name": "Bici Paixón",
+  "lat": 43.00903,
+  "lng": -7.57011
+ },
+ {
+  "name": "Bicicletas Carreira",
+  "lat": 43.01641,
+  "lng": -7.55632
+ },
+ {
+  "name": "Bicicletas Taboada",
+  "lat": 43.00026,
+  "lng": -7.54822
+ },
+ {
+  "name": "Bico de Xeado",
+  "lat": 43.01051,
+  "lng": -7.5543
+ },
+ {
+  "name": "Bidafarma Lugo",
+  "lat": 43.03207,
+  "lng": -7.53344
+ },
+ {
+  "name": "Biga Romana",
+  "lat": 43.00956,
+  "lng": -7.557
+ },
+ {
+  "name": "Bimba y Lola",
+  "lat": 43.0117,
+  "lng": -7.55654
+ },
+ {
+  "name": "Biosleep",
+  "lat": 43.01496,
+  "lng": -7.55853
+ },
+ {
+  "name": "Bloc",
+  "lat": 43.02008,
+  "lng": -7.56525
+ },
+ {
+  "name": "Blue balloon",
+  "lat": 43.02062,
+  "lng": -7.56342
+ },
+ {
+  "name": "BMW Lugauto",
+  "lat": 42.995,
+  "lng": -7.58681
+ },
+ {
+  "name": "Bocado",
+  "lat": 43.01452,
+  "lng": -7.55709
+ },
+ {
+  "name": "Bocalino",
+  "lat": 43.0025,
+  "lng": -7.54997
+ },
+ {
+  "name": "Bodega de María",
+  "lat": 42.97087,
+  "lng": -7.50652
+ },
+ {
+  "name": "Bodega Los Infantes",
+  "lat": 42.99457,
+  "lng": -7.55423
+ },
+ {
+  "name": "Bodegas do San Vicente",
+  "lat": 43.01043,
+  "lng": -7.55876
+ },
+ {
+  "name": "Bodegón A Fouce",
+  "lat": 43.00947,
+  "lng": -7.55119
+ },
+ {
+  "name": "Boletus",
+  "lat": 43.02908,
+  "lng": -7.57073
+ },
+ {
+  "name": "Bosende de Abaixo",
+  "lat": 42.99633,
+  "lng": -7.52552
+ },
+ {
+  "name": "Bosende de Arriba",
+  "lat": 42.99408,
+  "lng": -7.526
+ },
+ {
+  "name": "Botafumeiro",
+  "lat": 43.01368,
+  "lng": -7.55095
+ },
+ {
+  "name": "Bóveda (Igrexa de Bóveda)",
+  "lat": 42.99605,
+  "lng": -7.49592
+ },
+ {
+  "name": "Bóveda (Igrexa de Bóveda) 2",
+  "lat": 42.99822,
+  "lng": -7.49499
+ },
+ {
+  "name": "BP (HULA (Ent. Personal))",
+  "lat": 43.02082,
+  "lng": -7.53692
+ },
+ {
+  "name": "BP (Pista Muxa (Gasolineira BP))",
+  "lat": 43.03754,
+  "lng": -7.52774
+ },
+ {
+  "name": "Brais carnicería",
+  "lat": 43.01227,
+  "lng": -7.55122
+ },
+ {
+  "name": "Breogán Asesores",
+  "lat": 43.01405,
+  "lng": -7.55519
+ },
+ {
+  "name": "Breogán car",
+  "lat": 43.03537,
+  "lng": -7.57476
+ },
+ {
+  "name": "Breogán Motor",
+  "lat": 43.03569,
+  "lng": -7.57461
+ },
+ {
+  "name": "Breogán Ocasión",
+  "lat": 43.03547,
+  "lng": -7.57482
+ },
+ {
+  "name": "Brétemas café",
+  "lat": 43.00038,
+  "lng": -7.56891
+ },
+ {
+  "name": "BricoKit A Xesta",
+  "lat": 43.00295,
+  "lng": -7.54745
+ },
+ {
+  "name": "Bríos",
+  "lat": 43.00312,
+  "lng": -7.54886
+ },
+ {
+  "name": "Britania english school",
+  "lat": 43.02253,
+  "lng": -7.56464
+ },
+ {
+  "name": "Brooklyn pizzería",
+  "lat": 43.00896,
+  "lng": -7.552
+ },
+ {
+  "name": "Brunch Coffee",
+  "lat": 42.99819,
+  "lng": -7.54695
+ },
+ {
+  "name": "Bubela Artesá",
+  "lat": 43.00218,
+  "lng": -7.5456
+ },
+ {
+  "name": "Bufete Piroscia & Asociados",
+  "lat": 43.00831,
+  "lng": -7.5515
+ },
+ {
+  "name": "Bullcars",
+  "lat": 43.02253,
+  "lng": -7.56084
+ },
+ {
+  "name": "Buratai",
+  "lat": 42.99787,
+  "lng": -7.50959
+ },
+ {
+  "name": "Burger King (As Termas)",
+  "lat": 43.03718,
+  "lng": -7.56847
+ },
+ {
+  "name": "Burger King (Avda. Madrid 169-171)",
+  "lat": 42.99571,
+  "lng": -7.54198
+ },
+ {
+  "name": "Burozos",
+  "lat": 43.0213,
+  "lng": -7.55169
+ },
+ {
+  "name": "Busto de Xoán Montes",
+  "lat": 43.00971,
+  "lng": -7.55634
+ },
+ {
+  "name": "ByB",
+  "lat": 43.04089,
+  "lng": -7.55334
+ },
+ {
+  "name": "C N G",
+  "lat": 42.99723,
+  "lng": -7.54618
+ },
+ {
+  "name": "C. I. F. P. Politécnico de Lugo",
+  "lat": 43.00468,
+  "lng": -7.55823
+ },
+ {
+  "name": "C. Jaime do Pazo, S.L.",
+  "lat": 43.01166,
+  "lng": -7.54907
+ },
+ {
+  "name": "Cabo de Vila",
+  "lat": 42.97765,
+  "lng": -7.53749
+ },
+ {
+  "name": "Cacabelos",
+  "lat": 43.06489,
+  "lng": -7.54734
+ },
+ {
+  "name": "Cactus",
+  "lat": 42.99328,
+  "lng": -7.54623
+ },
+ {
+  "name": "Caetano Fórmula",
+  "lat": 43.04162,
+  "lng": -7.57197
+ },
+ {
+  "name": "Café - Bar Brisay",
+  "lat": 43.02273,
+  "lng": -7.56515
+ },
+ {
+  "name": "Café - Bar Maica",
+  "lat": 43.02325,
+  "lng": -7.56968
+ },
+ {
+  "name": "Café - Bar O Ventorro 2",
+  "lat": 43.0172,
+  "lng": -7.54962
+ },
+ {
+  "name": "Café Amsterdam",
+  "lat": 43.0169,
+  "lng": -7.55791
+ },
+ {
+  "name": "Café bar A miña casa",
+  "lat": 43.02071,
+  "lng": -7.56791
+ },
+ {
+  "name": "Café bar A Terminal",
+  "lat": 43.04498,
+  "lng": -7.56092
+ },
+ {
+  "name": "Café Bar Atlántico",
+  "lat": 43.02541,
+  "lng": -7.56729
+ },
+ {
+  "name": "Café bar Berna",
+  "lat": 43.01073,
+  "lng": -7.55892
+ },
+ {
+  "name": "Café bar Darío",
+  "lat": 43.02498,
+  "lng": -7.56661
+ },
+ {
+  "name": "Café Bar Dolmens",
+  "lat": 43.02686,
+  "lng": -7.56815
+ },
+ {
+  "name": "Café Bar el viajero feliz",
+  "lat": 43.017,
+  "lng": -7.56327
+ },
+ {
+  "name": "Café bar Horizontal",
+  "lat": 43.02906,
+  "lng": -7.57049
+ },
+ {
+  "name": "Café Bar Luna",
+  "lat": 43.02155,
+  "lng": -7.56964
+ },
+ {
+  "name": "Café Bar Méndez",
+  "lat": 43.01291,
+  "lng": -7.52263
+ },
+ {
+  "name": "Café Bar o Cruce",
+  "lat": 43.03213,
+  "lng": -7.54938
+ },
+ {
+  "name": "Café Bar O´Restrelo",
+  "lat": 43.00976,
+  "lng": -7.56944
+ },
+ {
+  "name": "Café Bar Raíña",
+  "lat": 43.01106,
+  "lng": -7.5561
+ },
+ {
+  "name": "Café Bar Saxo",
+  "lat": 43.01937,
+  "lng": -7.56642
+ },
+ {
+  "name": "Café bar Val do Neira",
+  "lat": 43.00408,
+  "lng": -7.54608
+ },
+ {
+  "name": "Café Bar Xarela",
+  "lat": 43.00837,
+  "lng": -7.55219
+ },
+ {
+  "name": "Café del Centro",
+  "lat": 43.01003,
+  "lng": -7.5568
+ },
+ {
+  "name": "Café goya",
+  "lat": 43.01773,
+  "lng": -7.56106
+ },
+ {
+  "name": "Café-Bar 5 Sentidos",
+  "lat": 43.01709,
+  "lng": -7.56458
+ },
+ {
+  "name": "Café-bar A' Costa",
+  "lat": 43.01791,
+  "lng": -7.55419
+ },
+ {
+  "name": "Cafe-bar as Tapinas de 23",
+  "lat": 43.01811,
+  "lng": -7.56289
+ },
+ {
+  "name": "Café-Bar El Pibe, papas fritas",
+  "lat": 43.01807,
+  "lng": -7.56296
+ },
+ {
+  "name": "Café-bar Lalín",
+  "lat": 43.01203,
+  "lng": -7.56733
+ },
+ {
+  "name": "Café-Bar Os Paxariños",
+  "lat": 43.00983,
+  "lng": -7.54978
+ },
+ {
+  "name": "Café-Bar Villarente",
+  "lat": 43.02046,
+  "lng": -7.56492
+ },
+ {
+  "name": "Cafetaría Plaza Mayor",
+  "lat": 43.00912,
+  "lng": -7.55707
+ },
+ {
+  "name": "Cafetería - Bar - Cervecería A Xuntanza",
+  "lat": 43.02627,
+  "lng": -7.56307
+ },
+ {
+  "name": "Cafetería - Panadería Montirón",
+  "lat": 43.03651,
+  "lng": -7.57495
+ },
+ {
+  "name": "Cafetería Abrente",
+  "lat": 43.01153,
+  "lng": -7.55086
+ },
+ {
+  "name": "Cafetería Adarve",
+  "lat": 43.01443,
+  "lng": -7.55686
+ },
+ {
+  "name": "Cafetería Amadeus",
+  "lat": 43.01036,
+  "lng": -7.56882
+ },
+ {
+  "name": "Cafetería as Pedreiras",
+  "lat": 42.99142,
+  "lng": -7.54383
+ },
+ {
+  "name": "Cafetería brisas",
+  "lat": 43.00773,
+  "lng": -7.55635
+ },
+ {
+  "name": "Cafetería da Escola Politécnica Superior",
+  "lat": 42.9939,
+  "lng": -7.54389
+ },
+ {
+  "name": "Cafetería da Facultade de ADE",
+  "lat": 42.99154,
+  "lng": -7.54881
+ },
+ {
+  "name": "Cafetería da Facultade de Veterinaria",
+  "lat": 42.99414,
+  "lng": -7.54728
+ },
+ {
+  "name": "Cafetería Fados",
+  "lat": 42.99646,
+  "lng": -7.55486
+ },
+ {
+  "name": "Cafetería Irmandiños",
+  "lat": 43.01504,
+  "lng": -7.55277
+ },
+ {
+  "name": "Cafetería Jade",
+  "lat": 43.0046,
+  "lng": -7.55068
+ },
+ {
+  "name": "Cafetería Kenedy",
+  "lat": 43.01438,
+  "lng": -7.5582
+ },
+ {
+  "name": "Cafetería Los Enebros",
+  "lat": 43.02872,
+  "lng": -7.56919
+ },
+ {
+  "name": "Cafetería Metropol",
+  "lat": 43.0148,
+  "lng": -7.55372
+ },
+ {
+  "name": "Cafeteria Monterrey",
+  "lat": 42.99436,
+  "lng": -7.55397
+ },
+ {
+  "name": "Cafetería París",
+  "lat": 43.00382,
+  "lng": -7.55069
+ },
+ {
+  "name": "Cafetería restaurante As Gándaras",
+  "lat": 43.03945,
+  "lng": -7.5537
+ },
+ {
+  "name": "Cafetería Río sil",
+  "lat": 43.01969,
+  "lng": -7.55827
+ },
+ {
+  "name": "Cafetería Rosalía de Castro",
+  "lat": 43.00641,
+  "lng": -7.55873
+ },
+ {
+  "name": "Cafetería Tanatorio as Gándaras",
+  "lat": 43.04145,
+  "lng": -7.55318
+ },
+ {
+  "name": "Caixa Rural Galega (Fonte dos Ranchos 29-30)",
+  "lat": 43.0119,
+  "lng": -7.56734
+ },
+ {
+  "name": "Caixa Rural Galega (Fontiñas 94)",
+  "lat": 43.00995,
+  "lng": -7.54867
+ },
+ {
+  "name": "Caixa Rural Galega (Montero Ríos 4)",
+  "lat": 43.01184,
+  "lng": -7.5516
+ },
+ {
+  "name": "Caixa Rural Galega (Rda. Valle Inclán 21)",
+  "lat": 43.01971,
+  "lng": -7.56579
+ },
+ {
+  "name": "Caixa Rural Gallega",
+  "lat": 42.99563,
+  "lng": -7.55492
+ },
+ {
+  "name": "Caixabank (Avda. Coruña 131)",
+  "lat": 43.02016,
+  "lng": -7.56281
+ },
+ {
+  "name": "Caixabank (Avda. Madrid (Cruz Vermella))",
+  "lat": 43.00096,
+  "lng": -7.54887
+ },
+ {
+  "name": "Cajero Banco Santander",
+  "lat": 42.99421,
+  "lng": -7.5473
+ },
+ {
+  "name": "Cal de Peón",
+  "lat": 43.00368,
+  "lng": -7.57944
+ },
+ {
+  "name": "Calibre 2.7",
+  "lat": 43.0076,
+  "lng": -7.55932
+ },
+ {
+  "name": "Calvo",
+  "lat": 43.01029,
+  "lng": -7.55736
+ },
+ {
+  "name": "Calzados Cortés",
+  "lat": 43.01162,
+  "lng": -7.55683
+ },
+ {
+  "name": "Calzedonia (As Termas)",
+  "lat": 43.03654,
+  "lng": -7.56934
+ },
+ {
+  "name": "Calzedonia (Rda. Muralla 56 (Sindicatos))",
+  "lat": 43.01231,
+  "lng": -7.55635
+ },
+ {
+  "name": "Cambalache",
+  "lat": 43.0095,
+  "lng": -7.55355
+ },
+ {
+  "name": "Camiño do Santo",
+  "lat": 42.9794,
+  "lng": -7.5259
+ },
+ {
+  "name": "Camiño do Vilar",
+  "lat": 42.97723,
+  "lng": -7.52394
+ },
+ {
+  "name": "Camiño Real",
+  "lat": 43.01893,
+  "lng": -7.56566
+ },
+ {
+  "name": "Camiño Real a Meira",
+  "lat": 43.01302,
+  "lng": -7.5438
+ },
+ {
+  "name": "Camisetas Lugo",
+  "lat": 43.00378,
+  "lng": -7.54695
+ },
+ {
+  "name": "Campo da Cheda",
+  "lat": 43.00436,
+  "lng": -7.57187
+ },
+ {
+  "name": "Campo de Arriba",
+  "lat": 42.99442,
+  "lng": -7.50438
+ },
+ {
+  "name": "Campo de Fútbol da Polvoreira",
+  "lat": 43.0022,
+  "lng": -7.54879
+ },
+ {
+  "name": "Campo de Fútbol das Gándaras",
+  "lat": 43.03223,
+  "lng": -7.55019
+ },
+ {
+  "name": "Campo de fútbol de Nadela",
+  "lat": 42.96784,
+  "lng": -7.50901
+ },
+ {
+  "name": "Campo de Fútbol Luis López Gorgoso",
+  "lat": 43.02475,
+  "lng": -7.56094
+ },
+ {
+  "name": "Campo do Seixo",
+  "lat": 42.97857,
+  "lng": -7.59491
+ },
+ {
+  "name": "Campo Municipal de Béisbol Germán López Vila",
+  "lat": 43.04882,
+  "lng": -7.56973
+ },
+ {
+  "name": "Campo Municipal de Fútbol José Carballido",
+  "lat": 43.04881,
+  "lng": -7.56842
+ },
+ {
+  "name": "Campos",
+  "lat": 43.01038,
+  "lng": -7.55874
+ },
+ {
+  "name": "Campus Lugo",
+  "lat": 42.99271,
+  "lng": -7.54689
+ },
+ {
+  "name": "Campus Terra",
+  "lat": 42.99256,
+  "lng": -7.54643
+ },
+ {
+  "name": "Cancelo",
+  "lat": 43.0483,
+  "lng": -7.53966
+ },
+ {
+  "name": "Canedo Restaurante & Brasería",
+  "lat": 43.00088,
+  "lng": -7.56308
+ },
+ {
+  "name": "Canela Bakery & Cafe",
+  "lat": 43.01006,
+  "lng": -7.55666
+ },
+ {
+  "name": "Canil de Fingoi",
+  "lat": 42.99561,
+  "lng": -7.55271
+ },
+ {
+  "name": "Canil de Frigsa",
+  "lat": 43.0237,
+  "lng": -7.56167
+ },
+ {
+  "name": "Canil do Carril das Estantigas",
+  "lat": 43.01273,
+  "lng": -7.56149
+ },
+ {
+  "name": "Capela da Sagrada Familia",
+  "lat": 43.02447,
+  "lng": -7.55219
+ },
+ {
+  "name": "Capela da Soidade",
+  "lat": 43.01138,
+  "lng": -7.55853
+ },
+ {
+  "name": "Capela de Fingoi (Alfonso X (antes. C. Novos))",
+  "lat": 42.99381,
+  "lng": -7.5536
+ },
+ {
+  "name": "Capela de Fingoi (Rúa Aviación Española 32)",
+  "lat": 42.99788,
+  "lng": -7.55403
+ },
+ {
+  "name": "Capela de San Lázaro da Ponte",
+  "lat": 43.00018,
+  "lng": -7.5721
+ },
+ {
+  "name": "Capela de San Roque",
+  "lat": 43.00911,
+  "lng": -7.5517
+ },
+ {
+  "name": "Capela de San Simón de Bagueixos",
+  "lat": 43.04743,
+  "lng": -7.58101
+ },
+ {
+  "name": "Capela de Santa Eufemia",
+  "lat": 42.96147,
+  "lng": -7.60442
+ },
+ {
+  "name": "Capela do Carme",
+  "lat": 43.01004,
+  "lng": -7.56135
+ },
+ {
+  "name": "Capela do Hospital Universitario Lucus Augusti",
+  "lat": 43.02047,
+  "lng": -7.53283
+ },
+ {
+  "name": "Captación e bombeo Novafrigsa",
+  "lat": 42.97065,
+  "lng": -7.52745
+ },
+ {
+  "name": "Carballeira de Afonso X o Sabio",
+  "lat": 42.99385,
+  "lng": -7.55266
+ },
+ {
+  "name": "Carballido",
+  "lat": 42.95058,
+  "lng": -7.59422
+ },
+ {
+  "name": "Carballo Mobile",
+  "lat": 43.01591,
+  "lng": -7.56212
+ },
+ {
+  "name": "Carballo Saúde",
+  "lat": 42.99422,
+  "lng": -7.55201
+ },
+ {
+  "name": "Carballoso",
+  "lat": 43.04479,
+  "lng": -7.53044
+ },
+ {
+  "name": "Carburos Metálicos",
+  "lat": 43.03812,
+  "lng": -7.5252
+ },
+ {
+  "name": "Cárcere Eclesiástico",
+  "lat": 43.00927,
+  "lng": -7.55503
+ },
+ {
+  "name": "Cardelle",
+  "lat": 43.05349,
+  "lng": -7.5889
+ },
+ {
+  "name": "Cardoso",
+  "lat": 42.98618,
+  "lng": -7.50945
+ },
+ {
+  "name": "Caritas",
+  "lat": 43.01015,
+  "lng": -7.55762
+ },
+ {
+  "name": "Carla Vila",
+  "lat": 43.00839,
+  "lng": -7.5568
+ },
+ {
+  "name": "Carlín",
+  "lat": 43.00375,
+  "lng": -7.55045
+ },
+ {
+  "name": "Carlos café bar restaurante",
+  "lat": 43.04369,
+  "lng": -7.56936
+ },
+ {
+  "name": "Carmen Ortiz de Galisteo Pérez",
+  "lat": 43.01196,
+  "lng": -7.55334
+ },
+ {
+  "name": "Carmen Presentación Gonzalez Castedo",
+  "lat": 43.01048,
+  "lng": -7.55399
+ },
+ {
+  "name": "Carmen Seijo",
+  "lat": 43.01745,
+  "lng": -7.56633
+ },
+ {
+  "name": "Cárnicas Peteira",
+  "lat": 43.06043,
+  "lng": -7.60035
+ },
+ {
+  "name": "Carnicería charcutería Martiño",
+  "lat": 43.01811,
+  "lng": -7.5604
+ },
+ {
+  "name": "Carnicería frutería Gerardo",
+  "lat": 43.02061,
+  "lng": -7.56802
+ },
+ {
+  "name": "Carnicería la Esquina",
+  "lat": 43.0134,
+  "lng": -7.55904
+ },
+ {
+  "name": "Carnicería Malú",
+  "lat": 43.00285,
+  "lng": -7.55024
+ },
+ {
+  "name": "Carnicería Pesuma 3",
+  "lat": 43.0131,
+  "lng": -7.56616
+ },
+ {
+  "name": "Carnicería Piedrafita",
+  "lat": 43.01935,
+  "lng": -7.56581
+ },
+ {
+  "name": "Caroline Brito studio de belleza",
+  "lat": 43.0155,
+  "lng": -7.56129
+ },
+ {
+  "name": "Carrás",
+  "lat": 42.95159,
+  "lng": -7.49376
+ },
+ {
+  "name": "Carrefour",
+  "lat": 43.00572,
+  "lng": -7.57405
+ },
+ {
+  "name": "Cartafol (Avda. Coruña 144)",
+  "lat": 43.0186,
+  "lng": -7.56179
+ },
+ {
+  "name": "Cartafol (Avda. Madrid (Cruz Vermella))",
+  "lat": 43.00082,
+  "lng": -7.54875
+ },
+ {
+  "name": "Casa Alvarado",
+  "lat": 43.00957,
+  "lng": -7.55739
+ },
+ {
+  "name": "Casa Balbina",
+  "lat": 43.04506,
+  "lng": -7.56964
+ },
+ {
+  "name": "Casa Botana",
+  "lat": 43.02215,
+  "lng": -7.55097
+ },
+ {
+  "name": "Casa D'Auga Vinoteca",
+  "lat": 43.01043,
+  "lng": -7.56001
+ },
+ {
+  "name": "Casa da Muller",
+  "lat": 43.02198,
+  "lng": -7.56399
+ },
+ {
+  "name": "Casa da Música",
+  "lat": 43.02728,
+  "lng": -7.56192
+ },
+ {
+  "name": "Casa da Xuventude",
+  "lat": 42.99871,
+  "lng": -7.54483
+ },
+ {
+  "name": "Casa das Asociacións",
+  "lat": 43.02604,
+  "lng": -7.56081
+ },
+ {
+  "name": "Casa das Linguas",
+  "lat": 43.02629,
+  "lng": -7.57008
+ },
+ {
+  "name": "Casa de Cardoso",
+  "lat": 42.98719,
+  "lng": -7.50992
+ },
+ {
+  "name": "Casa de Guitián",
+  "lat": 43.00563,
+  "lng": -7.53863
+ },
+ {
+  "name": "Casa de Rosende",
+  "lat": 43.01872,
+  "lng": -7.58179
+ },
+ {
+  "name": "Casa de Rozas",
+  "lat": 43.00944,
+  "lng": -7.56244
+ },
+ {
+  "name": "Casa Diocesana de Exercicios Espirituais",
+  "lat": 42.99548,
+  "lng": -7.55895
+ },
+ {
+  "name": "Casa do 1932",
+  "lat": 43.01302,
+  "lng": -7.55886
+ },
+ {
+  "name": "Casa do Concello de Lugo",
+  "lat": 43.01004,
+  "lng": -7.55564
+ },
+ {
+  "name": "Casa do Currelo",
+  "lat": 43.05878,
+  "lng": -7.55638
+ },
+ {
+  "name": "Casa do Rolo",
+  "lat": 43.05059,
+  "lng": -7.60206
+ },
+ {
+  "name": "Casa do Saber",
+  "lat": 43.00912,
+  "lng": -7.55922
+ },
+ {
+  "name": "Casa dos Cravos",
+  "lat": 43.01741,
+  "lng": -7.56377
+ },
+ {
+  "name": "Casa dos Mosaicos",
+  "lat": 43.01053,
+  "lng": -7.55703
+ },
+ {
+  "name": "Casa Grande do Cabalo, San Xoán de Pena",
+  "lat": 42.96258,
+  "lng": -7.50962
+ },
+ {
+  "name": "Casa ideal",
+  "lat": 43.00928,
+  "lng": -7.55715
+ },
+ {
+  "name": "Casa María",
+  "lat": 42.99092,
+  "lng": -7.5384
+ },
+ {
+  "name": "Casa Natal de Luís Pimentel",
+  "lat": 43.00981,
+  "lng": -7.55734
+ },
+ {
+  "name": "Casa Paco",
+  "lat": 42.99083,
+  "lng": -7.53793
+ },
+ {
+  "name": "Casa Raposo",
+  "lat": 43.01439,
+  "lng": -7.56527
+ },
+ {
+  "name": "Casa Rivas",
+  "lat": 43.00827,
+  "lng": -7.5589
+ },
+ {
+  "name": "Casás",
+  "lat": 43.01196,
+  "lng": -7.57547
+ },
+ {
+  "name": "Casas baratas",
+  "lat": 43.01473,
+  "lng": -7.56327
+ },
+ {
+  "name": "Casco Romano",
+  "lat": 43.0141,
+  "lng": -7.55731
+ },
+ {
+  "name": "Casco Vello",
+  "lat": 43.01125,
+  "lng": -7.55773
+ },
+ {
+  "name": "Cash Record",
+  "lat": 43.04712,
+  "lng": -7.56485
+ },
+ {
+  "name": "Castelao",
+  "lat": 43.00957,
+  "lng": -7.55622
+ },
+ {
+  "name": "Castelo",
+  "lat": 43.07059,
+  "lng": -7.54667
+ },
+ {
+  "name": "Castelo de Abaixo",
+  "lat": 43.00947,
+  "lng": -7.53365
+ },
+ {
+  "name": "Castelo de Arriba",
+  "lat": 43.01331,
+  "lng": -7.53508
+ },
+ {
+  "name": "Castelo de San Romao",
+  "lat": 42.98035,
+  "lng": -7.51952
+ },
+ {
+  "name": "Castro (Conturiz (Iglesia))",
+  "lat": 42.97954,
+  "lng": -7.51514
+ },
+ {
+  "name": "Castro (N-VI (Torre de Núñez))",
+  "lat": 42.97435,
+  "lng": -7.51615
+ },
+ {
+  "name": "Castro A Cubela",
+  "lat": 43.05001,
+  "lng": -7.53615
+ },
+ {
+  "name": "Castro da Croa",
+  "lat": 42.98474,
+  "lng": -7.55784
+ },
+ {
+  "name": "Castro da Madorra",
+  "lat": 42.97915,
+  "lng": -7.51398
+ },
+ {
+  "name": "Castro da Medorra (Calde (Hospital))",
+  "lat": 42.96104,
+  "lng": -7.61024
+ },
+ {
+  "name": "Castro da Medorra (Cementerio San Froilán)",
+  "lat": 42.97825,
+  "lng": -7.57409
+ },
+ {
+  "name": "Castro da Táboa",
+  "lat": 43.05307,
+  "lng": -7.58605
+ },
+ {
+  "name": "Castro das Baradas",
+  "lat": 42.96459,
+  "lng": -7.49718
+ },
+ {
+  "name": "Castro de Astrar",
+  "lat": 43.02732,
+  "lng": -7.52978
+ },
+ {
+  "name": "Castro de Milleirós",
+  "lat": 43.03793,
+  "lng": -7.57565
+ },
+ {
+  "name": "Castro de Ramil",
+  "lat": 42.9547,
+  "lng": -7.48271
+ },
+ {
+  "name": "Castro de Recimil",
+  "lat": 42.98009,
+  "lng": -7.49094
+ },
+ {
+  "name": "Castro de Toiriz",
+  "lat": 42.98394,
+  "lng": -7.56826
+ },
+ {
+  "name": "Castro Parga, S.L.",
+  "lat": 43.04717,
+  "lng": -7.57322
+ },
+ {
+  "name": "Castroverde",
+  "lat": 43.01086,
+  "lng": -7.55089
+ },
+ {
+  "name": "Catalana Occidente",
+  "lat": 43.02376,
+  "lng": -7.56699
+ },
+ {
+  "name": "Catedral de Santa María de Lugo",
+  "lat": 43.00914,
+  "lng": -7.55815
+ },
+ {
+  "name": "Catro Ruas",
+  "lat": 43.01928,
+  "lng": -7.56621
+ },
+ {
+  "name": "Cava de puros",
+  "lat": 43.00429,
+  "lng": -7.55082
+ },
+ {
+  "name": "Ceao Motor",
+  "lat": 43.05036,
+  "lng": -7.56603
+ },
+ {
+  "name": "CeDe",
+  "lat": 43.01881,
+  "lng": -7.56197
+ },
+ {
+  "name": "Cela",
+  "lat": 43.00904,
+  "lng": -7.53946
+ },
+ {
+  "name": "Cemiterio de Bóveda",
+  "lat": 42.99655,
+  "lng": -7.49658
+ },
+ {
+  "name": "Cemiterio de Cuíña",
+  "lat": 42.98574,
+  "lng": -7.54264
+ },
+ {
+  "name": "Cemiterio de Mazoi",
+  "lat": 43.06232,
+  "lng": -7.55215
+ },
+ {
+  "name": "Cemiterio de Pías",
+  "lat": 43.05982,
+  "lng": -7.56092
+ },
+ {
+  "name": "Cemiterio de Recimil",
+  "lat": 42.98014,
+  "lng": -7.49073
+ },
+ {
+  "name": "Cemiterio de San Lázaro",
+  "lat": 42.9999,
+  "lng": -7.57226
+ },
+ {
+  "name": "Cemiterio de San Mamede dos Anxos",
+  "lat": 42.98053,
+  "lng": -7.50437
+ },
+ {
+  "name": "Cemiterio de San Xoán de Pena",
+  "lat": 42.96408,
+  "lng": -7.51297
+ },
+ {
+  "name": "Cemiterio de Santa Comba",
+  "lat": 42.95524,
+  "lng": -7.49558
+ },
+ {
+  "name": "Cemiterio de Santo André de Castro",
+  "lat": 42.97919,
+  "lng": -7.51373
+ },
+ {
+  "name": "Cemiterio de Tirimol",
+  "lat": 43.05915,
+  "lng": -7.57962
+ },
+ {
+  "name": "Cemiterio Municipal San Froilán",
+  "lat": 42.98419,
+  "lng": -7.57887
+ },
+ {
+  "name": "Cemiterio Vello",
+  "lat": 43.01031,
+  "lng": -7.5617
+ },
+ {
+  "name": "Cento 70",
+  "lat": 43.01985,
+  "lng": -7.56717
+ },
+ {
+  "name": "Central de Biomasa do Campus de Lugo",
+  "lat": 42.9946,
+  "lng": -7.5451
+ },
+ {
+  "name": "Central óptica de Lugo",
+  "lat": 43.01743,
+  "lng": -7.56083
+ },
+ {
+  "name": "Centro Arqueolóxico San Roque",
+  "lat": 43.00921,
+  "lng": -7.55142
+ },
+ {
+  "name": "Centro Asociado da UNED de Lugo",
+  "lat": 42.98838,
+  "lng": -7.53615
+ },
+ {
+  "name": "Centro Comercial Abella",
+  "lat": 43.01502,
+  "lng": -7.57388
+ },
+ {
+  "name": "Centro Comercial As Termas",
+  "lat": 43.03682,
+  "lng": -7.56956
+ },
+ {
+  "name": "Centro Comercial Carrefour de Lugo",
+  "lat": 43.00566,
+  "lng": -7.5738
+ },
+ {
+  "name": "Centro d negocios d Galicia",
+  "lat": 42.99734,
+  "lng": -7.54622
+ },
+ {
+  "name": "Centro de Artesanía e Deseño",
+  "lat": 43.01056,
+  "lng": -7.5638
+ },
+ {
+  "name": "Centro de Atención Integral a las Personas Mayores Lugo",
+  "lat": 43.01248,
+  "lng": -7.56931
+ },
+ {
+  "name": "Centro de Convivencia de Fingoi",
+  "lat": 42.99852,
+  "lng": -7.55433
+ },
+ {
+  "name": "Centro de convivencia María Balteira",
+  "lat": 43.02617,
+  "lng": -7.57016
+ },
+ {
+  "name": "Centro de día Raiolas",
+  "lat": 42.99199,
+  "lng": -7.54603
+ },
+ {
+  "name": "Centro de Educación Especial Santa María",
+  "lat": 42.9954,
+  "lng": -7.54684
+ },
+ {
+  "name": "Centro de Educación Infantil e Primaria Albeiros",
+  "lat": 43.03033,
+  "lng": -7.5642
+ },
+ {
+  "name": "Centro de Educación Infantil e Primaria Illa Verde",
+  "lat": 43.00065,
+  "lng": -7.55075
+ },
+ {
+  "name": "Centro de Educación Infantil e Primaria Luís Pimentel",
+  "lat": 43.02518,
+  "lng": -7.57216
+ },
+ {
+  "name": "Centro de Educación Infantil e Primaria Menéndez Pelayo",
+  "lat": 43.01533,
+  "lng": -7.57073
+ },
+ {
+  "name": "Centro de Educación Infantil e Primaria Plurilingüe de Nadela",
+  "lat": 42.97062,
+  "lng": -7.50352
+ },
+ {
+  "name": "Centro de Educación Infantil e Primaria Sagrado Corazón",
+  "lat": 43.01882,
+  "lng": -7.55033
+ },
+ {
+  "name": "Centro de Especialidades da Praza de Ferrol",
+  "lat": 43.01392,
+  "lng": -7.55706
+ },
+ {
+  "name": "Centro de estética avanzado",
+  "lat": 43.01903,
+  "lng": -7.56588
+ },
+ {
+  "name": "Centro de estudios Premir",
+  "lat": 43.01702,
+  "lng": -7.55752
+ },
+ {
+  "name": "Centro de Interpretación da Natureza do Río Rato",
+  "lat": 42.99634,
+  "lng": -7.53277
+ },
+ {
+  "name": "Centro de Interpretación Terras do Miño",
+  "lat": 42.99704,
+  "lng": -7.53305
+ },
+ {
+  "name": "Centro de novas tecnoloxías",
+  "lat": 43.0102,
+  "lng": -7.55551
+ },
+ {
+  "name": "Centro de Saúde de Fingoi",
+  "lat": 43.00027,
+  "lng": -7.55261
+ },
+ {
+  "name": "Centro de Saúde de San Roque",
+  "lat": 43.00828,
+  "lng": -7.54971
+ },
+ {
+  "name": "Centro de Saúde do Sagrado Corazón",
+  "lat": 43.01771,
+  "lng": -7.55072
+ },
+ {
+  "name": "Centro dental Abeledo & Filpo",
+  "lat": 43.00884,
+  "lng": -7.55202
+ },
+ {
+  "name": "Centro dental implantológico",
+  "lat": 43.01795,
+  "lng": -7.56126
+ },
+ {
+  "name": "Centro deportivo Dani Villar",
+  "lat": 43.02553,
+  "lng": -7.56683
+ },
+ {
+  "name": "Centro Educativo Galén",
+  "lat": 43.02146,
+  "lng": -7.58557
+ },
+ {
+  "name": "Centro Integrado de Formación Profesional As Mercedes",
+  "lat": 42.99887,
+  "lng": -7.54586
+ },
+ {
+  "name": "Centro Integrado de Formación Profesional Politécnico de Lugo",
+  "lat": 43.00441,
+  "lng": -7.55764
+ },
+ {
+  "name": "Centro Integral de Saúde de Lugo",
+  "lat": 43.01182,
+  "lng": -7.57004
+ },
+ {
+  "name": "Centro médico Adeslas",
+  "lat": 43.00758,
+  "lng": -7.55277
+ },
+ {
+  "name": "Centro Paco Martín",
+  "lat": 43.0215,
+  "lng": -7.56897
+ },
+ {
+  "name": "Centro San Vicente de Paul",
+  "lat": 42.99577,
+  "lng": -7.54798
+ },
+ {
+  "name": "Centro Saúde Illas Canarias",
+  "lat": 43.02624,
+  "lng": -7.56332
+ },
+ {
+  "name": "Centro Social da Milagrosa",
+  "lat": 43.02302,
+  "lng": -7.56289
+ },
+ {
+  "name": "Centro Social Díaz Castro",
+  "lat": 43.01783,
+  "lng": -7.57206
+ },
+ {
+  "name": "Centro socio comunitario",
+  "lat": 43.0195,
+  "lng": -7.56465
+ },
+ {
+  "name": "Centro Sociocultural O Vello Cárcere",
+  "lat": 43.00819,
+  "lng": -7.55464
+ },
+ {
+  "name": "Centro Taico",
+  "lat": 43.0107,
+  "lng": -7.55085
+ },
+ {
+  "name": "Centro Tecnolóxico Agroalimentario",
+  "lat": 42.99846,
+  "lng": -7.54115
+ },
+ {
+  "name": "Centro tejano",
+  "lat": 43.01803,
+  "lng": -7.56106
+ },
+ {
+  "name": "Centro veterinario A Piringalla",
+  "lat": 43.02699,
+  "lng": -7.5699
+ },
+ {
+  "name": "Centros Único",
+  "lat": 43.03621,
+  "lng": -7.56919
+ },
+ {
+  "name": "Cerracín",
+  "lat": 43.06783,
+  "lng": -7.54758
+ },
+ {
+  "name": "Cervecería Abadía Viriato",
+  "lat": 42.99407,
+  "lng": -7.55343
+ },
+ {
+  "name": "Cervecería Boa Vista",
+  "lat": 43.00922,
+  "lng": -7.57074
+ },
+ {
+  "name": "Cervecería Breoghán",
+  "lat": 43.01265,
+  "lng": -7.55996
+ },
+ {
+  "name": "Cervecería Conde",
+  "lat": 43.01625,
+  "lng": -7.56789
+ },
+ {
+  "name": "Cervecería el olivo",
+  "lat": 43.00606,
+  "lng": -7.55108
+ },
+ {
+  "name": "Cervecería flor de toxo",
+  "lat": 43.02419,
+  "lng": -7.56596
+ },
+ {
+  "name": "Cervecería Gol",
+  "lat": 43.02438,
+  "lng": -7.5665
+ },
+ {
+  "name": "Cervecería Inter",
+  "lat": 43.00746,
+  "lng": -7.5593
+ },
+ {
+  "name": "Cervecería la Peatonal",
+  "lat": 43.01911,
+  "lng": -7.56543
+ },
+ {
+  "name": "Cervecería Lagar",
+  "lat": 43.01914,
+  "lng": -7.56385
+ },
+ {
+  "name": "Cervecería Mesón O capricho",
+  "lat": 43.01098,
+  "lng": -7.54913
+ },
+ {
+  "name": "Cerveceria Onde Sempre",
+  "lat": 43.02218,
+  "lng": -7.55886
+ },
+ {
+  "name": "Cervecería Parrillada Fonsagrada",
+  "lat": 43.03032,
+  "lng": -7.54942
+ },
+ {
+  "name": "Cervecería Pasarela",
+  "lat": 43.00801,
+  "lng": -7.5602
+ },
+ {
+  "name": "Cervecería pin",
+  "lat": 43.02875,
+  "lng": -7.57083
+ },
+ {
+  "name": "Cervecería Roma",
+  "lat": 43.01844,
+  "lng": -7.5622
+ },
+ {
+  "name": "Cervecería Umbar",
+  "lat": 43.01624,
+  "lng": -7.56774
+ },
+ {
+  "name": "Cervexa Aloumiña",
+  "lat": 43.01077,
+  "lng": -7.56001
+ },
+ {
+  "name": "Cervezoteca Peque",
+  "lat": 43.00972,
+  "lng": -7.55421
+ },
+ {
+  "name": "Chaos",
+  "lat": 43.02936,
+  "lng": -7.57513
+ },
+ {
+  "name": "Chapa y pintura Iglesias",
+  "lat": 43.02291,
+  "lng": -7.56967
+ },
+ {
+  "name": "Chemanel",
+  "lat": 43.00426,
+  "lng": -7.55056
+ },
+ {
+  "name": "Chicco",
+  "lat": 43.01022,
+  "lng": -7.55737
+ },
+ {
+  "name": "Chilandradas",
+  "lat": 43.00361,
+  "lng": -7.54589
+ },
+ {
+  "name": "Chino Antonio",
+  "lat": 43.04835,
+  "lng": -7.56737
+ },
+ {
+  "name": "Chrono Exprés S.A.- Servipack S.A.",
+  "lat": 43.04598,
+  "lng": -7.5704
+ },
+ {
+  "name": "Churrería Don Pepe",
+  "lat": 43.00701,
+  "lng": -7.55658
+ },
+ {
+  "name": "Chus y Jose",
+  "lat": 43.02361,
+  "lng": -7.57093
+ },
+ {
+  "name": "Ciclos Veiga",
+  "lat": 43.02416,
+  "lng": -7.5683
+ },
+ {
+  "name": "Cidade Norte",
+  "lat": 43.02336,
+  "lng": -7.56718
+ },
+ {
+  "name": "Cidade Romana",
+  "lat": 43.0069,
+  "lng": -7.55571
+ },
+ {
+  "name": "Cientounvinos",
+  "lat": 43.01007,
+  "lng": -7.55896
+ },
+ {
+  "name": "Cinco mans que apoian a muralla",
+  "lat": 43.01175,
+  "lng": -7.55936
+ },
+ {
+  "name": "Cine Cristal",
+  "lat": 43.01179,
+  "lng": -7.55192
+ },
+ {
+  "name": "Cioccolato",
+  "lat": 43.01056,
+  "lng": -7.55457
+ },
+ {
+  "name": "Cioccolato caffé",
+  "lat": 43.01046,
+  "lng": -7.55484
+ },
+ {
+  "name": "Círculo das Artes",
+  "lat": 43.00895,
+  "lng": -7.55673
+ },
+ {
+  "name": "City pizza kebab",
+  "lat": 43.01863,
+  "lng": -7.56724
+ },
+ {
+  "name": "Ciudad de Lugo",
+  "lat": 43.02143,
+  "lng": -7.559
+ },
+ {
+  "name": "Clarks",
+  "lat": 43.01072,
+  "lng": -7.55738
+ },
+ {
+  "name": "Claudio Express",
+  "lat": 43.03762,
+  "lng": -7.52777
+ },
+ {
+  "name": "Click Jurídico",
+  "lat": 43.00417,
+  "lng": -7.55625
+ },
+ {
+  "name": "Clickfer Galán",
+  "lat": 43.02246,
+  "lng": -7.56459
+ },
+ {
+  "name": "Clínica Baviera",
+  "lat": 43.00763,
+  "lng": -7.55296
+ },
+ {
+  "name": "Clínica deltal Adeslas",
+  "lat": 43.0133,
+  "lng": -7.55752
+ },
+ {
+  "name": "Clínica dental Arias López",
+  "lat": 43.0059,
+  "lng": -7.55122
+ },
+ {
+  "name": "Clínica dental Conde",
+  "lat": 43.00206,
+  "lng": -7.54986
+ },
+ {
+  "name": "Clínica dental integral",
+  "lat": 42.99478,
+  "lng": -7.55235
+ },
+ {
+  "name": "Clínica Dental Mónica Marques Castedo",
+  "lat": 43.0099,
+  "lng": -7.55211
+ },
+ {
+  "name": "Clínica dental San Pedro",
+  "lat": 42.99728,
+  "lng": -7.54635
+ },
+ {
+  "name": "Clínica Dinan",
+  "lat": 43.00741,
+  "lng": -7.55304
+ },
+ {
+  "name": "Clínica Marta Modia",
+  "lat": 43.00667,
+  "lng": -7.55533
+ },
+ {
+  "name": "Clínica Ribera Plaza Santo Domingo",
+  "lat": 43.01153,
+  "lng": -7.55689
+ },
+ {
+  "name": "Clínica Veterinaria Recatelo",
+  "lat": 43.00797,
+  "lng": -7.55787
+ },
+ {
+  "name": "Cliref Lugo - Fisioterapia",
+  "lat": 43.01694,
+  "lng": -7.56044
+ },
+ {
+  "name": "Club Clavicembalo",
+  "lat": 43.00997,
+  "lng": -7.55111
+ },
+ {
+  "name": "Club de Aeromodelismo Lavanco de Lugo",
+  "lat": 43.04105,
+  "lng": -7.54271
+ },
+ {
+  "name": "Club Fluvial Lugo",
+  "lat": 43.00057,
+  "lng": -7.56955
+ },
+ {
+  "name": "Club Kung-Fu Lugo",
+  "lat": 43.01963,
+  "lng": -7.56684
+ },
+ {
+  "name": "Club Lucus Kayak-Polo",
+  "lat": 43.00773,
+  "lng": -7.58313
+ },
+ {
+  "name": "Clube Fluvial de Lugo",
+  "lat": 43.00086,
+  "lng": -7.56842
+ },
+ {
+  "name": "Clube Slot Lucus",
+  "lat": 43.02174,
+  "lng": -7.56716
+ },
+ {
+  "name": "Coar Sanimed",
+  "lat": 43.01733,
+  "lng": -7.56052
+ },
+ {
+  "name": "Codex Cinema",
+  "lat": 43.02305,
+  "lng": -7.56639
+ },
+ {
+  "name": "Código",
+  "lat": 43.00844,
+  "lng": -7.55663
+ },
+ {
+  "name": "Código Denim",
+  "lat": 43.03727,
+  "lng": -7.56902
+ },
+ {
+  "name": "Coeo",
+  "lat": 42.97516,
+  "lng": -7.47615
+ },
+ {
+  "name": "COKÉ",
+  "lat": 43.0018,
+  "lng": -7.54416
+ },
+ {
+  "name": "ColadaMax",
+  "lat": 43.00457,
+  "lng": -7.5509
+ },
+ {
+  "name": "Colegio de Agentes Comerciales",
+  "lat": 43.01767,
+  "lng": -7.56077
+ },
+ {
+  "name": "Colexio Cervantes",
+  "lat": 43.02197,
+  "lng": -7.56591
+ },
+ {
+  "name": "Colexio de Educación Infantil e Primaria A Ponte",
+  "lat": 42.9994,
+  "lng": -7.56197
+ },
+ {
+  "name": "Colexio de Educación Infantil e Primaria Albeiros",
+  "lat": 43.03033,
+  "lng": -7.56416
+ },
+ {
+  "name": "Colexio de Educación Infantil e Primaria Anexa",
+  "lat": 43.00555,
+  "lng": -7.55585
+ },
+ {
+  "name": "Colexio de Educación Infantil e Primaria As Gándaras",
+  "lat": 43.02716,
+  "lng": -7.55153
+ },
+ {
+  "name": "Colexio de Educación Infantil e Primaria das Mercedes",
+  "lat": 43.00226,
+  "lng": -7.54863
+ },
+ {
+  "name": "Colexio de Educación Infantil e Primaria de Casás",
+  "lat": 43.01329,
+  "lng": -7.57514
+ },
+ {
+  "name": "Colexio de Educación Infantil e Primaria Paradai",
+  "lat": 43.02231,
+  "lng": -7.55999
+ },
+ {
+  "name": "Colexio de Educación Infantil e Primaria Plurilingüe Benigno Quiroga Ballesteros",
+  "lat": 43.01325,
+  "lng": -7.55848
+ },
+ {
+  "name": "Colexio de Educación Infantil e Primaria Rosalía de Castro",
+  "lat": 43.00444,
+  "lng": -7.55254
+ },
+ {
+  "name": "Colexio Divino Maestro",
+  "lat": 43.01475,
+  "lng": -7.56783
+ },
+ {
+  "name": "Colexio Fingoi",
+  "lat": 42.99821,
+  "lng": -7.55335
+ },
+ {
+  "name": "Colexio María Auxiliadora",
+  "lat": 43.00261,
+  "lng": -7.55244
+ },
+ {
+  "name": "Colexio Menor Eijo Garay",
+  "lat": 43.00363,
+  "lng": -7.55767
+ },
+ {
+  "name": "Colexio Menor Femenino",
+  "lat": 43.00472,
+  "lng": -7.5562
+ },
+ {
+  "name": "Colexio San Xosé",
+  "lat": 43.0087,
+  "lng": -7.56009
+ },
+ {
+  "name": "Coliseum Antigüedades Coleccionismo",
+  "lat": 43.00483,
+  "lng": -7.55077
+ },
+ {
+  "name": "Coliving Artístico Municipal de Lugo",
+  "lat": 43.00676,
+  "lng": -7.56523
+ },
+ {
+  "name": "Colocci",
+  "lat": 43.02363,
+  "lng": -7.57089
+ },
+ {
+  "name": "Comercial Agrícola Emilio (Pista Muxa (Cruce pista urbanización))",
+  "lat": 43.03922,
+  "lng": -7.52528
+ },
+ {
+  "name": "Comercial Agrícola Emilio (Rúa Monforte 40)",
+  "lat": 43.01551,
+  "lng": -7.55509
+ },
+ {
+  "name": "Comercial automóvil",
+  "lat": 43.01442,
+  "lng": -7.55678
+ },
+ {
+  "name": "Comercial Jelu",
+  "lat": 43.02724,
+  "lng": -7.56845
+ },
+ {
+  "name": "Comestibles Boavista",
+  "lat": 43.00925,
+  "lng": -7.5706
+ },
+ {
+  "name": "Comisaría Provincial de Lugo",
+  "lat": 43.01135,
+  "lng": -7.56347
+ },
+ {
+  "name": "Como en Casa",
+  "lat": 43.00752,
+  "lng": -7.55644
+ },
+ {
+  "name": "Complexo de Santa María",
+  "lat": 43.01076,
+  "lng": -7.5636
+ },
+ {
+  "name": "Complexo Deportivo As Pedreiras",
+  "lat": 42.99107,
+  "lng": -7.54382
+ },
+ {
+  "name": "Complexo Polideportivo de Frigsa",
+  "lat": 43.02638,
+  "lng": -7.56127
+ },
+ {
+  "name": "Comunicacinoes Devesa",
+  "lat": 43.00797,
+  "lng": -7.55156
+ },
+ {
+  "name": "Comunidad Islámica Annur",
+  "lat": 43.02067,
+  "lng": -7.5684
+ },
+ {
+  "name": "Concepción Arenal",
+  "lat": 43.00859,
+  "lng": -7.55529
+ },
+ {
+  "name": "Condominia",
+  "lat": 43.0078,
+  "lng": -7.48566
+ },
+ {
+  "name": "Confecciones García",
+  "lat": 43.02067,
+  "lng": -7.53379
+ },
+ {
+  "name": "Confitería Medraño",
+  "lat": 43.01694,
+  "lng": -7.54968
+ },
+ {
+  "name": "Congelados Cíes",
+  "lat": 43.02101,
+  "lng": -7.56375
+ },
+ {
+  "name": "Congelados Gran Sol",
+  "lat": 43.01112,
+  "lng": -7.56772
+ },
+ {
+  "name": "Conservatorio de Música Profesional Xoán Montes",
+  "lat": 42.99944,
+  "lng": -7.54674
+ },
+ {
+  "name": "Conservatorio Profesional de Danza de Lugo",
+  "lat": 42.99973,
+  "lng": -7.54611
+ },
+ {
+  "name": "Constante",
+  "lat": 43.07019,
+  "lng": -7.59031
+ },
+ {
+  "name": "Consultorio de Nadela",
+  "lat": 42.96731,
+  "lng": -7.50171
+ },
+ {
+  "name": "Conturiz",
+  "lat": 42.97681,
+  "lng": -7.52156
+ },
+ {
+  "name": "Convento Carmelitas Descalzas",
+  "lat": 42.98666,
+  "lng": -7.52887
+ },
+ {
+  "name": "Convento de San Domingos",
+  "lat": 43.01219,
+  "lng": -7.55745
+ },
+ {
+  "name": "Conxegalia",
+  "lat": 43.01755,
+  "lng": -7.55719
+ },
+ {
+  "name": "Conxelados Lugomar",
+  "lat": 43.01929,
+  "lng": -7.56235
+ },
+ {
+  "name": "Cook",
+  "lat": 42.99714,
+  "lng": -7.54752
+ },
+ {
+  "name": "Cooperación cos Concellos",
+  "lat": 43.01123,
+  "lng": -7.56281
+ },
+ {
+  "name": "Cooperativa Agris",
+  "lat": 42.9983,
+  "lng": -7.58934
+ },
+ {
+  "name": "Cope Lugo",
+  "lat": 42.99491,
+  "lng": -7.55795
+ },
+ {
+  "name": "Copora",
+  "lat": 43.00964,
+  "lng": -7.5605
+ },
+ {
+  "name": "Cordiño",
+  "lat": 42.9846,
+  "lng": -7.51433
+ },
+ {
+  "name": "Corral y Espiñeira, S.L.",
+  "lat": 43.01695,
+  "lng": -7.55797
+ },
+ {
+  "name": "Correduría de Seguros Rasegal",
+  "lat": 43.01521,
+  "lng": -7.55712
+ },
+ {
+  "name": "Cortefiel",
+  "lat": 43.03718,
+  "lng": -7.56892
+ },
+ {
+  "name": "Cortés",
+  "lat": 43.00958,
+  "lng": -7.55513
+ },
+ {
+  "name": "Cortiña",
+  "lat": 43.06752,
+  "lng": -7.56688
+ },
+ {
+  "name": "Cousa Nostra",
+  "lat": 42.99807,
+  "lng": -7.54762
+ },
+ {
+  "name": "Coworking espacio",
+  "lat": 43.02321,
+  "lng": -7.56988
+ },
+ {
+  "name": "CPR Plurilingüe Padres Franciscanos",
+  "lat": 43.00913,
+  "lng": -7.55605
+ },
+ {
+  "name": "Cris Armesto centro de estética",
+  "lat": 43.00472,
+  "lng": -7.54683
+ },
+ {
+  "name": "Cristina A. Fente Sampayo",
+  "lat": 43.01229,
+  "lng": -7.55573
+ },
+ {
+  "name": "Cristina Lazar estilista",
+  "lat": 43.01838,
+  "lng": -7.56161
+ },
+ {
+  "name": "Cristina Valle Peluquería",
+  "lat": 42.99618,
+  "lng": -7.55485
+ },
+ {
+  "name": "Cromados Estévez, S.L.",
+  "lat": 43.04607,
+  "lng": -7.56383
+ },
+ {
+  "name": "Cruceiro",
+  "lat": 43.05979,
+  "lng": -7.56666
+ },
+ {
+  "name": "Cruceiro de Barbaín",
+  "lat": 43.00723,
+  "lng": -7.5177
+ },
+ {
+  "name": "Cruceiro de Santa María de Muxa",
+  "lat": 43.04794,
+  "lng": -7.52616
+ },
+ {
+  "name": "Cruceiro de Simón Rebolo",
+  "lat": 43.04744,
+  "lng": -7.58121
+ },
+ {
+  "name": "Cruz Paleocristiá das escaleiras da Porta Nova",
+  "lat": 43.01386,
+  "lng": -7.56062
+ },
+ {
+  "name": "Cruz Roja",
+  "lat": 43.0007,
+  "lng": -7.54864
+ },
+ {
+  "name": "Cruz Vermella",
+  "lat": 43.00043,
+  "lng": -7.54903
+ },
+ {
+  "name": "Cruz Vermella - Unidade asistencial á drogodependencia",
+  "lat": 43.00867,
+  "lng": -7.54633
+ },
+ {
+  "name": "CS Mádia Leva",
+  "lat": 43.01573,
+  "lng": -7.558
+ },
+ {
+  "name": "CS. CA. Vagalume",
+  "lat": 43.01091,
+  "lng": -7.55387
+ },
+ {
+  "name": "CSA A Hedreira",
+  "lat": 43.007,
+  "lng": -7.55111
+ },
+ {
+  "name": "CTX urban",
+  "lat": 43.00117,
+  "lng": -7.5491
+ },
+ {
+  "name": "Cualtis",
+  "lat": 42.99584,
+  "lng": -7.54949
+ },
+ {
+  "name": "Cuartel de San Fernando",
+  "lat": 43.01377,
+  "lng": -7.55849
+ },
+ {
+  "name": "Cuíña",
+  "lat": 42.97666,
+  "lng": -7.53704
+ },
+ {
+  "name": "Cultivo Investigación",
+  "lat": 42.9946,
+  "lng": -7.54544
+ },
+ {
+  "name": "Cupeiro",
+  "lat": 43.06409,
+  "lng": -7.60345
+ },
+ {
+  "name": "Currelos",
+  "lat": 42.95496,
+  "lng": -7.61241
+ },
+ {
+  "name": "Curutelo",
+  "lat": 43.05968,
+  "lng": -7.5715
+ },
+ {
+  "name": "D L Bakery Coffee",
+  "lat": 43.00639,
+  "lng": -7.5557
+ },
+ {
+  "name": "D Popis barber",
+  "lat": 43.02005,
+  "lng": -7.56297
+ },
+ {
+  "name": "Dablanca inmobiliaria",
+  "lat": 43.01553,
+  "lng": -7.5593
+ },
+ {
+  "name": "Dalba peluqueros",
+  "lat": 43.01793,
+  "lng": -7.56124
+ },
+ {
+  "name": "Daniel",
+  "lat": 43.0099,
+  "lng": -7.55833
+ },
+ {
+  "name": "Darío",
+  "lat": 43.01477,
+  "lng": -7.55729
+ },
+ {
+  "name": "De segunda",
+  "lat": 43.01728,
+  "lng": -7.56126
+ },
+ {
+  "name": "De todo multitienda",
+  "lat": 43.01202,
+  "lng": -7.56298
+ },
+ {
+  "name": "Decathlon",
+  "lat": 43.03718,
+  "lng": -7.55296
+ },
+ {
+  "name": "Décimas",
+  "lat": 43.03687,
+  "lng": -7.56873
+ },
+ {
+  "name": "Decolugo",
+  "lat": 43.01498,
+  "lng": -7.56454
+ },
+ {
+  "name": "Deichmann",
+  "lat": 43.03744,
+  "lng": -7.56891
+ },
+ {
+  "name": "Delegación de Facenda",
+  "lat": 43.01063,
+  "lng": -7.55588
+ },
+ {
+  "name": "Delegación de Obras Públicas",
+  "lat": 43.01244,
+  "lng": -7.56259
+ },
+ {
+  "name": "Delegación de Sanidade",
+  "lat": 43.01207,
+  "lng": -7.56059
+ },
+ {
+  "name": "Delegacións do Estado: Carreteras, Costas, Confederación Hidrográfica e Teleco",
+  "lat": 43.01297,
+  "lng": -7.56216
+ },
+ {
+  "name": "Deporte Free",
+  "lat": 42.99814,
+  "lng": -7.54697
+ },
+ {
+  "name": "Deputación Provincial de Lugo",
+  "lat": 43.01319,
+  "lng": -7.55652
+ },
+ {
+  "name": "Desarrollos Ceao S.L.",
+  "lat": 43.0397,
+  "lng": -7.52466
+ },
+ {
+  "name": "Deseo Latino",
+  "lat": 43.02129,
+  "lng": -7.56307
+ },
+ {
+  "name": "Desguaces Conturiz",
+  "lat": 43.04355,
+  "lng": -7.55878
+ },
+ {
+  "name": "DeTodo multitienda",
+  "lat": 43.01377,
+  "lng": -7.55078
+ },
+ {
+  "name": "Día",
+  "lat": 43.01214,
+  "lng": -7.55134
+ },
+ {
+  "name": "Dielectro Galicia, S.A.",
+  "lat": 43.04619,
+  "lng": -7.57178
+ },
+ {
+  "name": "Diesel Inyección LUPIGLE, S.L.",
+  "lat": 43.04573,
+  "lng": -7.57243
+ },
+ {
+  "name": "Diez Hombre Moda",
+  "lat": 43.01154,
+  "lng": -7.55647
+ },
+ {
+  "name": "Diez Hombre Novios",
+  "lat": 43.01085,
+  "lng": -7.55821
+ },
+ {
+  "name": "Din & Don Jugueterías",
+  "lat": 43.01069,
+  "lng": -7.55375
+ },
+ {
+  "name": "Dirección General de Tráfico",
+  "lat": 43.00329,
+  "lng": -7.55224
+ },
+ {
+  "name": "Disdeco",
+  "lat": 43.04267,
+  "lng": -7.563
+ },
+ {
+  "name": "Distriz",
+  "lat": 43.02996,
+  "lng": -7.58398
+ },
+ {
+  "name": "Ditram",
+  "lat": 43.03583,
+  "lng": -7.53033
+ },
+ {
+  "name": "Diver Jump",
+  "lat": 43.03696,
+  "lng": -7.5733
+ },
+ {
+  "name": "Divina Pastora",
+  "lat": 43.01893,
+  "lng": -7.56517
+ },
+ {
+  "name": "DL",
+  "lat": 43.01579,
+  "lng": -7.55951
+ },
+ {
+  "name": "Do Laundry",
+  "lat": 43.02341,
+  "lng": -7.5654
+ },
+ {
+  "name": "Docar",
+  "lat": 43.01603,
+  "lng": -7.56205
+ },
+ {
+  "name": "Dolce Vita",
+  "lat": 43.00819,
+  "lng": -7.5567
+ },
+ {
+  "name": "DOM Barberías",
+  "lat": 43.03663,
+  "lng": -7.56919
+ },
+ {
+  "name": "Domino's",
+  "lat": 43.01116,
+  "lng": -7.55288
+ },
+ {
+  "name": "Domoble",
+  "lat": 43.01625,
+  "lng": -7.55967
+ },
+ {
+  "name": "Don Botón Mercería",
+  "lat": 43.02047,
+  "lng": -7.56305
+ },
+ {
+  "name": "Don disco",
+  "lat": 43.01569,
+  "lng": -7.56154
+ },
+ {
+  "name": "Don León (Avda. Magoi (dte. Gadis))",
+  "lat": 42.99531,
+  "lng": -7.55567
+ },
+ {
+  "name": "Don León (Rda. do Carme 69 (Mercadona))",
+  "lat": 43.01081,
+  "lng": -7.56601
+ },
+ {
+  "name": "Don Mac Burger",
+  "lat": 43.00449,
+  "lng": -7.55148
+ },
+ {
+  "name": "Don Minuto",
+  "lat": 43.02083,
+  "lng": -7.56372
+ },
+ {
+  "name": "Dona",
+  "lat": 42.99893,
+  "lng": -7.54771
+ },
+ {
+  "name": "Dona Vaniri (Avda. Coruña 281)",
+  "lat": 43.02332,
+  "lng": -7.56666
+ },
+ {
+  "name": "Dona Vaniri (Rúa Concepción Arenal 48)",
+  "lat": 43.01498,
+  "lng": -7.5609
+ },
+ {
+  "name": "Dosi neumaticos",
+  "lat": 43.01749,
+  "lng": -7.55668
+ },
+ {
+  "name": "Double u academia de inglés",
+  "lat": 43.01105,
+  "lng": -7.56671
+ },
+ {
+  "name": "Doval & Tato Abogados",
+  "lat": 43.00886,
+  "lng": -7.55336
+ },
+ {
+  "name": "Dovela",
+  "lat": 43.01462,
+  "lng": -7.56495
+ },
+ {
+  "name": "Dr. Henry Yallico",
+  "lat": 43.00663,
+  "lng": -7.55541
+ },
+ {
+  "name": "Dreams Boutique",
+  "lat": 43.01048,
+  "lng": -7.55462
+ },
+ {
+  "name": "Droguería Dyppo",
+  "lat": 43.01282,
+  "lng": -7.56294
+ },
+ {
+  "name": "Dulce capricho",
+  "lat": 43.01631,
+  "lng": -7.55972
+ },
+ {
+  "name": "Dunid",
+  "lat": 43.00801,
+  "lng": -7.54853
+ },
+ {
+  "name": "Dvorak 2.0",
+  "lat": 43.00973,
+  "lng": -7.55829
+ },
+ {
+  "name": "Dynamis",
+  "lat": 43.00265,
+  "lng": -7.54556
+ },
+ {
+  "name": "Edificio América",
+  "lat": 43.01743,
+  "lng": -7.55744
+ },
+ {
+  "name": "Edificio Baloira",
+  "lat": 43.00954,
+  "lng": -7.57278
+ },
+ {
+  "name": "Edificio Cactus",
+  "lat": 42.9935,
+  "lng": -7.54638
+ },
+ {
+  "name": "Edificio Europa",
+  "lat": 43.01802,
+  "lng": -7.5575
+ },
+ {
+  "name": "Edificio Impulso Verde",
+  "lat": 43.03657,
+  "lng": -7.56514
+ },
+ {
+  "name": "Edificio Principal do Colexio de Paradai",
+  "lat": 43.0223,
+  "lng": -7.55976
+ },
+ {
+  "name": "Edificio San Rafael",
+  "lat": 43.02604,
+  "lng": -7.56734
+ },
+ {
+  "name": "Eduardo Pondal",
+  "lat": 43.00936,
+  "lng": -7.55666
+ },
+ {
+  "name": "Eduardo Souto hair studio",
+  "lat": 43.02101,
+  "lng": -7.55914
+ },
+ {
+  "name": "Educación Permanente de Adultos Pública Albeiros",
+  "lat": 43.02246,
+  "lng": -7.56229
+ },
+ {
+  "name": "Egomundi",
+  "lat": 43.01231,
+  "lng": -7.54916
+ },
+ {
+  "name": "El almacén del pintor",
+  "lat": 43.0398,
+  "lng": -7.56834
+ },
+ {
+  "name": "El asador del gordo",
+  "lat": 43.01199,
+  "lng": -7.56361
+ },
+ {
+  "name": "El Boni",
+  "lat": 43.01576,
+  "lng": -7.56755
+ },
+ {
+  "name": "El cangrejo zurdo barbería",
+  "lat": 43.00774,
+  "lng": -7.55699
+ },
+ {
+  "name": "El Castillo",
+  "lat": 43.01066,
+  "lng": -7.54903
+ },
+ {
+  "name": "El Castro",
+  "lat": 42.98602,
+  "lng": -7.58918
+ },
+ {
+  "name": "El Diablo Bar",
+  "lat": 43.0105,
+  "lng": -7.5606
+ },
+ {
+  "name": "El edén del paladar",
+  "lat": 43.02043,
+  "lng": -7.56784
+ },
+ {
+  "name": "El gran sibarita gastrobar",
+  "lat": 43.00991,
+  "lng": -7.54164
+ },
+ {
+  "name": "El Mundo del Pintor",
+  "lat": 43.0278,
+  "lng": -7.56977
+ },
+ {
+  "name": "El Museo",
+  "lat": 43.01113,
+  "lng": -7.55925
+ },
+ {
+  "name": "El oasis lucense",
+  "lat": 43.00829,
+  "lng": -7.55971
+ },
+ {
+  "name": "El Portón",
+  "lat": 43.0094,
+  "lng": -7.55969
+ },
+ {
+  "name": "El Progreso (Rúa Industria (Teolindo))",
+  "lat": 43.04723,
+  "lng": -7.57221
+ },
+ {
+  "name": "El Progreso (Rúa Vilalba 6)",
+  "lat": 43.00701,
+  "lng": -7.55824
+ },
+ {
+  "name": "El Rincón de Martina",
+  "lat": 43.00299,
+  "lng": -7.55836
+ },
+ {
+  "name": "El Sagrado Taquería",
+  "lat": 43.0084,
+  "lng": -7.55197
+ },
+ {
+  "name": "El Tata",
+  "lat": 43.01523,
+  "lng": -7.55879
+ },
+ {
+  "name": "El templo de Baco",
+  "lat": 42.99505,
+  "lng": -7.5535
+ },
+ {
+  "name": "El viajero 2",
+  "lat": 43.02123,
+  "lng": -7.56804
+ },
+ {
+  "name": "Electro Mouriz",
+  "lat": 43.02418,
+  "lng": -7.5701
+ },
+ {
+  "name": "Electrocomponentes",
+  "lat": 43.01111,
+  "lng": -7.56994
+ },
+ {
+  "name": "Electrónica Lucense",
+  "lat": 43.02205,
+  "lng": -7.55893
+ },
+ {
+  "name": "Elefante Azul",
+  "lat": 43.03624,
+  "lng": -7.57456
+ },
+ {
+  "name": "Élide",
+  "lat": 42.99891,
+  "lng": -7.54793
+ },
+ {
+  "name": "Embuitidos Montepicato",
+  "lat": 43.0139,
+  "lng": -7.52231
+ },
+ {
+  "name": "Emilio",
+  "lat": 43.01476,
+  "lng": -7.56138
+ },
+ {
+  "name": "Emilio Coira Nieto",
+  "lat": 43.01919,
+  "lng": -7.56453
+ },
+ {
+  "name": "English centre Lugo",
+  "lat": 43.01779,
+  "lng": -7.56112
+ },
+ {
+  "name": "Enrique García Botana",
+  "lat": 43.02401,
+  "lng": -7.56357
+ },
+ {
+  "name": "Entrambosríos",
+  "lat": 42.98999,
+  "lng": -7.5894
+ },
+ {
+  "name": "Época",
+  "lat": 42.9938,
+  "lng": -7.55041
+ },
+ {
+  "name": "Epoch",
+  "lat": 43.043,
+  "lng": -7.55276
+ },
+ {
+  "name": "Equipo casa inmobiliaria",
+  "lat": 43.00649,
+  "lng": -7.5556
+ },
+ {
+  "name": "Equivalenza",
+  "lat": 43.03664,
+  "lng": -7.56915
+ },
+ {
+  "name": "Eropski center",
+  "lat": 43.01865,
+  "lng": -7.56552
+ },
+ {
+  "name": "Eroski (Avda. Inf. Elena (Enft. Lidl))",
+  "lat": 43.03657,
+  "lng": -7.5677
+ },
+ {
+  "name": "Eroski (Avda. Madrid 47-49)",
+  "lat": 43.00129,
+  "lng": -7.54807
+ },
+ {
+  "name": "Eroski (Rúa Camiño Real 197)",
+  "lat": 43.02086,
+  "lng": -7.56709
+ },
+ {
+  "name": "Eroski city",
+  "lat": 43.01688,
+  "lng": -7.56017
+ },
+ {
+  "name": "Escola de Arte e Superior de Deseño Ramón Falcón",
+  "lat": 42.9985,
+  "lng": -7.54249
+ },
+ {
+  "name": "Escola de Castelo de Arriba",
+  "lat": 43.01293,
+  "lng": -7.5314
+ },
+ {
+  "name": "Escola de Educación Infantil Fingoi nº 2",
+  "lat": 43.00096,
+  "lng": -7.54954
+ },
+ {
+  "name": "Escola de Enfermaría",
+  "lat": 42.99267,
+  "lng": -7.54199
+ },
+ {
+  "name": "Escola de Imaxe e Son Lugo",
+  "lat": 43.00705,
+  "lng": -7.56081
+ },
+ {
+  "name": "Escola de Música Municipal de Lugo",
+  "lat": 43.01207,
+  "lng": -7.5585
+ },
+ {
+  "name": "Escola de oficios técnicos",
+  "lat": 42.99801,
+  "lng": -7.54107
+ },
+ {
+  "name": "Escola de Relacións Laborais",
+  "lat": 42.99255,
+  "lng": -7.54323
+ },
+ {
+  "name": "Escola de Vilamiñao",
+  "lat": 42.97809,
+  "lng": -7.53953
+ },
+ {
+  "name": "Escola Infantil Luis Soto Menor",
+  "lat": 42.99539,
+  "lng": -7.5428
+ },
+ {
+  "name": "Escola Infantil Municipal María Wonenburger",
+  "lat": 43.02184,
+  "lng": -7.56899
+ },
+ {
+  "name": "Escola Infantil Nosa Señora do Sagrado Corazón",
+  "lat": 43.02056,
+  "lng": -7.56519
+ },
+ {
+  "name": "Escola Luguesa de Piragüismo",
+  "lat": 43.00692,
+  "lng": -7.57986
+ },
+ {
+  "name": "Escola Oficial de Idiomas de Lugo",
+  "lat": 42.99995,
+  "lng": -7.54561
+ },
+ {
+  "name": "Escola Politécnica Superior",
+  "lat": 42.99358,
+  "lng": -7.54474
+ },
+ {
+  "name": "Espacio TEOTS",
+  "lat": 43.01318,
+  "lng": -7.56292
+ },
+ {
+  "name": "Esparta factoría de protección",
+  "lat": 43.02576,
+  "lng": -7.56762
+ },
+ {
+  "name": "Espiñeiro",
+  "lat": 43.043,
+  "lng": -7.59327
+ },
+ {
+  "name": "Esprit",
+  "lat": 43.03702,
+  "lng": -7.56873
+ },
+ {
+  "name": "Estación de Autobuses de Lugo",
+  "lat": 43.00834,
+  "lng": -7.55342
+ },
+ {
+  "name": "Estación Depuradora de Augas Residuais de Lugo",
+  "lat": 42.97097,
+  "lng": -7.52046
+ },
+ {
+  "name": "Estación Intermodal de Lugo",
+  "lat": 43.01639,
+  "lng": -7.55418
+ },
+ {
+  "name": "Estadio Anxo Carro",
+  "lat": 43.00334,
+  "lng": -7.57098
+ },
+ {
+  "name": "Estanco Número 2",
+  "lat": 42.99893,
+  "lng": -7.54891
+ },
+ {
+  "name": "Estatua de Antonio Gandoy",
+  "lat": 43.00269,
+  "lng": -7.55058
+ },
+ {
+  "name": "Estereotipo Familia Pelúdez",
+  "lat": 43.00878,
+  "lng": -7.55484
+ },
+ {
+  "name": "Estilos",
+  "lat": 43.0251,
+  "lng": -7.56349
+ },
+ {
+  "name": "Estrella Park",
+  "lat": 43.01647,
+  "lng": -7.55984
+ },
+ {
+  "name": "Estudios Rafer SL",
+  "lat": 43.0048,
+  "lng": -7.55023
+ },
+ {
+  "name": "Esturion Lugo",
+  "lat": 43.0042,
+  "lng": -7.55057
+ },
+ {
+  "name": "Eureka Kids",
+  "lat": 43.03679,
+  "lng": -7.56884
+ },
+ {
+  "name": "Eurofrut",
+  "lat": 43.01942,
+  "lng": -7.5651
+ },
+ {
+  "name": "Euromaster",
+  "lat": 43.04694,
+  "lng": -7.5874
+ },
+ {
+  "name": "Euronics",
+  "lat": 43.02379,
+  "lng": -7.56602
+ },
+ {
+  "name": "Eurostars Gran Hotel Lugo",
+  "lat": 43.00497,
+  "lng": -7.55429
+ },
+ {
+  "name": "Eva María Real & asociados",
+  "lat": 43.01817,
+  "lng": -7.56118
+ },
+ {
+  "name": "Exágono",
+  "lat": 42.98441,
+  "lng": -7.58683
+ },
+ {
+  "name": "Expray",
+  "lat": 43.02672,
+  "lng": -7.56802
+ },
+ {
+  "name": "F. Javier Roca Edreira",
+  "lat": 43.00834,
+  "lng": -7.55153
+ },
+ {
+  "name": "Fábrica da Luz",
+  "lat": 43.00184,
+  "lng": -7.57224
+ },
+ {
+  "name": "Fábrica de chocolates Travadelo",
+  "lat": 43.01727,
+  "lng": -7.55461
+ },
+ {
+  "name": "Fábrica de Muebles González",
+  "lat": 43.00231,
+  "lng": -7.54725
+ },
+ {
+  "name": "Facenda Farruquiño",
+  "lat": 43.0082,
+  "lng": -7.55988
+ },
+ {
+  "name": "Factory",
+  "lat": 43.01475,
+  "lng": -7.5579
+ },
+ {
+  "name": "Facultade de Administración e Dirección de Empresas",
+  "lat": 42.99157,
+  "lng": -7.54909
+ },
+ {
+  "name": "Facultade de Ciencias",
+  "lat": 42.99054,
+  "lng": -7.54898
+ },
+ {
+  "name": "Facultade de Formación do Profesorado",
+  "lat": 43.00521,
+  "lng": -7.55596
+ },
+ {
+  "name": "Facultade de Humanidades",
+  "lat": 42.99231,
+  "lng": -7.54257
+ },
+ {
+  "name": "Facultade de Veterinaria",
+  "lat": 42.99413,
+  "lng": -7.54694
+ },
+ {
+  "name": "Fafián",
+  "lat": 43.06807,
+  "lng": -7.55799
+ },
+ {
+  "name": "Faisán",
+  "lat": 43.00805,
+  "lng": -7.56015
+ },
+ {
+  "name": "Falcón Agroalimentaria",
+  "lat": 43.031,
+  "lng": -7.53552
+ },
+ {
+  "name": "Famaliving",
+  "lat": 42.99489,
+  "lng": -7.55437
+ },
+ {
+  "name": "Family cash (Avda. Paulo Fabio Máximo (enfte. Nº 48))",
+  "lat": 43.03632,
+  "lng": -7.56976
+ },
+ {
+  "name": "Family Cash (Rúa Orquídea 55 (Colexio Casás))",
+  "lat": 43.01422,
+  "lng": -7.57367
+ },
+ {
+  "name": "Family nails",
+  "lat": 43.01872,
+  "lng": -7.56162
+ },
+ {
+  "name": "Fariñas O Muiñeiro",
+  "lat": 43.01389,
+  "lng": -7.54998
+ },
+ {
+  "name": "Farmacia Aguirre",
+  "lat": 43.00767,
+  "lng": -7.55648
+ },
+ {
+  "name": "Farmacia Ares",
+  "lat": 43.02112,
+  "lng": -7.56381
+ },
+ {
+  "name": "Farmacia Camiño Real",
+  "lat": 43.01492,
+  "lng": -7.56106
+ },
+ {
+  "name": "Farmacia Cortizas",
+  "lat": 43.06059,
+  "lng": -7.60046
+ },
+ {
+  "name": "Farmacia da Cruz",
+  "lat": 43.01027,
+  "lng": -7.55723
+ },
+ {
+  "name": "Farmacia das Mercedes",
+  "lat": 42.99997,
+  "lng": -7.54791
+ },
+ {
+  "name": "Farmacia Fontiñas 82 (Fontiñas (esq. Caiños))",
+  "lat": 43.01324,
+  "lng": -7.5498
+ },
+ {
+  "name": "Farmacia Fontiñas 82 (Fontiñas 87)",
+  "lat": 43.01093,
+  "lng": -7.54913
+ },
+ {
+  "name": "Farmacia Jover",
+  "lat": 43.01025,
+  "lng": -7.55864
+ },
+ {
+  "name": "Farmacia Labandeira",
+  "lat": 43.02406,
+  "lng": -7.56628
+ },
+ {
+  "name": "Farmacia Pardo",
+  "lat": 43.01116,
+  "lng": -7.55799
+ },
+ {
+  "name": "Farmacia Pedrosa",
+  "lat": 42.99739,
+  "lng": -7.5462
+ },
+ {
+  "name": "Farmacia Pillado",
+  "lat": 43.0087,
+  "lng": -7.55948
+ },
+ {
+  "name": "Farmacia Rego Lodos",
+  "lat": 43.00975,
+  "lng": -7.56869
+ },
+ {
+  "name": "Farmacia San Roque",
+  "lat": 43.00771,
+  "lng": -7.5515
+ },
+ {
+  "name": "Farxocos",
+  "lat": 43.00163,
+  "lng": -7.49179
+ },
+ {
+  "name": "FE seguros",
+  "lat": 43.01292,
+  "lng": -7.56563
+ },
+ {
+  "name": "Feloccjhi",
+  "lat": 43.01845,
+  "lng": -7.56141
+ },
+ {
+  "name": "Fergil Auto",
+  "lat": 43.04114,
+  "lng": -7.57988
+ },
+ {
+  "name": "Fernovas Asesores",
+  "lat": 43.00005,
+  "lng": -7.54803
+ },
+ {
+  "name": "Ferreiros",
+  "lat": 43.0102,
+  "lng": -7.55879
+ },
+ {
+  "name": "Ferretería Anglo",
+  "lat": 43.00757,
+  "lng": -7.54902
+ },
+ {
+  "name": "Ferretería Elias",
+  "lat": 43.02064,
+  "lng": -7.56319
+ },
+ {
+  "name": "Ferretería Gonzalez",
+  "lat": 43.01114,
+  "lng": -7.54925
+ },
+ {
+  "name": "Ferretería HMV",
+  "lat": 43.0014,
+  "lng": -7.54931
+ },
+ {
+  "name": "Ferretería Lugo",
+  "lat": 43.01049,
+  "lng": -7.55467
+ },
+ {
+  "name": "Ferretería Veiga, S.L.",
+  "lat": 43.01561,
+  "lng": -7.56561
+ },
+ {
+  "name": "Ferretería-Bazar Pablo",
+  "lat": 43.00287,
+  "lng": -7.54764
+ },
+ {
+  "name": "Fersay Lugo",
+  "lat": 43.01971,
+  "lng": -7.56399
+ },
+ {
+  "name": "Fervedoira",
+  "lat": 43.03013,
+  "lng": -7.54167
+ },
+ {
+  "name": "Finca de Prácticas da Escola Politécnica Superior",
+  "lat": 42.99501,
+  "lng": -7.54082
+ },
+ {
+  "name": "Finca de Prácticas da Escola Pomitécnica Superior",
+  "lat": 42.99537,
+  "lng": -7.54098
+ },
+ {
+  "name": "Fincas Lugo",
+  "lat": 42.99637,
+  "lng": -7.54871
+ },
+ {
+  "name": "Fincas Muralla",
+  "lat": 43.01233,
+  "lng": -7.55367
+ },
+ {
+  "name": "Fingoi (Rúa Armórica (enfte. Nº 138))",
+  "lat": 42.99914,
+  "lng": -7.5525
+ },
+ {
+  "name": "Fingoi (Rúa Armórica 39)",
+  "lat": 43.0022,
+  "lng": -7.55382
+ },
+ {
+  "name": "Fiordilatte",
+  "lat": 43.008,
+  "lng": -7.55647
+ },
+ {
+  "name": "First stop",
+  "lat": 43.01993,
+  "lng": -7.56288
+ },
+ {
+  "name": "Fisioterapia Cian",
+  "lat": 42.99769,
+  "lng": -7.54701
+ },
+ {
+  "name": "Fisioterapia San Roque",
+  "lat": 43.00511,
+  "lng": -7.55101
+ },
+ {
+  "name": "Fisterra",
+  "lat": 43.02181,
+  "lng": -7.5644
+ },
+ {
+  "name": "Flexi car",
+  "lat": 43.04325,
+  "lng": -7.58305
+ },
+ {
+  "name": "Floristería Penélope",
+  "lat": 43.00862,
+  "lng": -7.5541
+ },
+ {
+  "name": "Fogar do Transeúnte",
+  "lat": 43.01053,
+  "lng": -7.56408
+ },
+ {
+  "name": "Folder",
+  "lat": 43.01487,
+  "lng": -7.55881
+ },
+ {
+  "name": "Fontaneira",
+  "lat": 43.00397,
+  "lng": -7.54652
+ },
+ {
+  "name": "Fontao",
+  "lat": 42.97968,
+  "lng": -7.52255
+ },
+ {
+  "name": "Fontao - Bébécar",
+  "lat": 43.01573,
+  "lng": -7.55923
+ },
+ {
+  "name": "Fonte Cibernética",
+  "lat": 43.01227,
+  "lng": -7.56622
+ },
+ {
+  "name": "Fonte da Carballeira",
+  "lat": 42.99581,
+  "lng": -7.55195
+ },
+ {
+  "name": "Fonte das Lavandeiras",
+  "lat": 43.02342,
+  "lng": -7.56803
+ },
+ {
+  "name": "Fonte das Ras",
+  "lat": 43.00864,
+  "lng": -7.55507
+ },
+ {
+  "name": "Fonte de O Fontao",
+  "lat": 43.02561,
+  "lng": -7.57744
+ },
+ {
+  "name": "Fonte de San Vicente",
+  "lat": 43.01012,
+  "lng": -7.55861
+ },
+ {
+  "name": "Fonte do Pereiro",
+  "lat": 43.02383,
+  "lng": -7.54638
+ },
+ {
+  "name": "Fonte do Rei",
+  "lat": 43.0018,
+  "lng": -7.54968
+ },
+ {
+  "name": "Fonte Do Rei 2",
+  "lat": 43.00017,
+  "lng": -7.54813
+ },
+ {
+  "name": "Fonte dos Leóns",
+  "lat": 43.00581,
+  "lng": -7.55814
+ },
+ {
+  "name": "Fonte dos Ranchos",
+  "lat": 43.01234,
+  "lng": -7.56801
+ },
+ {
+  "name": "Fonte Rebel",
+  "lat": 42.9832,
+  "lng": -7.51308
+ },
+ {
+  "name": "Fontiñas",
+  "lat": 43.00472,
+  "lng": -7.54723
+ },
+ {
+  "name": "Formación",
+  "lat": 43.01118,
+  "lng": -7.56278
+ },
+ {
+  "name": "Forto de Ousá",
+  "lat": 43.02307,
+  "lng": -7.56369
+ },
+ {
+  "name": "Fortop Formación Topografía",
+  "lat": 42.99652,
+  "lng": -7.54919
+ },
+ {
+  "name": "Forus Lugo",
+  "lat": 42.99576,
+  "lng": -7.57054
+ },
+ {
+  "name": "Foto flash",
+  "lat": 43.02375,
+  "lng": -7.57015
+ },
+ {
+  "name": "Four Rooms Hostel",
+  "lat": 43.01273,
+  "lng": -7.55028
+ },
+ {
+  "name": "Francisco Ferreira Salgado",
+  "lat": 43.0141,
+  "lng": -7.55495
+ },
+ {
+  "name": "Fraternidad Muprespa",
+  "lat": 42.99683,
+  "lng": -7.54928
+ },
+ {
+  "name": "Frebas",
+  "lat": 43.01125,
+  "lng": -7.54886
+ },
+ {
+  "name": "Freire Asesores",
+  "lat": 43.01629,
+  "lng": -7.5597
+ },
+ {
+  "name": "Freixide",
+  "lat": 43.0751,
+  "lng": -7.54968
+ },
+ {
+  "name": "Frigoríficos Alfonso, S.A.",
+  "lat": 43.0466,
+  "lng": -7.57169
+ },
+ {
+  "name": "Froiz (Fontiñas 87)",
+  "lat": 43.01083,
+  "lng": -7.54857
+ },
+ {
+  "name": "Froiz (Rúa Illas Canarias 1 (esq. Avda. Coruña))",
+  "lat": 43.0231,
+  "lng": -7.56511
+ },
+ {
+  "name": "Froiz (Rúa Saúde (dte. Antiguo Hospital Xeral))",
+  "lat": 43.01116,
+  "lng": -7.5697
+ },
+ {
+  "name": "Froiz (Xosé Castiñeira (Froiz))",
+  "lat": 42.99856,
+  "lng": -7.54968
+ },
+ {
+  "name": "Frutas el Castillo (Avda. Coruña 436)",
+  "lat": 43.02965,
+  "lng": -7.57074
+ },
+ {
+  "name": "Frutas el castillo (Avda. Magoi (dte. Gadis))",
+  "lat": 42.99508,
+  "lng": -7.55518
+ },
+ {
+  "name": "Frutas El Castillo (Rúa Vilalba 6)",
+  "lat": 43.0092,
+  "lng": -7.555
+ },
+ {
+  "name": "Frutas Gloria",
+  "lat": 43.00995,
+  "lng": -7.55224
+ },
+ {
+  "name": "Frutas Meilán",
+  "lat": 42.99743,
+  "lng": -7.54912
+ },
+ {
+  "name": "Frutas Pomar",
+  "lat": 43.02529,
+  "lng": -7.56723
+ },
+ {
+  "name": "Frutería Miguel",
+  "lat": 43.00679,
+  "lng": -7.55143
+ },
+ {
+  "name": "Frutería Miño",
+  "lat": 43.01614,
+  "lng": -7.55754
+ },
+ {
+  "name": "Frutería Solín",
+  "lat": 43.01901,
+  "lng": -7.56215
+ },
+ {
+  "name": "Frutería Youseff",
+  "lat": 43.01662,
+  "lng": -7.56283
+ },
+ {
+  "name": "Frutigal (Avda. Coruña 144)",
+  "lat": 43.01877,
+  "lng": -7.56165
+ },
+ {
+  "name": "Frutigal (Ramón Ferreiro (Anexa))",
+  "lat": 43.00425,
+  "lng": -7.55536
+ },
+ {
+  "name": "Frutigal (Rúa Dinán)",
+  "lat": 43.00765,
+  "lng": -7.5533
+ },
+ {
+  "name": "Frutimar",
+  "lat": 43.02105,
+  "lng": -7.56376
+ },
+ {
+  "name": "Fuentes",
+  "lat": 43.00693,
+  "lng": -7.55147
+ },
+ {
+  "name": "Full sushi",
+  "lat": 42.99565,
+  "lng": -7.54458
+ },
+ {
+  "name": "Futura",
+  "lat": 43.01046,
+  "lng": -7.55487
+ },
+ {
+  "name": "G Galia electrodomésticos",
+  "lat": 43.00553,
+  "lng": -7.55093
+ },
+ {
+  "name": "Gadis (Adolfo Suárez (cr. Serra de Meira))",
+  "lat": 43.01643,
+  "lng": -7.55046
+ },
+ {
+  "name": "Gadis (Avda. Coruña 131)",
+  "lat": 43.01946,
+  "lng": -7.56252
+ },
+ {
+  "name": "Gadis (Avda. Magoi 92)",
+  "lat": 42.99545,
+  "lng": -7.55588
+ },
+ {
+  "name": "Gadis (Bolaño Ribadeneira 1)",
+  "lat": 43.01284,
+  "lng": -7.55858
+ },
+ {
+  "name": "Gadis (Fonte dos Ranchos 29-30)",
+  "lat": 43.01139,
+  "lng": -7.56747
+ },
+ {
+  "name": "Gadis (Ramón Ferreiro (Anexa))",
+  "lat": 43.00518,
+  "lng": -7.5548
+ },
+ {
+  "name": "Gadis (Rúa Industria (Gadis))",
+  "lat": 43.04699,
+  "lng": -7.56764
+ },
+ {
+  "name": "Gadis (Rúa Lavandeira 10)",
+  "lat": 43.02672,
+  "lng": -7.56846
+ },
+ {
+  "name": "Gadis (Rúa Ourense 48)",
+  "lat": 43.01507,
+  "lng": -7.56508
+ },
+ {
+  "name": "Galegos",
+  "lat": 43.01832,
+  "lng": -7.54269
+ },
+ {
+  "name": "Galería de Arte Clérigos",
+  "lat": 43.00883,
+  "lng": -7.55728
+ },
+ {
+  "name": "Gallaecia Fulget",
+  "lat": 42.99274,
+  "lng": -7.54532
+ },
+ {
+  "name": "Galp (Carrefour (Polideportivo Palomar))",
+  "lat": 43.00593,
+  "lng": -7.5723
+ },
+ {
+  "name": "Galp (Estda. Fonsagrada (enf. Pista Iglesia))",
+  "lat": 43.01051,
+  "lng": -7.53717
+ },
+ {
+  "name": "Galp Lugo",
+  "lat": 43.03008,
+  "lng": -7.54388
+ },
+ {
+  "name": "Gambrinus",
+  "lat": 42.99497,
+  "lng": -7.55129
+ },
+ {
+  "name": "Game",
+  "lat": 43.0369,
+  "lng": -7.56979
+ },
+ {
+  "name": "Gándaras Lowcost",
+  "lat": 43.03757,
+  "lng": -7.55498
+ },
+ {
+  "name": "Gandarío",
+  "lat": 42.96306,
+  "lng": -7.49595
+ },
+ {
+  "name": "Gandúl",
+  "lat": 43.01021,
+  "lng": -7.55974
+ },
+ {
+  "name": "Garabolos (Avda. Coruña 436)",
+  "lat": 43.02936,
+  "lng": -7.57054
+ },
+ {
+  "name": "Garabolos (Avda. Coruña 488)",
+  "lat": 43.03239,
+  "lng": -7.57072
+ },
+ {
+  "name": "García",
+  "lat": 43.01573,
+  "lng": -7.56658
+ },
+ {
+  "name": "Gasexpress",
+  "lat": 43.03668,
+  "lng": -7.54775
+ },
+ {
+  "name": "Gasogas Palas",
+  "lat": 43.04548,
+  "lng": -7.56071
+ },
+ {
+  "name": "Gasoleos Ceao",
+  "lat": 43.05276,
+  "lng": -7.56418
+ },
+ {
+  "name": "Geada",
+  "lat": 43.00345,
+  "lng": -7.55036
+ },
+ {
+  "name": "Gema Seco Feijoo",
+  "lat": 43.01218,
+  "lng": -7.56297
+ },
+ {
+  "name": "General Óptica",
+  "lat": 43.01177,
+  "lng": -7.55639
+ },
+ {
+  "name": "Generali (Avda. Madrid (McDonald´s))",
+  "lat": 42.99782,
+  "lng": -7.54672
+ },
+ {
+  "name": "Generali (Prof. Carvalho Calero (esq. Estda. Granxa))",
+  "lat": 42.9958,
+  "lng": -7.54912
+ },
+ {
+  "name": "Geox",
+  "lat": 43.03737,
+  "lng": -7.56883
+ },
+ {
+  "name": "Gexpín",
+  "lat": 43.012,
+  "lng": -7.55337
+ },
+ {
+  "name": "Gimnasio Forma",
+  "lat": 43.01189,
+  "lng": -7.55327
+ },
+ {
+  "name": "Gimnasio Olympuss",
+  "lat": 43.00994,
+  "lng": -7.55
+ },
+ {
+  "name": "Gimods",
+  "lat": 43.01675,
+  "lng": -7.56536
+ },
+ {
+  "name": "Gladys Rosendo",
+  "lat": 43.01142,
+  "lng": -7.56914
+ },
+ {
+  "name": "Glassdrive",
+  "lat": 43.01721,
+  "lng": -7.55699
+ },
+ {
+  "name": "Goiko",
+  "lat": 43.0122,
+  "lng": -7.55592
+ },
+ {
+  "name": "Gonpul",
+  "lat": 42.99779,
+  "lng": -7.54692
+ },
+ {
+  "name": "Goo!",
+  "lat": 43.02593,
+  "lng": -7.56815
+ },
+ {
+  "name": "Gran Cama",
+  "lat": 43.00921,
+  "lng": -7.55992
+ },
+ {
+  "name": "Gran Farmacia Central",
+  "lat": 43.01019,
+  "lng": -7.55586
+ },
+ {
+  "name": "Gran Sol",
+  "lat": 43.01659,
+  "lng": -7.56301
+ },
+ {
+  "name": "Grao de ouro",
+  "lat": 43.02244,
+  "lng": -7.56994
+ },
+ {
+  "name": "Grisín",
+  "lat": 43.05091,
+  "lng": -7.5891
+ },
+ {
+  "name": "Grueira",
+  "lat": 43.01059,
+  "lng": -7.56745
+ },
+ {
+  "name": "Grupo electroson Galicia",
+  "lat": 43.02093,
+  "lng": -7.56342
+ },
+ {
+  "name": "Grupo L-Motor",
+  "lat": 43.0348,
+  "lng": -7.57514
+ },
+ {
+  "name": "Grupo Solitium",
+  "lat": 43.02912,
+  "lng": -7.56994
+ },
+ {
+  "name": "Gsbox",
+  "lat": 43.00499,
+  "lng": -7.55099
+ },
+ {
+  "name": "Guapa chic",
+  "lat": 43.01418,
+  "lng": -7.56073
+ },
+ {
+  "name": "Guardia Civil",
+  "lat": 43.00655,
+  "lng": -7.55375
+ },
+ {
+  "name": "Guntín",
+  "lat": 43.03971,
+  "lng": -7.59019
+ },
+ {
+  "name": "H&M",
+  "lat": 43.03709,
+  "lng": -7.57021
+ },
+ {
+  "name": "HA Hospital Veterinario",
+  "lat": 43.00101,
+  "lng": -7.54135
+ },
+ {
+  "name": "Hair Time",
+  "lat": 43.01205,
+  "lng": -7.5598
+ },
+ {
+  "name": "Halcón viajes",
+  "lat": 43.01589,
+  "lng": -7.56209
+ },
+ {
+  "name": "Hale SHOP",
+  "lat": 43.03693,
+  "lng": -7.56849
+ },
+ {
+  "name": "Hangar 13",
+  "lat": 42.99887,
+  "lng": -7.54656
+ },
+ {
+  "name": "Hardware online",
+  "lat": 43.00573,
+  "lng": -7.55099
+ },
+ {
+  "name": "Hedra - Aula de estructuras",
+  "lat": 42.99751,
+  "lng": -7.54714
+ },
+ {
+  "name": "Herbolario Aceña de Olga",
+  "lat": 42.99592,
+  "lng": -7.55453
+ },
+ {
+  "name": "Hermanitas de ancianos desamparados hogar San Roque",
+  "lat": 43.00783,
+  "lng": -7.55226
+ },
+ {
+  "name": "Hermanos Maristas",
+  "lat": 43.00817,
+  "lng": -7.55537
+ },
+ {
+  "name": "Herra-Lugo",
+  "lat": 42.99775,
+  "lng": -7.5466
+ },
+ {
+  "name": "Hidrauto",
+  "lat": 43.01882,
+  "lng": -7.56579
+ },
+ {
+  "name": "Hiper Artesanía Oriental",
+  "lat": 43.0155,
+  "lng": -7.55905
+ },
+ {
+  "name": "Hiper China",
+  "lat": 43.01009,
+  "lng": -7.55257
+ },
+ {
+  "name": "Hiper Froiz",
+  "lat": 43.01058,
+  "lng": -7.55249
+ },
+ {
+  "name": "Hiper Fu Jia",
+  "lat": 43.02775,
+  "lng": -7.56929
+ },
+ {
+  "name": "Hiper Pekin",
+  "lat": 43.01682,
+  "lng": -7.56306
+ },
+ {
+  "name": "Hípica Lucus Cocó",
+  "lat": 43.02095,
+  "lng": -7.53858
+ },
+ {
+  "name": "Ho! Gruf",
+  "lat": 43.00993,
+  "lng": -7.55425
+ },
+ {
+  "name": "Hogar provincial de Santa María",
+  "lat": 43.01114,
+  "lng": -7.56275
+ },
+ {
+  "name": "Hole",
+  "lat": 43.00964,
+  "lng": -7.55937
+ },
+ {
+  "name": "Homenaxe a Federico García Lorca",
+  "lat": 43.00887,
+  "lng": -7.55893
+ },
+ {
+  "name": "Honey pets",
+  "lat": 43.02475,
+  "lng": -7.56681
+ },
+ {
+  "name": "Hope",
+  "lat": 43.01358,
+  "lng": -7.56046
+ },
+ {
+  "name": "Hospital Clínico Veterinario Rof Codina",
+  "lat": 42.99272,
+  "lng": -7.54956
+ },
+ {
+  "name": "Hospital de Carlos III",
+  "lat": 43.00021,
+  "lng": -7.57247
+ },
+ {
+  "name": "Hospital Psiquiátrico de Calde",
+  "lat": 42.95507,
+  "lng": -7.60158
+ },
+ {
+  "name": "Hospital Quirónsalud Lugo",
+  "lat": 43.01158,
+  "lng": -7.56191
+ },
+ {
+  "name": "Hospital Ribera Polusa",
+  "lat": 42.99788,
+  "lng": -7.56815
+ },
+ {
+  "name": "Hospital Universitario Lucus Augusti",
+  "lat": 43.02057,
+  "lng": -7.53323
+ },
+ {
+  "name": "Hostal Fisterra",
+  "lat": 43.02202,
+  "lng": -7.5662
+ },
+ {
+  "name": "Hostal Illán",
+  "lat": 43.06085,
+  "lng": -7.59974
+ },
+ {
+  "name": "Hostal Mar de Plata",
+  "lat": 43.00924,
+  "lng": -7.55395
+ },
+ {
+  "name": "Hostel Portón",
+  "lat": 43.00965,
+  "lng": -7.55962
+ },
+ {
+  "name": "Hotel Balneario de Lugo",
+  "lat": 43.00187,
+  "lng": -7.56101
+ },
+ {
+  "name": "Hotel Bríos",
+  "lat": 43.00319,
+  "lng": -7.54877
+ },
+ {
+  "name": "Hotel Ceao",
+  "lat": 43.05258,
+  "lng": -7.56379
+ },
+ {
+  "name": "Hotel Ciudad de Lugo",
+  "lat": 43.01127,
+  "lng": -7.55071
+ },
+ {
+  "name": "Hotel España",
+  "lat": 43.00813,
+  "lng": -7.55741
+ },
+ {
+  "name": "Hotel EsteOeste Sercotel",
+  "lat": 43.01179,
+  "lng": -7.55603
+ },
+ {
+  "name": "Hotel Forum Ceao",
+  "lat": 43.04576,
+  "lng": -7.56967
+ },
+ {
+  "name": "Hotel Los Olmos",
+  "lat": 43.03294,
+  "lng": -7.57452
+ },
+ {
+  "name": "Hotel Méndez Núñez",
+  "lat": 43.01054,
+  "lng": -7.55626
+ },
+ {
+  "name": "Hotel Metropol",
+  "lat": 43.01482,
+  "lng": -7.55371
+ },
+ {
+  "name": "Hotel Monumento Pazo de Orbán e Sangro",
+  "lat": 43.01019,
+  "lng": -7.56025
+ },
+ {
+  "name": "Hotel Muralla",
+  "lat": 43.01405,
+  "lng": -7.55149
+ },
+ {
+  "name": "Hotel Puerta de San Pedro",
+  "lat": 43.00836,
+  "lng": -7.55234
+ },
+ {
+  "name": "Hotel Santiago Spa",
+  "lat": 42.98588,
+  "lng": -7.58918
+ },
+ {
+  "name": "Hotel y Pensión Darío",
+  "lat": 43.02512,
+  "lng": -7.56583
+ },
+ {
+  "name": "Hugo Boss",
+  "lat": 43.01071,
+  "lng": -7.55816
+ },
+ {
+  "name": "Huntington North School",
+  "lat": 42.99636,
+  "lng": -7.5549
+ },
+ {
+  "name": "Ichigo",
+  "lat": 43.01579,
+  "lng": -7.55929
+ },
+ {
+  "name": "IES Sanxillao",
+  "lat": 43.00525,
+  "lng": -7.54592
+ },
+ {
+  "name": "Iglesia cuerpo de Cristo",
+  "lat": 43.01702,
+  "lng": -7.56496
+ },
+ {
+  "name": "Igrexa da Milagrosa",
+  "lat": 43.01974,
+  "lng": -7.56472
+ },
+ {
+  "name": "Igrexa das Agustinas",
+  "lat": 43.01204,
+  "lng": -7.55702
+ },
+ {
+  "name": "Igrexa de San Antón de Padua",
+  "lat": 43.01389,
+  "lng": -7.56498
+ },
+ {
+  "name": "Igrexa de San Fiz",
+  "lat": 42.99436,
+  "lng": -7.53717
+ },
+ {
+  "name": "Igrexa de San Francisco",
+  "lat": 43.00934,
+  "lng": -7.55593
+ },
+ {
+  "name": "Igrexa de San Francisco Xavier",
+  "lat": 43.00123,
+  "lng": -7.55132
+ },
+ {
+  "name": "Igrexa de San Froilán",
+  "lat": 43.01402,
+  "lng": -7.55794
+ },
+ {
+  "name": "Igrexa de San Lourenzo de Recimil",
+  "lat": 42.98014,
+  "lng": -7.49073
+ },
+ {
+  "name": "Igrexa de San Mamede dos Anxos",
+  "lat": 42.98054,
+  "lng": -7.50438
+ },
+ {
+  "name": "Igrexa de San Pedro",
+  "lat": 43.01153,
+  "lng": -7.55845
+ },
+ {
+  "name": "Igrexa de San Pedro de Santa Comba",
+  "lat": 42.95527,
+  "lng": -7.49553
+ },
+ {
+  "name": "Igrexa de San Vicente de Pías",
+  "lat": 43.05971,
+  "lng": -7.56112
+ },
+ {
+  "name": "Igrexa de San Xoán de Pena",
+  "lat": 42.96419,
+  "lng": -7.51306
+ },
+ {
+  "name": "Igrexa de San Xoán de Tirimol",
+  "lat": 43.05917,
+  "lng": -7.57952
+ },
+ {
+  "name": "Igrexa de San Xosé das Gándaras",
+  "lat": 43.02426,
+  "lng": -7.55182
+ },
+ {
+  "name": "Igrexa de Santa María de Bóveda",
+  "lat": 42.99657,
+  "lng": -7.49657
+ },
+ {
+  "name": "Igrexa de Santa María de Muxa",
+  "lat": 43.0483,
+  "lng": -7.52696
+ },
+ {
+  "name": "Igrexa de Santalla de Cuíña",
+  "lat": 42.98578,
+  "lng": -7.54259
+ },
+ {
+  "name": "Igrexa de Santalla de Mazoi",
+  "lat": 43.06232,
+  "lng": -7.55216
+ },
+ {
+  "name": "Igrexa de Santiago Apóstolo",
+  "lat": 43.01222,
+  "lng": -7.53984
+ },
+ {
+  "name": "Igrexa de Santiago das Saamasas",
+  "lat": 43.00791,
+  "lng": -7.57789
+ },
+ {
+  "name": "Igrexa de Santiago de Meilán",
+  "lat": 43.03121,
+  "lng": -7.58798
+ },
+ {
+  "name": "Igrexa de Santiago, A Nova",
+  "lat": 43.01031,
+  "lng": -7.55577
+ },
+ {
+  "name": "Igrexa de Santo André de Castro",
+  "lat": 42.9793,
+  "lng": -7.51372
+ },
+ {
+  "name": "Igrexa do Bo Pastor",
+  "lat": 42.99587,
+  "lng": -7.55678
+ },
+ {
+  "name": "Igrexa do Convento de San Domingos",
+  "lat": 43.01197,
+  "lng": -7.55715
+ },
+ {
+  "name": "Igrexa do Sagrado Corazón",
+  "lat": 43.01664,
+  "lng": -7.54986
+ },
+ {
+  "name": "Igrexa Evanxélica Boas Novas",
+  "lat": 43.00892,
+  "lng": -7.55153
+ },
+ {
+  "name": "Igrexa Nova de San Lourenzo de Albeiros",
+  "lat": 43.02945,
+  "lng": -7.56886
+ },
+ {
+  "name": "Igrexa Ortodoxa Sfântul Sfințitul Mucenic Haralambie de Lugo",
+  "lat": 42.99562,
+  "lng": -7.55918
+ },
+ {
+  "name": "Igrexa Vella de San Lourenzo de Albeiros",
+  "lat": 43.02935,
+  "lng": -7.56253
+ },
+ {
+  "name": "Ikebana",
+  "lat": 43.01138,
+  "lng": -7.56924
+ },
+ {
+  "name": "Il Farabutto",
+  "lat": 43.0006,
+  "lng": -7.56931
+ },
+ {
+  "name": "Il Farabutto Centro",
+  "lat": 43.01313,
+  "lng": -7.55485
+ },
+ {
+  "name": "Implantolugo",
+  "lat": 43.00647,
+  "lng": -7.5551
+ },
+ {
+  "name": "Indemniza express",
+  "lat": 43.02528,
+  "lng": -7.56723
+ },
+ {
+  "name": "Influence",
+  "lat": 43.00789,
+  "lng": -7.54855
+ },
+ {
+  "name": "Infoempresa",
+  "lat": 42.99579,
+  "lng": -7.54898
+ },
+ {
+  "name": "Informática Calderón",
+  "lat": 43.0113,
+  "lng": -7.55206
+ },
+ {
+  "name": "Informática de Recadación",
+  "lat": 43.01105,
+  "lng": -7.56268
+ },
+ {
+  "name": "Informática Marfer",
+  "lat": 43.0238,
+  "lng": -7.56907
+ },
+ {
+  "name": "Ingapan, S.L.",
+  "lat": 43.04835,
+  "lng": -7.57045
+ },
+ {
+  "name": "Ingeniería Insitu SL",
+  "lat": 43.01287,
+  "lng": -7.55177
+ },
+ {
+  "name": "Inmobiliaria Castro Gil",
+  "lat": 43.01421,
+  "lng": -7.5647
+ },
+ {
+  "name": "Inmobiliaria Jaus",
+  "lat": 43.01,
+  "lng": -7.55233
+ },
+ {
+  "name": "Inmobiliaria Mandi",
+  "lat": 43.0204,
+  "lng": -7.563
+ },
+ {
+  "name": "Inmobiliaria Nova",
+  "lat": 43.01437,
+  "lng": -7.56009
+ },
+ {
+  "name": "Inox Méndez",
+  "lat": 43.03854,
+  "lng": -7.5508
+ },
+ {
+  "name": "Inside",
+  "lat": 43.03735,
+  "lng": -7.56995
+ },
+ {
+  "name": "Inspección Técnica de Vehículos",
+  "lat": 43.04276,
+  "lng": -7.55997
+ },
+ {
+  "name": "Instalaciones Pérez Río",
+  "lat": 43.01274,
+  "lng": -7.56612
+ },
+ {
+  "name": "Instituto de Educación Secundaria Ánxel Fole",
+  "lat": 43.02442,
+  "lng": -7.57087
+ },
+ {
+  "name": "Instituto de Educación Secundaria Leiras Pulpeiro",
+  "lat": 43.01267,
+  "lng": -7.57437
+ },
+ {
+  "name": "Instituto de Educación Secundaria Lucus Augusti",
+  "lat": 43.00653,
+  "lng": -7.55666
+ },
+ {
+  "name": "Instituto de Educación Secundaria Muralla Romana",
+  "lat": 43.02429,
+  "lng": -7.57181
+ },
+ {
+  "name": "Instituto de Educación Secundaria Nosa Señora dos Ollos Grandes",
+  "lat": 43.00614,
+  "lng": -7.55678
+ },
+ {
+  "name": "Instituto de Educación Secundaria San Xillao",
+  "lat": 43.00533,
+  "lng": -7.5461
+ },
+ {
+  "name": "Instituto de Educación Secundaria Xoán Montes",
+  "lat": 43.0123,
+  "lng": -7.5619
+ },
+ {
+  "name": "Instituto de Estudios Celulares y Moleculares (ICM)",
+  "lat": 43.04456,
+  "lng": -7.54943
+ },
+ {
+  "name": "Instituto Galego de Seguridade e Saúde Laboral de Lugo",
+  "lat": 43.00204,
+  "lng": -7.55456
+ },
+ {
+  "name": "Instituto nacional de estadística",
+  "lat": 43.00463,
+  "lng": -7.55926
+ },
+ {
+  "name": "Instituto Universitario de Biodiversidade Agraria e Desenvolvemento Rural",
+  "lat": 42.99218,
+  "lng": -7.54922
+ },
+ {
+  "name": "Integral motion",
+  "lat": 43.04297,
+  "lng": -7.5542
+ },
+ {
+  "name": "Intersport",
+  "lat": 43.00822,
+  "lng": -7.55654
+ },
+ {
+  "name": "Intimissimi",
+  "lat": 43.01229,
+  "lng": -7.55646
+ },
+ {
+  "name": "Intres",
+  "lat": 43.01885,
+  "lng": -7.56142
+ },
+ {
+  "name": "Isla",
+  "lat": 43.01149,
+  "lng": -7.56234
+ },
+ {
+  "name": "Istambul",
+  "lat": 43.0005,
+  "lng": -7.54842
+ },
+ {
+  "name": "Itadakimas",
+  "lat": 43.01439,
+  "lng": -7.55401
+ },
+ {
+  "name": "Ivan motor",
+  "lat": 43.01495,
+  "lng": -7.55616
+ },
+ {
+  "name": "J M La María",
+  "lat": 43.00402,
+  "lng": -7.55531
+ },
+ {
+  "name": "Jager Lounge",
+  "lat": 43.01017,
+  "lng": -7.55816
+ },
+ {
+  "name": "Jalno",
+  "lat": 43.01662,
+  "lng": -7.56304
+ },
+ {
+  "name": "Janeiro Floristería",
+  "lat": 43.029,
+  "lng": -7.56985
+ },
+ {
+  "name": "Jarabicha",
+  "lat": 42.995,
+  "lng": -7.55154
+ },
+ {
+  "name": "Jasmine's hair",
+  "lat": 43.01592,
+  "lng": -7.56762
+ },
+ {
+  "name": "Jazz & Beer",
+  "lat": 43.00995,
+  "lng": -7.55835
+ },
+ {
+  "name": "Jenni Flor",
+  "lat": 43.02037,
+  "lng": -7.56474
+ },
+ {
+  "name": "Jeyson",
+  "lat": 43.01792,
+  "lng": -7.56097
+ },
+ {
+  "name": "Jimbarán",
+  "lat": 43.01357,
+  "lng": -7.55548
+ },
+ {
+  "name": "Jorba Flor",
+  "lat": 42.99722,
+  "lng": -7.56635
+ },
+ {
+  "name": "José Luis Joyeros",
+  "lat": 43.03664,
+  "lng": -7.56954
+ },
+ {
+  "name": "Josm Auto",
+  "lat": 43.02555,
+  "lng": -7.56818
+ },
+ {
+  "name": "Joya Lugo",
+  "lat": 43.01109,
+  "lng": -7.55491
+ },
+ {
+  "name": "Joya36",
+  "lat": 43.01024,
+  "lng": -7.55573
+ },
+ {
+  "name": "Joyería Calvo",
+  "lat": 43.03649,
+  "lng": -7.56942
+ },
+ {
+  "name": "Joyería García",
+  "lat": 43.01047,
+  "lng": -7.55481
+ },
+ {
+  "name": "Joyería Martínez",
+  "lat": 43.01781,
+  "lng": -7.56088
+ },
+ {
+  "name": "Joyería Onyx",
+  "lat": 43.01874,
+  "lng": -7.56163
+ },
+ {
+  "name": "Juan Manuel López Mella",
+  "lat": 43.0226,
+  "lng": -7.56333
+ },
+ {
+  "name": "Juan Piñeiro",
+  "lat": 43.02504,
+  "lng": -7.56643
+ },
+ {
+  "name": "Julius Caesar",
+  "lat": 43.0126,
+  "lng": -7.56245
+ },
+ {
+  "name": "k-mon",
+  "lat": 43.01162,
+  "lng": -7.55951
+ },
+ {
+  "name": "K-Tuin",
+  "lat": 43.01098,
+  "lng": -7.55605
+ },
+ {
+  "name": "Kantero",
+  "lat": 43.00795,
+  "lng": -7.55811
+ },
+ {
+  "name": "Kebab Ali",
+  "lat": 43.0172,
+  "lng": -7.56065
+ },
+ {
+  "name": "Keeper Galicia",
+  "lat": 43.04375,
+  "lng": -7.55259
+ },
+ {
+  "name": "Kiabi",
+  "lat": 43.0372,
+  "lng": -7.56505
+ },
+ {
+  "name": "Kids&Us",
+  "lat": 42.99708,
+  "lng": -7.54733
+ },
+ {
+  "name": "Kiko Make Up Milano",
+  "lat": 43.03702,
+  "lng": -7.56988
+ },
+ {
+  "name": "Kiosko",
+  "lat": 43.02067,
+  "lng": -7.53375
+ },
+ {
+  "name": "Kique vinoteca",
+  "lat": 43.00976,
+  "lng": -7.54865
+ },
+ {
+  "name": "Kiron Peluqueros",
+  "lat": 43.02593,
+  "lng": -7.57161
+ },
+ {
+  "name": "Kiwoko",
+  "lat": 43.03594,
+  "lng": -7.56896
+ },
+ {
+  "name": "Korner",
+  "lat": 43.0373,
+  "lng": -7.56878
+ },
+ {
+  "name": "Korner Kids",
+  "lat": 43.03693,
+  "lng": -7.56857
+ },
+ {
+  "name": "Krack",
+  "lat": 43.03733,
+  "lng": -7.56884
+ },
+ {
+  "name": "Kubica",
+  "lat": 43.01055,
+  "lng": -7.55824
+ },
+ {
+  "name": "Kursal Sports Bar",
+  "lat": 43.01262,
+  "lng": -7.5516
+ },
+ {
+  "name": "Kutxabank",
+  "lat": 43.01465,
+  "lng": -7.55754
+ },
+ {
+  "name": "La Becada",
+  "lat": 43.01073,
+  "lng": -7.57078
+ },
+ {
+  "name": "La bootique del sexo",
+  "lat": 43.01621,
+  "lng": -7.55691
+ },
+ {
+  "name": "La Casa Azul",
+  "lat": 43.0146,
+  "lng": -7.55742
+ },
+ {
+  "name": "La casa de las empanadas (Avda. Coruña 433 (Restaurante Suso))",
+  "lat": 43.02891,
+  "lng": -7.57018
+ },
+ {
+  "name": "La casa de las empanadas (San Roque 175)",
+  "lat": 43.00475,
+  "lng": -7.55075
+ },
+ {
+  "name": "La Clásica",
+  "lat": 43.02557,
+  "lng": -7.56747
+ },
+ {
+  "name": "La despensa de Maria",
+  "lat": 43.02266,
+  "lng": -7.57099
+ },
+ {
+  "name": "La esquina",
+  "lat": 43.01921,
+  "lng": -7.5664
+ },
+ {
+  "name": "La Finca",
+  "lat": 43.02061,
+  "lng": -7.53742
+ },
+ {
+  "name": "La Fontana",
+  "lat": 43.00984,
+  "lng": -7.5591
+ },
+ {
+  "name": "La Gramola",
+  "lat": 42.99375,
+  "lng": -7.55186
+ },
+ {
+  "name": "La huerta de Manolo",
+  "lat": 43.02521,
+  "lng": -7.56681
+ },
+ {
+  "name": "La huerta de Pepín",
+  "lat": 43.02568,
+  "lng": -7.56828
+ },
+ {
+  "name": "La Iguana",
+  "lat": 42.99569,
+  "lng": -7.5495
+ },
+ {
+  "name": "La Lonja",
+  "lat": 42.99823,
+  "lng": -7.5479
+ },
+ {
+  "name": "La nuez",
+  "lat": 43.01807,
+  "lng": -7.56479
+ },
+ {
+  "name": "La Oca",
+  "lat": 43.005,
+  "lng": -7.55363
+ },
+ {
+  "name": "La Oficina",
+  "lat": 43.011,
+  "lng": -7.55848
+ },
+ {
+  "name": "La Peregrina",
+  "lat": 42.99489,
+  "lng": -7.55046
+ },
+ {
+  "name": "La Poción Mágica",
+  "lat": 43.00385,
+  "lng": -7.5478
+ },
+ {
+  "name": "La Residencia",
+  "lat": 43.01166,
+  "lng": -7.56903
+ },
+ {
+  "name": "La Resistencia",
+  "lat": 43.01791,
+  "lng": -7.54958
+ },
+ {
+  "name": "La Roma",
+  "lat": 43.00971,
+  "lng": -7.55892
+ },
+ {
+  "name": "La Romana",
+  "lat": 43.01062,
+  "lng": -7.55894
+ },
+ {
+  "name": "La ronda droguería",
+  "lat": 43.00885,
+  "lng": -7.55956
+ },
+ {
+  "name": "La Sucursal",
+  "lat": 43.01238,
+  "lng": -7.55654
+ },
+ {
+  "name": "La Tabernita",
+  "lat": 43.02884,
+  "lng": -7.57075
+ },
+ {
+  "name": "La Terraza del Méndez",
+  "lat": 43.01057,
+  "lng": -7.55608
+ },
+ {
+  "name": "La tienda de Alf",
+  "lat": 42.99715,
+  "lng": -7.54936
+ },
+ {
+  "name": "La Urbana (Ramón Ferreiro (Feminino))",
+  "lat": 43.00737,
+  "lng": -7.5564
+ },
+ {
+  "name": "La Urbana (Xosé Castiñeira (Froiz))",
+  "lat": 42.99769,
+  "lng": -7.54887
+ },
+ {
+  "name": "La Voz de la Verdad",
+  "lat": 43.00782,
+  "lng": -7.55639
+ },
+ {
+  "name": "La zapatillería",
+  "lat": 43.00802,
+  "lng": -7.55663
+ },
+ {
+  "name": "Laboratorio de sanidade e produción animal de Galicia",
+  "lat": 42.99809,
+  "lng": -7.54585
+ },
+ {
+  "name": "Lacoste",
+  "lat": 43.01443,
+  "lng": -7.55844
+ },
+ {
+  "name": "Lamadeín",
+  "lat": 42.99432,
+  "lng": -7.49382
+ },
+ {
+  "name": "Lambetadas Moreno",
+  "lat": 43.03844,
+  "lng": -7.55023
+ },
+ {
+  "name": "Lamela Arias asesoría",
+  "lat": 43.0092,
+  "lng": -7.55217
+ },
+ {
+  "name": "Las Cinco Vigas",
+  "lat": 43.01015,
+  "lng": -7.5579
+ },
+ {
+  "name": "Las Palmas",
+  "lat": 43.01621,
+  "lng": -7.56229
+ },
+ {
+  "name": "Las palmeras Done kebab",
+  "lat": 43.019,
+  "lng": -7.56584
+ },
+ {
+  "name": "Lava & seca express",
+  "lat": 43.011,
+  "lng": -7.56653
+ },
+ {
+  "name": "Lava Seca Express",
+  "lat": 43.02647,
+  "lng": -7.57001
+ },
+ {
+  "name": "Lava y Seca",
+  "lat": 43.00404,
+  "lng": -7.54765
+ },
+ {
+  "name": "Lavandería autoservicio",
+  "lat": 43.01933,
+  "lng": -7.56433
+ },
+ {
+  "name": "Lavandería Río Ser",
+  "lat": 43.01744,
+  "lng": -7.56418
+ },
+ {
+  "name": "Laxegueira",
+  "lat": 42.96107,
+  "lng": -7.49205
+ },
+ {
+  "name": "Lecto-Cosmos",
+  "lat": 43.01018,
+  "lng": -7.55522
+ },
+ {
+  "name": "Lectocosmos",
+  "lat": 43.00933,
+  "lng": -7.55479
+ },
+ {
+  "name": "Legea Sport",
+  "lat": 43.01704,
+  "lng": -7.5603
+ },
+ {
+  "name": "Legendary",
+  "lat": 43.01689,
+  "lng": -7.56315
+ },
+ {
+  "name": "Leguario de Garabolos",
+  "lat": 43.03223,
+  "lng": -7.57274
+ },
+ {
+  "name": "Leroy Merlin Compact",
+  "lat": 43.03815,
+  "lng": -7.56993
+ },
+ {
+  "name": "Level",
+  "lat": 43.02144,
+  "lng": -7.56572
+ },
+ {
+  "name": "Liber",
+  "lat": 43.00863,
+  "lng": -7.5488
+ },
+ {
+  "name": "Librería Aguirre",
+  "lat": 43.00634,
+  "lng": -7.55531
+ },
+ {
+  "name": "Librería Alecrín",
+  "lat": 43.0172,
+  "lng": -7.55041
+ },
+ {
+  "name": "Librería Balmes",
+  "lat": 43.01071,
+  "lng": -7.55448
+ },
+ {
+  "name": "Librería Lamas",
+  "lat": 43.02692,
+  "lng": -7.57159
+ },
+ {
+  "name": "Librería M.F.",
+  "lat": 43.02379,
+  "lng": -7.56973
+ },
+ {
+  "name": "Librería Medusa",
+  "lat": 43.02884,
+  "lng": -7.57134
+ },
+ {
+  "name": "Librería Minguillón",
+  "lat": 43.01783,
+  "lng": -7.56091
+ },
+ {
+  "name": "Librería papelería María",
+  "lat": 43.00525,
+  "lng": -7.54778
+ },
+ {
+  "name": "Librería Porta Santiago",
+  "lat": 43.00834,
+  "lng": -7.55962
+ },
+ {
+  "name": "Librería Totem",
+  "lat": 43.01152,
+  "lng": -7.55564
+ },
+ {
+  "name": "Librería Trama",
+  "lat": 43.01539,
+  "lng": -7.55929
+ },
+ {
+  "name": "Librería Troll",
+  "lat": 43.00252,
+  "lng": -7.55012
+ },
+ {
+  "name": "Lidl (Avda. Inf. Elena (Enft. Lidl))",
+  "lat": 43.03563,
+  "lng": -7.56598
+ },
+ {
+  "name": "Lidl (Paseo Estudantes (ant. Rúa Artes))",
+  "lat": 42.99863,
+  "lng": -7.54445
+ },
+ {
+  "name": "Life Lugo + Biodinámico",
+  "lat": 43.04048,
+  "lng": -7.55845
+ },
+ {
+  "name": "Limpiezas Roferlim",
+  "lat": 43.01611,
+  "lng": -7.55825
+ },
+ {
+  "name": "Liñares",
+  "lat": 42.97945,
+  "lng": -7.48055
+ },
+ {
+  "name": "Loco Copia",
+  "lat": 43.00651,
+  "lng": -7.54878
+ },
+ {
+  "name": "Lok@al",
+  "lat": 43.01249,
+  "lng": -7.56646
+ },
+ {
+  "name": "Lolita Blu",
+  "lat": 43.01039,
+  "lng": -7.55514
+ },
+ {
+  "name": "Lolo",
+  "lat": 43.01682,
+  "lng": -7.56195
+ },
+ {
+  "name": "Loly y Alba",
+  "lat": 43.01278,
+  "lng": -7.56294
+ },
+ {
+  "name": "Lomar",
+  "lat": 43.02561,
+  "lng": -7.56913
+ },
+ {
+  "name": "Loogo (As Termas)",
+  "lat": 43.0375,
+  "lng": -7.56942
+ },
+ {
+  "name": "Loogo (Rda. Muralla 56 (Sindicatos))",
+  "lat": 43.01106,
+  "lng": -7.55625
+ },
+ {
+  "name": "López Freire Congelados",
+  "lat": 43.02182,
+  "lng": -7.5818
+ },
+ {
+  "name": "Lore estilistas",
+  "lat": 43.00434,
+  "lng": -7.55084
+ },
+ {
+  "name": "Los Robles",
+  "lat": 43.0064,
+  "lng": -7.57853
+ },
+ {
+  "name": "Los Roper's",
+  "lat": 43.01146,
+  "lng": -7.54899
+ },
+ {
+  "name": "Los Soportales",
+  "lat": 43.01022,
+  "lng": -7.55611
+ },
+ {
+  "name": "Loterías y Apuestas del Estado (Avda. Coruña 211 (Pq. Milagrosa))",
+  "lat": 43.02135,
+  "lng": -7.56376
+ },
+ {
+  "name": "Loterías y Apuestas del Estado (Avda. Coruña 325)",
+  "lat": 43.02482,
+  "lng": -7.56648
+ },
+ {
+  "name": "Loterías y Apuestas del Estado (Rda. Muralla 56 (Sindicatos))",
+  "lat": 43.01366,
+  "lng": -7.55564
+ },
+ {
+  "name": "Lousas Hermanos Castedo",
+  "lat": 43.01417,
+  "lng": -7.51108
+ },
+ {
+  "name": "Lozano Pernas Asesores",
+  "lat": 43.01461,
+  "lng": -7.56477
+ },
+ {
+  "name": "Lúa Casual Food",
+  "lat": 43.01048,
+  "lng": -7.55889
+ },
+ {
+  "name": "Luca's Grill",
+  "lat": 42.99176,
+  "lng": -7.55317
+ },
+ {
+  "name": "Lucus",
+  "lat": 43.01614,
+  "lng": -7.56675
+ },
+ {
+  "name": "Lucus Baby",
+  "lat": 42.99695,
+  "lng": -7.54635
+ },
+ {
+  "name": "Lucus carniceros",
+  "lat": 43.0208,
+  "lng": -7.56416
+ },
+ {
+  "name": "Lucus CrossFit",
+  "lat": 43.03799,
+  "lng": -7.55035
+ },
+ {
+  "name": "Lucus Gim",
+  "lat": 43.0213,
+  "lng": -7.55934
+ },
+ {
+  "name": "Lucus invicta",
+  "lat": 43.02135,
+  "lng": -7.56763
+ },
+ {
+  "name": "Lucus Park",
+  "lat": 43.01937,
+  "lng": -7.56244
+ },
+ {
+  "name": "Lucuscar",
+  "lat": 43.02864,
+  "lng": -7.56955
+ },
+ {
+  "name": "Lufri",
+  "lat": 42.99785,
+  "lng": -7.56671
+ },
+ {
+  "name": "Lugania",
+  "lat": 42.99721,
+  "lng": -7.54691
+ },
+ {
+  "name": "Lugo (Avda. Madrid 169-171)",
+  "lat": 42.99532,
+  "lng": -7.5438
+ },
+ {
+  "name": "Lugo (Bolaño Ribadeneira 1)",
+  "lat": 43.01184,
+  "lng": -7.55657
+ },
+ {
+  "name": "Lugo (Calde (Hospital))",
+  "lat": 42.96118,
+  "lng": -7.59318
+ },
+ {
+  "name": "Lugo (Estda. Vella Santiago 271 (enfte. Aqualive))",
+  "lat": 42.99101,
+  "lng": -7.57063
+ },
+ {
+  "name": "Lugo (Pza. Conde Fontao (Estda. FFCC))",
+  "lat": 43.0151,
+  "lng": -7.55216
+ },
+ {
+  "name": "Lugo (Rotonda Piugos (dir. Centro))",
+  "lat": 42.99317,
+  "lng": -7.56673
+ },
+ {
+  "name": "Lugo (Rúa Paradai de Arriba 28-31)",
+  "lat": 43.01735,
+  "lng": -7.55615
+ },
+ {
+  "name": "Lugo 100 km",
+  "lat": 43.0123,
+  "lng": -7.54969
+ },
+ {
+  "name": "Lugo antenas",
+  "lat": 43.00876,
+  "lng": -7.55198
+ },
+ {
+  "name": "Lugo dixital",
+  "lat": 43.00516,
+  "lng": -7.55103
+ },
+ {
+  "name": "Lugo Market 14 Horas",
+  "lat": 43.00853,
+  "lng": -7.55164
+ },
+ {
+  "name": "Lugo Mascotas",
+  "lat": 43.01503,
+  "lng": -7.55727
+ },
+ {
+  "name": "Lugo Mercancías",
+  "lat": 43.04694,
+  "lng": -7.55619
+ },
+ {
+  "name": "Lugo piso",
+  "lat": 43.01576,
+  "lng": -7.56165
+ },
+ {
+  "name": "Lugo Supercharger",
+  "lat": 43.03652,
+  "lng": -7.56901
+ },
+ {
+  "name": "Lugocopia",
+  "lat": 42.99782,
+  "lng": -7.54878
+ },
+ {
+  "name": "Lugofoto",
+  "lat": 43.01291,
+  "lng": -7.56008
+ },
+ {
+  "name": "Lugonorte",
+  "lat": 43.02647,
+  "lng": -7.56821
+ },
+ {
+  "name": "Lugoprint servicios gráficos",
+  "lat": 43.02645,
+  "lng": -7.56819
+ },
+ {
+  "name": "Lume crossfit",
+  "lat": 43.02106,
+  "lng": -7.56892
+ },
+ {
+  "name": "Luxilde",
+  "lat": 43.00125,
+  "lng": -7.49658
+ },
+ {
+  "name": "M L Dietética y terapias naturales",
+  "lat": 42.99788,
+  "lng": -7.54725
+ },
+ {
+  "name": "Macario charcutería",
+  "lat": 43.02097,
+  "lng": -7.56346
+ },
+ {
+  "name": "Madeiras Díaz Calvo S.L.",
+  "lat": 43.03853,
+  "lng": -7.52745
+ },
+ {
+  "name": "Maderas Besteiro",
+  "lat": 42.98656,
+  "lng": -7.59563
+ },
+ {
+  "name": "Mafi",
+  "lat": 43.00745,
+  "lng": -7.55143
+ },
+ {
+  "name": "Magie Dance",
+  "lat": 42.99532,
+  "lng": -7.55533
+ },
+ {
+  "name": "Máis descanso",
+  "lat": 43.01708,
+  "lng": -7.56179
+ },
+ {
+  "name": "Mala Fama Bodyart Studio",
+  "lat": 43.0266,
+  "lng": -7.56831
+ },
+ {
+  "name": "Malle",
+  "lat": 42.99322,
+  "lng": -7.49947
+ },
+ {
+  "name": "Mamá Lisa",
+  "lat": 43.03139,
+  "lng": -7.54943
+ },
+ {
+  "name": "Mámoa da Louzaneta 1",
+  "lat": 42.99006,
+  "lng": -7.5789
+ },
+ {
+  "name": "Mámoa da Louzaneta 2",
+  "lat": 42.99014,
+  "lng": -7.57984
+ },
+ {
+  "name": "Mámoa da Louzaneta 3",
+  "lat": 42.99043,
+  "lng": -7.58
+ },
+ {
+  "name": "Mámoa das Gándaras",
+  "lat": 43.04064,
+  "lng": -7.53881
+ },
+ {
+  "name": "Mámoa de San Cibrao",
+  "lat": 43.01897,
+  "lng": -7.51964
+ },
+ {
+  "name": "Mámoa de San Cibrao 1",
+  "lat": 43.02205,
+  "lng": -7.52802
+ },
+ {
+  "name": "Mámoa de San Cibrao 2",
+  "lat": 43.02128,
+  "lng": -7.52778
+ },
+ {
+  "name": "Mámoa de San Cibrao 3",
+  "lat": 43.02094,
+  "lng": -7.52757
+ },
+ {
+  "name": "Mámoa de San Cibrao 5",
+  "lat": 43.02111,
+  "lng": -7.53065
+ },
+ {
+  "name": "Mámoa de San Cibrao 6",
+  "lat": 43.02223,
+  "lng": -7.52926
+ },
+ {
+  "name": "Mámoa de San Cibrao 7",
+  "lat": 43.02233,
+  "lng": -7.52893
+ },
+ {
+  "name": "Manel Sánchez",
+  "lat": 43.00804,
+  "lng": -7.5572
+ },
+ {
+  "name": "Manger",
+  "lat": 43.00813,
+  "lng": -7.55875
+ },
+ {
+  "name": "Mango",
+  "lat": 43.03694,
+  "lng": -7.57009
+ },
+ {
+  "name": "Manhatan",
+  "lat": 43.00882,
+  "lng": -7.55344
+ },
+ {
+  "name": "Manolo de Marce",
+  "lat": 43.01087,
+  "lng": -7.5587
+ },
+ {
+  "name": "Manuel Maria (Montero Ríos 86)",
+  "lat": 43.01389,
+  "lng": -7.55101
+ },
+ {
+  "name": "Manuel María (Rúa Vilalba 6)",
+  "lat": 43.00963,
+  "lng": -7.5561
+ },
+ {
+  "name": "Manuel Varela Pintos",
+  "lat": 43.00259,
+  "lng": -7.54555
+ },
+ {
+  "name": "Mapfre",
+  "lat": 43.01054,
+  "lng": -7.5489
+ },
+ {
+  "name": "Maqueta da Península Ibérica",
+  "lat": 43.00618,
+  "lng": -7.55891
+ },
+ {
+  "name": "Maquinaria de Construcción Cela Abuin S.L.",
+  "lat": 42.98995,
+  "lng": -7.56084
+ },
+ {
+  "name": "Mar peluquería",
+  "lat": 43.02362,
+  "lng": -7.57
+ },
+ {
+  "name": "Maraca Zapaterías (As Termas)",
+  "lat": 43.03688,
+  "lng": -7.56898
+ },
+ {
+  "name": "Maraca zapaterías (Avda. Coruña 102)",
+  "lat": 43.01727,
+  "lng": -7.5607
+ },
+ {
+  "name": "Marc",
+  "lat": 42.99742,
+  "lng": -7.54731
+ },
+ {
+  "name": "Marcos Gómez Talleres Mecánicos",
+  "lat": 43.04005,
+  "lng": -7.55106
+ },
+ {
+  "name": "Marcos Gutiérrez Barber shop",
+  "lat": 42.99846,
+  "lng": -7.5484
+ },
+ {
+  "name": "María Coto xoieiros",
+  "lat": 43.01535,
+  "lng": -7.55914
+ },
+ {
+  "name": "María Cristina Cadorniga Veiga",
+  "lat": 43.00093,
+  "lng": -7.56308
+ },
+ {
+  "name": "María de Las Nieves Fernández Nartallo",
+  "lat": 43.01427,
+  "lng": -7.56513
+ },
+ {
+  "name": "María Divina Irago García",
+  "lat": 43.00791,
+  "lng": -7.54531
+ },
+ {
+  "name": "María Fernández López",
+  "lat": 43.01603,
+  "lng": -7.56625
+ },
+ {
+  "name": "María Jesus Fraga Vila",
+  "lat": 43.01805,
+  "lng": -7.56452
+ },
+ {
+  "name": "María Milagros Asorey Daviña",
+  "lat": 43.00945,
+  "lng": -7.54932
+ },
+ {
+  "name": "María Teresa Gómez-Barreiro Forján",
+  "lat": 43.00586,
+  "lng": -7.55535
+ },
+ {
+  "name": "María Teresa Ochoa Daviña",
+  "lat": 43.01271,
+  "lng": -7.5685
+ },
+ {
+  "name": "María Teresa Yañez Lopez",
+  "lat": 43.01865,
+  "lng": -7.55978
+ },
+ {
+  "name": "Marta Rodríguez Sagarra",
+  "lat": 43.01216,
+  "lng": -7.56568
+ },
+ {
+  "name": "Martínez de Lugo",
+  "lat": 43.03706,
+  "lng": -7.57623
+ },
+ {
+  "name": "Martiz 2",
+  "lat": 43.00225,
+  "lng": -7.54545
+ },
+ {
+  "name": "Maruxía",
+  "lat": 43.02712,
+  "lng": -7.56959
+ },
+ {
+  "name": "Más móvil",
+  "lat": 43.01714,
+  "lng": -7.5606
+ },
+ {
+  "name": "Más Tinta",
+  "lat": 42.99816,
+  "lng": -7.5478
+ },
+ {
+  "name": "Masaxes Lugo",
+  "lat": 43.0153,
+  "lng": -7.56131
+ },
+ {
+  "name": "Mascovet",
+  "lat": 43.0219,
+  "lng": -7.56445
+ },
+ {
+  "name": "Masmar Oil",
+  "lat": 43.04536,
+  "lng": -7.56369
+ },
+ {
+  "name": "Massimo",
+  "lat": 43.03367,
+  "lng": -7.57426
+ },
+ {
+  "name": "Massimo Dutti (As Termas)",
+  "lat": 43.03736,
+  "lng": -7.56916
+ },
+ {
+  "name": "Massimo Dutti (Bolaño Ribadeneira 1)",
+  "lat": 43.01113,
+  "lng": -7.55732
+ },
+ {
+  "name": "Mástinta",
+  "lat": 43.043,
+  "lng": -7.55449
+ },
+ {
+  "name": "Matelos",
+  "lat": 43.05282,
+  "lng": -7.547
+ },
+ {
+  "name": "Maty's Café",
+  "lat": 43.00963,
+  "lng": -7.55584
+ },
+ {
+  "name": "Maura",
+  "lat": 42.99736,
+  "lng": -7.54917
+ },
+ {
+  "name": "Mayoral",
+  "lat": 43.03694,
+  "lng": -7.56886
+ },
+ {
+  "name": "Mazarical",
+  "lat": 42.99195,
+  "lng": -7.49776
+ },
+ {
+  "name": "Mazo de Santa Comba",
+  "lat": 42.95139,
+  "lng": -7.48663
+ },
+ {
+  "name": "Mazoi (Pías 13)",
+  "lat": 43.05943,
+  "lng": -7.55867
+ },
+ {
+  "name": "Mazoi (Porto (dir. Ceao))",
+  "lat": 43.05776,
+  "lng": -7.55376
+ },
+ {
+  "name": "MC peluquería",
+  "lat": 43.01654,
+  "lng": -7.56292
+ },
+ {
+  "name": "McDonald's (As Termas)",
+  "lat": 43.03727,
+  "lng": -7.56961
+ },
+ {
+  "name": "McDonald's (Avda. Madrid (McDonald´s))",
+  "lat": 42.99761,
+  "lng": -7.54538
+ },
+ {
+  "name": "Med informática",
+  "lat": 43.00825,
+  "lng": -7.55977
+ },
+ {
+  "name": "Media Markt Lugo",
+  "lat": 43.03754,
+  "lng": -7.56867
+ },
+ {
+  "name": "Medievo Café Pub",
+  "lat": 43.00984,
+  "lng": -7.55898
+ },
+ {
+  "name": "Medio Ambiente",
+  "lat": 43.01111,
+  "lng": -7.56273
+ },
+ {
+  "name": "Medoña das Amasugüeiras 1",
+  "lat": 43.01027,
+  "lng": -7.51437
+ },
+ {
+  "name": "Medoña das Amasugüeiras 2",
+  "lat": 43.00989,
+  "lng": -7.51771
+ },
+ {
+  "name": "Medoña das Amasugüeiras 3",
+  "lat": 43.01072,
+  "lng": -7.519
+ },
+ {
+  "name": "Medoña das Amasugüeiras 4",
+  "lat": 43.01166,
+  "lng": -7.52068
+ },
+ {
+  "name": "Medusa",
+  "lat": 43.02897,
+  "lng": -7.57152
+ },
+ {
+  "name": "Medusa 180",
+  "lat": 43.02869,
+  "lng": -7.57213
+ },
+ {
+  "name": "Meifer Auto",
+  "lat": 43.02657,
+  "lng": -7.56789
+ },
+ {
+  "name": "Meilán (Avda. Garabolos (Pista Meilán-Chaos))",
+  "lat": 43.03112,
+  "lng": -7.58659
+ },
+ {
+  "name": "Meilán (N-VI (enf. Embotelladora))",
+  "lat": 43.03581,
+  "lng": -7.59102
+ },
+ {
+  "name": "Meizoso Fernández",
+  "lat": 42.99748,
+  "lng": -7.54907
+ },
+ {
+  "name": "Mel fror (Avda. Coruña 131)",
+  "lat": 43.01997,
+  "lng": -7.56292
+ },
+ {
+  "name": "Mel-fror (As Termas)",
+  "lat": 43.03635,
+  "lng": -7.56932
+ },
+ {
+  "name": "Mel-fror (Rúa Camiño Real 61)",
+  "lat": 43.01586,
+  "lng": -7.56208
+ },
+ {
+  "name": "Merca Sofá",
+  "lat": 43.01895,
+  "lng": -7.56181
+ },
+ {
+  "name": "Mercadillo do Parque da Milagrosa",
+  "lat": 43.02351,
+  "lng": -7.56308
+ },
+ {
+  "name": "Mercado Chino",
+  "lat": 43.00936,
+  "lng": -7.54867
+ },
+ {
+  "name": "Mercado de Fingoi",
+  "lat": 43.00444,
+  "lng": -7.55511
+ },
+ {
+  "name": "Mercado Municipal",
+  "lat": 43.01197,
+  "lng": -7.55838
+ },
+ {
+  "name": "Mercado Os Fidalgo",
+  "lat": 43.01811,
+  "lng": -7.55479
+ },
+ {
+  "name": "Mercadona (As Termas)",
+  "lat": 43.03861,
+  "lng": -7.56609
+ },
+ {
+  "name": "Mercadona (Fontiñas (enf. San Xillao))",
+  "lat": 43.00364,
+  "lng": -7.5473
+ },
+ {
+  "name": "Mercadona (Praza Agro do Rolo)",
+  "lat": 43.02024,
+  "lng": -7.56502
+ },
+ {
+  "name": "Mercadona (Rda. do Carme 69 (Mercadona))",
+  "lat": 43.01051,
+  "lng": -7.56596
+ },
+ {
+  "name": "Mercafruta",
+  "lat": 43.02056,
+  "lng": -7.56471
+ },
+ {
+  "name": "Mercedes Jover Ramos",
+  "lat": 43.01347,
+  "lng": -7.56028
+ },
+ {
+  "name": "Mercería lenceria Sol",
+  "lat": 43.02469,
+  "lng": -7.56677
+ },
+ {
+  "name": "Mercería Olalla",
+  "lat": 43.01953,
+  "lng": -7.56565
+ },
+ {
+  "name": "Mercure",
+  "lat": 43.00242,
+  "lng": -7.55305
+ },
+ {
+  "name": "Merkal Lugo",
+  "lat": 43.03768,
+  "lng": -7.56504
+ },
+ {
+  "name": "Mesón Abella",
+  "lat": 43.01339,
+  "lng": -7.57385
+ },
+ {
+  "name": "Mesón Aniceto",
+  "lat": 42.99592,
+  "lng": -7.56729
+ },
+ {
+  "name": "Mesón Aromas",
+  "lat": 43.00934,
+  "lng": -7.56526
+ },
+ {
+  "name": "Mesón as rodas",
+  "lat": 43.02283,
+  "lng": -7.57147
+ },
+ {
+  "name": "Mesón Casa Julio",
+  "lat": 42.97498,
+  "lng": -7.53502
+ },
+ {
+  "name": "Mesón da Rúa",
+  "lat": 43.01075,
+  "lng": -7.55904
+ },
+ {
+  "name": "Mesón el castillo",
+  "lat": 43.00914,
+  "lng": -7.55509
+ },
+ {
+  "name": "Mesón Lubre",
+  "lat": 43.01147,
+  "lng": -7.55102
+ },
+ {
+  "name": "Mesón O Forno",
+  "lat": 43.01745,
+  "lng": -7.56498
+ },
+ {
+  "name": "Mesón O Postigo",
+  "lat": 43.00925,
+  "lng": -7.56955
+ },
+ {
+  "name": "Mesón Ochoa",
+  "lat": 43.01187,
+  "lng": -7.56761
+ },
+ {
+  "name": "Mesón Pulpería Santiso",
+  "lat": 43.01828,
+  "lng": -7.56224
+ },
+ {
+  "name": "Mesón Xantar",
+  "lat": 43.01681,
+  "lng": -7.56219
+ },
+ {
+  "name": "Mesquita As-Salam de Lugo",
+  "lat": 43.02317,
+  "lng": -7.56848
+ },
+ {
+  "name": "Método Maravilla",
+  "lat": 43.02679,
+  "lng": -7.56808
+ },
+ {
+  "name": "MGS Seguros",
+  "lat": 43.0111,
+  "lng": -7.5529
+ },
+ {
+  "name": "Mi médico estético",
+  "lat": 43.00999,
+  "lng": -7.55705
+ },
+ {
+  "name": "Micro Media",
+  "lat": 43.00874,
+  "lng": -7.55178
+ },
+ {
+  "name": "Midentista",
+  "lat": 43.02287,
+  "lng": -7.56527
+ },
+ {
+  "name": "Migan",
+  "lat": 42.99762,
+  "lng": -7.56681
+ },
+ {
+  "name": "Migas",
+  "lat": 43.01222,
+  "lng": -7.56437
+ },
+ {
+  "name": "Miguel Darriba",
+  "lat": 43.01441,
+  "lng": -7.565
+ },
+ {
+  "name": "Miky moda infantil",
+  "lat": 43.02001,
+  "lng": -7.56294
+ },
+ {
+  "name": "Milcores",
+  "lat": 43.00809,
+  "lng": -7.54898
+ },
+ {
+  "name": "Milenium peluqueros",
+  "lat": 43.0148,
+  "lng": -7.55893
+ },
+ {
+  "name": "Miliario do Camiño de Santiago",
+  "lat": 43.01025,
+  "lng": -7.5532
+ },
+ {
+  "name": "Milleirós",
+  "lat": 43.03365,
+  "lng": -7.57727
+ },
+ {
+  "name": "Mimo mi movil",
+  "lat": 43.03631,
+  "lng": -7.56927
+ },
+ {
+  "name": "Minymás tiendas",
+  "lat": 43.03665,
+  "lng": -7.54809
+ },
+ {
+  "name": "Miradoiro de Blanco Amor (Avda. Fábrica da Luz (Pazo de Feiras))",
+  "lat": 43.00186,
+  "lng": -7.57276
+ },
+ {
+  "name": "Miradoiro de Blanco Amor (Carrefour (Polideportivo Palomar))",
+  "lat": 43.00426,
+  "lng": -7.5742
+ },
+ {
+  "name": "Miradoiro de Volta da Viña",
+  "lat": 43.00276,
+  "lng": -7.56122
+ },
+ {
+  "name": "Miriam Pérez Rivas",
+  "lat": 42.99524,
+  "lng": -7.55464
+ },
+ {
+  "name": "Miss mariquita",
+  "lat": 43.01609,
+  "lng": -7.55975
+ },
+ {
+  "name": "Miss-Tic",
+  "lat": 43.01503,
+  "lng": -7.55864
+ },
+ {
+  "name": "Mister Minit",
+  "lat": 43.03659,
+  "lng": -7.56928
+ },
+ {
+  "name": "MituPhone",
+  "lat": 43.02708,
+  "lng": -7.56831
+ },
+ {
+  "name": "Modhogar",
+  "lat": 43.01969,
+  "lng": -7.56233
+ },
+ {
+  "name": "Moeve",
+  "lat": 43.03438,
+  "lng": -7.5746
+ },
+ {
+  "name": "MOM",
+  "lat": 43.01002,
+  "lng": -7.55872
+ },
+ {
+  "name": "Monasterio de la Visitación (Salesas)",
+  "lat": 42.99629,
+  "lng": -7.55873
+ },
+ {
+  "name": "Monbus",
+  "lat": 42.99039,
+  "lng": -7.58178
+ },
+ {
+  "name": "Monte da Brea",
+  "lat": 43.06446,
+  "lng": -7.59145
+ },
+ {
+  "name": "Monte das Pías",
+  "lat": 43.01783,
+  "lng": -7.57515
+ },
+ {
+  "name": "Monte das Verrugas",
+  "lat": 42.99017,
+  "lng": -7.50116
+ },
+ {
+  "name": "Monte de Astrar",
+  "lat": 43.03293,
+  "lng": -7.51597
+ },
+ {
+  "name": "Monte de Barbaín",
+  "lat": 43.00662,
+  "lng": -7.51274
+ },
+ {
+  "name": "Monte de Farxocos",
+  "lat": 43.00463,
+  "lng": -7.49066
+ },
+ {
+  "name": "Monte de Fontao",
+  "lat": 42.97894,
+  "lng": -7.57331
+ },
+ {
+  "name": "Monte de Foxas",
+  "lat": 43.06989,
+  "lng": -7.5563
+ },
+ {
+  "name": "Monte de San Cibrao",
+  "lat": 43.02063,
+  "lng": -7.52936
+ },
+ {
+  "name": "Monte de San Cibrao 4",
+  "lat": 43.01983,
+  "lng": -7.53099
+ },
+ {
+  "name": "Monte do Torrón",
+  "lat": 42.98085,
+  "lng": -7.58542
+ },
+ {
+  "name": "Monte do Tumbo",
+  "lat": 43.05542,
+  "lng": -7.6041
+ },
+ {
+  "name": "Monte Sartego (Igrexa Muxa *)",
+  "lat": 43.0483,
+  "lng": -7.51837
+ },
+ {
+  "name": "Monte Sartego (Igrexa Muxa *) 2",
+  "lat": 43.05419,
+  "lng": -7.51597
+ },
+ {
+  "name": "Monte Segade",
+  "lat": 43.00115,
+  "lng": -7.59404
+ },
+ {
+  "name": "Montes",
+  "lat": 43.03017,
+  "lng": -7.57118
+ },
+ {
+  "name": "Montes de San Cibrao",
+  "lat": 43.02118,
+  "lng": -7.51988
+ },
+ {
+  "name": "Montiño Novo",
+  "lat": 43.07301,
+  "lng": -7.58527
+ },
+ {
+  "name": "Montirón",
+  "lat": 43.00021,
+  "lng": -7.54245
+ },
+ {
+  "name": "Montouto Compra Venta",
+  "lat": 43.02165,
+  "lng": -7.56214
+ },
+ {
+  "name": "Montreal",
+  "lat": 43.01904,
+  "lng": -7.56217
+ },
+ {
+  "name": "Monumeno ó pescador",
+  "lat": 43.01284,
+  "lng": -7.56505
+ },
+ {
+  "name": "Monumento ao Alcalde Ángel López Pérez",
+  "lat": 43.00559,
+  "lng": -7.55932
+ },
+ {
+  "name": "Monumento ao Bimilenario",
+  "lat": 43.012,
+  "lng": -7.55635
+ },
+ {
+  "name": "Monumento ao poeta Pimentel",
+  "lat": 43.0098,
+  "lng": -7.55694
+ },
+ {
+  "name": "Monumento Arde Lucus",
+  "lat": 43.00699,
+  "lng": -7.55576
+ },
+ {
+  "name": "Morrigan",
+  "lat": 42.99713,
+  "lng": -7.54602
+ },
+ {
+  "name": "Motel Bambú",
+  "lat": 42.95786,
+  "lng": -7.60011
+ },
+ {
+  "name": "Moto Premium",
+  "lat": 43.02643,
+  "lng": -7.56776
+ },
+ {
+  "name": "Moto-K",
+  "lat": 43.01564,
+  "lng": -7.55495
+ },
+ {
+  "name": "Motor & Glass",
+  "lat": 43.00893,
+  "lng": -7.56494
+ },
+ {
+  "name": "Motos Montouto",
+  "lat": 43.02203,
+  "lng": -7.55894
+ },
+ {
+  "name": "Motos Núñez Motor",
+  "lat": 43.0209,
+  "lng": -7.56398
+ },
+ {
+  "name": "Mouronte automóviles",
+  "lat": 43.0309,
+  "lng": -7.57137
+ },
+ {
+  "name": "Movistar (As Termas)",
+  "lat": 43.03667,
+  "lng": -7.56977
+ },
+ {
+  "name": "Movistar (Avda. Coruña 102)",
+  "lat": 43.01784,
+  "lng": -7.56117
+ },
+ {
+  "name": "Movistar (Fonte dos Ranchos 29-30)",
+  "lat": 43.01241,
+  "lng": -7.5666
+ },
+ {
+  "name": "MRK Istambul",
+  "lat": 43.0194,
+  "lng": -7.56217
+ },
+ {
+  "name": "Mudanzas Alfredo",
+  "lat": 43.0115,
+  "lng": -7.55211
+ },
+ {
+  "name": "Muebles Boom",
+  "lat": 43.04348,
+  "lng": -7.56042
+ },
+ {
+  "name": "Muebles Casanova",
+  "lat": 43.04803,
+  "lng": -7.59267
+ },
+ {
+  "name": "Muebles Castro",
+  "lat": 43.00117,
+  "lng": -7.54909
+ },
+ {
+  "name": "Muebles Franco",
+  "lat": 43.00535,
+  "lng": -7.56331
+ },
+ {
+  "name": "Muiño de Castro",
+  "lat": 42.99639,
+  "lng": -7.48107
+ },
+ {
+  "name": "Muíño de Malle",
+  "lat": 42.99299,
+  "lng": -7.50875
+ },
+ {
+  "name": "Muíño de Marce",
+  "lat": 42.98511,
+  "lng": -7.47583
+ },
+ {
+  "name": "Muíño de Orbazai",
+  "lat": 43.00754,
+  "lng": -7.58531
+ },
+ {
+  "name": "Muíño do Castro",
+  "lat": 43.00591,
+  "lng": -7.58568
+ },
+ {
+  "name": "Muíño do Cuco",
+  "lat": 42.97652,
+  "lng": -7.51513
+ },
+ {
+  "name": "Muíño do Tendeiro",
+  "lat": 43.00295,
+  "lng": -7.59618
+ },
+ {
+  "name": "Multicines As Termas",
+  "lat": 43.03721,
+  "lng": -7.57045
+ },
+ {
+  "name": "Multiópticas",
+  "lat": 43.01013,
+  "lng": -7.55646
+ },
+ {
+  "name": "Multiservicios Meza Ramos",
+  "lat": 43.02592,
+  "lng": -7.56739
+ },
+ {
+  "name": "Multitienda Agarimo",
+  "lat": 43.00355,
+  "lng": -7.55039
+ },
+ {
+  "name": "Multitienda Carpal",
+  "lat": 43.01612,
+  "lng": -7.56243
+ },
+ {
+  "name": "Multitienda San Roque",
+  "lat": 43.00435,
+  "lng": -7.55058
+ },
+ {
+  "name": "Multitienda última hora",
+  "lat": 43.00088,
+  "lng": -7.54623
+ },
+ {
+  "name": "Multiúsos Xunta de Galicia",
+  "lat": 43.01466,
+  "lng": -7.55591
+ },
+ {
+  "name": "Mundisofá",
+  "lat": 42.96661,
+  "lng": -7.50105
+ },
+ {
+  "name": "Mundo Diner",
+  "lat": 43.02384,
+  "lng": -7.56674
+ },
+ {
+  "name": "Muñiño de San Mamede",
+  "lat": 42.98006,
+  "lng": -7.51022
+ },
+ {
+  "name": "Muralla de Cómics",
+  "lat": 43.00915,
+  "lng": -7.55984
+ },
+ {
+  "name": "Muralla Discos",
+  "lat": 43.01188,
+  "lng": -7.55558
+ },
+ {
+  "name": "Muralla Motor",
+  "lat": 43.04097,
+  "lng": -7.57904
+ },
+ {
+  "name": "Muralla romana de Lugo",
+  "lat": 43.01145,
+  "lng": -7.55782
+ },
+ {
+  "name": "Musa floristas",
+  "lat": 43.0207,
+  "lng": -7.53379
+ },
+ {
+  "name": "Museo Interactivo da Historia de Lugo",
+  "lat": 43.02369,
+  "lng": -7.5605
+ },
+ {
+  "name": "Museo Provincial de Lugo",
+  "lat": 43.01175,
+  "lng": -7.55892
+ },
+ {
+  "name": "Museo Universitario A Domos do Mitreo",
+  "lat": 43.0092,
+  "lng": -7.55914
+ },
+ {
+  "name": "Musical Allegro",
+  "lat": 43.00383,
+  "lng": -7.54753
+ },
+ {
+  "name": "Muxa",
+  "lat": 43.05093,
+  "lng": -7.52791
+ },
+ {
+  "name": "Muxa de Abaixo",
+  "lat": 43.03928,
+  "lng": -7.52821
+ },
+ {
+  "name": "Muxa de Arriba",
+  "lat": 43.05026,
+  "lng": -7.52171
+ },
+ {
+  "name": "N de Nube",
+  "lat": 43.01048,
+  "lng": -7.55455
+ },
+ {
+  "name": "Nabelle",
+  "lat": 43.0403,
+  "lng": -7.51994
+ },
+ {
+  "name": "Nacho GST",
+  "lat": 42.99698,
+  "lng": -7.54955
+ },
+ {
+  "name": "Nación Poke",
+  "lat": 43.01662,
+  "lng": -7.56018
+ },
+ {
+  "name": "Nadela (Nadela (ent. Estda. Sarria))",
+  "lat": 42.96952,
+  "lng": -7.50434
+ },
+ {
+  "name": "Nadela (Nadela (ent. Estda. Sarria)) 2",
+  "lat": 42.97062,
+  "lng": -7.50145
+ },
+ {
+  "name": "Nai Sentada",
+  "lat": 43.02211,
+  "lng": -7.56369
+ },
+ {
+  "name": "Naiterra",
+  "lat": 43.0201,
+  "lng": -7.56302
+ },
+ {
+  "name": "Nalgures Producións SL",
+  "lat": 43.0091,
+  "lng": -7.56509
+ },
+ {
+  "name": "Nanos",
+  "lat": 43.0101,
+  "lng": -7.55519
+ },
+ {
+  "name": "Natividad de María García Soto",
+  "lat": 43.01299,
+  "lng": -7.5589
+ },
+ {
+  "name": "Naturgy",
+  "lat": 43.01512,
+  "lng": -7.55873
+ },
+ {
+  "name": "NB",
+  "lat": 43.01688,
+  "lng": -7.56039
+ },
+ {
+  "name": "NB21 Correduría de seguros",
+  "lat": 42.9989,
+  "lng": -7.54828
+ },
+ {
+  "name": "ndorfina sports",
+  "lat": 43.01004,
+  "lng": -7.55457
+ },
+ {
+  "name": "Nébula",
+  "lat": 42.99821,
+  "lng": -7.54839
+ },
+ {
+  "name": "Necrópole megalítica de San Cibrao",
+  "lat": 43.02061,
+  "lng": -7.52536
+ },
+ {
+  "name": "Neira",
+  "lat": 42.99814,
+  "lng": -7.54776
+ },
+ {
+  "name": "Neumáticos soledad",
+  "lat": 43.04536,
+  "lng": -7.55969
+ },
+ {
+  "name": "New bikes Lugo",
+  "lat": 43.00248,
+  "lng": -7.54975
+ },
+ {
+  "name": "New Square",
+  "lat": 42.99758,
+  "lng": -7.54715
+ },
+ {
+  "name": "Noelia Fernández",
+  "lat": 43.01408,
+  "lng": -7.5622
+ },
+ {
+  "name": "Norauto",
+  "lat": 43.03581,
+  "lng": -7.56881
+ },
+ {
+  "name": "Norvento Enerxia",
+  "lat": 43.03989,
+  "lng": -7.5551
+ },
+ {
+  "name": "Notre",
+  "lat": 43.01163,
+  "lng": -7.56325
+ },
+ {
+  "name": "Nova Exágono",
+  "lat": 42.98563,
+  "lng": -7.58747
+ },
+ {
+  "name": "Nova Rúa Galería de Arte",
+  "lat": 43.01371,
+  "lng": -7.56037
+ },
+ {
+  "name": "Nova Rúa Manualidades",
+  "lat": 43.01365,
+  "lng": -7.56035
+ },
+ {
+  "name": "Nutri Health",
+  "lat": 42.99794,
+  "lng": -7.54735
+ },
+ {
+  "name": "NV Zapatos",
+  "lat": 43.00627,
+  "lng": -7.5554
+ },
+ {
+  "name": "O Agro",
+  "lat": 42.97499,
+  "lng": -7.49036
+ },
+ {
+  "name": "O Agro do Santo",
+  "lat": 42.97363,
+  "lng": -7.5266
+ },
+ {
+  "name": "O Ancao",
+  "lat": 42.98328,
+  "lng": -7.48961
+ },
+ {
+  "name": "O artesán",
+  "lat": 43.0214,
+  "lng": -7.56379
+ },
+ {
+  "name": "O Banco",
+  "lat": 43.01012,
+  "lng": -7.55877
+ },
+ {
+  "name": "O Bodegón de Roci",
+  "lat": 43.00969,
+  "lng": -7.54977
+ },
+ {
+  "name": "O Bosque",
+  "lat": 43.06835,
+  "lng": -7.55313
+ },
+ {
+  "name": "O café da María",
+  "lat": 43.01893,
+  "lng": -7.56207
+ },
+ {
+  "name": "O Cantiño",
+  "lat": 43.01063,
+  "lng": -7.55325
+ },
+ {
+  "name": "O Carme",
+  "lat": 43.01016,
+  "lng": -7.56507
+ },
+ {
+  "name": "O Carqueixo",
+  "lat": 43.01299,
+  "lng": -7.52273
+ },
+ {
+  "name": "O Castelo",
+  "lat": 43.01119,
+  "lng": -7.55927
+ },
+ {
+  "name": "O Castrelo",
+  "lat": 42.99745,
+  "lng": -7.59947
+ },
+ {
+  "name": "O Castro (Cruce Farxocos - Bóveda (dir. centro))",
+  "lat": 42.99771,
+  "lng": -7.4842
+ },
+ {
+  "name": "O Castro (Vilar)",
+  "lat": 42.97813,
+  "lng": -7.49181
+ },
+ {
+  "name": "O Castro de Bóveda",
+  "lat": 42.99604,
+  "lng": -7.48586
+ },
+ {
+  "name": "O Castro de Gomaros",
+  "lat": 43.02897,
+  "lng": -7.55592
+ },
+ {
+  "name": "O Ceao",
+  "lat": 43.05315,
+  "lng": -7.56532
+ },
+ {
+  "name": "O Chuco",
+  "lat": 43.00073,
+  "lng": -7.56625
+ },
+ {
+  "name": "O Corral de Abaixo",
+  "lat": 43.06466,
+  "lng": -7.56478
+ },
+ {
+  "name": "O Corral de Arriba",
+  "lat": 43.06444,
+  "lng": -7.56149
+ },
+ {
+  "name": "O Covelo",
+  "lat": 43.03387,
+  "lng": -7.58247
+ },
+ {
+  "name": "O Cuco",
+  "lat": 42.97727,
+  "lng": -7.51167
+ },
+ {
+  "name": "O Figón",
+  "lat": 43.0101,
+  "lng": -7.5538
+ },
+ {
+  "name": "O Fontao",
+  "lat": 43.02547,
+  "lng": -7.57709
+ },
+ {
+  "name": "O forno da esquina",
+  "lat": 43.0161,
+  "lng": -7.56766
+ },
+ {
+  "name": "O Forno de Catuxa",
+  "lat": 42.95,
+  "lng": -7.59334
+ },
+ {
+  "name": "O Furancho Folk-Rock",
+  "lat": 43.00968,
+  "lng": -7.55986
+ },
+ {
+  "name": "O graneiro de Amelia",
+  "lat": 43.01044,
+  "lng": -7.5549
+ },
+ {
+  "name": "O Mazo",
+  "lat": 42.95166,
+  "lng": -7.49261
+ },
+ {
+  "name": "O Mercado",
+  "lat": 43.01178,
+  "lng": -7.5583
+ },
+ {
+  "name": "O Novo",
+  "lat": 42.98662,
+  "lng": -7.48129
+ },
+ {
+  "name": "O Outeiro",
+  "lat": 42.97712,
+  "lng": -7.57588
+ },
+ {
+  "name": "O Palomar",
+  "lat": 43.00414,
+  "lng": -7.57253
+ },
+ {
+  "name": "O pan do país",
+  "lat": 43.01653,
+  "lng": -7.57031
+ },
+ {
+  "name": "Ó Paso",
+  "lat": 42.99796,
+  "lng": -7.54741
+ },
+ {
+  "name": "O Pedregal",
+  "lat": 43.01437,
+  "lng": -7.56488
+ },
+ {
+  "name": "O Peixeiro Pepe do Noventa",
+  "lat": 42.99411,
+  "lng": -7.55349
+ },
+ {
+  "name": "O Pelamio",
+  "lat": 42.97566,
+  "lng": -7.50957
+ },
+ {
+  "name": "O Polvorín",
+  "lat": 42.97609,
+  "lng": -7.58315
+ },
+ {
+  "name": "O Poni Pisador",
+  "lat": 43.00969,
+  "lng": -7.55904
+ },
+ {
+  "name": "O Portalón",
+  "lat": 43.01206,
+  "lng": -7.56427
+ },
+ {
+  "name": "O Porto de Lugo",
+  "lat": 43.05658,
+  "lng": -7.56591
+ },
+ {
+  "name": "O Priorato",
+  "lat": 43.01994,
+  "lng": -7.56537
+ },
+ {
+  "name": "O Rego do Espiño",
+  "lat": 42.99041,
+  "lng": -7.57097
+ },
+ {
+  "name": "O Rincón de Santos",
+  "lat": 42.99811,
+  "lng": -7.5485
+ },
+ {
+  "name": "O Rincón do bocata",
+  "lat": 43.01175,
+  "lng": -7.56244
+ },
+ {
+  "name": "O Rocho (Avda. Coruña 39)",
+  "lat": 43.01564,
+  "lng": -7.55916
+ },
+ {
+  "name": "O Rocho (Montero Ríos 4)",
+  "lat": 43.01143,
+  "lng": -7.55217
+ },
+ {
+  "name": "O Romano",
+  "lat": 43.00882,
+  "lng": -7.55505
+ },
+ {
+  "name": "O Seixo",
+  "lat": 42.98275,
+  "lng": -7.59373
+ },
+ {
+  "name": "O Sisto",
+  "lat": 43.05038,
+  "lng": -7.54583
+ },
+ {
+  "name": "O Tentáculo",
+  "lat": 43.01032,
+  "lng": -7.55882
+ },
+ {
+  "name": "O Torrón",
+  "lat": 42.98337,
+  "lng": -7.58204
+ },
+ {
+  "name": "O Tumbo",
+  "lat": 43.05639,
+  "lng": -7.59747
+ },
+ {
+  "name": "O Xugo Pulpería-Parrillada",
+  "lat": 43.00478,
+  "lng": -7.55918
+ },
+ {
+  "name": "Obradoiro de gaitas Lis",
+  "lat": 43.02256,
+  "lng": -7.5746
+ },
+ {
+  "name": "Obramat",
+  "lat": 43.03646,
+  "lng": -7.54919
+ },
+ {
+  "name": "Ocaso",
+  "lat": 43.01534,
+  "lng": -7.55891
+ },
+ {
+  "name": "Occident",
+  "lat": 43.02716,
+  "lng": -7.56949
+ },
+ {
+  "name": "Océano",
+  "lat": 43.02127,
+  "lng": -7.56369
+ },
+ {
+  "name": "Offico administrativo",
+  "lat": 43.01463,
+  "lng": -7.55589
+ },
+ {
+  "name": "Oficina de Correos (Praza Agro do Rolo)",
+  "lat": 43.0198,
+  "lng": -7.56385
+ },
+ {
+  "name": "Oficina de Correos (Rda. Muralla 25 (Arenal))",
+  "lat": 43.01057,
+  "lng": -7.55512
+ },
+ {
+  "name": "Oficina de Emprego Lugo-Norte",
+  "lat": 43.01976,
+  "lng": -7.56046
+ },
+ {
+  "name": "Oficina de Emprego Lugo-Sur",
+  "lat": 42.99556,
+  "lng": -7.55102
+ },
+ {
+  "name": "Oficina de Turismo e Centro de Interpretación da Muralla",
+  "lat": 43.01006,
+  "lng": -7.55851
+ },
+ {
+  "name": "Oficina de Turismo e Centro de Interpretación do Camiño de Santiago",
+  "lat": 43.0101,
+  "lng": -7.55923
+ },
+ {
+  "name": "Oficina del censo electoral",
+  "lat": 43.0046,
+  "lng": -7.55929
+ },
+ {
+  "name": "Ofiprecios",
+  "lat": 43.01126,
+  "lng": -7.55296
+ },
+ {
+  "name": "Old Tabern",
+  "lat": 43.00827,
+  "lng": -7.54889
+ },
+ {
+  "name": "Onda Media",
+  "lat": 43.00965,
+  "lng": -7.55888
+ },
+ {
+  "name": "Onda tejana",
+  "lat": 43.01737,
+  "lng": -7.56079
+ },
+ {
+  "name": "Onemons S.A.",
+  "lat": 43.04567,
+  "lng": -7.57176
+ },
+ {
+  "name": "Opc motor",
+  "lat": 43.00461,
+  "lng": -7.54664
+ },
+ {
+  "name": "Open Pool",
+  "lat": 43.01389,
+  "lng": -7.56448
+ },
+ {
+  "name": "Óptica Peláez",
+  "lat": 43.00615,
+  "lng": -7.55554
+ },
+ {
+  "name": "Opticalia",
+  "lat": 43.03667,
+  "lng": -7.56906
+ },
+ {
+  "name": "Oral Design",
+  "lat": 42.99855,
+  "lng": -7.54808
+ },
+ {
+  "name": "Orange",
+  "lat": 43.03677,
+  "lng": -7.5689
+ },
+ {
+  "name": "Orbazai",
+  "lat": 43.00847,
+  "lng": -7.58984
+ },
+ {
+  "name": "Orbilux",
+  "lat": 43.00425,
+  "lng": -7.54918
+ },
+ {
+  "name": "Orbita",
+  "lat": 43.01232,
+  "lng": -7.56096
+ },
+ {
+  "name": "Orixe do Campo",
+  "lat": 43.01003,
+  "lng": -7.55864
+ },
+ {
+  "name": "Ortopedia Aconde",
+  "lat": 43.01236,
+  "lng": -7.56084
+ },
+ {
+  "name": "Os Agros do Rolo",
+  "lat": 43.0506,
+  "lng": -7.60034
+ },
+ {
+  "name": "Os Campos",
+  "lat": 43.06414,
+  "lng": -7.56697
+ },
+ {
+  "name": "Os Cancelos",
+  "lat": 43.01095,
+  "lng": -7.49156
+ },
+ {
+  "name": "Os Castros de San Vicente de Pías",
+  "lat": 43.06111,
+  "lng": -7.55785
+ },
+ {
+  "name": "os colexios",
+  "lat": 43.01191,
+  "lng": -7.56188
+ },
+ {
+  "name": "Os Curros",
+  "lat": 43.06814,
+  "lng": -7.57137
+ },
+ {
+  "name": "Os Leiros Mollados",
+  "lat": 43.02774,
+  "lng": -7.58297
+ },
+ {
+  "name": "Os Pedrouzos",
+  "lat": 43.07271,
+  "lng": -7.56251
+ },
+ {
+  "name": "Os Pepe's",
+  "lat": 43.01258,
+  "lng": -7.56018
+ },
+ {
+  "name": "Os Pepes",
+  "lat": 43.01161,
+  "lng": -7.54906
+ },
+ {
+  "name": "Os Plateiros",
+  "lat": 43.00372,
+  "lng": -7.53984
+ },
+ {
+  "name": "Os Pontellos",
+  "lat": 43.06818,
+  "lng": -7.5865
+ },
+ {
+  "name": "Os Portiños",
+  "lat": 43.0688,
+  "lng": -7.57836
+ },
+ {
+  "name": "Os sobriños de Cuenca café bar",
+  "lat": 43.02599,
+  "lng": -7.57022
+ },
+ {
+  "name": "Os Tres Pes",
+  "lat": 43.01088,
+  "lng": -7.5591
+ },
+ {
+  "name": "Os-Lilos",
+  "lat": 43.00789,
+  "lng": -7.55643
+ },
+ {
+  "name": "Os-Mar",
+  "lat": 43.01675,
+  "lng": -7.55775
+ },
+ {
+  "name": "Oscar Alquiler de Coches",
+  "lat": 43.04883,
+  "lng": -7.56288
+ },
+ {
+  "name": "Oscar Seijas",
+  "lat": 43.02976,
+  "lng": -7.57044
+ },
+ {
+  "name": "Ourizo",
+  "lat": 43.02058,
+  "lng": -7.56564
+ },
+ {
+  "name": "Ousá (Avda. Coruña 369)",
+  "lat": 43.02588,
+  "lng": -7.56825
+ },
+ {
+  "name": "Ousá (Rda. Muralla 118)",
+  "lat": 43.0141,
+  "lng": -7.56087
+ },
+ {
+  "name": "Ousá (Rúa Camiño Real 141)",
+  "lat": 43.01941,
+  "lng": -7.56574
+ },
+ {
+  "name": "Ousá (Rúa Illas Canarias 1 (esq. Avda. Coruña))",
+  "lat": 43.02254,
+  "lng": -7.56465
+ },
+ {
+  "name": "Ousá (Rúa Ourense 48)",
+  "lat": 43.01516,
+  "lng": -7.56431
+ },
+ {
+  "name": "Ousá (San Roque (Jardín))",
+  "lat": 43.00963,
+  "lng": -7.55261
+ },
+ {
+  "name": "Outlet Lugo",
+  "lat": 43.02428,
+  "lng": -7.56605
+ },
+ {
+  "name": "Oysho",
+  "lat": 43.03734,
+  "lng": -7.56936
+ },
+ {
+  "name": "Pacific Soul Tattoo & Co",
+  "lat": 43.00654,
+  "lng": -7.55554
+ },
+ {
+  "name": "Pacios",
+  "lat": 43.03386,
+  "lng": -7.5796
+ },
+ {
+  "name": "Paco Martínez",
+  "lat": 43.03724,
+  "lng": -7.56874
+ },
+ {
+  "name": "Pádel Box",
+  "lat": 43.05148,
+  "lng": -7.56136
+ },
+ {
+  "name": "Pádel Lugo",
+  "lat": 43.04857,
+  "lng": -7.56412
+ },
+ {
+  "name": "Padelprix Lugo",
+  "lat": 43.03821,
+  "lng": -7.55154
+ },
+ {
+  "name": "Padín",
+  "lat": 43.05413,
+  "lng": -7.57447
+ },
+ {
+  "name": "Palacio Municipal de Deportes",
+  "lat": 43.00509,
+  "lng": -7.56229
+ },
+ {
+  "name": "Palomar de Guillar",
+  "lat": 43.07051,
+  "lng": -7.60085
+ },
+ {
+  "name": "Panaderia cafetería Manso",
+  "lat": 43.01959,
+  "lng": -7.56263
+ },
+ {
+  "name": "Panadería Chousa",
+  "lat": 42.99378,
+  "lng": -7.53981
+ },
+ {
+  "name": "Panadería de Ousa",
+  "lat": 43.01126,
+  "lng": -7.56758
+ },
+ {
+  "name": "Panadería Fraga",
+  "lat": 43.00342,
+  "lng": -7.55035
+ },
+ {
+  "name": "Panadería Friol",
+  "lat": 43.01753,
+  "lng": -7.56439
+ },
+ {
+  "name": "Panadería Manso (Rda. Muralla 25 (Arenal))",
+  "lat": 43.01013,
+  "lng": -7.55312
+ },
+ {
+  "name": "Panadería Manso (Rúa Monforte 2-4)",
+  "lat": 43.01459,
+  "lng": -7.55737
+ },
+ {
+  "name": "Panadería Ousá",
+  "lat": 43.02803,
+  "lng": -7.5718
+ },
+ {
+  "name": "Panadería Río Sil",
+  "lat": 43.01538,
+  "lng": -7.55917
+ },
+ {
+  "name": "Panadería Soto",
+  "lat": 43.02777,
+  "lng": -7.57162
+ },
+ {
+  "name": "Panadería-Pastelería Manso",
+  "lat": 43.00814,
+  "lng": -7.55652
+ },
+ {
+  "name": "Pandora",
+  "lat": 43.03642,
+  "lng": -7.56937
+ },
+ {
+  "name": "Panisse Óptica",
+  "lat": 43.01211,
+  "lng": -7.55573
+ },
+ {
+  "name": "Pankonké?",
+  "lat": 43.00758,
+  "lng": -7.55664
+ },
+ {
+  "name": "Papéame",
+  "lat": 43.02601,
+  "lng": -7.55135
+ },
+ {
+  "name": "Papoi",
+  "lat": 42.95203,
+  "lng": -7.60732
+ },
+ {
+  "name": "Papoi de Abaixo (Calde (Hospital))",
+  "lat": 42.95053,
+  "lng": -7.59819
+ },
+ {
+  "name": "Papoi de Abaixo (Calde (Hospital)) 2",
+  "lat": 42.9512,
+  "lng": -7.60216
+ },
+ {
+  "name": "Paprica",
+  "lat": 43.01075,
+  "lng": -7.55378
+ },
+ {
+  "name": "Parada dulce (Avda. Coruña 131)",
+  "lat": 43.01922,
+  "lng": -7.56231
+ },
+ {
+  "name": "Parada Dulce (Rúa Vilalba 6)",
+  "lat": 43.00761,
+  "lng": -7.55631
+ },
+ {
+  "name": "Parada Taxis Garabolos",
+  "lat": 43.02803,
+  "lng": -7.56937
+ },
+ {
+  "name": "Paradai",
+  "lat": 43.02197,
+  "lng": -7.55931
+ },
+ {
+  "name": "Parafarmacia Aceña de Olga",
+  "lat": 42.99591,
+  "lng": -7.55446
+ },
+ {
+  "name": "Parafarmacia naturval",
+  "lat": 42.99879,
+  "lng": -7.54849
+ },
+ {
+  "name": "Paragüería Lucense",
+  "lat": 43.01042,
+  "lng": -7.55501
+ },
+ {
+  "name": "Páramo",
+  "lat": 42.99851,
+  "lng": -7.54782
+ },
+ {
+  "name": "Pardo peluqueros",
+  "lat": 43.00798,
+  "lng": -7.55715
+ },
+ {
+  "name": "Paredes",
+  "lat": 42.98892,
+  "lng": -7.52442
+ },
+ {
+  "name": "Parfois",
+  "lat": 43.0373,
+  "lng": -7.56945
+ },
+ {
+  "name": "Parking 3",
+  "lat": 43.01336,
+  "lng": -7.56036
+ },
+ {
+  "name": "Parking Plaza Santo Domingo",
+  "lat": 43.01186,
+  "lng": -7.55684
+ },
+ {
+  "name": "Parking público rúa Ramón Ferreiro",
+  "lat": 43.0066,
+  "lng": -7.55486
+ },
+ {
+  "name": "Parque da Chanca",
+  "lat": 43.01257,
+  "lng": -7.54751
+ },
+ {
+  "name": "Parque da Lembranza",
+  "lat": 43.00671,
+  "lng": -7.56441
+ },
+ {
+  "name": "Parque da Milagrosa",
+  "lat": 43.02229,
+  "lng": -7.56328
+ },
+ {
+  "name": "Parque das Saamasas",
+  "lat": 43.00435,
+  "lng": -7.57519
+ },
+ {
+  "name": "Parque de Albeiros",
+  "lat": 43.02793,
+  "lng": -7.56173
+ },
+ {
+  "name": "Parque de Bombeiros de Lugo",
+  "lat": 43.03312,
+  "lng": -7.57239
+ },
+ {
+  "name": "Parque de Paradai",
+  "lat": 43.02068,
+  "lng": -7.55591
+ },
+ {
+  "name": "Parque de Rosalía de Castro",
+  "lat": 43.00581,
+  "lng": -7.55957
+ },
+ {
+  "name": "Parque de Simón Bolívar",
+  "lat": 43.01165,
+  "lng": -7.56607
+ },
+ {
+  "name": "Parque do Campo Castelo",
+  "lat": 43.00965,
+  "lng": -7.55489
+ },
+ {
+  "name": "Parque do Sagrado Corazón",
+  "lat": 43.01632,
+  "lng": -7.55236
+ },
+ {
+  "name": "Parque dos Paxariños",
+  "lat": 43.00651,
+  "lng": -7.54693
+ },
+ {
+  "name": "Parque Infantil de Tráfico López Mella",
+  "lat": 43.02576,
+  "lng": -7.56224
+ },
+ {
+  "name": "Parque Paulo Fabio",
+  "lat": 43.03462,
+  "lng": -7.56812
+ },
+ {
+  "name": "Parrillada Fonsagrada",
+  "lat": 43.00932,
+  "lng": -7.55018
+ },
+ {
+  "name": "Parrillada Juan",
+  "lat": 43.04666,
+  "lng": -7.56945
+ },
+ {
+  "name": "Parrillada Nova Lucense",
+  "lat": 43.01729,
+  "lng": -7.55764
+ },
+ {
+  "name": "Parrillada Os Paisanos",
+  "lat": 43.00906,
+  "lng": -7.55001
+ },
+ {
+  "name": "Parrillada Santa Comba",
+  "lat": 42.95086,
+  "lng": -7.49885
+ },
+ {
+  "name": "Parvulario de Paradai",
+  "lat": 43.02217,
+  "lng": -7.55927
+ },
+ {
+  "name": "Paseo do Cine",
+  "lat": 43.02223,
+  "lng": -7.56333
+ },
+ {
+  "name": "Paseo do Miño (Alfonso X (Santo Anxo))",
+  "lat": 42.99179,
+  "lng": -7.55242
+ },
+ {
+  "name": "Paseo do Miño (Avda. Fábrica da Luz (Pazo de Feiras))",
+  "lat": 43.00258,
+  "lng": -7.5683
+ },
+ {
+  "name": "Paseo Periurbán do Río Rato",
+  "lat": 42.99793,
+  "lng": -7.53069
+ },
+ {
+  "name": "Pastelería Maceda",
+  "lat": 43.00671,
+  "lng": -7.55524
+ },
+ {
+  "name": "Pastelería Migas",
+  "lat": 42.99573,
+  "lng": -7.56695
+ },
+ {
+  "name": "Patatas Pereiro",
+  "lat": 43.00525,
+  "lng": -7.55007
+ },
+ {
+  "name": "Paula Salvador Pacior Abogada",
+  "lat": 43.019,
+  "lng": -7.56581
+ },
+ {
+  "name": "Pavillón Central",
+  "lat": 42.99359,
+  "lng": -7.54501
+ },
+ {
+  "name": "Pavillón I",
+  "lat": 42.99416,
+  "lng": -7.54476
+ },
+ {
+  "name": "Pavillón II",
+  "lat": 42.99309,
+  "lng": -7.54468
+ },
+ {
+  "name": "Pavillón III",
+  "lat": 42.99349,
+  "lng": -7.54382
+ },
+ {
+  "name": "Pavillón Polideportivo do Instituto Leiras Pulpeiro",
+  "lat": 43.01259,
+  "lng": -7.57502
+ },
+ {
+  "name": "Pazo da Maza (Dinoslandia)",
+  "lat": 43.01099,
+  "lng": -7.55921
+ },
+ {
+  "name": "Pazo das Pombas",
+  "lat": 43.00989,
+  "lng": -7.55914
+ },
+ {
+  "name": "Pazo de Feiras e Congresos de Lugo",
+  "lat": 43.00312,
+  "lng": -7.56828
+ },
+ {
+  "name": "Pazo de Orbán",
+  "lat": 43.01022,
+  "lng": -7.56018
+ },
+ {
+  "name": "Pazo de Velarde",
+  "lat": 43.01123,
+  "lng": -7.55762
+ },
+ {
+  "name": "Pazo do Marqués de Ombreiro",
+  "lat": 43.01056,
+  "lng": -7.55752
+ },
+ {
+  "name": "Pazo do Sangro",
+  "lat": 43.01022,
+  "lng": -7.56032
+ },
+ {
+  "name": "Pazo dos Rexedores Osorio",
+  "lat": 43.01034,
+  "lng": -7.55735
+ },
+ {
+  "name": "Pazo dos Saavedra de Miraz",
+  "lat": 43.00958,
+  "lng": -7.55952
+ },
+ {
+  "name": "Pazo Episcopal de Lugo",
+  "lat": 43.00984,
+  "lng": -7.55789
+ },
+ {
+  "name": "Pazo Provincial dos Deportes de Lugo",
+  "lat": 42.99125,
+  "lng": -7.54534
+ },
+ {
+  "name": "Pedrouzón",
+  "lat": 43.05967,
+  "lng": -7.57449
+ },
+ {
+  "name": "Pelayo",
+  "lat": 43.0148,
+  "lng": -7.55805
+ },
+ {
+  "name": "Peluqueria Amparito",
+  "lat": 43.02111,
+  "lng": -7.56901
+ },
+ {
+  "name": "Peluquería Angel",
+  "lat": 43.01644,
+  "lng": -7.55776
+ },
+ {
+  "name": "Peluquería Avance",
+  "lat": 43.02365,
+  "lng": -7.56864
+ },
+ {
+  "name": "Peluquería Carlos Carreira",
+  "lat": 43.00722,
+  "lng": -7.55137
+ },
+ {
+  "name": "Peluquería de Caballeros Jorge",
+  "lat": 43.01941,
+  "lng": -7.55912
+ },
+ {
+  "name": "Peluquería estética Ebia",
+  "lat": 43.01536,
+  "lng": -7.56136
+ },
+ {
+  "name": "Peluquería Finy",
+  "lat": 43.01492,
+  "lng": -7.55726
+ },
+ {
+  "name": "Peluquería Lasconi",
+  "lat": 43.01506,
+  "lng": -7.56115
+ },
+ {
+  "name": "Peluqueria Leila",
+  "lat": 43.01596,
+  "lng": -7.567
+ },
+ {
+  "name": "Peluquería Lupe",
+  "lat": 43.02004,
+  "lng": -7.56296
+ },
+ {
+  "name": "Peluquería M. Carmen",
+  "lat": 43.01564,
+  "lng": -7.56146
+ },
+ {
+  "name": "Peluquería Manoli",
+  "lat": 43.00134,
+  "lng": -7.54926
+ },
+ {
+  "name": "Peluquería Marifé",
+  "lat": 43.00407,
+  "lng": -7.55054
+ },
+ {
+  "name": "Peluquería Marina Duarte",
+  "lat": 43.02085,
+  "lng": -7.56368
+ },
+ {
+  "name": "Peluquería Orgánica Moana",
+  "lat": 43.00829,
+  "lng": -7.55675
+ },
+ {
+  "name": "Peluquería Saraiba",
+  "lat": 43.02532,
+  "lng": -7.5669
+ },
+ {
+  "name": "Peluquerías Low Cost",
+  "lat": 42.9985,
+  "lng": -7.54763
+ },
+ {
+  "name": "Penas Apartadas",
+  "lat": 43.0217,
+  "lng": -7.53266
+ },
+ {
+  "name": "Penoucos",
+  "lat": 43.00385,
+  "lng": -7.53186
+ },
+ {
+  "name": "Pensión 511",
+  "lat": 43.01163,
+  "lng": -7.55309
+ },
+ {
+  "name": "Pensión Alba",
+  "lat": 43.00994,
+  "lng": -7.55414
+ },
+ {
+  "name": "Pensión González",
+  "lat": 43.06089,
+  "lng": -7.60067
+ },
+ {
+  "name": "Pension San Roque",
+  "lat": 43.0096,
+  "lng": -7.55279
+ },
+ {
+  "name": "People",
+  "lat": 43.01008,
+  "lng": -7.55829
+ },
+ {
+  "name": "Pepa",
+  "lat": 43.01167,
+  "lng": -7.55313
+ },
+ {
+  "name": "Pepe Jeans",
+  "lat": 43.01158,
+  "lng": -7.55688
+ },
+ {
+  "name": "Peppino Century",
+  "lat": 43.00849,
+  "lng": -7.55435
+ },
+ {
+  "name": "Pescadería Facoy",
+  "lat": 43.00467,
+  "lng": -7.55102
+ },
+ {
+  "name": "Pescadería los armadores del norte",
+  "lat": 43.01629,
+  "lng": -7.5624
+ },
+ {
+  "name": "Pescados y mariscos Estefania",
+  "lat": 43.02731,
+  "lng": -7.57157
+ },
+ {
+  "name": "Petiscos",
+  "lat": 43.01027,
+  "lng": -7.55881
+ },
+ {
+  "name": "Peto de Ánimas da Tolda",
+  "lat": 42.99032,
+  "lng": -7.53663
+ },
+ {
+  "name": "Petrocash",
+  "lat": 43.03058,
+  "lng": -7.53674
+ },
+ {
+  "name": "Petroprix",
+  "lat": 43.03763,
+  "lng": -7.56584
+ },
+ {
+  "name": "Pías",
+  "lat": 43.05994,
+  "lng": -7.56462
+ },
+ {
+  "name": "Piedrafita - Supermercado",
+  "lat": 43.01025,
+  "lng": -7.54875
+ },
+ {
+  "name": "Pink Blue",
+  "lat": 43.02325,
+  "lng": -7.56355
+ },
+ {
+  "name": "Pinturas Kromo",
+  "lat": 43.04751,
+  "lng": -7.57386
+ },
+ {
+  "name": "Piscina Municipal As Pedreiras",
+  "lat": 42.99154,
+  "lng": -7.54363
+ },
+ {
+  "name": "Piscina Municipal de Frigsa",
+  "lat": 43.02648,
+  "lng": -7.56188
+ },
+ {
+  "name": "Piscina Romana",
+  "lat": 43.00943,
+  "lng": -7.55754
+ },
+ {
+  "name": "Piscinas Municipais Descubertas",
+  "lat": 43.02659,
+  "lng": -7.56107
+ },
+ {
+  "name": "Piso Fácil",
+  "lat": 43.0125,
+  "lng": -7.56
+ },
+ {
+  "name": "Pistas Deportivas da Cidade Cultural",
+  "lat": 43.00477,
+  "lng": -7.55698
+ },
+ {
+  "name": "Piti Otero",
+  "lat": 43.01201,
+  "lng": -7.56742
+ },
+ {
+  "name": "Piúgos",
+  "lat": 42.98508,
+  "lng": -7.56482
+ },
+ {
+  "name": "Piúgos de Pena",
+  "lat": 42.9861,
+  "lng": -7.56747
+ },
+ {
+  "name": "Pizzería el Nonno",
+  "lat": 43.01872,
+  "lng": -7.5619
+ },
+ {
+  "name": "Plancho Por Ti",
+  "lat": 43.00382,
+  "lng": -7.54751
+ },
+ {
+  "name": "Planetagoloso",
+  "lat": 43.01232,
+  "lng": -7.5669
+ },
+ {
+  "name": "Plenergy",
+  "lat": 43.03877,
+  "lng": -7.57414
+ },
+ {
+  "name": "Plenus supermercados",
+  "lat": 43.00547,
+  "lng": -7.55112
+ },
+ {
+  "name": "Plural",
+  "lat": 42.99889,
+  "lng": -7.54823
+ },
+ {
+  "name": "Plus Ultra",
+  "lat": 43.02742,
+  "lng": -7.56897
+ },
+ {
+  "name": "Policía Autonómica",
+  "lat": 42.99979,
+  "lng": -7.54863
+ },
+ {
+  "name": "Policía Municipal",
+  "lat": 42.99982,
+  "lng": -7.54331
+ },
+ {
+  "name": "Policía Nacional",
+  "lat": 43.00445,
+  "lng": -7.55448
+ },
+ {
+  "name": "Policlínica Ciudad Norte",
+  "lat": 43.02425,
+  "lng": -7.56644
+ },
+ {
+  "name": "Polideportivo Municipal Casa do Deporte",
+  "lat": 43.02498,
+  "lng": -7.56032
+ },
+ {
+  "name": "Polideportivo Municipal Daniel Cordido",
+  "lat": 43.02506,
+  "lng": -7.57058
+ },
+ {
+  "name": "Polígono Industrial das Gándaras",
+  "lat": 43.04253,
+  "lng": -7.54862
+ },
+ {
+  "name": "Polígono Industrial do Ceao",
+  "lat": 43.04672,
+  "lng": -7.56771
+ },
+ {
+  "name": "Ponte da Tolda",
+  "lat": 42.99078,
+  "lng": -7.53739
+ },
+ {
+  "name": "Ponte Vella de Lugo",
+  "lat": 43.00193,
+  "lng": -7.56358
+ },
+ {
+  "name": "Porta da Estación",
+  "lat": 43.0128,
+  "lng": -7.55477
+ },
+ {
+  "name": "Porta de San Fernando",
+  "lat": 43.01454,
+  "lng": -7.55839
+ },
+ {
+  "name": "Porta de San Pedro",
+  "lat": 43.01033,
+  "lng": -7.55319
+ },
+ {
+  "name": "Porta de Santiago",
+  "lat": 43.00882,
+  "lng": -7.5592
+ },
+ {
+  "name": "Porta do Bispo Aguirre",
+  "lat": 43.00855,
+  "lng": -7.55676
+ },
+ {
+  "name": "Porta do Bispo Izquierdo",
+  "lat": 43.00898,
+  "lng": -7.55502
+ },
+ {
+  "name": "Porta do Bispo Odoario",
+  "lat": 43.01175,
+  "lng": -7.56262
+ },
+ {
+  "name": "Porta Falsa",
+  "lat": 43.01436,
+  "lng": -7.5574
+ },
+ {
+  "name": "Porta Miñá",
+  "lat": 43.01005,
+  "lng": -7.56058
+ },
+ {
+  "name": "Porta Nova",
+  "lat": 43.01394,
+  "lng": -7.56057
+ },
+ {
+  "name": "Porta Santiago",
+  "lat": 43.00828,
+  "lng": -7.55893
+ },
+ {
+  "name": "Portal 36",
+  "lat": 43.01173,
+  "lng": -7.55544
+ },
+ {
+  "name": "Portarregueiro",
+  "lat": 43.04384,
+  "lng": -7.5427
+ },
+ {
+  "name": "Porto Piñeiro",
+  "lat": 43.0517,
+  "lng": -7.53395
+ },
+ {
+  "name": "Porto viajes",
+  "lat": 43.0177,
+  "lng": -7.56104
+ },
+ {
+  "name": "Prados",
+  "lat": 43.01293,
+  "lng": -7.56577
+ },
+ {
+  "name": "Praza Agro do Rolo",
+  "lat": 43.02099,
+  "lng": -7.56594
+ },
+ {
+  "name": "Praza Anxo Fernández Gómez",
+  "lat": 43.01009,
+  "lng": -7.55533
+ },
+ {
+  "name": "Praza Armanyà",
+  "lat": 43.01068,
+  "lng": -7.5579
+ },
+ {
+  "name": "Praza Augas Férreas",
+  "lat": 42.99763,
+  "lng": -7.54804
+ },
+ {
+  "name": "Praza Aviador Parga Cerezo",
+  "lat": 43.00552,
+  "lng": -7.55197
+ },
+ {
+  "name": "Praza Bispo Frei Xosé Gómez",
+  "lat": 43.02325,
+  "lng": -7.57259
+ },
+ {
+  "name": "Praza da árbore",
+  "lat": 43.01698,
+  "lng": -7.55778
+ },
+ {
+  "name": "Praza da Constitución",
+  "lat": 43.00887,
+  "lng": -7.55508
+ },
+ {
+  "name": "Praza da Milagrosa",
+  "lat": 43.01947,
+  "lng": -7.56485
+ },
+ {
+  "name": "Praza da Mina",
+  "lat": 43.00655,
+  "lng": -7.55237
+ },
+ {
+  "name": "Praza da Mosqueira",
+  "lat": 43.0096,
+  "lng": -7.55373
+ },
+ {
+  "name": "Praza da Soidade",
+  "lat": 43.01132,
+  "lng": -7.55893
+ },
+ {
+  "name": "Praza das Illas",
+  "lat": 43.0023,
+  "lng": -7.54089
+ },
+ {
+  "name": "Praza de Abastos",
+  "lat": 43.01193,
+  "lng": -7.55798
+ },
+ {
+  "name": "Praza de Alicante",
+  "lat": 43.0169,
+  "lng": -7.56473
+ },
+ {
+  "name": "Praza de Antonio Gandoy",
+  "lat": 43.00275,
+  "lng": -7.5506
+ },
+ {
+  "name": "Praza de Asturias",
+  "lat": 43.01302,
+  "lng": -7.55465
+ },
+ {
+  "name": "Praza de Conde Fontao",
+  "lat": 43.01504,
+  "lng": -7.55244
+ },
+ {
+  "name": "Praza de Fernando de Casas Novoa",
+  "lat": 43.00929,
+  "lng": -7.55747
+ },
+ {
+  "name": "Praza de Ferrol",
+  "lat": 43.01381,
+  "lng": -7.55771
+ },
+ {
+  "name": "Praza de Pío XII",
+  "lat": 43.00908,
+  "lng": -7.55887
+ },
+ {
+  "name": "Praza de San Lourenzo",
+  "lat": 43.02095,
+  "lng": -7.56208
+ },
+ {
+  "name": "Praza de San Marcos",
+  "lat": 43.01297,
+  "lng": -7.55703
+ },
+ {
+  "name": "Praza de San Xoán",
+  "lat": 43.00129,
+  "lng": -7.54216
+ },
+ {
+  "name": "Praza de Santa María",
+  "lat": 43.00968,
+  "lng": -7.55758
+ },
+ {
+  "name": "Praza de Santo Domingo",
+  "lat": 43.01177,
+  "lng": -7.55702
+ },
+ {
+  "name": "Praza do Camiño Primitivo",
+  "lat": 43.01239,
+  "lng": -7.54991
+ },
+ {
+  "name": "Praza do Campo",
+  "lat": 43.01017,
+  "lng": -7.55856
+ },
+ {
+  "name": "Praza do Campo e Fonte de San Vicente Ferrer",
+  "lat": 43.01006,
+  "lng": -7.55846
+ },
+ {
+  "name": "Praza do Cantiño",
+  "lat": 43.01051,
+  "lng": -7.55328
+ },
+ {
+  "name": "Praza do Castiñeiro",
+  "lat": 43.01706,
+  "lng": -7.57049
+ },
+ {
+  "name": "Praza do Catasol",
+  "lat": 43.00805,
+  "lng": -7.55107
+ },
+ {
+  "name": "Praza do Eixo Atlántico",
+  "lat": 43.02345,
+  "lng": -7.56804
+ },
+ {
+  "name": "Praza do Rei",
+  "lat": 43.00233,
+  "lng": -7.55045
+ },
+ {
+  "name": "Praza Fillos de Antón Marcos",
+  "lat": 43.01155,
+  "lng": -7.55939
+ },
+ {
+  "name": "Praza Horta do Seminario",
+  "lat": 43.00689,
+  "lng": -7.55571
+ },
+ {
+  "name": "Praza Maior",
+  "lat": 43.00967,
+  "lng": -7.55653
+ },
+ {
+  "name": "Praza Primeiro de Maio",
+  "lat": 43.02388,
+  "lng": -7.56517
+ },
+ {
+  "name": "Praza Roxa",
+  "lat": 43.00103,
+  "lng": -7.55239
+ },
+ {
+  "name": "Praza Viana do Castelo",
+  "lat": 43.02309,
+  "lng": -7.5671
+ },
+ {
+  "name": "Prebe",
+  "lat": 43.01048,
+  "lng": -7.55879
+ },
+ {
+  "name": "Precor 2000",
+  "lat": 43.0127,
+  "lng": -7.56297
+ },
+ {
+  "name": "Predio",
+  "lat": 43.00645,
+  "lng": -7.55517
+ },
+ {
+  "name": "Prelo (Avda. Coruña 39)",
+  "lat": 43.0155,
+  "lng": -7.55927
+ },
+ {
+  "name": "Prelo (Montero Ríos 4)",
+  "lat": 43.01157,
+  "lng": -7.55306
+ },
+ {
+  "name": "Prelo (Rúa Vilalba 6)",
+  "lat": 43.00803,
+  "lng": -7.55701
+ },
+ {
+  "name": "Premium cars Lugo",
+  "lat": 43.01954,
+  "lng": -7.56669
+ },
+ {
+  "name": "Prenatal",
+  "lat": 43.01585,
+  "lng": -7.55956
+ },
+ {
+  "name": "Prima prix",
+  "lat": 43.01693,
+  "lng": -7.56021
+ },
+ {
+  "name": "Prime Colada (Ramón Ferreiro 19)",
+  "lat": 43.0063,
+  "lng": -7.55536
+ },
+ {
+  "name": "Prime Colada (Rda. Valle Inclán 21)",
+  "lat": 43.01908,
+  "lng": -7.56619
+ },
+ {
+  "name": "Proeste Ingeniería S.L.",
+  "lat": 42.99638,
+  "lng": -7.55561
+ },
+ {
+  "name": "Prohabit interiorismo",
+  "lat": 43.02613,
+  "lng": -7.56754
+ },
+ {
+  "name": "Protese S. L.",
+  "lat": 43.00016,
+  "lng": -7.54711
+ },
+ {
+  "name": "Proyestegal SL",
+  "lat": 43.00481,
+  "lng": -7.55054
+ },
+ {
+  "name": "Pub Karrusel",
+  "lat": 43.01023,
+  "lng": -7.55783
+ },
+ {
+  "name": "Pull&Bear",
+  "lat": 43.03735,
+  "lng": -7.56974
+ },
+ {
+  "name": "Pulpería A Rotonda",
+  "lat": 43.02902,
+  "lng": -7.5703
+ },
+ {
+  "name": "Pulpería Aurora do Carballiño",
+  "lat": 43.00875,
+  "lng": -7.55397
+ },
+ {
+  "name": "Pulpería Breogán",
+  "lat": 43.0091,
+  "lng": -7.55305
+ },
+ {
+  "name": "Pumariño Abogados",
+  "lat": 43.00697,
+  "lng": -7.55314
+ },
+ {
+  "name": "Punto de Encuentro",
+  "lat": 43.0001,
+  "lng": -7.54652
+ },
+ {
+  "name": "Punto Limpo de Lugo",
+  "lat": 43.04582,
+  "lng": -7.55889
+ },
+ {
+  "name": "Purificación García",
+  "lat": 43.01137,
+  "lng": -7.55617
+ },
+ {
+  "name": "Puro cubano",
+  "lat": 42.99463,
+  "lng": -7.55054
+ },
+ {
+  "name": "Puro Tardeo Jardín Club",
+  "lat": 43.00786,
+  "lng": -7.57835
+ },
+ {
+  "name": "Purriños fotógrafos",
+  "lat": 43.02244,
+  "lng": -7.56521
+ },
+ {
+  "name": "Queixería Praza do Campo",
+  "lat": 43.01016,
+  "lng": -7.55878
+ },
+ {
+  "name": "Quintela",
+  "lat": 42.96476,
+  "lng": -7.48706
+ },
+ {
+  "name": "Quintián",
+  "lat": 43.0562,
+  "lng": -7.52268
+ },
+ {
+  "name": "Quiosco da Música",
+  "lat": 43.00516,
+  "lng": -7.55975
+ },
+ {
+  "name": "Rafa fotografía",
+  "lat": 43.01519,
+  "lng": -7.56106
+ },
+ {
+  "name": "Rafael González",
+  "lat": 43.00829,
+  "lng": -7.55719
+ },
+ {
+  "name": "Ramil",
+  "lat": 43.05573,
+  "lng": -7.59677
+ },
+ {
+  "name": "Ramon",
+  "lat": 43.01035,
+  "lng": -7.55658
+ },
+ {
+  "name": "Ramón Otero Pedrayo",
+  "lat": 43.00889,
+  "lng": -7.55692
+ },
+ {
+  "name": "Rañoá",
+  "lat": 43.0629,
+  "lng": -7.5471
+ },
+ {
+  "name": "Rapi2",
+  "lat": 43.02087,
+  "lng": -7.56362
+ },
+ {
+  "name": "Rapimueble",
+  "lat": 43.04683,
+  "lng": -7.58697
+ },
+ {
+  "name": "Rastro Remar",
+  "lat": 43.02423,
+  "lng": -7.56601
+ },
+ {
+  "name": "Rastro Reto",
+  "lat": 43.04041,
+  "lng": -7.57299
+ },
+ {
+  "name": "Real Reads",
+  "lat": 43.01597,
+  "lng": -7.5622
+ },
+ {
+  "name": "Reale (Avda. Coruña 58)",
+  "lat": 43.01681,
+  "lng": -7.56011
+ },
+ {
+  "name": "Reale (Rda. Muralla 118)",
+  "lat": 43.01422,
+  "lng": -7.56047
+ },
+ {
+  "name": "Recadación",
+  "lat": 43.01107,
+  "lng": -7.56269
+ },
+ {
+  "name": "Recambios al volante, S.L.",
+  "lat": 43.04648,
+  "lng": -7.57335
+ },
+ {
+  "name": "Recambios Frain SL",
+  "lat": 43.04743,
+  "lng": -7.56965
+ },
+ {
+  "name": "Recambios Infra, S.L:",
+  "lat": 43.04803,
+  "lng": -7.56546
+ },
+ {
+  "name": "Recambios Infra, S.L.",
+  "lat": 43.04759,
+  "lng": -7.56592
+ },
+ {
+  "name": "Recambios Luis",
+  "lat": 43.0383,
+  "lng": -7.55088
+ },
+ {
+  "name": "Recatelo",
+  "lat": 43.00691,
+  "lng": -7.55848
+ },
+ {
+  "name": "Recimil",
+  "lat": 42.9806,
+  "lng": -7.48721
+ },
+ {
+  "name": "Redes",
+  "lat": 43.00878,
+  "lng": -7.55307
+ },
+ {
+  "name": "Redetel",
+  "lat": 42.99704,
+  "lng": -7.54759
+ },
+ {
+  "name": "Regalucus",
+  "lat": 43.02068,
+  "lng": -7.53377
+ },
+ {
+  "name": "Renta 4 banco",
+  "lat": 43.0167,
+  "lng": -7.56001
+ },
+ {
+  "name": "Reparación de calzado O galego",
+  "lat": 43.00838,
+  "lng": -7.55212
+ },
+ {
+  "name": "Repsol (A Tolda (Cruce pista Bosende))",
+  "lat": 42.98839,
+  "lng": -7.5357
+ },
+ {
+  "name": "Repsol (Benigno Rivera (H. Ferreiro))",
+  "lat": 43.0447,
+  "lng": -7.56993
+ },
+ {
+  "name": "Repsol (Benigno Rivera (Remar))",
+  "lat": 43.03939,
+  "lng": -7.57326
+ },
+ {
+  "name": "Repsol (Estda. Fonsagrada 196)",
+  "lat": 43.01291,
+  "lng": -7.52346
+ },
+ {
+  "name": "Repsol (Estda. Nova Santiago (Comp. Santiago))",
+  "lat": 42.99727,
+  "lng": -7.5871
+ },
+ {
+  "name": "Repsol (Igrexa Muxa *)",
+  "lat": 43.04362,
+  "lng": -7.51692
+ },
+ {
+  "name": "Repsol (Nadela (Mundisofá))",
+  "lat": 42.96707,
+  "lng": -7.49872
+ },
+ {
+  "name": "Repsol (Rúa Anduriñas 5)",
+  "lat": 43.01226,
+  "lng": -7.56272
+ },
+ {
+  "name": "Repsol (Rúa Leiteiras (Transp. Arias))",
+  "lat": 43.05072,
+  "lng": -7.56551
+ },
+ {
+  "name": "Repsol (San Roque 72 (Rampa Claudio López))",
+  "lat": 43.0061,
+  "lng": -7.55131
+ },
+ {
+  "name": "Reque",
+  "lat": 43.00658,
+  "lng": -7.53521
+ },
+ {
+  "name": "Rescate",
+  "lat": 43.00843,
+  "lng": -7.55188
+ },
+ {
+  "name": "Residencia Abeiro",
+  "lat": 42.99529,
+  "lng": -7.55528
+ },
+ {
+  "name": "Residencia Miradoiro do Aledar",
+  "lat": 42.99125,
+  "lng": -7.56429
+ },
+ {
+  "name": "Residencia universitaria de estudiantes Xesús Bal e Gay",
+  "lat": 42.99063,
+  "lng": -7.55032
+ },
+ {
+  "name": "Restaurante A Lareira",
+  "lat": 43.02007,
+  "lng": -7.56307
+ },
+ {
+  "name": "Restaurante A Seimeira",
+  "lat": 43.01136,
+  "lng": -7.55138
+ },
+ {
+  "name": "Restaurante Antonio",
+  "lat": 43.00897,
+  "lng": -7.57019
+ },
+ {
+  "name": "Restaurante Cafetería Yaldara",
+  "lat": 43.03742,
+  "lng": -7.55515
+ },
+ {
+  "name": "Restaurante Chino Shanghai",
+  "lat": 43.00686,
+  "lng": -7.55145
+ },
+ {
+  "name": "Restaurante España",
+  "lat": 43.01259,
+  "lng": -7.55493
+ },
+ {
+  "name": "Restaurante González",
+  "lat": 43.0609,
+  "lng": -7.60064
+ },
+ {
+  "name": "Restaurante Kina-Kaña",
+  "lat": 43.03028,
+  "lng": -7.54969
+ },
+ {
+  "name": "Restaurante Los Robles-6 Bellotas",
+  "lat": 43.00641,
+  "lng": -7.57853
+ },
+ {
+  "name": "Restaurante Manuel Manuel",
+  "lat": 43.02295,
+  "lng": -7.5638
+ },
+ {
+  "name": "Restaurante Terras do Miño",
+  "lat": 42.99636,
+  "lng": -7.53317
+ },
+ {
+  "name": "Restaurante Vila Verde",
+  "lat": 43.00376,
+  "lng": -7.54744
+ },
+ {
+  "name": "Restaurante Wok",
+  "lat": 43.02061,
+  "lng": -7.56317
+ },
+ {
+  "name": "Revoltosa",
+  "lat": 43.04813,
+  "lng": -7.57464
+ },
+ {
+  "name": "Riba",
+  "lat": 43.01004,
+  "lng": -7.55838
+ },
+ {
+  "name": "Ribeira",
+  "lat": 42.98472,
+  "lng": -7.54649
+ },
+ {
+  "name": "Rincón de Enrique",
+  "lat": 43.0209,
+  "lng": -7.5634
+ },
+ {
+  "name": "Rodrilux",
+  "lat": 43.01405,
+  "lng": -7.56224
+ },
+ {
+  "name": "Roots and Boots",
+  "lat": 43.0027,
+  "lng": -7.56353
+ },
+ {
+  "name": "Roque cafetería",
+  "lat": 43.00973,
+  "lng": -7.55326
+ },
+ {
+  "name": "Rosalía de Castro (Ramón Ferreiro (Feminino))",
+  "lat": 43.00584,
+  "lng": -7.55881
+ },
+ {
+  "name": "Rosalía de Castro (Rúa Vilalba 6)",
+  "lat": 43.00941,
+  "lng": -7.55655
+ },
+ {
+  "name": "Royal Tandoori Indian",
+  "lat": 43.01211,
+  "lng": -7.55165
+ },
+ {
+  "name": "Roysan",
+  "lat": 43.04853,
+  "lng": -7.56313
+ },
+ {
+  "name": "Rúa Campos Novos",
+  "lat": 42.99396,
+  "lng": -7.55137
+ },
+ {
+  "name": "Rucho",
+  "lat": 43.01722,
+  "lng": -7.56044
+ },
+ {
+  "name": "Ruínas do Cuartel de San Cibrao",
+  "lat": 43.01649,
+  "lng": -7.52652
+ },
+ {
+  "name": "Ruta botánica polo campus universitario de Lugo (Alfonso X (Fac. Ciencias))",
+  "lat": 42.99114,
+  "lng": -7.54786
+ },
+ {
+  "name": "Ruta botánica polo campus universitario de Lugo (Facultade Veterinaria)",
+  "lat": 42.99472,
+  "lng": -7.5461
+ },
+ {
+  "name": "Ruta do río Rato (Avda. Madrid 317-319)",
+  "lat": 42.9914,
+  "lng": -7.53685
+ },
+ {
+  "name": "Ruta do Río Rato (Bosende)",
+  "lat": 42.99704,
+  "lng": -7.53292
+ },
+ {
+  "name": "Ruta: As ribeiras altas, Miño arriba",
+  "lat": 43.00247,
+  "lng": -7.56379
+ },
+ {
+  "name": "SabadellGallego (Avda. Coruña 131)",
+  "lat": 43.01974,
+  "lng": -7.56273
+ },
+ {
+  "name": "SabadellGallego (Rda. Muralla 25 (Arenal))",
+  "lat": 43.01099,
+  "lng": -7.55463
+ },
+ {
+  "name": "SabadellGallego (Rúa Vilalba 6)",
+  "lat": 43.00869,
+  "lng": -7.55697
+ },
+ {
+  "name": "SabadellGallego (San Roque 175)",
+  "lat": 43.00405,
+  "lng": -7.55076
+ },
+ {
+  "name": "Sagrado Corazón",
+  "lat": 43.01731,
+  "lng": -7.55017
+ },
+ {
+  "name": "Sala de Exposicións Capela de Santa María",
+  "lat": 43.01145,
+  "lng": -7.563
+ },
+ {
+  "name": "Sala de Exposicións Porta Miñá",
+  "lat": 43.0098,
+  "lng": -7.56094
+ },
+ {
+  "name": "Salón de Actos Facultade Veterinaria",
+  "lat": 42.9945,
+  "lng": -7.54667
+ },
+ {
+  "name": "Salón del Reino de los Testigos Cristianos de Jehová",
+  "lat": 43.02507,
+  "lng": -7.55544
+ },
+ {
+  "name": "Salvatierra abogados",
+  "lat": 43.0093,
+  "lng": -7.55223
+ },
+ {
+  "name": "Salzillo Seguridad",
+  "lat": 43.01703,
+  "lng": -7.56164
+ },
+ {
+  "name": "San Amaro",
+  "lat": 42.98051,
+  "lng": -7.51921
+ },
+ {
+  "name": "San Antonio",
+  "lat": 43.014,
+  "lng": -7.56474
+ },
+ {
+  "name": "San Cibrao 1",
+  "lat": 43.01924,
+  "lng": -7.52122
+ },
+ {
+  "name": "San Cibrao 2",
+  "lat": 43.02176,
+  "lng": -7.52033
+ },
+ {
+  "name": "San Fiz",
+  "lat": 42.99519,
+  "lng": -7.53852
+ },
+ {
+  "name": "San Lázaro",
+  "lat": 43.00422,
+  "lng": -7.56494
+ },
+ {
+  "name": "San Mamede",
+  "lat": 42.98072,
+  "lng": -7.50489
+ },
+ {
+  "name": "San Mamede dos Anxos",
+  "lat": 42.97977,
+  "lng": -7.50631
+ },
+ {
+  "name": "San Pedro Fiz de Muxa",
+  "lat": 42.99559,
+  "lng": -7.53897
+ },
+ {
+  "name": "San Rafael",
+  "lat": 43.0257,
+  "lng": -7.56714
+ },
+ {
+  "name": "San Roque",
+  "lat": 43.00929,
+  "lng": -7.55193
+ },
+ {
+  "name": "San Salvador de Muxa",
+  "lat": 43.03874,
+  "lng": -7.53453
+ },
+ {
+  "name": "San Vicente de Pías",
+  "lat": 43.06194,
+  "lng": -7.56361
+ },
+ {
+  "name": "San Xoán de Pena",
+  "lat": 42.96479,
+  "lng": -7.51054
+ },
+ {
+  "name": "Sandra",
+  "lat": 43.02018,
+  "lng": -7.56511
+ },
+ {
+  "name": "Sani Dent",
+  "lat": 43.01729,
+  "lng": -7.56049
+ },
+ {
+  "name": "Sanjurjo Peluqueros",
+  "lat": 43.01241,
+  "lng": -7.55996
+ },
+ {
+  "name": "Santa Comba (Santa Comba (Calfensa))",
+  "lat": 42.95164,
+  "lng": -7.50346
+ },
+ {
+  "name": "Santa Comba (Santa Comba (Calfensa)) 2",
+  "lat": 42.95591,
+  "lng": -7.49516
+ },
+ {
+  "name": "Santa Engracia",
+  "lat": 42.95081,
+  "lng": -7.49881
+ },
+ {
+  "name": "Santa Eufemia",
+  "lat": 42.95867,
+  "lng": -7.60556
+ },
+ {
+  "name": "Santa Eulalia",
+  "lat": 42.97664,
+  "lng": -7.53737
+ },
+ {
+  "name": "Santa Lucía",
+  "lat": 43.01598,
+  "lng": -7.55944
+ },
+ {
+  "name": "Santa Sede",
+  "lat": 43.00944,
+  "lng": -7.55846
+ },
+ {
+  "name": "Santalla",
+  "lat": 42.98574,
+  "lng": -7.54292
+ },
+ {
+  "name": "Santeiros",
+  "lat": 43.00278,
+  "lng": -7.56335
+ },
+ {
+  "name": "Santo André de Castro",
+  "lat": 42.9788,
+  "lng": -7.5197
+ },
+ {
+  "name": "Santos y Yáñez",
+  "lat": 43.01996,
+  "lng": -7.55851
+ },
+ {
+  "name": "SB Soluciones informáticas",
+  "lat": 43.0062,
+  "lng": -7.55129
+ },
+ {
+  "name": "Seaga",
+  "lat": 43.04481,
+  "lng": -7.5592
+ },
+ {
+  "name": "SegurCaixa Adeslas",
+  "lat": 43.00753,
+  "lng": -7.553
+ },
+ {
+  "name": "Seivane",
+  "lat": 43.05861,
+  "lng": -7.58079
+ },
+ {
+  "name": "Seminario Maior",
+  "lat": 43.00741,
+  "lng": -7.55537
+ },
+ {
+  "name": "Seminario Menor",
+  "lat": 43.00845,
+  "lng": -7.55605
+ },
+ {
+  "name": "Senoreste",
+  "lat": 42.99516,
+  "lng": -7.55308
+ },
+ {
+  "name": "Sensei Depilación Laser",
+  "lat": 42.99813,
+  "lng": -7.54774
+ },
+ {
+  "name": "Seoane",
+  "lat": 42.96859,
+  "lng": -7.51308
+ },
+ {
+  "name": "Serendipia",
+  "lat": 43.03692,
+  "lng": -7.56862
+ },
+ {
+  "name": "Serigar",
+  "lat": 43.02857,
+  "lng": -7.5679
+ },
+ {
+  "name": "Serigráfica Argentina",
+  "lat": 43.02692,
+  "lng": -7.57176
+ },
+ {
+  "name": "Servicio de Publicacións da Deputación Provincial de Lugo",
+  "lat": 43.01072,
+  "lng": -7.56394
+ },
+ {
+  "name": "Servicopia",
+  "lat": 42.99846,
+  "lng": -7.54787
+ },
+ {
+  "name": "Servihogar Galicia",
+  "lat": 43.01474,
+  "lng": -7.56459
+ },
+ {
+  "name": "Servizo de Parques e Xardíns",
+  "lat": 42.99631,
+  "lng": -7.54335
+ },
+ {
+  "name": "Seur",
+  "lat": 43.03672,
+  "lng": -7.57417
+ },
+ {
+  "name": "Sfera",
+  "lat": 43.03726,
+  "lng": -7.57015
+ },
+ {
+  "name": "Shalom",
+  "lat": 42.99755,
+  "lng": -7.5464
+ },
+ {
+  "name": "Shell",
+  "lat": 43.04382,
+  "lng": -7.56912
+ },
+ {
+  "name": "Shifu",
+  "lat": 43.01616,
+  "lng": -7.55959
+ },
+ {
+  "name": "Shiku",
+  "lat": 43.01046,
+  "lng": -7.55367
+ },
+ {
+  "name": "Shopping center Lugo",
+  "lat": 42.98523,
+  "lng": -7.58878
+ },
+ {
+  "name": "Si buscas coche",
+  "lat": 43.04096,
+  "lng": -7.57288
+ },
+ {
+  "name": "Siervas de Jesús de la Caridad",
+  "lat": 43.0122,
+  "lng": -7.55323
+ },
+ {
+  "name": "Simón Bolívar",
+  "lat": 43.01186,
+  "lng": -7.56604
+ },
+ {
+  "name": "Sindoo Estudio Creativo",
+  "lat": 43.01044,
+  "lng": -7.55337
+ },
+ {
+  "name": "Sinvello!",
+  "lat": 43.01556,
+  "lng": -7.56162
+ },
+ {
+  "name": "Sito",
+  "lat": 43.02924,
+  "lng": -7.57125
+ },
+ {
+  "name": "Skatepark Frigsa",
+  "lat": 43.0256,
+  "lng": -7.56047
+ },
+ {
+  "name": "Smartphone Lugo",
+  "lat": 43.02028,
+  "lng": -7.5629
+ },
+ {
+  "name": "Socastro",
+  "lat": 43.05451,
+  "lng": -7.59255
+ },
+ {
+  "name": "Socel",
+  "lat": 43.0159,
+  "lng": -7.56341
+ },
+ {
+  "name": "Social expresso",
+  "lat": 42.99895,
+  "lng": -7.54887
+ },
+ {
+  "name": "Sociedad Protectora de animales y plantas de Lugo",
+  "lat": 43.05476,
+  "lng": -7.53218
+ },
+ {
+  "name": "Sociedade Lucense da Canaricultura",
+  "lat": 43.02608,
+  "lng": -7.56078
+ },
+ {
+  "name": "SoftGalia Aplicaciones Informáticas S.L.",
+  "lat": 43.01225,
+  "lng": -7.55012
+ },
+ {
+  "name": "Sogama",
+  "lat": 43.04533,
+  "lng": -7.55785
+ },
+ {
+  "name": "Soho night club",
+  "lat": 43.00925,
+  "lng": -7.55742
+ },
+ {
+  "name": "Sol Park",
+  "lat": 43.02054,
+  "lng": -7.56335
+ },
+ {
+  "name": "Solaria",
+  "lat": 42.99828,
+  "lng": -7.54855
+ },
+ {
+  "name": "Soloptical",
+  "lat": 43.03709,
+  "lng": -7.56858
+ },
+ {
+  "name": "Somoza y Simón",
+  "lat": 43.00818,
+  "lng": -7.55994
+ },
+ {
+  "name": "Sonia Mallo",
+  "lat": 42.99764,
+  "lng": -7.54711
+ },
+ {
+  "name": "Sonia Prados",
+  "lat": 43.00783,
+  "lng": -7.55153
+ },
+ {
+  "name": "Sonytel",
+  "lat": 43.0135,
+  "lng": -7.5616
+ },
+ {
+  "name": "Soños de papel",
+  "lat": 42.99828,
+  "lng": -7.54799
+ },
+ {
+  "name": "Spar express",
+  "lat": 43.06053,
+  "lng": -7.60041
+ },
+ {
+  "name": "Spiral Artesanía",
+  "lat": 43.00933,
+  "lng": -7.55901
+ },
+ {
+  "name": "Sports Bar",
+  "lat": 43.01895,
+  "lng": -7.56367
+ },
+ {
+  "name": "Sports&Me",
+  "lat": 42.99727,
+  "lng": -7.54611
+ },
+ {
+  "name": "Springfield (As Termas)",
+  "lat": 43.0373,
+  "lng": -7.56999
+ },
+ {
+  "name": "Springfield (Rda. Muralla 25 (Arenal))",
+  "lat": 43.01078,
+  "lng": -7.55615
+ },
+ {
+  "name": "Sprinter",
+  "lat": 43.03792,
+  "lng": -7.56976
+ },
+ {
+  "name": "Stadivarius",
+  "lat": 43.01067,
+  "lng": -7.55611
+ },
+ {
+  "name": "Stop!",
+  "lat": 43.01542,
+  "lng": -7.56402
+ },
+ {
+  "name": "Stradivarius",
+  "lat": 43.03724,
+  "lng": -7.56954
+ },
+ {
+  "name": "Subdelegación de Defensa",
+  "lat": 43.01068,
+  "lng": -7.5621
+ },
+ {
+  "name": "Subdelegación del Gobierno en Lugo",
+  "lat": 43.01099,
+  "lng": -7.55808
+ },
+ {
+  "name": "Subdelegación do Goberno",
+  "lat": 43.01089,
+  "lng": -7.558
+ },
+ {
+  "name": "Sudinox, S.L.",
+  "lat": 43.05097,
+  "lng": -7.56272
+ },
+ {
+  "name": "Suministros la Ronda",
+  "lat": 43.00954,
+  "lng": -7.56029
+ },
+ {
+  "name": "Super 24/7 Sewa",
+  "lat": 43.00369,
+  "lng": -7.55064
+ },
+ {
+  "name": "Super Comercio",
+  "lat": 43.00954,
+  "lng": -7.56969
+ },
+ {
+  "name": "Super Euro",
+  "lat": 43.02073,
+  "lng": -7.56327
+ },
+ {
+  "name": "Super Sewa",
+  "lat": 43.00372,
+  "lng": -7.55044
+ },
+ {
+  "name": "Supercor stop&go",
+  "lat": 43.0259,
+  "lng": -7.5672
+ },
+ {
+  "name": "Supermercado Vila Sol",
+  "lat": 43.02411,
+  "lng": -7.57246
+ },
+ {
+  "name": "Suso",
+  "lat": 43.02874,
+  "lng": -7.57005
+ },
+ {
+  "name": "Suso Motor",
+  "lat": 43.0277,
+  "lng": -7.56883
+ },
+ {
+  "name": "Syner Gym",
+  "lat": 43.02237,
+  "lng": -7.56901
+ },
+ {
+  "name": "Synergym",
+  "lat": 43.01397,
+  "lng": -7.55607
+ },
+ {
+  "name": "Syret",
+  "lat": 43.01724,
+  "lng": -7.56153
+ },
+ {
+  "name": "Tabacos (Avda. Coruña 2)",
+  "lat": 43.01507,
+  "lng": -7.5587
+ },
+ {
+  "name": "Tabacos (Avda. Coruña 433 (Restaurante Suso))",
+  "lat": 43.02902,
+  "lng": -7.57035
+ },
+ {
+  "name": "Tabacos (Avda. Coruña 488)",
+  "lat": 43.03152,
+  "lng": -7.57189
+ },
+ {
+  "name": "Tabacos (Fonte dos Ranchos 8 (Cafetería Prados))",
+  "lat": 43.01292,
+  "lng": -7.56554
+ },
+ {
+  "name": "Tabacos (Fontiñas 203)",
+  "lat": 43.00256,
+  "lng": -7.54555
+ },
+ {
+  "name": "Tabacos (San Roque (Jardín))",
+  "lat": 43.00997,
+  "lng": -7.55287
+ },
+ {
+  "name": "Taberna de Cuenca",
+  "lat": 43.02806,
+  "lng": -7.5718
+ },
+ {
+  "name": "Taberna do Xesús",
+  "lat": 42.98545,
+  "lng": -7.58184
+ },
+ {
+  "name": "Taberna Pajón",
+  "lat": 43.00952,
+  "lng": -7.56199
+ },
+ {
+  "name": "Taberna Pimentel",
+  "lat": 43.0098,
+  "lng": -7.55734
+ },
+ {
+  "name": "Tablicia",
+  "lat": 42.96124,
+  "lng": -7.50447
+ },
+ {
+  "name": "Tabú",
+  "lat": 43.00472,
+  "lng": -7.55093
+ },
+ {
+  "name": "Taller de costura Camelia",
+  "lat": 43.01169,
+  "lng": -7.56903
+ },
+ {
+  "name": "Taller de costura Isma",
+  "lat": 42.99748,
+  "lng": -7.54727
+ },
+ {
+  "name": "Taller de costura Pili",
+  "lat": 43.01629,
+  "lng": -7.54986
+ },
+ {
+  "name": "Taller eléctrico José Luis",
+  "lat": 43.01284,
+  "lng": -7.56615
+ },
+ {
+  "name": "Taller Mecánico Vilela Auto Motor",
+  "lat": 43.01567,
+  "lng": -7.56788
+ },
+ {
+  "name": "Talleres Bagaría",
+  "lat": 43.04107,
+  "lng": -7.5533
+ },
+ {
+  "name": "Talleres Casana S.L.",
+  "lat": 43.01556,
+  "lng": -7.55799
+ },
+ {
+  "name": "Talleres Casanova",
+  "lat": 43.04592,
+  "lng": -7.58627
+ },
+ {
+  "name": "Talleres Cupeiro",
+  "lat": 43.02073,
+  "lng": -7.56819
+ },
+ {
+  "name": "Talleres Losagui",
+  "lat": 43.00314,
+  "lng": -7.54574
+ },
+ {
+  "name": "Talleres Miguel",
+  "lat": 43.02219,
+  "lng": -7.56545
+ },
+ {
+  "name": "Talleres Miki Sánchez, S. L.",
+  "lat": 43.04849,
+  "lng": -7.57117
+ },
+ {
+  "name": "Talleres powerfull engines",
+  "lat": 43.03991,
+  "lng": -7.54985
+ },
+ {
+  "name": "Talleres Salvador",
+  "lat": 42.99712,
+  "lng": -7.56613
+ },
+ {
+  "name": "Talleres Villar e Hijos S.L",
+  "lat": 43.04444,
+  "lng": -7.54863
+ },
+ {
+  "name": "Tallerivas",
+  "lat": 43.04383,
+  "lng": -7.56202
+ },
+ {
+  "name": "Tan To Ten",
+  "lat": 43.01624,
+  "lng": -7.55899
+ },
+ {
+  "name": "Tanatorio as Gándaras",
+  "lat": 43.04149,
+  "lng": -7.55278
+ },
+ {
+  "name": "Tapas Cunqueiro",
+  "lat": 43.00911,
+  "lng": -7.54873
+ },
+ {
+  "name": "Tapería de Baco",
+  "lat": 42.99871,
+  "lng": -7.54864
+ },
+ {
+  "name": "Tapería O Peque",
+  "lat": 43.00961,
+  "lng": -7.55513
+ },
+ {
+  "name": "Tapicería Arteboa",
+  "lat": 43.00927,
+  "lng": -7.54903
+ },
+ {
+  "name": "Tastelab",
+  "lat": 42.99705,
+  "lng": -7.54748
+ },
+ {
+  "name": "Tato",
+  "lat": 42.99739,
+  "lng": -7.54667
+ },
+ {
+  "name": "Tattoo Nando Studio",
+  "lat": 43.02078,
+  "lng": -7.56384
+ },
+ {
+  "name": "Tavi",
+  "lat": 43.02943,
+  "lng": -7.5702
+ },
+ {
+  "name": "Taxi - Euro Galicia",
+  "lat": 43.01004,
+  "lng": -7.55707
+ },
+ {
+  "name": "Tea for Two",
+  "lat": 43.01322,
+  "lng": -7.5602
+ },
+ {
+  "name": "Tecnicolor lavandería - tintorería",
+  "lat": 43.03812,
+  "lng": -7.5509
+ },
+ {
+  "name": "Tecno Game",
+  "lat": 43.01666,
+  "lng": -7.56286
+ },
+ {
+  "name": "TEDi",
+  "lat": 43.01468,
+  "lng": -7.55765
+ },
+ {
+  "name": "Teifer",
+  "lat": 43.02523,
+  "lng": -7.56853
+ },
+ {
+  "name": "Tele Istambul Doner Kebab",
+  "lat": 43.00592,
+  "lng": -7.55483
+ },
+ {
+  "name": "Telecentro O Castiñeiro",
+  "lat": 43.01697,
+  "lng": -7.57075
+ },
+ {
+  "name": "Telecopy",
+  "lat": 43.00314,
+  "lng": -7.55031
+ },
+ {
+  "name": "Telefónica",
+  "lat": 43.00837,
+  "lng": -7.5527
+ },
+ {
+  "name": "Telefónica Móviles",
+  "lat": 42.98548,
+  "lng": -7.54925
+ },
+ {
+  "name": "Telepizza",
+  "lat": 43.00469,
+  "lng": -7.55042
+ },
+ {
+  "name": "Templo Romano",
+  "lat": 43.00885,
+  "lng": -7.55648
+ },
+ {
+  "name": "Teresa Estrada Decoradora",
+  "lat": 43.00174,
+  "lng": -7.55337
+ },
+ {
+  "name": "Termas Romanas de Lugo",
+  "lat": 43.00161,
+  "lng": -7.56085
+ },
+ {
+  "name": "Terminal de Mercadorías",
+  "lat": 43.0445,
+  "lng": -7.56019
+ },
+ {
+  "name": "Terra Bar",
+  "lat": 43.04351,
+  "lng": -7.56155
+ },
+ {
+  "name": "Terra Meiga",
+  "lat": 43.04888,
+  "lng": -7.57386
+ },
+ {
+  "name": "Terra Pádel",
+  "lat": 43.04333,
+  "lng": -7.56129
+ },
+ {
+  "name": "Tesouraría Xeral da Seguridade Social",
+  "lat": 42.99919,
+  "lng": -7.54864
+ },
+ {
+  "name": "Tesourería Xeral da Seguridade Social",
+  "lat": 43.01401,
+  "lng": -7.55703
+ },
+ {
+  "name": "The Question",
+  "lat": 43.00342,
+  "lng": -7.54696
+ },
+ {
+  "name": "The Real Coffee",
+  "lat": 43.00778,
+  "lng": -7.55797
+ },
+ {
+  "name": "Thermomix",
+  "lat": 42.9971,
+  "lng": -7.54943
+ },
+ {
+  "name": "Thessalia",
+  "lat": 43.00972,
+  "lng": -7.55557
+ },
+ {
+  "name": "Tía Julia",
+  "lat": 42.99397,
+  "lng": -7.55317
+ },
+ {
+  "name": "Tiempos Modernos",
+  "lat": 43.00042,
+  "lng": -7.54836
+ },
+ {
+  "name": "Tien 21",
+  "lat": 43.01804,
+  "lng": -7.56132
+ },
+ {
+  "name": "Tiger",
+  "lat": 43.01244,
+  "lng": -7.55662
+ },
+ {
+  "name": "Time Road",
+  "lat": 43.03717,
+  "lng": -7.56869
+ },
+ {
+  "name": "Tinte Lugo",
+  "lat": 43.01446,
+  "lng": -7.56654
+ },
+ {
+  "name": "Tinte Lugo II",
+  "lat": 43.00539,
+  "lng": -7.5509
+ },
+ {
+  "name": "Tintorería Emperatriz",
+  "lat": 43.01928,
+  "lng": -7.56485
+ },
+ {
+  "name": "Tirabeque",
+  "lat": 43.01001,
+  "lng": -7.55879
+ },
+ {
+  "name": "Tirimol",
+  "lat": 43.05787,
+  "lng": -7.58808
+ },
+ {
+  "name": "Tobarix",
+  "lat": 43.01087,
+  "lng": -7.55473
+ },
+ {
+  "name": "Todo consolas",
+  "lat": 43.01795,
+  "lng": -7.561
+ },
+ {
+  "name": "Todo Telas",
+  "lat": 43.0156,
+  "lng": -7.55913
+ },
+ {
+  "name": "Todocampo",
+  "lat": 43.03792,
+  "lng": -7.57412
+ },
+ {
+  "name": "Torguesa Industrial, S.L.",
+  "lat": 43.04873,
+  "lng": -7.57314
+ },
+ {
+  "name": "Torre",
+  "lat": 43.03271,
+  "lng": -7.55522
+ },
+ {
+  "name": "Torre de Andrade",
+  "lat": 43.01849,
+  "lng": -7.5617
+ },
+ {
+  "name": "Torre de Núñez",
+  "lat": 42.97714,
+  "lng": -7.51727
+ },
+ {
+  "name": "Torres y Saez",
+  "lat": 43.04186,
+  "lng": -7.55183
+ },
+ {
+  "name": "Tosal",
+  "lat": 43.02601,
+  "lng": -7.56787
+ },
+ {
+  "name": "Tosar",
+  "lat": 43.01007,
+  "lng": -7.55906
+ },
+ {
+  "name": "Total English School",
+  "lat": 42.99802,
+  "lng": -7.54756
+ },
+ {
+  "name": "totin.es",
+  "lat": 43.0076,
+  "lng": -7.55335
+ },
+ {
+  "name": "Tous",
+  "lat": 43.01159,
+  "lng": -7.55523
+ },
+ {
+  "name": "Toys “R” Us",
+  "lat": 43.03684,
+  "lng": -7.56995
+ },
+ {
+  "name": "Tragsa",
+  "lat": 43.01801,
+  "lng": -7.55736
+ },
+ {
+  "name": "Tragsatec",
+  "lat": 43.01773,
+  "lng": -7.55801
+ },
+ {
+  "name": "Tramas+",
+  "lat": 43.03695,
+  "lng": -7.56984
+ },
+ {
+  "name": "Transportes Gallardo Cervantes",
+  "lat": 43.05056,
+  "lng": -7.56593
+ },
+ {
+  "name": "Trevi",
+  "lat": 43.01678,
+  "lng": -7.56009
+ },
+ {
+  "name": "Tribeca",
+  "lat": 43.01332,
+  "lng": -7.55793
+ },
+ {
+  "name": "Tribunal legal abogados",
+  "lat": 43.00878,
+  "lng": -7.55199
+ },
+ {
+  "name": "Tríscele",
+  "lat": 42.98088,
+  "lng": -7.58602
+ },
+ {
+  "name": "Trópico II",
+  "lat": 43.01855,
+  "lng": -7.56233
+ },
+ {
+  "name": "Tu jardín",
+  "lat": 42.98783,
+  "lng": -7.58166
+ },
+ {
+  "name": "Tu Paso",
+  "lat": 43.01211,
+  "lng": -7.56125
+ },
+ {
+  "name": "Tweens&Teens Kids&Us",
+  "lat": 42.9958,
+  "lng": -7.54905
+ },
+ {
+  "name": "Unesco",
+  "lat": 43.00905,
+  "lng": -7.55909
+ },
+ {
+  "name": "Unidade de Xestión Académica",
+  "lat": 42.99234,
+  "lng": -7.5459
+ },
+ {
+  "name": "Unión de radioaficionados españoles de Lugo",
+  "lat": 43.0232,
+  "lng": -7.56239
+ },
+ {
+  "name": "Urba'n Peluqueros",
+  "lat": 42.99836,
+  "lng": -7.54823
+ },
+ {
+  "name": "Urbanización A Florida",
+  "lat": 43.03829,
+  "lng": -7.53725
+ },
+ {
+  "name": "Urbanización Castro Gil",
+  "lat": 43.02668,
+  "lng": -7.54225
+ },
+ {
+  "name": "Urbanización da Campiña",
+  "lat": 43.03884,
+  "lng": -7.53446
+ },
+ {
+  "name": "Urbanización O Salete",
+  "lat": 43.05722,
+  "lng": -7.60978
+ },
+ {
+  "name": "Urbe",
+  "lat": 43.01155,
+  "lng": -7.55946
+ },
+ {
+  "name": "Urgencias Hospital Quirónsalud",
+  "lat": 43.01154,
+  "lng": -7.56146
+ },
+ {
+  "name": "USC Campus Terra",
+  "lat": 42.99696,
+  "lng": -7.54553
+ },
+ {
+  "name": "Valín Libros",
+  "lat": 43.00898,
+  "lng": -7.55207
+ },
+ {
+  "name": "Valle-Inclán",
+  "lat": 43.00947,
+  "lng": -7.55643
+ },
+ {
+  "name": "Vanessa Martínez estilista",
+  "lat": 43.01606,
+  "lng": -7.56765
+ },
+ {
+  "name": "Vania Diseño Floral",
+  "lat": 42.99774,
+  "lng": -7.54696
+ },
+ {
+  "name": "Vappeo Store",
+  "lat": 43.01737,
+  "lng": -7.56053
+ },
+ {
+  "name": "Veciños de San Lázaro",
+  "lat": 42.99771,
+  "lng": -7.56194
+ },
+ {
+  "name": "Veiga",
+  "lat": 42.95305,
+  "lng": -7.49607
+ },
+ {
+  "name": "Velatorios Lucenses Gándaras",
+  "lat": 43.03927,
+  "lng": -7.55373
+ },
+ {
+  "name": "Velatorios Lucenses SL",
+  "lat": 42.98427,
+  "lng": -7.5921
+ },
+ {
+  "name": "Ven que te Peino",
+  "lat": 42.99755,
+  "lng": -7.54717
+ },
+ {
+  "name": "Verdilugo",
+  "lat": 42.98738,
+  "lng": -7.58634
+ },
+ {
+  "name": "Versus XL",
+  "lat": 43.00873,
+  "lng": -7.55799
+ },
+ {
+  "name": "Vetercan",
+  "lat": 43.02015,
+  "lng": -7.56516
+ },
+ {
+  "name": "Vetlar",
+  "lat": 43.01418,
+  "lng": -7.5621
+ },
+ {
+  "name": "Vía Romana XIX (Avda. Madrid 169-171)",
+  "lat": 42.99516,
+  "lng": -7.53877
+ },
+ {
+  "name": "Vía Romana XIX (Avda. Madrid 324)",
+  "lat": 42.99063,
+  "lng": -7.53699
+ },
+ {
+  "name": "Vía Romana XIX (Fontiñas (enf. San Xillao))",
+  "lat": 43.00401,
+  "lng": -7.54562
+ },
+ {
+  "name": "Vía Romana XIX (N-VI (enfte. Babilonia))",
+  "lat": 42.98044,
+  "lng": -7.5198
+ },
+ {
+  "name": "Viador",
+  "lat": 42.97329,
+  "lng": -7.5051
+ },
+ {
+  "name": "Viajes Carrefour Lugo 2",
+  "lat": 43.00308,
+  "lng": -7.5503
+ },
+ {
+  "name": "Victoria Gil",
+  "lat": 42.99869,
+  "lng": -7.54798
+ },
+ {
+  "name": "Victoria María Iriarte Altube",
+  "lat": 43.01674,
+  "lng": -7.54838
+ },
+ {
+  "name": "Vilamarce",
+  "lat": 42.95056,
+  "lng": -7.5011
+ },
+ {
+  "name": "Vilamiñao",
+  "lat": 42.97925,
+  "lng": -7.53972
+ },
+ {
+  "name": "Vilar",
+  "lat": 42.95506,
+  "lng": -7.50384
+ },
+ {
+  "name": "Vilar de Cucos",
+  "lat": 42.98184,
+  "lng": -7.49519
+ },
+ {
+  "name": "Vilardón",
+  "lat": 43.0494,
+  "lng": -7.60332
+ },
+ {
+  "name": "Villa Emma",
+  "lat": 43.01229,
+  "lng": -7.55331
+ },
+ {
+  "name": "Vinoteca Vinos y Más",
+  "lat": 43.00932,
+  "lng": -7.57031
+ },
+ {
+  "name": "Vit Sec",
+  "lat": 43.01748,
+  "lng": -7.56087
+ },
+ {
+  "name": "Vitaldent",
+  "lat": 43.02035,
+  "lng": -7.56322
+ },
+ {
+  "name": "Viviendas Protegidas Hermanos Pedrosa Posada",
+  "lat": 43.00218,
+  "lng": -7.54053
+ },
+ {
+  "name": "Vodafone",
+  "lat": 43.03671,
+  "lng": -7.569
+ },
+ {
+  "name": "Wash-up",
+  "lat": 43.01648,
+  "lng": -7.56288
+ },
+ {
+  "name": "Wenea Charging Station",
+  "lat": 43.05258,
+  "lng": -7.5642
+ },
+ {
+  "name": "Winoco",
+  "lat": 43.02527,
+  "lng": -7.56685
+ },
+ {
+  "name": "Wok Zhang",
+  "lat": 43.01639,
+  "lng": -7.55978
+ },
+ {
+  "name": "Women’secret (As Termas)",
+  "lat": 43.03713,
+  "lng": -7.56969
+ },
+ {
+  "name": "Women'secret (Rda. Muralla 25 (Arenal))",
+  "lat": 43.01056,
+  "lng": -7.55466
+ },
+ {
+  "name": "X Distinto",
+  "lat": 43.01003,
+  "lng": -7.55242
+ },
+ {
+  "name": "Xálide",
+  "lat": 42.99417,
+  "lng": -7.55366
+ },
+ {
+  "name": "Xardín de Gallego Tato",
+  "lat": 43.02545,
+  "lng": -7.57054
+ },
+ {
+  "name": "Xardín de San Roque",
+  "lat": 43.00952,
+  "lng": -7.55197
+ },
+ {
+  "name": "Xardíns da Deputación",
+  "lat": 43.0134,
+  "lng": -7.55602
+ },
+ {
+  "name": "Xardíns de Marcos Cela",
+  "lat": 43.00131,
+  "lng": -7.55949
+ },
+ {
+  "name": "Xardíns do doutor Miguel A. González López",
+  "lat": 43.02151,
+  "lng": -7.55859
+ },
+ {
+  "name": "Xardíns do Museo Provincial",
+  "lat": 43.01178,
+  "lng": -7.55915
+ },
+ {
+  "name": "Xardíns do Museo Provincial e Cociña do Convento de San Francisco",
+  "lat": 43.01161,
+  "lng": -7.55937
+ },
+ {
+  "name": "Xardíns dos Conservatorios",
+  "lat": 42.99985,
+  "lng": -7.54736
+ },
+ {
+  "name": "Xena cervecería pulpería",
+  "lat": 43.00004,
+  "lng": -7.54801
+ },
+ {
+  "name": "Xenera compañía eléctrica",
+  "lat": 43.01569,
+  "lng": -7.55943
+ },
+ {
+  "name": "Xeral.net",
+  "lat": 43.01055,
+  "lng": -7.5489
+ },
+ {
+  "name": "Xerencia Territorial do Catastro",
+  "lat": 43.01221,
+  "lng": -7.55548
+ },
+ {
+  "name": "Xesús de Nazaré",
+  "lat": 43.01367,
+  "lng": -7.51177
+ },
+ {
+  "name": "Xosé Castiñeira Pardo",
+  "lat": 43.00694,
+  "lng": -7.55572
+ },
+ {
+  "name": "Xuíz",
+  "lat": 43.00623,
+  "lng": -7.54436
+ },
+ {
+  "name": "Xulgados",
+  "lat": 43.00532,
+  "lng": -7.55768
+ },
+ {
+  "name": "Xuxaos",
+  "lat": 43.00714,
+  "lng": -7.5957
+ },
+ {
+  "name": "Yari y Leidis",
+  "lat": 43.02863,
+  "lng": -7.57009
+ },
+ {
+  "name": "Yisus Barber Style",
+  "lat": 43.01669,
+  "lng": -7.56312
+ },
+ {
+  "name": "Yoeli",
+  "lat": 43.00416,
+  "lng": -7.55534
+ },
+ {
+  "name": "Yoigo",
+  "lat": 43.0367,
+  "lng": -7.56962
+ },
+ {
+  "name": "Yuli moda",
+  "lat": 43.01523,
+  "lng": -7.56109
+ },
+ {
+  "name": "Yulvet (Avda. Coruña 2)",
+  "lat": 43.01528,
+  "lng": -7.55909
+ },
+ {
+  "name": "Yulvet (San Roque 72 (Rampa Claudio López))",
+  "lat": 43.0071,
+  "lng": -7.55151
+ },
+ {
+  "name": "Yute Confeccións",
+  "lat": 43.0121,
+  "lng": -7.55976
+ },
+ {
+  "name": "Zafiro tours",
+  "lat": 43.00881,
+  "lng": -7.54875
+ },
+ {
+  "name": "Zalo",
+  "lat": 43.01267,
+  "lng": -7.55513
+ },
+ {
+  "name": "Zapateria catedral paragüería",
+  "lat": 43.00936,
+  "lng": -7.55881
+ },
+ {
+  "name": "Zapping (Avda. Coruña 102)",
+  "lat": 43.01738,
+  "lng": -7.56109
+ },
+ {
+  "name": "Zapping (Fontiñas 134)",
+  "lat": 43.00878,
+  "lng": -7.54876
+ },
+ {
+  "name": "Zara (As Termas)",
+  "lat": 43.03763,
+  "lng": -7.569
+ },
+ {
+  "name": "Zara (Rda. Muralla 163-164)",
+  "lat": 43.01062,
+  "lng": -7.55745
+ },
+ {
+  "name": "Zarra",
+  "lat": 43.03206,
+  "lng": -7.53545
+ },
+ {
+  "name": "Zbitt",
+  "lat": 43.0149,
+  "lng": -7.56484
+ },
+ {
+  "name": "Zenith",
+  "lat": 43.02306,
+  "lng": -7.56774
+ },
+ {
+  "name": "Zertin",
+  "lat": 43.0458,
+  "lng": -7.56534
+ },
+ {
+  "name": "Zihouse",
+  "lat": 43.01258,
+  "lng": -7.56629
+ },
+ {
+  "name": "Zodiac",
+  "lat": 43.0218,
+  "lng": -7.56854
+ },
+ {
+  "name": "Zona Móvil",
+  "lat": 43.01833,
+  "lng": -7.56131
+ },
+ {
+  "name": "Zouk",
+  "lat": 43.03963,
+  "lng": -7.55365
+ }
+]
