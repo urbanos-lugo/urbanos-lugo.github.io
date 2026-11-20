@@ -79,7 +79,9 @@ export default function App() {
   /** The map must not draw that default as chosen: a big blue dot on a stop nobody picked. */
   const [stopWasChosen, setStopWasChosen] = useState(false);
   /** What the reader asked the map to show, so it can stop guessing between its stop and its line. */
-  const [mapFocus, setMapFocus] = useState<'stop' | 'line'>('line');
+  const [mapFocus, setMapFocus] = useState<'stop' | 'line' | 'place'>('line');
+  /** A place from the search, shown on the map rather than routed to; the nonce shows it again when asked twice. */
+  const [mapPlace, setMapPlace] = useState<{ name: string; lat: number; lng: number; nonce: number } | null>(null);
   /** No line until somebody opens one; the map started with 1.1 drawn over a choice nobody had made. */
   const [selectedLine, setSelectedLine] = useState<BusLine | null>(null);
   /** A place chosen in the search box, on its way to the planner as a destination. A counter, so asking for the same place twice is two asks. */
@@ -186,6 +188,12 @@ export default function App() {
     setPlaceRequest((prev) => ({ query, nonce: (prev?.nonce ?? 0) + 1 }));
     go({ tab: 'plan' });
   };
+  const showPlaceOnMap = (place: { name: string; lat: number; lng: number }) => {
+    setMapPlace((prev) => ({ name: place.name, lat: place.lat, lng: place.lng, nonce: (prev?.nonce ?? 0) + 1 }));
+    setMapFocus('place');
+    // Already there, no move: the sheet takes the search's step (useBackLayer), and a second map screen would be a dead step.
+    if (activeTab !== 'map') go({ tab: 'map' });
+  };
   const viewStopOnMap = (stop: BusStop) => {
     setSelectedStop(stop);
     setStopWasChosen(true);
@@ -220,6 +228,8 @@ export default function App() {
             onSelectStop={selectStop}
             onSelectLine={openLine}
             onSelectPlace={planTo}
+            onShowPlace={showPlaceOnMap}
+            placesOnMap={activeTab === 'map'}
             onOpenQrScanner={() => setIsQrModalOpen(true)}
             onOpenMenu={() => setIsMenuOpen(true)}
             onOpenTab={goToTab}
@@ -338,7 +348,7 @@ export default function App() {
                       </div>
                     }
                   >
-                    <InteractiveMap selectedStop={stopWasChosen ? selectedStop : undefined} selectedLine={selectedLine} focus={mapFocus} onSelectStop={selectStop} onSelectLine={setSelectedLine} onOpenLine={openLine} onPlanTo={(stop) => planTo(stop.name)} changes={noticeChanges} visible={activeTab === 'map'} />
+                    <InteractiveMap selectedStop={stopWasChosen ? selectedStop : undefined} selectedLine={selectedLine} focus={mapFocus} place={mapFocus === 'place' ? mapPlace : null} onSelectStop={selectStop} onSelectLine={setSelectedLine} onOpenLine={openLine} onPlanTo={planTo} changes={noticeChanges} visible={activeTab === 'map'} />
                   </Suspense>
                 </div>
               )}

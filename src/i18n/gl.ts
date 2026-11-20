@@ -59,6 +59,8 @@ export const gl = {
     screens: 'Pantallas',
     /** A place is not a stop, so the row says which stop serves it and how far it is. */
     nearestStop: (stop: string, metres: number) => `${stop} · a ${metres} m a pé`,
+    seeOnMap: (place: string) => `Ver ${place} no mapa`,
+    routeTo: (place: string) => `Como chegar a ${place}`,
   },
 
   stopHome: {
@@ -382,6 +384,8 @@ export const gl = {
     controls: 'Filtros e capas',
     closeControls: 'Pechar filtros e capas',
     closeStop: 'Pechar esta parada',
+    closePlace: 'Pechar este sitio',
+    nearestStopOf: (stop: string) => `Parada máis próxima: ${stop}`,
     backToMap: 'Volver ao mapa',
     /** The close button of a map popup, which the map renderer names in English. */
     closePopup: 'Pechar',

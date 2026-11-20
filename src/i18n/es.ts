@@ -43,6 +43,8 @@ export const es: Dict = {
     places: 'Sitios',
     screens: 'Pantallas',
     nearestStop: (stop: string, metres: number) => `${stop} · a ${metres} m a pie`,
+    seeOnMap: (place: string) => `Ver ${place} en el mapa`,
+    routeTo: (place: string) => `Cómo llegar a ${place}`,
   },
 
   stopHome: {
@@ -330,6 +332,8 @@ export const es: Dict = {
     controls: 'Filtros y capas',
     closeControls: 'Cerrar filtros y capas',
     closeStop: 'Cerrar esta parada',
+    closePlace: 'Cerrar este sitio',
+    nearestStopOf: (stop: string) => `Parada más cercana: ${stop}`,
     backToMap: 'Volver al mapa',
     closePopup: 'Cerrar',
     expandLines: 'Ver todas las líneas de una vez',

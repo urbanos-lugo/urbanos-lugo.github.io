@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { LngLatBounds, type Map as MapLibre } from 'maplibre-gl';
-import { LocateFixed, Navigation2, SlidersHorizontal } from 'lucide-react';
+import { LngLatBounds, Marker, type Map as MapLibre } from 'maplibre-gl';
+import { LocateFixed, Navigation, Navigation2, SlidersHorizontal } from 'lucide-react';
 import { CloseButton, Notice, Scrim } from '../ui/controls';
 import { useT } from '../../i18n';
 import { BusStop, BusLine } from '../../types';
 import type { NoticeChanges } from '../../utils/noticeChanges';
 import { BUS_STOPS, BUS_LINES, LUGO_CENTER, lineById, poleCode } from '../../data/transitData';
 import { getScheduledBuses } from '../../utils/vehicles';
-import { getNearbyLines, NearbyLine } from '../../utils/places';
+import { getNearbyLines, getNearestStopToCoords, NearbyLine } from '../../utils/places';
 import { useIsDark } from '../../hooks/useIsDark';
 import { useDialog } from '../../hooks/useDialog';
 import { useMapLibre } from '../../hooks/useMapLibre';
@@ -17,6 +17,7 @@ import { DRAW, mapColors } from './palette';
 import { RouteLayer } from './RouteLayer';
 import { StopLayer } from './StopLayer';
 import { StopSheet } from './StopSheet';
+import { MapSheet } from './MapSheet';
 import { LinesHereSheet, type RouteHit } from './LinesHereSheet';
 import { VehicleLayer } from './VehicleLayer';
 import { LineChips } from './LineChips';
@@ -45,6 +46,8 @@ const PRESET_CENTERS: Partial<Record<Preset, [number, number]>> = {
 const STOP_ZOOM = 15;
 const AREA_ZOOM = 14;
 const CITY_ZOOM = 13;
+/** A place from the search: close enough for the names of its squares and parks, which start at 16. */
+const PLACE_ZOOM = 16;
 
 const fitLines = (map: MapLibre, ids: string[]) => {
   const bounds = new LngLatBounds();
@@ -56,21 +59,23 @@ const fitLines = (map: MapLibre, ids: string[]) => {
 interface TransitMapProps {
   selectedStop?: BusStop;
   /** What the reader asked to see, so the map does not have to guess between the two. */
-  focus?: 'stop' | 'line';
+  focus?: 'stop' | 'line' | 'place';
+  /** A place picked in the search on this tab: shown here, with a pin and its sheet, rather than routed to. */
+  place?: { name: string; lat: number; lng: number; nonce: number } | null;
   selectedLine?: BusLine | null;
   onSelectStop: (stop: BusStop) => void;
   onSelectLine: (line: BusLine) => void;
   /** Leave the map for a line's own page. Selecting a line only filters the map. */
   onOpenLine: (line: BusLine, at?: BusStop) => void;
-  /** Plan a trip to a stop tapped on the map. */
-  onPlanTo: (stop: BusStop) => void;
+  /** Plan a trip to a stop tapped on the map, or to the place shown, by its name. */
+  onPlanTo: (name: string) => void;
   /** The operator's notices read out, for the tapped stop's sheet. */
   changes?: NoticeChanges | null;
   /** False while another tab is on screen: the map stays mounted, and its clock stops. */
   visible?: boolean;
 }
 
-export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelectStop, onSelectLine, onOpenLine, onPlanTo, changes = null, visible = true }: TransitMapProps) {
+export function TransitMap({ selectedStop, focus = 'line', place = null, selectedLine, onSelectStop, onSelectLine, onOpenLine, onPlanTo, changes = null, visible = true }: TransitMapProps) {
   const t = useT();
   const containerRef = useRef<HTMLDivElement>(null);
   const colors = mapColors(useIsDark());
@@ -99,6 +104,15 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
   const [tappedStop, setTappedStop] = useState<BusStop | null>(null);
   /** The routes under a tap on the map, and where it was: their sheet is open. */
   const [linesHere, setLinesHere] = useState<{ hits: RouteHit[]; at: [number, number] } | null>(null);
+  /**
+   * The searched place on the map, its pin and its sheet, until the sheet is put away. Read from
+   * the prop, not set in an effect: the sheet has to open in the same commit as the search's rows
+   * close, to take their step (useBackLayer); a render later, their back could land first and
+   * close it.
+   */
+  const [dismissed, setDismissed] = useState(0);
+  const shownPlace = place && place.nonce !== dismissed ? place : null;
+  const placeNear = useMemo(() => (shownPlace ? getNearestStopToCoords(shownPlace.lat, shownPlace.lng) : null), [shownPlace]);
   /** The controls pulled up over the map; only means anything below `lg`. */
   const [sheetOpen, setSheetOpen] = useState(false);
   const closeSheet = useCallback(() => setSheetOpen(false), []);
@@ -144,7 +158,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
 
   // A line chosen somewhere else becomes the only one on the map; one picked here must not (onSelectLine reports every pick upward).
   useEffect(() => {
-    if (focus === 'stop' || !selectedLine || pickedLineIds.includes(selectedLine.id)) return;
+    if (focus !== 'line' || !selectedLine || pickedLineIds.includes(selectedLine.id)) return;
     setPickedLineIds([selectedLine.id]);
     setPreset('all');
     if (map) fitLines(map, [selectedLine.id]);
@@ -152,7 +166,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
 
   // Centre on the stop the reader asked for, and drop the line filter, or the stop arrives on somebody else's route.
   useEffect(() => {
-    if (!selectedStop || !map) return;
+    if (!selectedStop || !map || focus === 'place') return;
     if (focus === 'stop') {
       setPickedLineIds([]);
       setPreset('all');
@@ -161,6 +175,32 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
     map.resize();
     map.easeTo({ center: [selectedStop.lng, selectedStop.lat], zoom: STOP_ZOOM });
   }, [selectedStop, map, focus]);
+
+  // A place picked in the search on this tab: the whole network, the place in the middle, near
+  // enough for its name, and its sheet. Picked on another tab, a place still goes to Ruta.
+  useEffect(() => {
+    if (!place || !map) return;
+    setPickedLineIds([]);
+    setPreset('all');
+    setAroundStop(null);
+    setTappedStop(null);
+    setLinesHere(null);
+    map.resize();
+    map.easeTo({ center: [place.lng, place.lat], zoom: PLACE_ZOOM });
+  }, [place, map]);
+
+  // Its pin, the trip map's pin in the accent colour: the name is in the sheet, so the pin says nothing to a screen reader.
+  useEffect(() => {
+    if (!map || !shownPlace) return;
+    const el = document.createElement('div');
+    el.className = 'route-map-pin';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<div class="size-full rounded-pill border-strong border-bg bg-accent shadow-pin"></div>';
+    const pin = new Marker({ element: el }).setLngLat([shownPlace.lng, shownPlace.lat]).addTo(map);
+    return () => {
+      pin.remove();
+    };
+  }, [map, shownPlace]);
 
   const handleSelectLine = (line: BusLine) => {
     const adding = !pickedLineIds.includes(line.id);
@@ -330,7 +370,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                 changes={changes}
                 onPlanTo={(stop) => {
                   setTappedStop(null);
-                  onPlanTo(stop);
+                  onPlanTo(stop.name);
                 }}
                 onHeight={(px) => keepAbove([tappedStop.lat, tappedStop.lng], px)}
                 onClose={() => setTappedStop(null)}
@@ -348,6 +388,34 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                   onSelectStop(stop);
                 }}
               />
+            )}
+            {/* Under a stop's sheet opened from it, and back when that one is put away. */}
+            {shownPlace && placeNear && !tappedStop && !linesHere && (
+              <MapSheet
+                label={shownPlace.name}
+                title={shownPlace.name}
+                hint={t.search.nearestStop(placeNear.stop.name, placeNear.walkMeters)}
+                closeLabel={t.map.closePlace}
+                onClose={() => setDismissed(shownPlace.nonce)}
+                onHeight={(px) => keepAbove([shownPlace.lat, shownPlace.lng], px)}
+              >
+                <div className="mt-2 flex flex-col gap-1.5 border-t border-line p-3.5 pb-sheet-foot">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDismissed(shownPlace.nonce);
+                      onPlanTo(shownPlace.name);
+                    }}
+                    className="btn btn-primary btn-dense w-full"
+                  >
+                    <Navigation className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    {t.arrivals.planTo}
+                  </button>
+                  <button type="button" onClick={() => setTappedStop(placeNear.stop)} className="btn btn-secondary btn-dense w-full">
+                    {t.map.nearestStopOf(placeNear.stop.name)}
+                  </button>
+                </div>
+              </MapSheet>
             )}
             {linesHere && (
               <LinesHereSheet

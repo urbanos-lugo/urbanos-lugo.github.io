@@ -139,6 +139,8 @@ const tab = (name: string): Step => ({ tap: `tabLink(${name})`, stack: 'push', w
 const board = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.closest('header')) && document.querySelector('main ul li .figure')`;
 const firstDeparture = `[...document.querySelectorAll('main ul li .figure')].find(shown)`;
 const lineHeading = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.classList.contains('text-emph'))`;
+/** A searched place's sheet on the map: its "how to get here". */
+const placeRoute = `[...document.querySelectorAll('[role=dialog][aria-modal=true] button')].find((b) => shown(b) && b.textContent.includes(T.arrivals.planTo))`;
 /** A line's "go to the bus" button: its words lead, and a count follows when there are more. */
 const goToBus = `[...document.querySelectorAll('main button')].find((b) => shown(b) && b.textContent.startsWith(T.lines.goToBus))`;
 /** Where it went: a stop's row has the focus, and the timetable puts a bus there. */
@@ -474,6 +476,19 @@ export const JOURNEYS: Journey[] = [
       { tap: `[...document.querySelectorAll('header .z-results button')].filter(shown).find((b) => b.querySelector('svg.lucide-landmark'))`, options: `[...document.querySelectorAll('header .z-results button')].filter(shown)`, wait: answerFigure },
     ],
     answer: answerFigure,
+  },
+  {
+    // Looked for on the map tab, a place went straight to Ruta. There it is shown on the map, with
+    // its sheet, and Ruta is one button further.
+    task: 'a place on the map',
+    entry: 'map tab, search',
+    start: {},
+    steps: [
+      tab('T.nav.map'),
+      { type: `document.getElementById('site-search')`, text: 'catedral', next: `css('header .z-results button')`, wait: `css('header .z-results button')` },
+      { tap: `[...document.querySelectorAll('header .z-results button')].filter(shown).find((b) => b.querySelector('svg.lucide-landmark'))`, options: `[...document.querySelectorAll('header .z-results button')].filter(shown)`, wait: placeRoute },
+    ],
+    answer: placeRoute,
   },
   {
     task: 'a trip',
@@ -1313,7 +1328,9 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
         while (stack.length > 1 && tabOf(stack[stack.length - 1]) === tabOf(after)) stack.pop();
         stack.push(after);
       } else if (move === 'pop' || (move !== 'push' && back >= 0 && back < stack.length - 1)) stack.splice(back + 1);
-      else if (move !== 'push' && layered(stack[stack.length - 1]) && !layered(after)) stack[stack.length - 1] = after;
+      // The search's results give their step to whatever a row of theirs opens, a sheet too, as
+      // useTabRoute's go does: back from it goes to the screen under them, not to them again.
+      else if (move !== 'push' && layered(stack[stack.length - 1]) && (!layered(after) || (stack[stack.length - 1].results && !after.results))) stack[stack.length - 1] = after;
       else if (move !== 'none') stack.push(after);
       seen.add(name(after));
     }

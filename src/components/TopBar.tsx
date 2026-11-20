@@ -1,5 +1,5 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Landmark, MapPin, Menu, QrCode, Search, Star, X } from 'lucide-react';
+import { Landmark, MapPin, Menu, Navigation, QrCode, Search, Star, X } from 'lucide-react';
 import { BUS_LINES, poleCode } from '../data/transitData';
 import { MAX_QUERY_LENGTH, calculateRelevanceScore, matchesQuery } from '../utils/searchUtils';
 import { getNearestStopToCoords, rankLandmarks, rankStops } from '../utils/places';
@@ -16,8 +16,12 @@ import { useBackLayer } from '../hooks/useBackLayer';
 interface TopBarProps {
   onSelectStop: (stop: BusStop) => void;
   onSelectLine: (line: BusLine) => void;
-  /** A named place, which is not a stop: the planner is where you can do something with it. */
+  /** A named place, which is not a stop, planned to by its name. */
   onSelectPlace: (query: string) => void;
+  /** The same place shown on the map, with a pin and its sheet. */
+  onShowPlace: (place: { name: string; lat: number; lng: number }) => void;
+  /** On the map tab, a place's row shows it there and the button beside it plans to it; elsewhere, the other way round. */
+  placesOnMap?: boolean;
   onOpenQrScanner: () => void;
   onOpenFavorites: () => void;
   savedCount: number;
@@ -57,7 +61,7 @@ const Row = ({ onClick, children }: { onClick: () => void; children: ReactNode }
  * One field for stops, lines and streets, with the QR scanner attached to it: standing at
  * a pole, scanning the sticker is the shortest path from "I am here" to "these are my times".
  */
-export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScanner, onOpenFavorites, savedCount, onOpenMenu, alertCount, onOpenTab }: TopBarProps) {
+export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onShowPlace, placesOnMap = false, onOpenQrScanner, onOpenFavorites, savedCount, onOpenMenu, alertCount, onOpenTab }: TopBarProps) {
   const t = useT();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
@@ -205,12 +209,25 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onOpenQrScan
           ))}
 
           {places.length > 0 && <Heading>{t.search.places}</Heading>}
-          {places.map(({ lm, stop, walkMeters }) => (
-            <Row key={lm.name} onClick={choose(() => onSelectPlace(lm.name))}>
-              <Landmark className="h-4.5 w-4.5 shrink-0 text-ink-3" aria-hidden="true" />
-              <NameStack name={lm.name} hint={t.search.nearestStop(stop.name, walkMeters)} size="emph" />
-            </Row>
-          ))}
+          {/* Two things to do with a place, both on its row: looking for it on the map, it went
+              straight to Ruta. The row does what the tab is for, the button beside it the other. */}
+          {places.map(({ lm, stop, walkMeters }) => {
+            const toRoute = choose(() => onSelectPlace(lm.name));
+            const toMap = choose(() => onShowPlace(lm));
+            return (
+              <div key={lm.name} className="flex items-center border-t border-line-soft pr-2">
+                <button onClick={placesOnMap ? toMap : toRoute} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1 px-cap-4 py-3 text-left">
+                  <Landmark className="h-4.5 w-4.5 shrink-0 text-ink-3" aria-hidden="true" />
+                  <NameStack name={lm.name} hint={t.search.nearestStop(stop.name, walkMeters)} size="emph" />
+                </button>
+                {placesOnMap ? (
+                  <IconButton icon={Navigation} label={t.search.routeTo(lm.name)} title={t.search.routeTo(lm.name)} onClick={toRoute} />
+                ) : (
+                  <IconButton icon={MapPin} label={t.search.seeOnMap(lm.name)} title={t.search.seeOnMap(lm.name)} onClick={toMap} />
+                )}
+              </div>
+            );
+          })}
 
           {screens.length > 0 && <Heading>{t.search.screens}</Heading>}
           {screens.map(({ id, Icon, label }) => (

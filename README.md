@@ -1256,6 +1256,12 @@ O cadro de arriba atopa paradas, liñas e sitios, e tamén as pantallas da propi
 nome: «tarifas» ou «avisos» abren a súa, porque a WCAG (2.4.5) pide máis dun camiño a cada
 páxina dun conxunto.
 
+Un sitio ten dúas cousas que facer con el, e as dúas están na súa fila. A fila fai a da
+pestana: no **mapa**, o mapa vai ata o sitio, pon un pin e abre a súa folla, co nome, a
+parada máis próxima e o paseo ata ela, «Como chegar aquí» e un botón á parada. Nas outras
+pestanas, Ruta, co sitio de destino. O botón ao lado fai a outra. Buscado no mapa, un sitio
+levaba directo a Ruta.
+
 ---
 
 ## API REST

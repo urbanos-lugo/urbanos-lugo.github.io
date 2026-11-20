@@ -54,6 +54,8 @@ export const en: Dict = {
     places: 'Places',
     screens: 'Screens',
     nearestStop: (stop: string, metres: number) => `${stop} · ${metres} m walk`,
+    seeOnMap: (place: string) => `Show ${place} on the map`,
+    routeTo: (place: string) => `Route to ${place}`,
   },
 
   stopHome: {
@@ -341,6 +343,8 @@ export const en: Dict = {
     controls: 'Filters and layers',
     closeControls: 'Close filters and layers',
     closeStop: 'Close this stop',
+    closePlace: 'Close this place',
+    nearestStopOf: (stop: string) => `Nearest stop: ${stop}`,
     backToMap: 'Back to the map',
     closePopup: 'Close',
     expandLines: 'See every line at once',
