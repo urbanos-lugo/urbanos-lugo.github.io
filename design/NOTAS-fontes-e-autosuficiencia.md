@@ -234,6 +234,33 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    rastrexador non chegaría a elas: o sitemap segue sen lerse en Google, e as paradas da
    páxina dunha liña son `div role="button"`, non ligazóns. Iso tería que cambiar con elas.
    O 448 do punto 8 contouse antes das páxinas de liña.
+3. **Mudar a API de Deno Deploy, antes de abril de 2027.** O 9 de outubro de 2026 Deno
+   anunciou que se une a Cloudflare e que Deno Deploy «will continue operating for six months
+   before shutting down», sen data exacta: seis meses levan a abril. Ademais, o 20 de novembro a
+   organización do plan gratuito, sen tarxeta, ía no 75 % do seu «Memory Time», que sen
+   tarxeta é o 1 % do normal. Se se esgota ou se pecha, a app segue: os avisos saen da copia
+   de cada hora, e só se perden os minutos en directo dos QR.
+   - **Onde:** Cloudflare Workers, gratis. Segundo a súa documentación (lida o 20 de
+     novembro): 100.000 peticións ao día, 10 ms de CPU por petición, 50 subpeticións, 128 MB
+     por illamento, e o erro 1027 ao pasar o límite do día. Os lectores do worker tardan aquí
+     de 0 a 2 ms con páxinas normais, e 12 ms con 1 MB patolóxico (`pnpm run
+     measure:parsers`); o corpo xa vén recortado (`readCapped`).
+   - **O dono:** unha conta de Cloudflare e un token con permiso para Workers, gardados en
+     GitHub como segredo e variable.
+   - **O código:** `worker/index.ts` só usa de Deno dous `Deno.env.get` (`ALLOWED_ORIGIN`,
+     `DEPLOY_SHA`); en Workers chegan no `env` do `fetch`. O resto é `fetch`, `Response` e a
+     Cache API, e a build xa é ESM neutra (`worker:build`). Un `wrangler.toml` co nome, o
+     `main` e as variables; `deploy-worker.yml` despregaría con wrangler, fixado por versión
+     coma o resto, no canto de `@deno/deploy`.
+   - **O que hai que probar despois do primeiro despregue:** a documentación só garante a
+     Cache API en dominios propios, e o worker iría en `*.workers.dev`. Sen ela quedan as
+     cachés do módulo, unha por illamento, e Cloudflare reparte en máis illamentos: hai que
+     contar que as peticións a buslugo.com seguen preto dunha cada media hora. Tamén, que
+     buslugo.com e info.urbanoslugo.com responden desde Cloudflare.
+   - **O cambio:** a variable `API_ORIGIN` ao enderezo novo; a CSP colle a orixe dela só. As
+     dúas APIs en paralelo uns días, e despois a de Deno fóra.
+   - **Os documentos:** PRIVACY.md e SECURITY.md (quen recibe as peticións), CLAUDE.md
+     (`worker/index.ts` «on Deno Deploy»), o README e unha decisión en DECIDIDO.
 
 ## Feito dende que se escribiu isto
 
