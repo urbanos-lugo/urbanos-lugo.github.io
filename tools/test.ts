@@ -2456,19 +2456,20 @@ ok('the services and the worker bundle for a runtime with no Node in it', () => 
   }
 });
 
-await okAsync('the worker bundle answers in a runtime with no Node in it, and turns a malformed address away', async () => {
+await okAsync('the worker bundle answers as Cloudflare runs it, with no Node and no Deno, and turns a malformed address away', async () => {
   // A bundle that builds can still reach for `process` or `Buffer` at run time, which esbuild
-  // cannot see and Deno Deploy throws on. So the worker is bundled as it deploys and run in a
-  // context holding web standards alone, and asked the questions it exists to answer. A
+  // cannot see and the edge runtime throws on. So the worker is bundled as it deploys and run in
+  // a context holding web standards alone, and asked the questions it exists to answer. A
   // malformed escape in the stop code was an uncaught URIError, a 500 from the runtime.
+  // Cloudflare has no `Deno` and hands the settings to fetch: the worker read Deno.env as it
+  // loaded, which on Cloudflare would have stopped it before its first answer.
   const { outputFiles } = buildSync({ absWorkingDir: root, entryPoints: ['worker/index.ts'], bundle: true, format: 'iife', globalName: 'worker', platform: 'neutral', target: 'es2022', write: false, logLevel: 'silent' });
   const asked: string[] = [];
   const stored = new Map<string, Response>();
   const web = {
     URL, URLSearchParams, Request, Response, Headers, AbortSignal, AbortController, TextDecoder, TextEncoder, ReadableStream,
     console: { log() {}, warn() {}, error() {} }, setTimeout, clearTimeout, queueMicrotask, encodeURIComponent, decodeURIComponent,
-    Deno: { env: { get: (key: string) => (key === 'ALLOWED_ORIGIN' ? 'https://owner.github.io' : undefined) } },
-    caches: { open: async () => ({ match: async (r: Request) => stored.get(r.url)?.clone(), put: async (r: Request, res: Response) => void stored.set(r.url, res), delete: async (r: Request) => stored.delete(r.url) }) },
+    caches:{ open: async () => ({ match: async (r: Request) => stored.get(r.url)?.clone(), put: async (r: Request, res: Response) => void stored.set(r.url, res), delete: async (r: Request) => stored.delete(r.url) }) },
     fetch: async (input: unknown) => {
       asked.push(String(input));
       return new Response('<div class="sae-content-info"><div class="sae-content-info-line"><p>13</p></div><div class="sae-content-info-time"><p>7</p></div></div></div>', { status: 200 });
@@ -2476,11 +2477,16 @@ await okAsync('the worker bundle answers in a runtime with no Node in it, and tu
   };
   const sandbox = createContext(web);
   runInContext(outputFiles[0].text, sandbox);
-  const handle = (sandbox as unknown as { worker: { handle: (r: Request) => Promise<Response> } }).worker.handle;
+  const settings = { ALLOWED_ORIGIN: 'https://owner.github.io', DEPLOY_SHA: 'abc1234' };
+  const entry = (sandbox as unknown as { worker: { default: { fetch: (r: Request, env: unknown, ctx: unknown) => Promise<Response> } } }).worker.default;
+  const handle = (r: Request) => entry.fetch(r, settings, {});
   const pole = BUS_STOPS.find((s) => poleCode(s))!;
 
+  const version = await handle(new Request('https://api.example/api/version'));
+  assert((await version.json()).sha === settings.DEPLOY_SHA, 'the worker did not say which commit it was built from');
   const minutes = await handle(new Request(`https://api.example/api/paradas/${pole.id}/agora`));
   assert(minutes.status === 200, `the operator's minutes came back ${minutes.status}`);
+  assert(minutes.headers.get('access-control-allow-origin') === settings.ALLOWED_ORIGIN && stored.size === 1, 'the minutes were not answered and kept for the origin the runtime gave');
   assert((await minutes.json()).departures.length === 1, 'the operator’s minutes lost their departures on the way through the worker');
   const notices = await handle(new Request('https://api.example/api/alerts'));
   assert(notices.status === 200, `the notices came back ${notices.status}`);
@@ -3683,7 +3689,7 @@ await okAsync('the worker answers only for the origin it was given, and keeps on
     }),
   };
   globalThis.fetch = (async () => new Response('<div class="sae-content-info"><div class="sae-content-info-time"><p>4</p></div></div></div>', { status: 200 })) as typeof fetch;
-  // The worker reads its origin once, when loaded, so each setting is its own copy of the module.
+  // A fresh copy of the module per setting, so nothing a copy read as it loaded carries over.
   const load = async (tag: string): Promise<(r: Request) => Promise<Response>> => (await import(`../worker/index.ts?${tag}`)).handle;
   try {
     const pole = BUS_STOPS.filter((s) => poleCode(s))[3];

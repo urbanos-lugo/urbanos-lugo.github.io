@@ -707,6 +707,40 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - Mirado nas teselas de OpenFreeMap que debuxa o mapa, a man: doce de zoom 14 sobre Lugo,
   unha por segundo, gardadas para as seguintes lecturas.
 
+## A API volve a Cloudflare Workers — 20 de novembro de 2026
+
+- **Cloudflare Workers, no plan gratuíto, en `workers.dev`.** Deno Deploy pecha (anunciado o
+  9 de outubro de 2026, seis meses despois), e a organización gratuíta sen tarxeta ía o 20 de
+  novembro no 75 % do seu «Memory Time». Comparado ese día, nas páxinas de cada un:
+  - Cloudflare Workers Free: 100.000 peticións ao día e 10 ms de CPU por petición; pasado o
+    límite, erro ata o día seguinte. Corre no nodo máis próximo a quen pregunta.
+  - Vercel Hobby: 1.000.000 de invocacións e 4 horas de CPU activa ao mes; pasado, 30 días
+    sen a función. Unha rexión, Washington (`iad1`) se non se escolle outra; non se comprobou
+    que o plan deixe Frankfurt ou París.
+  - Netlify Free: 300 créditos ao mes con tope duro (2 por cada 10.000 peticións, 10 por
+    GB-hora de función); a rexión das funcións non a din.
+  - Fastly Compute: sen un plan gratuíto actual que se puidese confirmar.
+
+  Para unhas centas peticións ao mes abondan todas. Cloudflare é a de máis marxe, a máis
+  próxima e a única onde o worker xa corría: naceu alí.
+- **O risco polo que marchou en setembro segue, e asúmese.** Segundo o informe de OONI que
+  cita Capital Fútbol (agosto de 2026), os bloqueos de LaLiga afectaron entre xaneiro e xuño
+  de 2026 a 554.507 dominios, 501.305 deles (o 90 %) en Cloudflare; das 7.441 IPs bloqueadas,
+  2.218 (o 30 %) eran súas. Vercel contou dúas IPs propias bloqueadas en abril de 2025, soltas
+  aos poucos días, e nomea GitHub Pages e BunnyCDN entre os afectados. Nun bloqueo a app fai
+  o que xa sabe: avisos da copia de cada hora, coa data, e sen o bloque do QR.
+- **Plan B, Vercel**, se o enderezo do worker aparece bloqueado en días de partido. O worker
+  xa le os axustes do que lle pasa o `fetch`, así que serían un ficheiro de entrada e a rexión.
+- **Ningunha protección de bots no medio.** buslugo.com (51.254.196.27, OVH) e
+  info.urbanoslugo.com (212.145.223.10) non están detrás de Cloudflare, e a do worker é un
+  axuste do dominio que aquí non se acende. Que os servidores do operador respondan a IPs de
+  Cloudflare compróbase no primeiro despregue.
+- **A telemetría de wrangler, apagada** (`WRANGLER_SEND_METRICS=false`), e wrangler fixado
+  nunha versión de máis de dúas semanas, 4.158.0, que se descarga só no traballo que desprega.
+- **As dúas APIs en paralelo** ata que `API_ORIGIN` nomee a nova; despois, fóra o traballo de
+  Deno e o que o nomea (PRIVACY.md, SECURITY.md, CLAUDE.md, a arquitectura do README e o
+  seu diagrama).
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).

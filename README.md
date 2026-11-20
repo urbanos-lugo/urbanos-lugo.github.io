@@ -1064,7 +1064,7 @@ non chama ningunha.
 │   └── test.ts                     comprobacións executables
 ├── .github/workflows/
 │   ├── deploy-pages.yml            publica en Pages: push, por calendario e a man
-│   ├── deploy-worker.yml           publica a API en Deno Deploy, se hai token
+│   ├── deploy-worker.yml           publica a API en Deno Deploy e en Cloudflare Workers, cada un se ten token
 │   ├── check-source.yml            luns: reconcile + xeometría + tarifas + analizadores
 │   ├── measure.yml                 luns: measure:browser, audit:browser e stress:network, como artefacto
 │   └── ci.yml                      en cada push menos a main, e en cada proposta: lint, test, check:policy, check:deep, build e audit:browser
@@ -1078,7 +1078,8 @@ non chama ningunha.
 ├── NOTICE.md                       librarías, tipografía e a quen pertencen
 ├── PRIVACY.md                      que fai esta app cos teus datos
 ├── SECURITY.md                     como informar dun fallo de seguridade
-└── vite.config.ts
+├── vite.config.ts
+└── wrangler.toml                   a API en Cloudflare Workers: o paquete de worker:build, tal cal
 ```
 
 `design/` garda o redeseño como artboards da canvas de Claude Design: cada pantalla
@@ -1506,9 +1507,9 @@ crer `X-Forwarded-For`, e cada visitante ten o seu. Sen el non se lle cre a ning
 **Integración continua.** Permisos mínimos por traballo (o de construír só le a árbore;
 só o de despregar escribe en Pages) e `persist-credentials: false` no checkout, para que
 o token non quede en `.git/config` durante o resto do traballo. Cada acción vai fixada ao
-seu commit, coa versión ao lado, e o traballo que ten o token de Deno Deploy corre unha
-versión exacta de Deno e de `@deno/deploy`: unha etiqueta pódese mover a outro código
-despois de revisada.
+seu commit, coa versión ao lado, e os traballos que teñen un token de despregue corren
+versións exactas —Deno e `@deno/deploy` un, `wrangler` o outro—: unha etiqueta pódese
+mover a outro código despois de revisada.
 
 **Scripts de instalación.** Ningunha dependencia executa un `postinstall` —que é onde
 correría primeiro unha comprometida—, e `pnpm-workspace.yaml` declárao explícitamente en
@@ -1884,24 +1885,28 @@ cantas illas haxa pono o propio código, en cada unha: buslugo.com como moito un
 minuto (o feed do Concello non o le), e a páxina do operador detrás do QR como moito 120
 veces por minuto en total, pregunte quen pregunte e pola parada que sexa.
 
-**Vai en Deno Deploy**, e despregao `.github/workflows/deploy-worker.yml` cando cambia algo
-do que está feito. Non hai CLI que instalar nin sesión que iniciar nunha máquina: fai falta
-un `DENO_DEPLOY_TOKEN` nos segredos do ambiente `deno-deploy`, e **sen ese segredo o
-workflow non fai nada e dío** —non deixa unha execución en vermello nun repositorio que
-decidiu non montalo.
+**Vai en Deno Deploy, e múdase a Cloudflare Workers** antes de que Deno Deploy peche (o 9
+de outubro de 2026 anunciou que seguiría seis meses). `.github/workflows/deploy-worker.yml`
+desprega o mesmo paquete nos dous cando cambia algo do que está feito, e o sitio pregunta ao
+que nomee a variable `API_ORIGIN`. Non hai CLI que instalar nin sesión que iniciar nunha
+máquina: cada despregue ten o seu token nos segredos do seu ambiente, e **sen ese segredo
+ese traballo non fai nada e dío** —non deixa unha execución en vermello nun repositorio que
+decidiu non montalo. O mesmo código corre nos dous: Cloudflare pásalle os axustes ao `fetch`,
+Deno déixaos en `Deno.env`, e o worker mira primeiro o que lle pasan.
 
-Iría en Cloudflare Workers cambiando tres liñas —o ambiente, a escritura diferida na caché
-e o punto de entrada—, porque todo o que importa aquí é estándar. Non vai alí por dúas
-razóns, e a segunda é local: Cloudflare envía telemetría
-desde a súa ferramenta de despregue, e sobre todo, os **bloqueos por IP que LaLiga obtén
-en España** levan caído enriba de rangos de Cloudflare en tardes de fin de semana, que é
-exactamente cando alguén mira cando pasa o bus para volver á casa. Non é unha garantía
-—ningún aloxamento a dá, e o propio sitio está en GitHub Pages—, pero é a exposición máis
-documentada e evitábase cambiando de casa.
+Volve a Cloudflare, de onde saíu en setembro de 2026 por dúas razóns. A primeira, a
+telemetría da súa ferramenta de despregue, xa non conta: o despregue corre con
+`WRANGLER_SEND_METRICS=false`. A segunda segue en pé: os **bloqueos por IP que LaLiga
+obtén en España** caen sobre todo en rangos de Cloudflare en horas de partido, que é
+exactamente cando alguén mira cando pasa o bus para volver á casa. Durante un bloqueo a app
+non rompe —os avisos saen da copia de cada hora, coa súa data, e o bloque do QR non
+aparece—, e as alternativas gratuitas eran peores no demais. Por que, e o plan B, en
+[`design/DECIDIDO.md`](design/DECIDIDO.md).
 
 Deno esixe extensión explícita nos imports relativos e todo `src/` está escrito para un
 empaquetador, así que o workflow empaqueta antes con esbuild, que xa está aquí por
-`server.ts`. `pnpm run worker:build` fai o mesmo en local.
+`server.ts`. `pnpm run worker:build` fai o mesmo en local, e Cloudflare sobe ese mesmo
+ficheiro tal cal (`wrangler.toml`): o que corre alí é o que a suite executa sen Node e sen Deno.
 
 Fai falta, unha vez: un token de organización de Deno Deploy (na consola, *Settings →
 Organization tokens*) como segredo `DENO_DEPLOY_TOKEN` do ambiente `deno-deploy`, que en
@@ -1915,6 +1920,14 @@ pechado, e tampouco garda esa resposta en ningunha caché, que a seguiría servi
 de posta a variable. Tamén fixa `DEPLOY_SHA`, e `GET /api/version` devólveo: «está xa o
 worker novo?» é un `curl`. A páxina leva o mesmo dato en `<meta name="build">` cando a
 constrúe o workflow.
+
+Para Cloudflare fai falta, unha vez: unha conta (o plan gratuíto abonda), o subdominio
+`workers.dev` escollido no panel (*Workers & Pages*) antes do primeiro despregue, un token
+de API feito co modelo *Edit Cloudflare Workers* como segredo `CLOUDFLARE_API_TOKEN` do
+ambiente `cloudflare` —que, coma o de Deno, só deixa despregar a `main`—, e o identificador
+da conta como variable `CLOUDFLARE_ACCOUNT_ID`. O workflow pasa `ALLOWED_ORIGIN` e
+`DEPLOY_SHA` en cada despregue, e a API queda en
+`https://urbanos-lugo-api.<subdominio>.workers.dev`.
 
 E na build do sitio, a variable de repositorio `API_ORIGIN` co enderezo do despregue. Iso
 fai dúas cousas á vez: as peticións van alí en lugar de a carón da páxina, e ese mesmo

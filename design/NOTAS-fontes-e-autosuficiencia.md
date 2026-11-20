@@ -240,23 +240,27 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    organización do plan gratuito, sen tarxeta, ía no 75 % do seu «Memory Time», que sen
    tarxeta é o 1 % do normal. Se se esgota ou se pecha, a app segue: os avisos saen da copia
    de cada hora, e só se perden os minutos en directo dos QR.
-   - **Onde:** Cloudflare Workers, gratis. Segundo a súa documentación (lida o 20 de
-     novembro): 100.000 peticións ao día, 10 ms de CPU por petición, 50 subpeticións, 128 MB
-     por illamento, e o erro 1027 ao pasar o límite do día. Os lectores do worker tardan aquí
-     de 0 a 2 ms con páxinas normais, e 12 ms con 1 MB patolóxico (`pnpm run
-     measure:parsers`); o corpo xa vén recortado (`readCapped`).
-   - **O dono:** unha conta de Cloudflare e un token con permiso para Workers, gardados en
-     GitHub como segredo e variable.
-   - **O código:** `worker/index.ts` só usa de Deno dous `Deno.env.get` (`ALLOWED_ORIGIN`,
-     `DEPLOY_SHA`); en Workers chegan no `env` do `fetch`. O resto é `fetch`, `Response` e a
-     Cache API, e a build xa é ESM neutra (`worker:build`). Un `wrangler.toml` co nome, o
-     `main` e as variables; `deploy-worker.yml` despregaría con wrangler, fixado por versión
-     coma o resto, no canto de `@deno/deploy`.
-   - **O que hai que probar despois do primeiro despregue:** a documentación só garante a
-     Cache API en dominios propios, e o worker iría en `*.workers.dev`. Sen ela quedan as
-     cachés do módulo, unha por illamento, e Cloudflare reparte en máis illamentos: hai que
-     contar que as peticións a buslugo.com seguen preto dunha cada media hora. Tamén, que
-     buslugo.com e info.urbanoslugo.com responden desde Cloudflare.
+   - **Onde:** Cloudflare Workers, gratis, malia os bloqueos de LaLiga que a fixeran marchar
+     en setembro: a comparación e o plan B, en DECIDIDO («A API volve a Cloudflare Workers»).
+     Segundo a súa documentación (lida o 20 de novembro): 100.000 peticións ao día, 10 ms de
+     CPU por petición, 50 subpeticións, 128 MB por illamento, e o erro 1027 ao pasar o límite
+     do día. Os lectores do worker tardan aquí de 0 a 2 ms con páxinas normais, e 12 ms con
+     1 MB patolóxico (`pnpm run measure:parsers`); o corpo xa vén recortado (`readCapped`).
+   - **O código, feito** (rolda 82): o worker le os axustes do `env` do `fetch`, e de
+     `Deno.env` só se non llos pasan; `wrangler.toml` sobe o paquete de `worker:build` tal
+     cal (`wrangler deploy --dry-run` aceptouno: 265 KiB, 39 comprimido); `deploy-worker.yml`
+     ten un segundo traballo, `cloudflare`, con wrangler 4.158.0 e sen telemetría.
+   - **O dono:** unha conta de Cloudflare co subdominio `workers.dev` escollido; un token co
+     modelo *Edit Cloudflare Workers* como segredo `CLOUDFLARE_API_TOKEN` do ambiente
+     `cloudflare` (en *Settings → Environments*, só `main`), e o identificador da conta como
+     variable `CLOUDFLARE_ACCOUNT_ID`. Despois, un push a `main` ou o workflow a man.
+   - **O que hai que probar despois do primeiro despregue:** `GET /api/version` co commit; a
+     documentación só garante a Cache API en dominios propios, e o worker vai en
+     `*.workers.dev`. Sen ela quedan as cachés do módulo, unha por illamento, e Cloudflare
+     reparte en máis illamentos: hai que contar que as peticións a buslugo.com seguen preto
+     dunha cada media hora. Tamén, que buslugo.com e info.urbanoslugo.com responden desde
+     Cloudflare, e que nada desafía as peticións do navegador. E nun par de fins de semana de
+     partido, se a IP do enderezo aparece entre as bloqueadas.
    - **O cambio:** a variable `API_ORIGIN` ao enderezo novo; a CSP colle a orixe dela só. As
      dúas APIs en paralelo uns días, e despois a de Deno fóra.
    - **Os documentos:** PRIVACY.md e SECURITY.md (quen recibe as peticións), CLAUDE.md

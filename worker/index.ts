@@ -1,8 +1,9 @@
 /**
  * The two things GitHub Pages cannot do, and nothing else: the operator's service notices
  * and the minutes their page shows behind the QR sticker. Neither site sends a CORS header,
- * so something with a server has to ask on the browser's behalf. On Deno Deploy, written
- * with web standards only, so the same handlers `server.ts` exposes run here unchanged.
+ * so something with a server has to ask on the browser's behalf. On Cloudflare Workers and,
+ * until it shuts down, Deno Deploy, written with web standards only, so the same handlers
+ * `server.ts` exposes run here unchanged.
  */
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
 import { operatorTimesResponse } from '../src/services/operatorTimes';
@@ -14,31 +15,40 @@ import { operatorTimesResponse } from '../src/services/operatorTimes';
  */
 const EDGE_SECONDS = { alerts: 30 * 60, unreachable: 60, operator: 20 };
 
-/** The one site allowed to call this. No default on purpose: unset, the response carries no allow-origin and a browser refuses it. */
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '';
-/** The commit this deployment was built from; null when run by hand. */
-const DEPLOY_SHA = Deno.env.get('DEPLOY_SHA') ?? null;
+/**
+ * A setting of the deployment. Cloudflare hands them to `fetch` as its second argument;
+ * Deno Deploy keeps them in `Deno.env` and passes connection details there instead, which
+ * name none of these. Read per request: Cloudflare has no `Deno`, and touching it while the
+ * module loaded would have stopped the worker before it answered anything.
+ */
+const setting = (env: unknown, key: 'ALLOWED_ORIGIN' | 'DEPLOY_SHA'): string | undefined => {
+  const given = env && typeof env === 'object' ? (env as Record<string, unknown>)[key] : undefined;
+  if (typeof given === 'string') return given;
+  return typeof Deno === 'undefined' ? undefined : Deno.env.get(key);
+};
 
 /** Never store an answer no browser will accept: an answer without a usable allow-origin is not stale, it is unusable. */
-const cacheableFor = (maxAge: number): number => (ALLOWED_ORIGIN ? maxAge : 0);
+const cacheableFor = (maxAge: number, origin: string): number => (origin ? maxAge : 0);
 
-const json = (body: unknown, status: number, maxAge: number): Response =>
+const json = (body: unknown, status: number, maxAge: number, origin: string): Response =>
   new Response(JSON.stringify(body), {
     status,
     headers: {
       'content-type': 'application/json; charset=utf-8',
-      'access-control-allow-origin': ALLOWED_ORIGIN,
+      'access-control-allow-origin': origin,
       vary: 'Origin',
-      'cache-control': cacheableFor(maxAge) > 0 ? `public, max-age=${cacheableFor(maxAge)}` : 'no-store',
+      'cache-control': cacheableFor(maxAge, origin) > 0 ? `public, max-age=${cacheableFor(maxAge, origin)}` : 'no-store',
       // When this answer was made, so a read can tell a fresh one from a three-day-old one whatever the runtime computes for `age`.
       'x-stored-at': String(Date.now()),
       'x-content-type-options': 'nosniff',
     },
   });
 
-export async function handle(request: Request): Promise<Response> {
+export async function handle(request: Request, env?: unknown): Promise<Response> {
   const url = new URL(request.url);
-  if (request.method !== 'GET') return json({ error: 'Only GET' }, 405, 0);
+  /** The one site allowed to call this. No default on purpose: unset, the response carries no allow-origin and a browser refuses it. */
+  const ALLOWED_ORIGIN = setting(env, 'ALLOWED_ORIGIN') ?? '';
+  if (request.method !== 'GET') return json({ error: 'Only GET' }, 405, 0, ALLOWED_ORIGIN);
 
   // `caches.open(name)` is the web standard; the allowed origin goes in the key because it goes in the response.
   // The query string does not: `?x=1`, `?x=2`, ... were each a fresh entry that missed the
@@ -60,14 +70,14 @@ export async function handle(request: Request): Promise<Response> {
   }
 
   const respond = async (body: unknown, status: number, maxAge: number): Promise<Response> => {
-    const res = json(body, status, maxAge);
+    const res = json(body, status, maxAge, ALLOWED_ORIGIN);
     // Only a real answer is cached: an error cached for half an hour is half an hour of the same error.
-    if (status === 200 && cacheableFor(maxAge) > 0) await cache.put(cacheKey, res.clone());
+    if (status === 200 && cacheableFor(maxAge, ALLOWED_ORIGIN) > 0) await cache.put(cacheKey, res.clone());
     return res;
   };
 
-  // Which commit is answering: the only way to tell a fresh deployment from an edge cache still serving the last one.
-  if (url.pathname === '/api/version') return respond({ sha: DEPLOY_SHA }, 200, 0);
+  // Which commit is answering, null when run by hand: the only way to tell a fresh deployment from an edge cache still serving the last one.
+  if (url.pathname === '/api/version') return respond({ sha: setting(env, 'DEPLOY_SHA') ?? null }, 200, 0);
 
   if (url.pathname === '/api/alerts') {
     const force = url.searchParams.get('refresh') === 'true';

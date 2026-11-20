@@ -96,6 +96,10 @@ ok('what the workflows run is pinned, and none of them hands out more than it us
     for (const [spec] of commands.matchAll(/\b(?:jsr|npm):@?[\w./-]+(?:@[\w.^~-]+)?/g)) {
       assert(/@\d+\.\d+\.\d+$/.test(spec), `${file}: ${spec} is fetched at run time without an exact version`);
     }
+    // The same for a package run without installing it: the Cloudflare deploy runs wrangler so, with the token.
+    for (const [, spec] of commands.matchAll(/\b(?:pnpm dlx|npx(?: --yes| -y)?)\s+(\S+)/g)) {
+      assert(/@\d+\.\d+\.\d+$/.test(spec), `${file}: ${spec} is fetched at run time without an exact version`);
+    }
     for (const [, version] of text.matchAll(/deno-version:\s*(\S+)/g)) {
       assert(/^v?\d+\.\d+\.\d+$/.test(version), `${file}: deno-version ${version} is whatever is newest on the day`);
     }

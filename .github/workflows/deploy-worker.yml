@@ -6,8 +6,12 @@ name: Deploy the API worker
 #
 # It only exists if somebody deploys it. Without it the site is exactly what it is today:
 # the notices come from the copy the hourly job commits, and the QR block does not appear.
-# So this workflow does nothing at all until DENO_DEPLOY_TOKEN is set, as a secret of the
-# deno-deploy environment below — no red runs on a repository that has decided not to bother.
+# So each job does nothing at all until its token is set, as a secret of its environment
+# below — no red runs on a repository that has decided not to bother.
+#
+# Two jobs while the API moves house. Deno Deploy announced on 9 October 2026 that it shuts
+# down six months on, so the same bundle goes to Cloudflare Workers too; the site asks
+# whichever the API_ORIGIN variable names, and the Deno job goes once nothing asks it.
 on:
   push:
     branches: [main]
@@ -19,6 +23,7 @@ on:
       - 'src/utils/**'
       - 'src/i18n/**'
       - 'src/project.ts'
+      - 'wrangler.toml'
       - '.github/workflows/deploy-worker.yml'
   workflow_dispatch:
 
@@ -228,3 +233,56 @@ jobs:
           echo "The site does not need this: without the worker the notices come from the"
           echo "committed snapshot and the QR block stays hidden, which is the published"
           echo "behaviour today. README, 'Devolverlle a Pages as dúas cousas que lle faltan'."
+
+  cloudflare:
+    runs-on: ubuntu-24.04
+    # Same arrangement as the Deno job: the token is a secret of an environment that only
+    # main may deploy from, and its absence is a quiet skip rather than a red run.
+    environment: cloudflare
+    env:
+      HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+      - run: pnpm test
+      - run: pnpm run worker:build
+
+      # wrangler.toml says what goes up: the bundle just built, as it is. wrangler is fetched
+      # here at an exact version rather than kept in the lockfile, where its runtime binary
+      # would be installed by every other job for this one step. It runs with the token, so
+      # it is a release more than two weeks old, moved on purpose.
+      #
+      # The origin is derived from the repository owner, as in the Deno job, so a fork is not
+      # left answering for this one; the commit is what /api/version reports. Both go in on
+      # every deploy, and wrangler drops any variable a deploy does not name.
+      #
+      # The account needs its workers.dev subdomain chosen once in the dashboard (Workers &
+      # Pages) before the first deploy: wrangler asks for one otherwise, and with no terminal
+      # to ask in, fails.
+      - name: Deploy
+        if: env.HAS_TOKEN == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          # Nothing about this deploy goes to Cloudflare's usage statistics.
+          WRANGLER_SEND_METRICS: 'false'
+        run: |
+          pnpm dlx wrangler@4.158.0 deploy \
+            --var "ALLOWED_ORIGIN:https://${GITHUB_REPOSITORY_OWNER}.github.io" \
+            --var "DEPLOY_SHA:${GITHUB_SHA}"
+
+      - name: Say why nothing was deployed
+        if: env.HAS_TOKEN != 'true'
+        run: |
+          echo "No CLOUDFLARE_API_TOKEN secret in the cloudflare environment, so nothing went"
+          echo "to Cloudflare Workers. README, 'Devolverlle a Pages as dúas cousas que lle faltan'."
