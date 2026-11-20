@@ -6150,3 +6150,59 @@ ferramenta; os parques, coma as prazas.
 
 - O tema claro non se mirou no panel.
 - `audit:browser` enteiro non se correu; nada desta rolda está en `develop` remoto.
+- *O 19 de novembro, o CI de `480322e` pasou enteiro á primeira, co executor en pnpm 12.21.0
+  (run 44609076123): a auditoría completa cubre as prazas e os parques.*
+
+## Rolda 80: un sitio buscado no mapa vese no mapa — 20 de novembro de 2026
+
+Pedido: no buscador do mapa, dúas opcións para un sitio, velo no mapa ou ir a Ruta. Buscado
+no mapa, un sitio levaba directo a Ruta (pasoulle tamén a esta sesión, buscando Praza Maior).
+
+### Feito (`e8d6f98`)
+
+- Cada fila dun sitio no buscador fai o que toca na súa pestana, co outro como un botón ao
+  lado:
+  - no mapa, a fila amosa o sitio no mapa e o botón vai a Ruta («Como chegar a …»);
+  - nas outras pestanas, a fila vai a Ruta coma antes e o botón amósao no mapa («Ver … no
+    mapa»).
+- No mapa, o sitio vese así:
+  - o mapa vai ao sitio no zoom 16, o dos nomes das prazas e dos parques;
+  - un pin na cor do acento, o pin do mapa do traxecto, co aro na cor do fondo (a política
+    non deixa un aro branco);
+  - unha folla co nome, a parada máis próxima e o paseo ata ela;
+  - na folla, «Como chegar aquí» (a mesma clave e a mesma chamada ca a folla dunha parada) e
+    un botón á parada máis próxima, que abre a súa folla. Ao pechala, volve a do sitio.
+- A folla do sitio sae da prop e non dun estado posto nun efecto. Primeiro fíxose cun efecto,
+  e no panel, cun rato, a folla abría e pechaba ás veces de vez: o «atrás» diferido das filas
+  do buscador chegaba antes. Os percorridos, con toques, non o vían.
+- `useBackLayer`: unha capa aberta mentres outra se pecha colle o paso desa, como xa facía
+  un cambio de pantalla (`useTabRoute`). Sen iso, «atrás» desde a folla aterraba no paso das
+  filas xa pechadas.
+- Xa no mapa, ensinar un sitio non navega: un segundo paso de mapa era un paso morto.
+- Unha viaxe nova (51): no mapa, buscar «catedral» e tocar a fila abre a folla, e a resposta
+  é o seu «Como chegar aquí». En `journeys.ts`, os resultados do buscador ceden o seu paso a
+  unha folla que abra unha fila súa, coma a app.
+- README: o que fai unha fila dun sitio, en cada pestana.
+
+### Comprobado
+
+- As cinco portas, co parche só nun worktree illado desde `480322e`: lint, 178 comprobacións,
+  26 políticas, `check:deep` e a build. No árbol principal, lint fallaba en
+  `tools/importPlaces.ts`, a medias da outra sesión, que non é deste parche.
+- `AUDIT_RUNNER=1`, todas as viaxes contra a build en 3002, con Chrome 157: 102 percorridos e
+  0 achados de fluxo ou de volta. Os toques no cuarto de arriba pasan de 64 a 68, os da
+  viaxe nova no buscador.
+- No panel, a 375×812, en castelán e escuro, co rato, no mapa:
+  - «catedral» trae a fila co botón «Cómo llegar a Catedral de Lugo (Porta de Santiago)»;
+  - tocar a fila leva o mapa ao zoom 16 sobre a Catedral, co pin e a folla: «Rúa Vilalba 6 ·
+    a 149 m a pie», «Cómo llegar aquí» e «Parada más cercana: Rúa Vilalba 6»;
+  - o historial segue en tres pasos;
+  - «atrás» pecha a folla e quita o pin;
+  - ningún erro na consola.
+
+### Queda
+
+- O botón «Ver … no mapa» desde outra pestana non o colle ningunha viaxe; mirado só no código.
+- Que ao pechar a folla da parada máis próxima volva a do sitio vese no código; no panel non
+  se probou.
+- `audit:browser` enteiro non se correu; nada desta rolda está en `develop` remoto.
