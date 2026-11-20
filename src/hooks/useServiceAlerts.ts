@@ -5,6 +5,7 @@ import { isSnapshotStale } from '../utils/snapshotAge';
 import { readNotice } from '../utils/operatorNotices';
 import { noticeOver } from '../utils/noticeChanges';
 import { apiUrl } from '../services/apiUrl';
+import { isCrawler } from '../routes';
 
 /**
  * The operator's notices, fetched once for the whole app, so the navigation badge and the
@@ -102,6 +103,13 @@ export function useServiceAlerts(now: Date): ServiceAlerts {
 
   // A server that neither answers nor fails left an empty list, which reads as "no incidents".
   useEffect(() => {
+    // A crawler gets the saved notices beside the page: asking the API, every page it rendered,
+    // at any hour, woke the server for no reader. What it indexes is the same.
+    if (isCrawler(navigator.userAgent)) {
+      answered.current = true;
+      showSnapshot();
+      return;
+    }
     refresh(false);
     const patience = setTimeout(async () => {
       if (answered.current) return;

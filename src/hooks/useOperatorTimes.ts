@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { OperatorDeparture, OperatorTimes } from '../services/operatorTimes';
 import { apiUrl } from '../services/apiUrl';
+import { onShown } from './useClock';
 
 /**
  * The server's answer, narrowed rather than cast: only departures with a line, a corridor
@@ -29,15 +30,20 @@ export function useOperatorTimes(code: string | undefined): OperatorTimes | null
     setTimes(null); // a stop change must not leave the previous stop's minutes on screen
     if (!code) return;
     let current = true;
+    let gone = false;
     let timer: ReturnType<typeof setInterval> | undefined;
 
     const ask = async () => {
+      if (gone) return;
       try {
         // Twelve seconds: past the server's own eight-second cap, and under the interval below
         // so a stalled connection cannot stack requests. Optional: AbortSignal.timeout is Safari 16.
         const res = await fetch(apiUrl(`paradas/${encodeURIComponent(code)}/agora`), { signal: AbortSignal.timeout?.(12_000) });
         // A 404 is permanent (static build, or a stop with no code on their site); a 502 is the operator being unreadable now.
-        if (res.status === 404) clearInterval(timer);
+        if (res.status === 404) {
+          gone = true;
+          clearInterval(timer);
+        }
         if (!res.ok) throw new Error(String(res.status));
         const data = readOperatorTimes(await res.json());
         if (current) setTimes(data);
@@ -47,11 +53,15 @@ export function useOperatorTimes(code: string | undefined): OperatorTimes | null
     };
 
     ask();
-    // Their own page refreshes on this cadence; the server caches for twenty seconds.
-    timer = setInterval(ask, 30_000);
+    // Their own page refreshes on this cadence; the server caches for twenty seconds. Not while
+    // the page is hidden: a board left open in a background tab or on a locked phone asked twice
+    // a minute for hours, and kept the API awake for nobody. Shown again, it asks at once.
+    timer = setInterval(() => document.visibilityState === 'visible' && ask(), 30_000);
+    const unshown = onShown(ask);
     return () => {
       current = false;
       clearInterval(timer);
+      unshown();
     };
   }, [code]);
 
