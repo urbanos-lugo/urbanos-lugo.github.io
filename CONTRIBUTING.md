@@ -45,7 +45,7 @@ as demais que o README marca— pásanse a man, unha vez, e non van nunca nun bu
   certo —un comportamento, unha cifra—, o README cambia no mesmo commit. As cifras medidas
   viven só en `README.md`; `README.es.md` e `README.en.md` son un resumo cada un.
 - **Mensaxes de commit que contan que pasou**, e por que, en inglés, como o código e os
-  comentarios. As notas de deseño (`design/*.md`) van en galego.
+  comentarios. As notas de traballo (`design/*.md`) e os documentos de `docs/` van en galego.
 - **Nada que non sexa público.** Sen nomes de persoas, sen credenciais, sen directorios de
   asistentes (`.claude/`, `.agents/` e similares están ignorados a propósito).
 

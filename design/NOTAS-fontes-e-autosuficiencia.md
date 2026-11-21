@@ -218,7 +218,7 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
 ## Pendente
 
 1. **Un lector de pantalla de verdade, nun teléfono**, cousa do dono: o guión de
-   [`PROBA-lector-de-pantalla.md`](PROBA-lector-de-pantalla.md), unha vez con VoiceOver e
+   [`PROBA-lector-de-pantalla.md`](../docs/PROBA-lector-de-pantalla.md), unha vez con VoiceOver e
    outra con TalkBack (rolda 31). `audit:browser` mide nomes, estados, orde e idioma no
    código; como os di cada lector, se le o «~» das horas estimadas e se cambia de voz nos
    avisos en castelán, só se sabe escoitando.
@@ -275,7 +275,7 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
   palabras.
 - **Probada nun iPhone e nun Android de verdade** (novembro de 2026), a man. O guión para
   repetila, coa lista curta do iPhone que estaba aquí, é
-  [`PROBA-no-telefono.md`](PROBA-no-telefono.md).
+  [`PROBA-no-telefono.md`](../docs/PROBA-no-telefono.md).
 - **Os buscadores saen da lista** (10 de novembro de 2026): seguen ao seu ritmo e son cousa
   do dono. Google indexa todas as páxinas agás algunhas en inglés; o sitemap segue «Non se
   puido ler» desde o 29 de outubro; Bing le o sitemap enteiro e ten `/es/` como

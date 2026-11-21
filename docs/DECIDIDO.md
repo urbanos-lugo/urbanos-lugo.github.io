@@ -6,7 +6,7 @@ repositorio como plans dunha cousa xa feita. Este ficheiro garda o que deles imp
 o 15 de setembro de 2026. Os textos completos, coas maquetas e as voltas, están no
 historial de git ata ese día (`design/PLAN-acento-vermello.md`, `design/PLAN-mapa-propio.md`,
 `design/PLAN-vou-no-bus.md`). As medidas e os fallos de cada rolda seguen en
-[`REXISTRO-probas.md`](REXISTRO-probas.md); o que nunca se fará, e por que, no README en
+[`REXISTRO-probas.md`](../design/REXISTRO-probas.md); o que nunca se fará, e por que, no README en
 «Ideas para máis adiante».
 
 A regra que atravesa os tres: **non presentar como medido o que non o é**, e medir antes

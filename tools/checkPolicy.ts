@@ -323,7 +323,7 @@ ok('no tracked file outside the records names the old address', () => {
   // keep it on purpose, as what was true then, and the README to say it is dead; this file
   // keeps it as the thing to look for. Dropped from the suite on 20 October with the checks that
   // read files, while DECIDIDO.md went on saying a check held it.
-  const RECORDS = ['README.md', 'design/DECIDIDO.md', 'design/REXISTRO-probas.md', 'design/AUDITORIA-seo.md', 'design/NOTAS-fontes-e-autosuficiencia.md', 'design/MUDANZA-organizacion.md', 'tools/checkPolicy.ts'];
+  const RECORDS = ['README.md', 'docs/DECIDIDO.md', 'design/REXISTRO-probas.md', 'design/AUDITORIA-seo.md', 'design/NOTAS-fontes-e-autosuficiencia.md', 'design/MUDANZA-organizacion.md', 'tools/checkPolicy.ts'];
   const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' }).split('\0').filter(Boolean);
   assert(tracked.length > 100, `git lists ${tracked.length} files, so this is not reading the repository`);
   const offenders = tracked.filter((file) => {
@@ -402,7 +402,7 @@ ok('every file, script, command and heading a document names exists', () => {
     );
   };
   const off: string[] = [];
-  for (const doc of tracked.filter((f) => f.endsWith('.md') && !/^design\/(REXISTRO-probas|DECIDIDO)\.md$/.test(f))) {
+  for (const doc of tracked.filter((f) => f.endsWith('.md') && !/^(design\/REXISTRO-probas|docs\/DECIDIDO)\.md$/.test(f))) {
     const text = read(doc);
     for (const [, path] of text.matchAll(PATH)) if (!exists(path)) off.push(`${doc} names ${path}`);
     for (const [, name] of text.matchAll(/`([\w.-]+\.(?:tsx?|md|json|ya?ml|css|html|m?js|cjs|txt|svg|png|woff2|ico|webmanifest|lock))`/g)) {

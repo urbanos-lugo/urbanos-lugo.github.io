@@ -194,7 +194,7 @@ do publicado por OpenFreeMap e xerado por `tools/buildMapStyle.ts`: as teselas, 
 e os glifos seguen sendo os seus, as cores son nosas. Están medidas contra o que se debuxa
 enriba — as 24 cores de liña quedan a 1,45 ou máis sobre calquera das tres capas de rúa
 que cruzan, e ningún rótulo do mapa baixa de 4,5. As decisións e as cifras están en
-[`design/DECIDIDO.md`](design/DECIDIDO.md).
+[`docs/DECIDIDO.md`](docs/DECIDIDO.md).
 
 O mapa leva **os sitios polos que se busca unha parada, co seu nome**, por chanzos para
 non enchelo: desde o zoom 13, os hospitais, a estación de tren, a de autobuses, o campus e
@@ -1069,9 +1069,10 @@ non chama ningunha.
 │   ├── measure.yml                 luns: measure:browser, audit:browser e stress:network, como artefacto
 │   └── ci.yml                      en cada push menos a main, e en cada proposta: lint, test, check:policy, check:deep, build e audit:browser
 ├── worker/                         a API que Pages non pode servir (opcional)
-├── design/                         artboards do redeseño (.dc.html), canvas.json, e as notas: o que se decidiu
-│                                   (DECIDIDO.md), o rexistro de probas, a auditoría SEO e as notas de fontes
-├── docs/diagrams/                  fontes dos diagramas deste README + as imaxes
+├── design/                         artboards do redeseño (.dc.html), canvas.json, e as notas de traballo:
+│                                   o rexistro de probas, os pendentes e a auditoría SEO
+├── docs/                           o que se decidiu (DECIDIDO.md), os guións para probar a man nun
+│                                   teléfono e cun lector de pantalla, e diagrams/, os deste README
 ├── server.ts
 ├── CONTRIBUTING.md                 o pouco que hai que saber para que un cambio entre á primeira
 ├── DATA.md                         procedencia e condicións dos datos
@@ -1086,7 +1087,9 @@ non chama ningunha.
 nun `.dc.html` e o `canvas.json` que os coloca. Son o rexistro de por que a interface
 é como é —as alternativas que se descartaron seguen aí— e ábrense coa canvas, non
 como páxinas soltas. O ficheiro sementado que a canvas publica é un artefacto de
-compilación e non se commitea.
+compilación e non se commitea. Ao seu lado van as notas de traballo —o rexistro de cada
+rolda de probas, os pendentes e a auditoría SEO—, escritas para quen desenvolve; o que se
+decidiu e por que está en [`docs/DECIDIDO.md`](docs/DECIDIDO.md).
 
 `docs/diagrams/` garda os tres diagramas deste README como o JSON do que se debuxan, e as
 dúas imaxes —clara e escura— que GitHub amosa. O visor `.html` que os acompaña non se
@@ -1644,12 +1647,11 @@ outro Chrome —ao 200 % a monoespazada do executor xa é máis ancha ca a de Wi
 cambialo é unha decisión con auditoría, non algo que pase un luns. A imaxe de 24.04 si se
 renova soa cada semana, co seu Chrome: en novembro de 2026 unha levouno da 156 á 157 e as
 viaxes fallaron no CI ata que as caras da fonte pasaron a cargarse ao arrancar (rolda 71
-do rexistro). Por que segue en 24.04, coas medidas, está nas notas
-([`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md), «Feito»).
+do rexistro).
 «Arranxado» quere dicir que fallaba
 e que agora o comproba algo que falla se volve. Do que unha máquina non pode oír, o lector
 de pantalla de verdade, hai un guión para seguir a man:
-[`design/PROBA-lector-de-pantalla.md`](design/PROBA-lector-de-pantalla.md).
+[`docs/PROBA-lector-de-pantalla.md`](docs/PROBA-lector-de-pantalla.md).
 
 | Criterio | Nivel | Estado | Por que, e como se sabe |
 | :--- | :---: | :--- | :--- |
@@ -1823,9 +1825,8 @@ Este repositorio é dese segundo caso: desde o 13 de outubro de 2026 chámase
 `urbanos-lugo/urbanos-lugo.github.io` (antes `braisbrg/urbanos-lugo`), así que `BASE_PATH`
 é `/` e o sitio está en `https://urbanos-lugo.github.io/`. O enderezo anterior,
 `https://braisbrg.github.io/urbanos-lugo/`, dá 404 e non redirixe a ningures: o repositorio
-que o servía xa non existe baixo ese nome, e unha páxina que o fixese redirixir
-([`design/MUDANZA-organizacion.md`](design/MUDANZA-organizacion.md)) só serviría a quen
-aínda garde a ligazón. A `github.com/braisbrg/urbanos-lugo` si a redirixe GitHub ao
+que o servía xa non existe baixo ese nome, e unha páxina que o fixese redirixir só
+serviría a quen aínda garde a ligazón. A `github.com/braisbrg/urbanos-lugo` si a redirixe GitHub ao
 repositorio novo. As copias instaladas desde o enderezo vello, e o que gardaban
 (favoritos, paradas recentes, tema, idioma), quedan na súa orixe e non pasan: instálase
 de novo desde o enderezo novo.
@@ -1848,7 +1849,7 @@ sitemap e a build.
 **Cada liña ten a súa páxina**, `/linhas/1.4/`, `/es/lineas/1.4/`, `/en/lines/1.4/`: 24
 liñas en tres idiomas, 72 copias máis, e o sitemap pasa de dezaoito entradas a noventa. As
 buscas polo número dunha liña («horario bus 1.4 lugo», «línea 2») caían todas en
-`/es/lineas/`, unha páxina para as 24 (`design/AUDITORIA-seo.md`, punto 7). O slug é o id da
+`/es/lineas/`, unha páxina para as 24. O slug é o id da
 liña en ASCII (`1.4`, `5ds`, `11-igrexa-de-boveda`): catro liñas son un «11» no bus, e cada
 unha ten o seu enderezo e o seu título. O título leva o número, e a variante do 11 detrás;
 a descrición, o nome que o operador forma coas dúas cabeceiras, e nada que non estea no
@@ -1901,7 +1902,7 @@ obtén en España** caen sobre todo en rangos de Cloudflare en horas de partido,
 exactamente cando alguén mira cando pasa o bus para volver á casa. Durante un bloqueo a app
 non rompe —os avisos saen da copia de cada hora, coa súa data, e o bloque do QR non
 aparece—, e as alternativas gratuitas eran peores no demais. Por que, e o plan B, en
-[`design/DECIDIDO.md`](design/DECIDIDO.md).
+[`docs/DECIDIDO.md`](docs/DECIDIDO.md).
 
 Deno esixe extensión explícita nos imports relativos e todo `src/` está escrito para un
 empaquetador, así que o workflow empaqueta antes con esbuild, que xa está aquí por
@@ -1953,7 +1954,7 @@ pantalla acesa e `AbortSignal.timeout` pídense só se existen, a vibración é 
 WebGL2 o mapa é un aviso e as listas din o mesmo. Está probado a fondo só en Chromium (as ferramentas de
 `tools/` diríxeno por CDP); Safari en iOS, que é a outra metade dos teléfonos de Lugo,
 e Android próbanse a man, e probáronse nun iPhone e nun Android en novembro de 2026, co
-guión de [`design/PROBA-no-telefono.md`](design/PROBA-no-telefono.md).
+guión de [`docs/PROBA-no-telefono.md`](docs/PROBA-no-telefono.md).
 
 ```bash
 corepack enable && corepack prepare --activate
@@ -2360,13 +2361,11 @@ Cartografía © OpenStreetMap contributors, teselas de OpenFreeMap © OpenMapTil
 
 ### O que queda por facer
 
-A lista de traballo, co detalle e as medidas de cada punto, é unha soa:
-[`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md),
-«Pendente». En resumo:
-
-- **Un lector de pantalla de verdade nun teléfono**, VoiceOver e TalkBack
-  ([`design/PROBA-lector-de-pantalla.md`](design/PROBA-lector-de-pantalla.md)): a
-  auditoría mide nomes, estados e orde, pero non como soan.
+- **Mudar a API** de Deno Deploy, que pecha en 2027, a Cloudflare Workers: o código está
+  listo, e o por que e o plan B, en [`docs/DECIDIDO.md`](docs/DECIDIDO.md).
+- **Un lector de pantalla de verdade nun teléfono**, VoiceOver e TalkBack, co guión de
+  [`docs/PROBA-lector-de-pantalla.md`](docs/PROBA-lector-de-pantalla.md): a auditoría mide
+  nomes, estados e orde, pero non como soan.
 - **Unha páxina por parada**, á espera do que diga Search Console en decembro das páxinas
   de liña: se Google as indexa e se lles leva as buscas polo número.
 
@@ -2423,9 +2422,7 @@ O que custa, medido:
 Non está feito porque é un pipeline novo comparable ao do urbano, non un engadido
 pequeno. A decisión previa é se paga a pena manter esa descarga. E leva outra cousa
 consigo: o GTFS trae **un poste por sentido, na beirarrúa**, que é o que faría falta para
-que o mapa dixese o lado da rúa —hoxe os pins do operador marcan a calzada, non a beira—;
-o custo e a orde diso están en
-[`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md).
+que o mapa dixese o lado da rúa: hoxe os pins do operador marcan a calzada, non a beira.
 
 #### Que o móbil vibre coa aplicación pechada
 
@@ -2476,8 +2473,7 @@ O que depende de nós para os buscadores está feito: título, descrición e can
 pestana e idioma, pestanas como ligazóns, `og:image`, datos estruturados, `robots.txt` e
 sitemap na raíz do dominio, o sitio dado de alta en Search Console e en Bing, e desde a
 1.7.10 cada liña co seu enderezo, nos tres idiomas. O paso seguinte sería o mesmo para as
-417 paradas. Está descrito en [`design/AUDITORIA-seo.md`](design/AUDITORIA-seo.md) (punto
-8), e espera ao export de decembro: antes hai que ver se as páxinas de liña se indexan e
+417 paradas, e espera ao export de decembro: antes hai que ver se as páxinas de liña se indexan e
 levan as buscas polo número. Hoxe, ademais, un rastrexador non chegaría ás paradas: na
 páxina dunha liña non son ligazóns. Nada diso cambia as regras: ningún título prometerá
 tempo real, e «non oficial» vai na descrición.

@@ -13,7 +13,7 @@
  *
  * Tiles, sprites and glyphs still come from tiles.openfreemap.org, so the CSP gains no
  * origin; the layers stay as published, in their published order, with one of ours on top
- * (LANDMARKS). The measurements behind every value are in design/DECIDIDO.md.
+ * (LANDMARKS). The measurements behind every value are in docs/DECIDIDO.md.
  *
  * Street names stay at every zoom. They faded out from 15 to 16.5, where the stop names
  * arrive, and a reader zoomed in to find a stop could not read the street it was on.

@@ -6485,6 +6485,10 @@ antes onde, porque a API saíra de Cloudflare en setembro polos bloqueos de LaLi
   - `check:policy` pide versión exacta tamén ao que se executa con `pnpm dlx` ou `npx`;
   - README (a sección do worker, a árbore e a integración continua), DECIDIDO («A API volve a
     Cloudflare Workers», coa comparación e o plan B) e NOTAS.
+- Os documentos, ordenados para quen chega ao repositorio: DECIDIDO e os dous guións PROBA
+  pasan a `docs/` co mesmo nome, e o README deixa de mandar ás notas de traballo de
+  `design/` (este rexistro, NOTAS, a auditoría SEO e a da mudanza); «O que queda» xa non
+  remite a NOTAS. Nada sae do repositorio.
 
 ### Comprobado
 
