@@ -1032,7 +1032,7 @@ non chama ningunha.
 │   ├── importWalkNetwork.ts        as vías camiñables de Lugo desde Overpass
 │   ├── importElevation.ts          o MDT05 do IGN, só onde se pode camiñar
 │   ├── terrain.ts                  le o TIFF do IGN e coloca cada altura
-│   ├── buildWalkGraph.ts           fainas grafo: cruces, arestas e polilinas
+│   ├── buildWalkGraph.ts           fainas grafo (cruces, arestas e polilinas) e escribe streets.json
 │   ├── compareWalkRouter.ts        o noso enrutador fronte ao de FOSSGIS
 │   ├── checkLandmarks.ts           onde din OSM e Wikidata que están os sitios
 │   ├── fetchAlerts.ts              refresca a instantánea de avisos (CI)

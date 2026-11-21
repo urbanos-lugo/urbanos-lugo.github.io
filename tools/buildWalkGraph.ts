@@ -6,13 +6,17 @@
  * a junction, and so is either end of a way; the nodes between only describe the shape
  * of the street, so each run collapses into one edge carrying its length and polyline.
  *
- * Offline and fast. Reads data/osm-walk-network.json, writes src/data/walk-network.json:
+ * Offline and fast. Reads data/osm-walk-network.json, writes src/data/walk-network.json and
+ * src/data/streets.json:
  *   pnpm run data:walkgraph
+ * Both are committed and data/osm-walk-network.json is not, so it is this script that writes
+ * them and not data:build, which runs on a clean checkout in CI.
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
-import { metresBetween } from '../src/utils/geo';
+import { getDistanceMeters, metresBetween } from '../src/utils/geo';
+import { at, writeJson } from './lib';
 import { decodeTiff, terrainFrom, type Raster, type Terrain } from './terrain';
 
 interface KeptWay {
@@ -49,6 +53,21 @@ const SAMPLE_M = 5;
 const THRESHOLD_M = 2;
 
 const ways: KeptWay[] = JSON.parse(readFileSync('data/osm-walk-network.json', 'utf8'));
+
+// Every named way of the walking network, as one point on it: what Ruta finds for a street that
+// names no stop. Searched, «Rúa do Teatro» and «Rúa San Marcos» found nothing. The point is the
+// one of its ways nearest their middle, so it is on the street and not in a block beside it.
+const byStreet = new Map<string, [number, number][]>();
+for (const way of ways) if (way.name) byStreet.set(way.name, [...(byStreet.get(way.name) ?? []), ...way.geometry]);
+const streets = [...byStreet]
+  .map(([name, points]) => {
+    const mid = [points.reduce((s, p) => s + p[0], 0) / points.length, points.reduce((s, p) => s + p[1], 0) / points.length];
+    const on = points.reduce((best, p) => (getDistanceMeters(p[0], p[1], mid[0], mid[1]) < getDistanceMeters(best[0], best[1], mid[0], mid[1]) ? p : best));
+    return { name, lat: Number(on[0].toFixed(5)), lng: Number(on[1].toFixed(5)) };
+  })
+  .sort((a, b) => a.name.localeCompare(b.name, 'gl'));
+writeJson(at('src', 'data', 'streets.json'), streets, false);
+console.log(`  src/data/streets.json: ${streets.length} named ways of the walking network`);
 
 const uses = new Map<number, number>();
 for (const way of ways) for (const node of way.nodes) uses.set(node, (uses.get(node) ?? 0) + 1);

@@ -96,7 +96,7 @@ where no surveyed relation exists.
   `sport`, with the branches of each chain taken from AllThePlaces (below) where the chain's
   points fall on OSM's. Two of one name are told apart by the stop nearest them.
   `src/data/streets.json` — the 794 named ways of the walking network, a point
-  on each — is written by `tools/buildDataset.ts` from `data/osm-walk-network.json`. Both
+  on each — is written by `tools/buildWalkGraph.ts` from `data/osm-walk-network.json`. Both
   Derivative Databases, ODbL. A place no source has is not found: it is added in OSM, and
   arrives with the next import.
 

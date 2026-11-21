@@ -489,25 +489,9 @@ for (const [file, built] of [['stops.json', served], ['lines.json', slimLines]] 
   if (built.length < before * 0.9) throw new Error(`${file}: built ${built.length}, previously ${before}. That is a broken run, not a timetable change — nothing written.`);
 }
 
-// Every named way of the walking network, as one point on it: what Ruta finds for a street that
-// names no stop. Searched, «Rúa do Teatro» and «Rúa San Marcos» found nothing. The point is the
-// one of its ways nearest their middle, so it is on the street and not in a block beside it.
-const byStreet = new Map<string, [number, number][]>();
-for (const way of readJson<{ name?: string; geometry: [number, number][] }[]>(at('data', 'osm-walk-network.json'))) {
-  if (way.name) byStreet.set(way.name, [...(byStreet.get(way.name) ?? []), ...way.geometry]);
-}
-const streets = [...byStreet]
-  .map(([name, points]) => {
-    const mid = [points.reduce((s, p) => s + p[0], 0) / points.length, points.reduce((s, p) => s + p[1], 0) / points.length];
-    const on = points.reduce((best, p) => (haversine(p[0], p[1], mid[0], mid[1]) < haversine(best[0], best[1], mid[0], mid[1]) ? p : best));
-    return { name, lat: Number(on[0].toFixed(5)), lng: Number(on[1].toFixed(5)) };
-  })
-  .sort((a, b) => a.name.localeCompare(b.name, 'gl'));
-
 writeJson(at('src', 'data', 'stops.json'), served);
 writeJson(at('src', 'data', 'lines.json'), slimLines);
 writeJson(at('src', 'data', 'route-geometry.json'), geometry, false);
-writeJson(at('src', 'data', 'streets.json'), streets, false);
 
 console.log(`stops : ${served.length} physical poles written`);
 console.log(`        ${collapsed} duplicate operator ids collapsed, ${dropped} without coordinates, ${orphaned} served by no line`);
@@ -516,7 +500,6 @@ for (const [a, b, m] of duplicatePairs) {
   if (!repositioned.includes(a) && !repositioned.includes(b)) console.log(`        left as published: ${a} and ${b} are ${Math.round(m)} m apart in one direction`);
 }
 console.log(`lines : ${lines.length} written`);
-console.log(`streets: ${streets.length} named ways of the walking network`);
 console.log(`routes: ${Object.keys(geometry).length} directions with street geometry`);
 console.log(`        ${osmCount} drawn from the itinerary surveyed in OSM, ${osrmCount} from OSRM`);
 console.log(`sizes : lines.json ${(JSON.stringify(slimLines).length / 1024).toFixed(0)} KB (bundled) + route-geometry.json ${(JSON.stringify(geometry).length / 1024).toFixed(0)} KB (lazy)`);
