@@ -6550,3 +6550,87 @@ antes onde, porque a API saíra de Cloudflare en setembro polos bloqueos de LaLi
 
 - O CI xa non rexenera `streets.json`, igual que non rexenera `walk-network.json`: as dúas
   só cambian cando alguén refresca a rede peonil (`data:walk`, logo `data:walkgraph`).
+
+## Rolda 85: a rede peonil refrescada, e o camiño a pé que caía nun anaco solto — 21 de novembro de 2026
+
+Pedido: refrescar a copia da rede peonil polos nomes novos das rúas do polígono, mirar se
+pasa algo parecido noutra parte, e deixar ben calculados os tempos e os camiños a pé ata os
+sitios, coas costas.
+
+### Feito
+
+- `pnpm run data:walk` (unha consulta a Overpass, á man) e `pnpm run data:walkgraph`. A copia
+  anterior era do 7 de setembro. De 12.651 a 12.698 vías (saen 33, entran 80); de 21.093 a
+  21.175 cruces, de 29.489 a 29.614 arestas e de 2.516 a 2.524 km; 73 anacos, o maior co
+  98,7 % dos cruces; ningún cruce fóra das teselas do MDT05. `streets.json` pasa de 794 a 798
+  rúas: tres nomes cambian de escritura («Ronda de Valle Inclán» é «Ronda Valle Inclán») e
+  entran sete.
+- **Corrección da rolda 81.** As rúas do polígono do Ceao xa tiñan eses nomes na copia de
+  setembro. O que cambiou en OSM o 1 de novembro foi o trazado: vías alongadas, e os seus
+  puntos en `streets.json` móvense ata 256 m.
+- **O camiño a pé ía á rúa máis próxima, aínda que fose un anaco solto.** Cando esa rúa era
+  un anaco que o resto da rede non alcanza (un carreiro nun patio, o apartadoiro dunha
+  parada da N-VI), `routeOnFoot` devolvía null: o plan quedaba coa liña recta por 1,35, sen
+  cobrar a subida, e o mapa sen camiño. Coa copia de setembro, 7 paradas e 18 sitios non
+  tiñan camiño ata a súa parada máis próxima; coa de novembro, 9 e 16: as oito paradas da
+  N-VI e Bagueixos, e sitios do centro como o Museo Provincial, a Policía Municipal, a Praza
+  Primeiro de Maio ou o Parque do Sagrado Corazón. En todos, a rede principal estaba a 13–115
+  m do punto, agás un muíño a 384 m. `src/utils/walkRouter.ts` etiqueta agora cada cruce co
+  seu anaco ao descodificar, e se os dous extremos caen en anacos distintos o que está nun
+  menor pasa ao principal, se o ten a menos de 150 m (`MAIN_PIECE_REACH_M`). Ese treito
+  camíñase en recta e ao paso de chan, como xa se facía co desvío ata a rede. Agora non
+  queda ningunha parada sen camiño, e só un sitio, o Mazo de Santa Comba.
+- Comprobación nova en `tools/test.ts`: cada parada chega a pé á súa parada máis próxima, o
+  Museo Provincial á súa en menos de tres veces a recta, e o Mazo segue sen camiño.
+- A táboa dos rodeos do README. A fila dos «340 pares de paradas veciñas» non se puido
+  reproducir: nin cada parada coa máis próxima (260 pares) nin as consecutivas de cada
+  sentido (533) dan 340 pares nin ×3,78. Vai no seu lugar a primeira, co método escrito:
+  ×1,43 de mediana, p90 ×5,10 e o peor ×32,96. Co enrutador de antes eran ×1,42, ×4,83 e
+  ×32,96, con 5 pares sen camiño. A fila dos 1.022 tramos queda, coa súa data, setembro.
+- README (cifras da rede e das costas, o parágrafo de cando non hai camiño peonil, a táboa
+  dos rodeos, as 798 rúas, os tamaños), DATA.md, PRIVACY.md, a etiqueta do diagrama de datos
+  e os comentarios de `walkRouter.ts`, `walkingPath.ts` e `tools/test.ts`.
+
+### Mirado noutras partes
+
+- Os enderezos dos 3.575 elementos de OSM do 20 de novembro (`addr:street`): 11 rúas que
+  ningunha vía leva, todas escrituras doutra forma («N-540», «Carretera a Friol Km. 0,3»).
+  Ningún nome novo.
+- Os 28 sitios escritos a man, contra OSM do 20 de novembro e sen rede: 21 a menos de 150 m;
+  5 sen un nome que case enteiro («Rolda» fronte a «Ronda»); 2 lonxe, As Gándaras a 1.085 m
+  e o cemiterio de San Froilán a 208 m, dúas áreas grandes onde o punto de OSM cae noutra
+  esquina. `check:landmarks` non se correu: fai unha petición a Overpass por palabra.
+- Nada escrito a man nomea as rúas que cambiaron de escritura; as paradas «Rda. Valle
+  Inclán» levan o nome do operador.
+- O CI: `data:build` le só ficheiros versionados. `buildMapStyle.ts` precisa `.cache/style`
+  e `buildWalkGraph.ts` `.cache/mdt`, pero ningún dos dous corre no CI.
+- As instantáneas de OSM que ningunha comprobación semanal mira: a rede peonil, refrescada
+  agora, e `data/stop-amenities.json`, de agosto cos arranxos de setembro e outubro. As
+  rutas de OSM míraas `check-source.yml` cada luns (verde o 16 de novembro); os sitios e as
+  prazas son desta semana.
+
+### Comprobado
+
+- `data:build` despois de `data:walkgraph`: só cambian `walk-network.json` e `streets.json`.
+- As cinco portas: lint, 183 comprobacións, 26 políticas, `check:deep` (1.050 pares, 38.097
+  viaxes) e a build.
+- As cifras das costas, cun mesmo script sobre o `walk-network.json` de setembro e o novo: o
+  vello dá as do README (41.834 e 49.735 m, 3.099 e 292 arestas, a peor de 1.941 m con 78 m,
+  36 KB), e o novo 41.855 e 49.790 m, 3.119 e 292 arestas, a mesma peor e 36 KB.
+- As tres filas da táboa de Naismith e o camiño da Ponte Romana á Praza Maior, coa rede vella,
+  coa nova e co enrutador arranxado: 31/23, 25/18 e 39/36 min, e 1.664/1.653 m. Non cambian.
+- Os tamaños, na build nova: entrada 733,7/199,0/162,6 KB, primeira carga
+  896,5/243,0/199,8, rede peonil 1.287,6/447,6/397,6, worker do planificador
+  414,9/100,3/79,4; precaché 4,90/1,42/1,16 MB.
+- No panel, contra a build nun porto que nunca tivera service worker (3047): do HULA ao
+  Museo Provincial ás 10:00, o plan di «A pie, medido: 11 min · 0,7 km», co último tramo ata
+  o museo dentro, e a consola sen erros.
+- O diagrama de datos, redebuxado co Chrome 157 da caché de Puppeteer. As imaxes do de
+  etiquetas saían distintas sen ter cambiado a súa fonte, e quedan como estaban.
+
+### Queda
+
+- `data/stop-amenities.json` sen refrescar: outra consulta a Overpass, e o seu diff hai que
+  lelo contra os arranxos feitos a man.
+- Despois do arranxo hai camiños rurais longos que antes eran unha recta: ao Castro de Ramil,
+  7.980 m para 1.089 m en recta. É o que dá a rede sen a N-VI.
