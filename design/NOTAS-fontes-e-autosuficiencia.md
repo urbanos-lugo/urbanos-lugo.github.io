@@ -246,7 +246,7 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
      CPU por petición, 50 subpeticións, 128 MB por illamento, e o erro 1027 ao pasar o límite
      do día. Os lectores do worker tardan aquí de 0 a 2 ms con páxinas normais, e 12 ms con
      1 MB patolóxico (`pnpm run measure:parsers`); o corpo xa vén recortado (`readCapped`).
-   - **O código, feito** (rolda 82): o worker le os axustes do `env` do `fetch`, e de
+   - **O código, feito** (rolda 83): o worker le os axustes do `env` do `fetch`, e de
      `Deno.env` só se non llos pasan; `wrangler.toml` sobe o paquete de `worker:build` tal
      cal (`wrangler deploy --dry-run` aceptouno: 265 KiB, 39 comprimido); `deploy-worker.yml`
      ten un segundo traballo, `cloudflare`, con wrangler 4.158.0 e sen telemetría.

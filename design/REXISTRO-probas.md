@@ -6460,3 +6460,57 @@ e non sabe a rúa.
   coordenadas: engadilos pide xeolocalizar cada enderezo.
 - A copia da rede peonil segue sen os nomes novos das rúas do polígono: rolda aparte.
 - `audit:browser` non se correu, e no panel non se miraron os sitios novos.
+
+## Rolda 83: a API esperta menos, e ten o camiño feito a Cloudflare — 21 de novembro de 2026
+
+Pedido: un correo de Deno Deploy avisaba do uso da organización gratuíta; ver que chama á
+API e recortalo. Despois Deno anunciou que pecha: planear a mudanza e facela, comparando
+antes onde, porque a API saíra de Cloudflare en setembro polos bloqueos de LaLiga.
+
+### Feito
+
+- `758be5a`: un taboleiro do QR nunha lapela oculta ou cun teléfono bloqueado xa non
+  pregunta, e preguntaba dúas veces por minuto durante horas; ao volver á vista pregunta ao
+  momento. Un rastreador (`isCrawler`) le a copia dos avisos a carón da páxina, non a API.
+- `f0df168`: NOTAS, «Pendente» 3, mudar a API antes de abril de 2027, e como. Non recollía
+  que a API saíra de Cloudflare en setembro: viuse ao empezar a mudanza, no README.
+- `6e9a7a2`:
+  - o worker le `ALLOWED_ORIGIN` e `DEPLOY_SHA` en cada petición, do `env` que lle pasa o
+    `fetch`, e de `Deno.env` só se non llos pasan. Lidos ao cargar o módulo, en Cloudflare,
+    que non ten `Deno`, paraba antes da primeira resposta;
+  - a comprobación que executa o paquete sen Node execútao agora como Cloudflare, sen Deno e
+    cos axustes no `fetch`, e mira tamén `/api/version` e a orixe da resposta;
+  - `wrangler.toml` e un segundo traballo en `deploy-worker.yml`, `cloudflare`, con wrangler
+    4.158.0 e sen telemetría, que non fai nada sen `CLOUDFLARE_API_TOKEN`;
+  - `check:policy` pide versión exacta tamén ao que se executa con `pnpm dlx` ou `npx`;
+  - README (a sección do worker, a árbore e a integración continua), DECIDIDO («A API volve a
+    Cloudflare Workers», coa comparación e o plan B) e NOTAS.
+
+### Comprobado
+
+- O uso de Deno, na captura do panel aos 19 días do período: 303 peticións e 1,1 minutos de
+  CPU.
+- Contra a build, en Chrome sen pantalla, coa API contestada en local e ningunha petición
+  fóra: a portada como lector, 1 `/api/alerts`; como Googlebot, 0, e 1 `alerts.json`. O
+  taboleiro do QR, 2 peticións nos primeiros 35 s á vista, 0 en 65 s oculto e 1 nos 2 s
+  despois de volver.
+- A integración continua de `758be5a`, en verde coas cinco partes do audit.
+- Co worker de antes, a comprobación nova falla con `ReferenceError: Deno is not defined`, e
+  co novo pasa. `check:policy` falla se se lle quita a versión a wrangler.
+- `wrangler deploy --dry-run`, sen conta: 265 KiB (39 comprimidos) e as dúas variables.
+- As cinco portas na rama rebasada sobre `d357d2d`: lint, 182 comprobacións, 26 políticas,
+  `check:deep` e a build.
+- DNS, preguntado a 1.1.1.1: buslugo.com en 51.254.196.27 e info.urbanoslugo.com en
+  212.145.223.10, ningunha das dúas de Cloudflare.
+- As condicións gratuítas de Cloudflare, Vercel e Netlify, lidas nas súas páxinas o 20 de
+  novembro. As cifras dos bloqueos, do artigo de Capital Fútbol (agosto de 2026) que cita a
+  OONI, e do blog de Vercel (abril de 2025). A páxina de bandaancha.eu respondeu 403.
+
+### Queda
+
+- Nada está despregado en Cloudflare: faltan a conta, o token e a variable (NOTAS, «Pendente»
+  3). Despois, o que alí se lista para probar, e o cambio de `API_ORIGIN`.
+- PRIVACY.md, SECURITY.md, CLAUDE.md, a arquitectura do README e o seu diagrama seguen
+  dicindo Deno: cambian co `API_ORIGIN`, non antes.
+- `audit:browser` non se correu nesta rolda: o cambio non toca a app. Nada está en `develop`
+  remoto.
