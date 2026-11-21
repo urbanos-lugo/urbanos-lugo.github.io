@@ -88,16 +88,68 @@ where no surveyed relation exists.
   written by `tools/importSquares.ts` from the areas OSM maps as squares: `place=square`, and
   pedestrian areas, pedestrian rings and parks named as one. Derivative Database, ODbL. The
   map style embeds it (below), because the tiles carry a square only as the line of its edge.
-- **And to the places Ruta finds.** `src/data/places.json` — 2.380 named places within a
-  1.5 km walk of a stop: villages and hamlets, chemists, churches, schools, offices,
-  restaurants, shops — is written by `tools/importPlaces.ts` (`pnpm run data:places`, by
-  hand) from every feature OSM names under `amenity`, `shop`, `office`, `healthcare`,
-  `leisure`, `tourism`, `historic`, `craft`, `place`, `building`, `landuse`, `man_made`,
-  `club` or `sport`. Two of one name are told apart by the stop nearest them.
+- **And to the places Ruta finds.** `src/data/places.json` — 2.122 named places within a
+  1.5 km walk of a stop: villages and hamlets, churches, offices, restaurants, shops, chain
+  branches — is written by `tools/importPlaces.ts` (`pnpm run data:places`, by hand) from
+  every feature OSM names under `amenity`, `shop`, `office`, `healthcare`, `leisure`,
+  `tourism`, `historic`, `craft`, `place`, `building`, `landuse`, `man_made`, `club` or
+  `sport`, with the branches of each chain taken from AllThePlaces (below) where the chain's
+  points fall on OSM's. Two of one name are told apart by the stop nearest them.
   `src/data/streets.json` — the 794 named ways of the walking network, a point
   on each — is written by `tools/buildDataset.ts` from `data/osm-walk-network.json`. Both
-  Derivative Databases, ODbL. A place OSM does not have is not found: it is added in OSM, and
+  Derivative Databases, ODbL. A place no source has is not found: it is added in OSM, and
   arrives with the next import.
+
+## Places — AllThePlaces, SERGAS and the Xunta's school register
+
+`tools/importPlaces.ts` reads three more sources beside OSM, one request after another and
+each answer cached under `.cache/`, because a quarter of OSM's shops here had not been
+touched since before 2023 and one closed bank was among them:
+
+- **AllThePlaces** (`alltheplaces.xyz`) scrapes each chain's own branch finder every week
+  and publishes the result under **CC0**. The importer reads its latest run's PMTiles archive
+  (6 GB) by byte range, only the tiles over the box: 47 requests, 200 ms apart, on
+  20 November 2026. Where a chain puts one of its points on one of OSM's branches, its points
+  are its branches: they replace OSM's, a branch within 300 m is taken to have moved, and one
+  the chain does not list is left out unless OSM has it checked on the spot (`check_date`)
+  in the 18 months before the OSM answer. A chain none of whose points falls on OSM's is
+  left as OSM has it. CC0 asks nothing; the branches go into `places.json` with OSM's.
+- **SERGAS**, the Galician health service, through the Xunta's open-data entry «Mapa dos
+  servizos sanitarios de Galicia» (`abertos.xunta.gal`, dataset 0253): every chemist, health
+  centre, continuous-care point and hospital, with its point. Its map server answers by band
+  of latitude and gives at most 100 of a layer, so it is asked in strips of 0,025°, a second
+  apart, and a full strip stops the run. A chemist OSM has and SERGAS has not is left out; one
+  SERGAS has and OSM has not is added as «Farmacia»; one OSM names after a person SERGAS does
+  not list as its owner is named «Farmacia». A health centre OSM lacks is added with SERGAS's
+  name, written out of its capitals. SERGAS's firewall refused a query to the map service's
+  own interface; the importer asks only the address the open-data entry publishes.
+- **The Xunta's register of schools**, «Centros educativos de Galicia» (`abertos.xunta.gal`,
+  dataset 0257), the province of Lugo's CSV: each school by its official name and point,
+  replacing OSM's where both name it.
+
+The health service's and the Xunta's are **CC BY-SA 4.0**, as each dataset's page states.
+Their places go to `src/data/official-places.json`, a file of their own and under that
+licence, so as not to mix share-alike terms with the ODbL of `places.json`: 57 on
+20 November 2026 (43 schools, 8 chemists, 6 health centres and hospitals). Credit: Xunta de
+Galicia, Servizo Galego de Saúde and Consellería de Educación.
+
+The Health Ministry's register of authorised centres (REGCESS) was tried as well: it lists
+480 in the municipality of Lugo, but without coordinates, so it serves only to check names,
+and nothing of it ships.
+
+## Places found gone — `data/places-checked.json`
+
+Every shop, bar and office of OSM's that no list of its own vouches for (1,336 of them) was
+searched for by name in Google Maps, one search a place in a browser, on 21 November 2026,
+and judged by whether a place of that name showed up within 150 m of OSM's point and open.
+The 304 that were not there, closed for good, 150 m or more away, absent or under another
+name, and one more a sample of the other sources found closed, are listed in
+`data/places-checked.json` by OSM element and the edit timestamp they were judged on, and
+the importer leaves them out. That verdict is all that is kept: no name,
+point, hour or other detail of Google's goes into the data, which stays OSM's under the
+ODbL. An element edited in OSM after the check comes back, as a newer account of the place,
+and the importer lists it to be searched for again. The rates each source scored, and how
+the 304 split, are in the README, under «Calquera rúa ou sitio con nome, non só as paradas».
 
 ## Map tiles — OpenFreeMap
 

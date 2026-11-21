@@ -52,8 +52,13 @@ The full account, with what each source permits, is in `DATA.md`.
 - Timetables, stops and pole codes: transcribed from **buslugo.com** (AULUSA / Grupo
   Monbus). Published for public consultation; no licence stated and no agreement granted
   to this project.
-- Route geometry, stop surveys and amenities: **OpenStreetMap contributors**, ODbL 1.0.
-  The derived geometry is a Derivative Database and stays under ODbL.
+- Route geometry, stop surveys, amenities and the places Ruta finds: **OpenStreetMap
+  contributors**, ODbL 1.0. The derived geometry is a Derivative Database and stays under ODbL.
+- The branches of chains among those places: **AllThePlaces**, from each chain's own branch
+  finder, CC0.
+- Chemists, health centres and hospitals: **Servizo Galego de Saúde**; schools: **Consellería
+  de Educación**; both through the open data of the **Xunta de Galicia**, CC BY-SA 4.0. They
+  ship in `src/data/official-places.json` under that licence.
 - Map tiles: **OpenFreeMap**, serving the **OpenMapTiles** schema built from OpenStreetMap.
 - Routing: the **OSRM** project's public demo server, at build time only. The walking
   network is built from OpenStreetMap at build time as well and routed on the reader's

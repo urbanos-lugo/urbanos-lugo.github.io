@@ -356,16 +356,61 @@ paradas se nega a inventar unha posición que o móbil non deu.
 
 **Calquera rúa ou sitio con nome, non só as paradas.** Ruta atopa as 794 rúas da rede
 peonil, tamén co número do portal («Rúa Río Neira 20» vai á rúa, que é o que hai: os
-portais non están nos datos), e 2.380 sitios que OpenStreetMap nomea a menos dun paseo de
-1,5 km dunha parada: aldeas e lugares, farmacias, igrexas, colexios, bancos, oficinas,
-supermercados, restaurantes, tendas. Antes atopaba as paradas e 28 sitios escritos a man, e
-«Rúa do Teatro» ou «Cines Cristal» quedaban sen resposta; nas liñas rurais, a xente sabe o
-nome da súa aldea, non o dunha rúa. Os sitios do mesmo nome levan a parada máis próxima, que
-é onde deixa o bus: «Gadis (Fonte dos Ranchos 29-30)». Unha palabra pode ir enteira ou
-non, «Cines Cristal» é «Cine Cristal». Todo vai dentro da app, polo que funciona sen
-conexión e o que se escribe non sae a ningún buscador de fóra; o que OSM non ten non se
-atopa, e chega coa seguinte importación se alguén o engade alí (`pnpm run data:places`, á
-man). Costa 37 KB en brotli na primeira carga, medidos (táboa de máis abaixo).
+portais non están nos datos), e 2.179 sitios a menos dun paseo de 1,5 km dunha parada:
+aldeas e lugares, farmacias, igrexas, colexios, bancos, oficinas, supermercados,
+restaurantes, tendas. Antes atopaba as paradas e 28 sitios escritos a man, e «Rúa do Teatro»
+ou «Cines Cristal» quedaban sen resposta; nas liñas rurais, a xente sabe o nome da súa
+aldea, non o dunha rúa. Os sitios do mesmo nome levan a parada máis próxima, que é onde
+deixa o bus: «Gadis (Fonte dos Ranchos 29-30)». Unha palabra pode ir enteira ou non,
+«Cines Cristal» é «Cine Cristal».
+
+Cada sitio vén da fonte que mellor o garda, e non só de OpenStreetMap: dos 1.473 comercios
+que tiña OSM a un paseo dunha parada, 366 levaban sen tocarse dende antes de 2023, e un
+banco entre eles pechara había anos.
+
+- **As farmacias, os centros de saúde e os hospitais, do SERGAS**, que os lista todos. Unha
+  farmacia que OSM ten e o SERGAS non, non está (dúas); unha que o SERGAS ten e OSM non,
+  engádese (oito); e unha que OSM nomea por un titular que o SERGAS xa non ten alí chámase
+  «Farmacia» (dúas).
+- **Os colexios, do rexistro da Xunta**, co seu nome oficial e o seu punto: 43, entre eles
+  os que OSM non tiña, como a EOI, o Conservatorio de Danza ou as escolas de música.
+- **As sucursais das cadeas, do buscador de oficinas de cada marca**, que recolle
+  [AllThePlaces](https://www.alltheplaces.xyz/) cada semana: 143. Onde a marca pon os seus
+  puntos sobre os de OSM, os seus mandan: o banco pechado estaba a 116 m da súa oficina de
+  agora. Unha sucursal que a marca non lista quítase, salvo que alguén a comprobase no
+  sitio en OSM nos últimos 18 meses.
+- **O resto, de OSM**: aldeas, igrexas, parques e as tendas e bares dun só dono.
+
+Comprobado sitio a sitio. Os 1.336 comercios, bares e oficinas que só avalaba OSM
+buscáronse un a un en Google Maps en novembro de 2026, polo seu nome e no seu punto, e 304
+xa non estaban: 83 pechados, 108 noutro sitio, 90 que non aparecen e 23 que agora se chaman
+doutro xeito. Quitáronse, e con eles unha tenda de audífonos que a mostra do REGCESS atopou
+pechada. Só se garda o veredicto, en `data/places-checked.json`, nunca
+nada do que amosa Google; e caduca se alguén edita ese sitio en OSM despois, porque entón
+hai unha conta máis nova del. A confianza de cada fonte, medida así:
+
+| Fonte | Estaba onde di |
+| :--- | :--- |
+| OSM só, sen tocar dende antes de 2023 | 30 % (52 de 172) |
+| OSM só, tocado dende 2023 | 69 % (189 de 275) |
+| OSM e Overture á vez | 83 % (526 de 635) |
+| OSM comprobado no sitio nos últimos 18 meses | 87 % (221 de 254); os 30 que Google non ten quedan |
+| O buscador de cada cadea (AllThePlaces), mostra | 17 de 20 |
+| As farmacias de OSM que lista o SERGAS, mostra | 13 de 14 |
+| O rexistro sanitario REGCESS, mostra | 11 de 12; o que fallaba, pechado, quitouse |
+| As listas do SERGAS e da Xunta, mostra | 13 de 14; o outro, Google non o ten |
+| O que non pecha (igrexas, parques, museos), mostra | 11 de 13; os outros dous, capelas vellas que Google non ten |
+
+Coas taxas medidas, e supoñendo que Google acerta en 97 de cada 100 que dá por abertos,
+sae un 96 % de sitios que están e onde din. É unha estimación, non unha medida: Google non é
+a verdade, só a lista de comercios máis completa e máis nova que hai, e tamén tarda en
+quitar os pechados e non ten algún que si está (unha Ousá que OSM engadiu en agosto de
+2026). A conta enteira, na rolda 82 do rexistro.
+
+Todo vai dentro da app, polo que funciona sen conexión e o que se escribe non sae a ningún
+buscador de fóra. Un sitio que ningunha fonte ten non se atopa, e chega coa seguinte
+importación se alguén o engade a OSM (`pnpm run data:places`, á man). Coas rúas e os
+sitios, a primeira carga é de ~200 KB en brotli; sen eles, ~165 KB (táboa de máis abaixo).
 
 **Unha parada como destino, dun toque.** «Como chegar aquí», no taboleiro dunha parada e
 na súa folla do mapa, abre Ruta con esa parada de destino, calculada desde a orixe que
@@ -905,7 +950,8 @@ non chama ningunha.
 │   │   ├── map-style-light.json    XERADO — o estilo do mapa base, paleta clara
 │   │   ├── map-style-dark.json     XERADO — o mesmo, paleta escura
 │   │   ├── squares.json            XERADO — nome e centro das prazas, de OSM (ODbL)
-│   │   ├── places.json             XERADO — os 2.380 sitios con nome que atopa Ruta, de OSM (ODbL)
+│   │   ├── places.json             XERADO — 2.122 sitios que atopa Ruta, de OSM e das cadeas (ODbL)
+│   │   ├── official-places.json    XERADO — os outros 57, do SERGAS e da Xunta (CC BY-SA 4.0)
 │   │   ├── streets.json            XERADO — as 794 rúas da rede peonil, un punto en cada unha (ODbL)
 │   │   ├── festivos.json           os festivos que corren como domingos, por ano e coa súa fonte
 │   │   ├── structuralNotices.ts    os avisos permanentes, escritos a man, coa data da súa revisión
@@ -972,13 +1018,15 @@ non chama ningunha.
 ├── data/                           SÓ entradas da build; a app non as importa
 │   ├── official-raw.json           INSTANTÁNEA — scraping de buslugo
 │   ├── osm-routes.json             INSTANTÁNEA — relacións de OSM (Overpass)
+│   ├── places-checked.json         Á MAN — os sitios de OSM que unha busca en Google Maps atopou pechados ou noutro sitio
 │   ├── routes.json                 INSTANTÁNEA — xeometría de OSRM
 │   └── stop-amenities.json         INSTANTÁNEA — equipamentos de OSM
 ├── tools/
 │   ├── importOfficialData.ts       descarga e axuste viario (lento, cacheado)
 │   ├── importStopAmenities.ts      equipamentos de parada desde OSM
 │   ├── importSquares.ts            as prazas como áreas, desde OSM, para o seu nome no mapa
-│   ├── importPlaces.ts             os sitios con nome a un paseo dunha parada, desde OSM, para a busca de Ruta
+│   ├── importPlaces.ts             os sitios a un paseo dunha parada, de OSM, as cadeas, o SERGAS e a Xunta, para a busca de Ruta
+│   ├── pmtiles.ts                  le os puntos dun arquivo PMTiles por anacos, só con zlib (o de AllThePlaces)
 │   ├── buildDataset.ts             xera stops.json e lines.json (rápido)
 │   ├── importOsmRoutes.ts          relacións de ruta desde Overpass
 │   ├── importWalkNetwork.ts        as vías camiñables de Lugo desde Overpass
@@ -1195,7 +1243,7 @@ servizo que cruzan a medianoite.
 `planTrips` en `src/utils/planner.ts` (a primeira opción é a resposta):
 
 1. **Resolución** — texto libre, código de parada, punto de interese ou coordenadas GPS. O
-   texto busca nas paradas, nos 28 sitios escritos a man, nos 2.380 que nomea OSM e nas 794
+   texto busca nas paradas, nos 28 sitios escritos a man, nos 2.179 importados e nas 794
    rúas, nesa orde agás cando unha rúa ou un sitio casa mellor ca calquera parada: «A
    Corredoira» ía a «Pintor Corredoira», a 10 km. Un nome escrito enteiro gaña a unha
    parada que só empeza igual («Rúa J» non é «Rúa de Juana Ibarbourou»), pero non a unha que
@@ -1336,24 +1384,24 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 
 | | sen comprimir | gzip | brotli |
 | :--- | ---: | ---: | ---: |
-| Anaco de entrada | 744 KB | 201 KB | **165 KB** |
+| Anaco de entrada | 733 KB | 199 KB | **162 KB** |
 | Anaco compartido, con React | 90 KB | 28 KB | **24 KB** |
 | Folla de estilos | 68 KB | 14 KB | **12 KB** |
 | `index.html` | 5 KB | 2 KB | **2 KB** |
-| **Primeira carga** | **907 KB** | ~245 KB | **~202 KB** |
+| **Primeira carga** | **896 KB** | ~243 KB | **~200 KB** |
 | Tipografía | 51 KB | — | 51 KB, en paralelo |
 | Renderizador do mapa, co estilo e a paleta | 1.133 KB | 300 KB | 245 KB, ao abrir un mapa |
 | Estilos do renderizador | 70 KB | 10 KB | 8 KB, ao abrir un mapa |
 | Worker do renderizador | 538 KB | 154 KB | 127 KB, ao abrir un mapa |
 | Xeometría viaria | 512 KB | 83 KB | 28 KB, ao abrir un mapa |
 | Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
-| Worker do planificador, coa súa copia de paradas, liñas, rúas e sitios | 426 KB | 103 KB | 82 KB, ao calcular a primeira ruta |
+| Worker do planificador, coa súa copia de paradas, liñas, rúas e sitios | 415 KB | 100 KB | 79 KB, ao calcular a primeira ruta |
 
-Medido o 20 de novembro de 2026 sobre a build da busca de rúas e sitios, con Vite 8.3.8 e
-MapLibre 6.19. As 794 rúas e os 2.380 sitios que atopa Ruta van no anaco de entrada e no
-worker do planificador: sen eles, a mesma build medía ~165 KB de primeira carga e 45 KB de
-worker. As medidas anteriores, do 31 de outubro (rolda 52) e do 2 e o 19 de novembro, están
-no rexistro. Un KB son 1.024
+Medido o 21 de novembro de 2026 sobre a build dos sitios xa comprobados en Google Maps, con
+Vite 8.3.8 e MapLibre 6.19. As 794 rúas e os 2.179 sitios que atopa Ruta van no anaco de entrada e no
+worker do planificador: sen eles, a build do 20 de novembro medía ~165 KB de primeira carga e
+45 KB de worker. As medidas anteriores, do 31 de outubro (rolda 52) e do 2, o 19 e o 20 de
+novembro, están no rexistro. Un KB son 1.024
 bytes, gzip ao nivel 9 e brotli á calidade 11. MapLibre non vai no anaco de entrada,
 senón enteiro no do renderizador, que baixa ao abrir un mapa.
 A instantánea de avisos tampouco: é un ficheiro á parte, `alerts.json`, e o motivo está
@@ -1374,12 +1422,12 @@ páxina pide para pintarse; o service worker é outra cousa. Para que a app func
 cobertura, na primeira visita garda **todo** o que a app usa —fóra quedan só as copias das
 páxinas que son para os buscadores (as de castelán e inglés e as das liñas), `robots.txt`
 e `sitemap.xml`—: 29 ficheiros distintos (o manifesto lista 33: catro iconas van dúas veces
-e baixan unha), 4,92 MB sen comprimir, 1,42 MB en gzip e 1,17 MB en brotli, medidos sobre
-`dist/sw.js` o 20 de novembro de 2026, sen esperar a que
+e baixan unha), 4,90 MB sen comprimir, 1,41 MB en gzip e 1,16 MB en brotli, medidos sobre
+`dist/sw.js` o 21 de novembro de 2026, sen esperar a que
 se abra un mapa nin se trace un camiño. Non bloquea nada: vai detrás da primeira
 pantalla, e a partir de aí cada anaco sae da caché. É o prezo de que o planificador e o
 mapa vaian dentro do móbil, e está á vista aquí para que ninguén o tome por unha primeira
-carga de ~202 KB.
+carga de ~200 KB.
 
 E cando un despregue cambia os nomes deses ficheiros debaixo dunha páxina aberta, a
 páxina que pide o mapa despois de publicado recarga unha soa vez en lugar de amosar «a

@@ -203,8 +203,9 @@ build-time dataset instead.
 (`pnpm run check:parsers`, four to six requests), `importWalkNetwork.ts`,
 `importElevation.ts`, `checkLandmarks.ts`, `compareWalkRouter.ts` and `buildMapStyle.ts
 --fetch` read `buslugo.com`, the council's feed, the Overpass API, Wikidata, the IGN's
-elevation tiles, FOSSGIS's public routers, OpenFreeMap or the fonts' source — servers this
-project does not own and has no agreement with.
+elevation tiles, FOSSGIS's public routers, OpenFreeMap, the fonts' source, and (for
+`importPlaces.ts`) AllThePlaces' archive, SERGAS's map and the Xunta's open-data portal —
+servers this project does not own and has no agreement with.
 
 They are run by hand, or on a schedule — weekly in `.github/workflows/check-source.yml`,
 and `fetchAlerts.ts` before each hourly build in `deploy-pages.yml` — and their answers

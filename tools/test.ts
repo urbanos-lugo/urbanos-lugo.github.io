@@ -25,6 +25,9 @@ import { CACHE_TTL_MS as ALERTS_CACHE_MS, MIN_OUTBOUND_INTERVAL_MS as ALERTS_MIN
 import { clockDriftFromTimetable, lugoOffsetByRule } from '../src/utils/clock';
 import { MAX_QUERY_LENGTH, calculateRelevanceScore, matchesQuery, matchesWordsEitherWay, normalizeText, withinEditDistance } from '../src/utils/searchUtils';
 import PLACES from '../src/data/places.json';
+import OFFICIAL_PLACES from '../src/data/official-places.json';
+import { mergePlaces, tidyName } from './importPlaces';
+import { tileId } from './pmtiles';
 import STREETS from '../src/data/streets.json';
 import { LANGS, translations } from '../src/i18n';
 import type { RoutePlanResult, ServiceAlert, TripSegment } from '../src/types';
@@ -846,13 +849,102 @@ ok('a street or a place OSM names is found, and lands on itself or on what carri
     return !!got && (metresBetween(got.lat, got.lng, p.lat, p.lng) < 400 || matchesWordsEitherWay(got.name, p.name));
   };
   for (const s of STREETS) assert(lands(s), `the street «${s.name}» landed on ${at(s.name)?.name}`);
-  for (const p of PLACES.filter((_, i) => i % 3 === 0)) assert(lands(p), `the place «${p.name}» landed on ${at(p.name)?.name}`);
-  // And a name is one place: a bank's nine branches each carry their street.
+  for (const p of [...PLACES, ...OFFICIAL_PLACES].filter((_, i) => i % 3 === 0)) assert(lands(p), `the place «${p.name}» landed on ${at(p.name)?.name}`);
+  // And a name is one place: a bank's nine branches each carry their stop.
   const seen = new Set<string>();
-  for (const p of PLACES) {
+  for (const p of [...PLACES, ...OFFICIAL_PLACES]) {
     assert(!seen.has(normalizeText(p.name)), `two places are called «${p.name}»`);
     seen.add(normalizeText(p.name));
   }
+});
+
+ok('the places import believes a chain and the health service over an old OSM point', () => {
+  // OSM kept a bank branch that had closed years before (last edited July 2022): the bank's
+  // own branch finder had it 116 m away. And most chemists here are mapped by the owner's name
+  // alone, which «farmacia» did not find.
+  const node = (id: number, name: string, lat: number, lon: number, tags: Record<string, string>, timestamp = '2022-07-20T00:00:00Z') =>
+    ({ type: 'node' as const, id, lat, lon, timestamp, tags: { name, ...tags } });
+  const brand = (lat: number, lng: number, properties: Record<string, string>) => ({ lat, lng, layer: 'l', properties });
+  const { places, dropped, moved } = mergePlaces({
+    osm: [
+      node(1, 'Abanca', 43.01114, -7.56705, { amenity: 'bank', 'brand:wikidata': 'Q9598744' }),
+      node(2, 'Abanca', 43.01646, -7.5507, { amenity: 'bank' }),
+      node(8, 'Abanca', 43.0257, -7.5680, { amenity: 'bank', check_date: '2026-08-01' }),
+      node(9, 'Abanca', 42.9989, -7.5490, { amenity: 'bank' }),
+      node(3, 'Gadis', 43.01139, -7.56747, { shop: 'supermarket' }),
+      node(4, 'María Pérez', 43.01436, -7.56518, { amenity: 'pharmacy' }),
+      node(5, 'Farmacia Vella', 43.00797, -7.55156, { amenity: 'pharmacy' }),
+      node(7, 'Xosé Bao Lema Rial', 43.0175, -7.5640, { amenity: 'pharmacy' }),
+      node(6, 'Colexio de Educación Infantil e Primaria Rosalía de Castro', 43.0049, -7.5539, { amenity: 'school' }),
+      node(10, 'Edificio Principal do Colexio Rosalía de Castro', 43.0051, -7.5541, { building: 'school' }),
+    ],
+    brands: [
+      brand(43.01113, -7.56563, { brand: 'Abanca', 'brand:wikidata': 'Q9598744', amenity: 'bank', '@spider': 'abanca_es' }),
+      brand(43.01636, -7.55064, { brand: 'Abanca', 'brand:wikidata': 'Q9598744', amenity: 'bank', '@spider': 'abanca_es' }),
+      brand(43.0145, -7.5603, { brand: 'Correos', amenity: 'post_box', '@spider': 'correos_mailboxes_es' }),
+    ],
+    health: [
+      { folder: 'Farmacias', name: 'LU-151-F', lat: 43.014361, lng: -7.56518, fields: {} },
+      { folder: 'Farmacias', name: 'LU-152-F', lat: 43.01752, lng: -7.56405, fields: { TITULAR1: 'ANA ROCHA VILAR' } },
+      { folder: 'Centros de saúde', name: 'CENTRO SAUDE A MILAGROSA', lat: 43.0185, lng: -7.5633, fields: {} },
+    ],
+    schools: [{ name: 'CEIP Rosalía de Castro', lat: 43.0050, lng: -7.5540 }],
+    recentSince: '2025-05-20',
+  });
+  const named = (re: RegExp) => places.filter((p) => re.test(p.name));
+  // The finder puts its other branch on OSM's, so its points are the branches': the old one
+  // goes to where the bank has it now, and the move is reported.
+  assert(!named(/^Abanca/).some((p) => metresBetween(p.lat, p.lng, 43.01114, -7.56705) < 50), 'the closed branch is still a place');
+  assert(named(/^Abanca/).some((p) => metresBetween(p.lat, p.lng, 43.01113, -7.56563) < 30), `the branches are ${JSON.stringify(named(/^Abanca/))}`);
+  assert(moved.some((d) => d.name === 'Abanca' && /branch finder/.test(d.why)), 'the move was not reported');
+  // One the finder does not list stays if somebody checked it on the spot lately, and goes if not.
+  assert(named(/^Abanca/).some((p) => metresBetween(p.lat, p.lng, 43.0257, -7.568) < 30), 'a branch checked this summer was dropped');
+  assert(!named(/^Abanca/).some((p) => metresBetween(p.lat, p.lng, 42.9989, -7.549) < 30) && dropped.some((d) => /finder/.test(d.why)), 'an unchecked branch the finder lacks stayed');
+  assert(named(/^Abanca/).length === 3, `the branches are ${JSON.stringify(named(/^Abanca/))}`);
+  // A chain the finder does not cover keeps OSM's; a letterbox is no destination.
+  assert(named(/^Gadis$/).length === 1, 'a chain without a branch finder lost its branch');
+  assert(!named(/^Correos/).length, 'a letterbox became a place');
+  // The chemist SERGAS lists keeps its door's name, now findable; the one it does not list goes.
+  assert(named(/^Farmacia María Pérez$/).length === 1, `the chemists are ${JSON.stringify(named(/Farmacia/))}`);
+  assert(!named(/Vella/).length && dropped.some((d) => /Vella/.test(d.name)), 'a chemist SERGAS does not list was kept');
+  // One whose owner, as OSM has it, is not the one SERGAS lists there is a chemist, not that person's.
+  assert(!named(/Bao Lema/).length && named(/^Farmacia$/).length === 1, `the old owner's name stayed: ${JSON.stringify(named(/Farmacia/))}`);
+  // A health centre OSM lacks comes from SERGAS, written as words; a school by its official name.
+  assert(named(/^Centro de Saúde A Milagrosa$/).length === 1, `the health centres are ${JSON.stringify(places.map((p) => p.name))}`);
+  assert(named(/^CEIP Rosalía de Castro$/).length === 1 && !named(/^(Colexio de Educación|Edificio Principal)/).length, 'the school kept two names');
+  assert(places.filter((p) => p.source === 'official').every((p) => !/^(Abanca|Gadis)/.test(p.name)), 'a chain came out as official');
+  assert(tidyName('HOSPITAL DE CALDE (PSIQUIATRICO)') === 'Hospital de Calde (Psiquiátrico)', tidyName('HOSPITAL DE CALDE (PSIQUIATRICO)'));
+  assert(tidyName('CENTRO INTEGRAL SANITARIO (CIS) DE LUGO') === 'Centro Integral Sanitario (CIS) de Lugo', tidyName('CENTRO INTEGRAL SANITARIO (CIS) DE LUGO'));
+});
+
+ok('a place a search found gone stays out until OSM has it edited again', () => {
+  // A third of OSM's shops untouched since before 2023 were no longer where OSM had them when
+  // searched for one by one (November 2026). The verdict holds for the edit it was made on: a
+  // later edit is somebody's newer account of the place, and wins.
+  const bar = (id: number, name: string, lat: number, timestamp: string) =>
+    ({ type: 'node' as const, id, lat, lon: -7.5590, timestamp, tags: { name, amenity: 'bar' } });
+  const gone = [
+    { osm: 'node/1', name: 'Bar Pechado', edited: '2019-03-01T10:00:00Z', seen: 'closed' as const },
+    { osm: 'node/2', name: 'Bar Reaberto', edited: '2019-03-01T10:00:00Z', seen: 'absent' as const },
+  ];
+  const { places, dropped, lapsed } = mergePlaces({
+    osm: [bar(1, 'Bar Pechado', 43.0108, '2019-03-01T10:00:00Z'), bar(2, 'Bar Reaberto', 43.0120, '2026-12-01T10:00:00Z'), bar(3, 'Bar Aberto', 43.0130, '2019-03-01T10:00:00Z')],
+    brands: [],
+    health: [],
+    schools: [],
+    recentSince: '2025-05-20',
+    gone,
+    checkedOn: '2026-11-21',
+  });
+  const names = places.map((p) => p.name);
+  assert(!names.includes('Bar Pechado') && dropped.some((d) => d.name === 'Bar Pechado' && /closed/.test(d.why)), `the closed bar stayed: ${JSON.stringify(names)}`);
+  assert(names.includes('Bar Reaberto') && lapsed.some((d) => d.name === 'Bar Reaberto'), 'a bar edited after the search stayed out, or was not listed to search again');
+  assert(names.includes('Bar Aberto'), 'a bar the search did not touch went');
+});
+
+ok('the tile archive of the brands is addressed as PMTiles numbers its tiles', () => {
+  // The spec's own examples: the zooms above count first, then the Hilbert curve.
+  assert.deepStrictEqual([tileId(0, 0, 0), tileId(1, 0, 0), tileId(1, 0, 1), tileId(1, 1, 1), tileId(1, 1, 0), tileId(2, 0, 0)], [0, 1, 2, 3, 4, 5]);
 });
 
 ok('a real corridor plans end to end', () => {

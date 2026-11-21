@@ -4,6 +4,7 @@
  */
 import { BUS_STOPS, lineById, stopById } from '../data/transitData';
 import PLACES from '../data/places.json';
+import OFFICIAL_PLACES from '../data/official-places.json';
 import STREETS from '../data/streets.json';
 import { Lang, translations } from '../i18n/translations';
 import { BusStop, BusLine } from '../types';
@@ -127,8 +128,13 @@ export function rankStops(q: string): { stop: BusStop; score: number }[] {
     .sort((a, b) => b.score - a.score);
 }
 
-/** A point with a name: a place OSM has (`places.json`, `pnpm run data:places`) or a street of the walking network (`streets.json`). */
+/**
+ * A point with a name: a place (`pnpm run data:places`: OSM's and the chains' own in
+ * `places.json`, the health service's and the Xunta's in `official-places.json`, apart for
+ * their licence) or a street of the walking network (`streets.json`).
+ */
 type Named = { name: string; lat: number; lng: number };
+const NAMED_PLACES: Named[] = [...PLACES, ...OFFICIAL_PLACES];
 
 /** The house number off the end: the streets carry none, so «Rúa Río Neira 20» is the street. */
 const streetPart = (q: string) => q.replace(/[\s,]+(?:n[º°o.]?\s*)?\d+\s*[a-z]?$/i, '').trim() || q;
@@ -150,7 +156,7 @@ function rankNamed(list: Named[], q: string): { place: Named; score: number }[] 
  */
 export function rankPlaces(q: string): { place: Named; score: number }[] {
   const streets = rankNamed(STREETS, q);
-  return [...rankNamed(PLACES, q), ...(streets.length ? streets : rankNamed(STREETS, streetPart(q)))].sort((a, b) => b.score - a.score || typedWhole(b.place.name, q) - typedWhole(a.place.name, q));
+  return [...rankNamed(NAMED_PLACES, q), ...(streets.length ? streets : rankNamed(STREETS, streetPart(q)))].sort((a, b) => b.score - a.score || typedWhole(b.place.name, q) - typedWhole(a.place.name, q));
 }
 
 /** Landmarks ranked by relevance to a query, best first. */

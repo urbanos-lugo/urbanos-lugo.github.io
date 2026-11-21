@@ -1,0 +1,1842 @@
+{
+ "checked": "2026-11-21",
+ "checkedAgainst": "Google Maps, one search a place by its name, looked at in a browser",
+ "counts": {
+  "closed": 84,
+  "elsewhere": 108,
+  "absent": 90,
+  "renamed": 23
+ },
+ "gone": [
+  {
+   "osm": "node/4311680066",
+   "name": "A Adega",
+   "edited": "2019-01-27T11:29:42Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4921920835",
+   "name": "A Calzada TapasGin",
+   "edited": "2024-09-28T22:53:30Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/9799842977",
+   "name": "A Cova da Serpe",
+   "edited": "2025-05-08T21:54:04Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2956228089",
+   "name": "A Nosa Terra",
+   "edited": "2014-07-09T19:52:05Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4311680061",
+   "name": "A Tasca",
+   "edited": "2016-07-19T21:40:39Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4358669390",
+   "name": "Adios Tormenta",
+   "edited": "2016-08-20T09:23:53Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/11905235345",
+   "name": "Aguirre XXI correduría de seguros",
+   "edited": "2024-05-14T20:52:05Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4295243843",
+   "name": "Agulla e dedal, arranxos de roupa",
+   "edited": "2024-05-10T16:24:36Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4471141370",
+   "name": "Albergue Casa da Chanca",
+   "edited": "2026-01-16T17:58:06Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/3032840388",
+   "name": "Alecrín Café Bar",
+   "edited": "2025-10-25T23:09:14Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11905177964",
+   "name": "Algodón de azúcar",
+   "edited": "2024-05-14T20:51:58Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4325205703",
+   "name": "Almacenes Galán",
+   "edited": "2016-07-28T13:11:49Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11892178870",
+   "name": "Aloia",
+   "edited": "2024-05-09T20:13:27Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4900234282",
+   "name": "Altafit",
+   "edited": "2024-04-12T10:36:28Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/8149496785",
+   "name": "Aluminios Ozores",
+   "edited": "2023-04-15T16:55:01Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/2469347881",
+   "name": "Ambigú Lounge Bar",
+   "edited": "2025-10-10T08:50:11Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4295337082",
+   "name": "Amiama",
+   "edited": "2016-07-10T23:08:21Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/8007789356",
+   "name": "AMSlab",
+   "edited": "2020-10-14T20:58:01Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2700724957",
+   "name": "Ancares",
+   "edited": "2025-10-25T23:12:12Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/781357226",
+   "name": "Andión",
+   "edited": "2024-05-30T18:44:39Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11820013610",
+   "name": "Apex",
+   "edited": "2024-04-15T20:06:56Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4297090022",
+   "name": "Arcos",
+   "edited": "2024-11-18T19:43:15Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11895202905",
+   "name": "Aromas",
+   "edited": "2024-05-10T16:24:19Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4204987089",
+   "name": "Audinor",
+   "edited": "2026-08-10T17:47:28Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5713902141",
+   "name": "Auto Repuesto Palacios",
+   "edited": "2019-10-12T14:49:10Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/6405147036",
+   "name": "Avogadas",
+   "edited": "2019-04-14T21:20:46Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4293657428",
+   "name": "Aylen",
+   "edited": "2018-06-30T15:03:03Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/3133125014",
+   "name": "Banco Santander",
+   "edited": "2020-04-21T23:43:09Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4295003160",
+   "name": "Bar a potiña",
+   "edited": "2018-02-04T19:00:29Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/14069364152",
+   "name": "Bar Gasalla",
+   "edited": "2026-08-02T23:29:09Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4295291254",
+   "name": "Bar Matias",
+   "edited": "2025-10-25T23:13:12Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/7903206769",
+   "name": "Bar Monopoly",
+   "edited": "2020-09-13T19:15:13Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4058397300",
+   "name": "Bar Omega",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11920631571",
+   "name": "Bar Piringalla",
+   "edited": "2024-05-20T21:15:24Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5630324878",
+   "name": "Bar pulpería Catro Camiños",
+   "edited": "2018-05-20T11:33:38Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/14322627413",
+   "name": "Basic",
+   "edited": "2026-10-27T07:39:25Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11938284639",
+   "name": "Bazar Ferretería Gómez",
+   "edited": "2025-01-27T12:23:48Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5404285728",
+   "name": "BBVA",
+   "edited": "2020-11-30T14:51:50Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/842645883",
+   "name": "Bello sin Vello",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4325357341",
+   "name": "Bicicletas Carreira",
+   "edited": "2024-05-26T09:52:36Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11820013620",
+   "name": "Biosleep",
+   "edited": "2024-09-16T15:58:42Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "way/424499874",
+   "name": "Bodega de María",
+   "edited": "2016-06-12T11:04:22Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2090044223",
+   "name": "Bodega Los Infantes",
+   "edited": "2025-10-25T23:30:00Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5829698201",
+   "name": "BP",
+   "edited": "2024-03-04T18:23:00Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/13014527245",
+   "name": "Brais carnicería",
+   "edited": "2025-07-20T23:14:44Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/11895205704",
+   "name": "Bullcars",
+   "edited": "2024-05-10T16:24:36Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/6404715359",
+   "name": "C N G",
+   "edited": "2019-04-14T16:55:06Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/11920631572",
+   "name": "Café bar A miña casa",
+   "edited": "2024-05-20T21:15:24Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/7903228686",
+   "name": "Café bar Berna",
+   "edited": "2020-09-13T19:18:39Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4058397303",
+   "name": "Café Bar O´Restrelo",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/12176799563",
+   "name": "Café Bar Raíña",
+   "edited": "2024-09-14T14:00:19Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5453831986",
+   "name": "Café-Bar 5 Sentidos",
+   "edited": "2018-03-04T11:00:36Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5761791649",
+   "name": "Café-Bar Os Paxariños",
+   "edited": "2018-07-15T14:31:35Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/11905177959",
+   "name": "Cafetaría Plaza Mayor",
+   "edited": "2024-09-24T17:25:48Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4293851141",
+   "name": "Cafetería - Bar - Cervecería A Xuntanza",
+   "edited": "2016-07-10T00:25:37Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4187505566",
+   "name": "Cafetería Los Enebros",
+   "edited": "2024-11-25T20:04:10Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/2883887904",
+   "name": "Cafeteria Monterrey",
+   "edited": "2025-09-05T14:50:11Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/7179302294",
+   "name": "Cafetería restaurante As Gándaras",
+   "edited": "2020-02-02T15:38:17Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5713842446",
+   "name": "Cafetería Tanatorio as Gándaras",
+   "edited": "2024-02-11T01:30:29Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/3282083328",
+   "name": "Cambalache",
+   "edited": "2015-09-25T17:52:15Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/2431322178",
+   "name": "Canela Bakery & Cafe",
+   "edited": "2016-07-25T21:48:30Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/14068902224",
+   "name": "Carballo Mobile",
+   "edited": "2026-08-02T18:22:33Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/8074551495",
+   "name": "Casa das Linguas",
+   "edited": "2025-11-22T12:01:41Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11905177958",
+   "name": "Casa ideal",
+   "edited": "2024-09-23T18:33:21Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/3282032366",
+   "name": "Casa María",
+   "edited": "2015-01-11T13:47:57Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4406137291",
+   "name": "Casa Paco",
+   "edited": "2020-06-24T22:51:52Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4311694276",
+   "name": "Castroverde",
+   "edited": "2016-07-19T19:03:35Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/12536293529",
+   "name": "Catalana Occidente",
+   "edited": "2025-01-27T13:34:19Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/5339182049",
+   "name": "Cervecería Abadía Viriato",
+   "edited": "2025-10-25T23:31:02Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/2428551718",
+   "name": "Cerveceria Onde Sempre",
+   "edited": "2024-05-10T16:24:36Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/1705347525",
+   "name": "Cervecería Parrillada Fonsagrada",
+   "edited": "2017-02-18T22:42:07Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4175066789",
+   "name": "Cervecería Roma",
+   "edited": "2018-03-04T11:00:37Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4293683323",
+   "name": "Chapa y pintura Iglesias",
+   "edited": "2024-05-27T18:41:01Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/3863358603",
+   "name": "Chrono Exprés S.A.- Servipack S.A.",
+   "edited": "2016-03-21T01:13:19Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/4355357890",
+   "name": "Clarks",
+   "edited": "2020-11-21T12:36:53Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/12476048545",
+   "name": "Claudio Express",
+   "edited": "2025-01-05T17:39:52Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2635472515",
+   "name": "Click Jurídico",
+   "edited": "2023-02-05T18:05:30Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4058397305",
+   "name": "Comestibles Boavista",
+   "edited": "2020-02-26T16:05:16Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/4311923708",
+   "name": "Como en Casa",
+   "edited": "2024-02-14T11:48:13Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/8390313090",
+   "name": "Confecciones García",
+   "edited": "2021-02-03T12:02:56Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4058397306",
+   "name": "Congelados Gran Sol",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4325282966",
+   "name": "Corral y Espiñeira, S.L.",
+   "edited": "2024-09-22T21:57:24Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/4295287961",
+   "name": "Correduría de Seguros Rasegal",
+   "edited": "2016-07-10T22:47:02Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/6593847946",
+   "name": "Cualtis",
+   "edited": "2019-07-06T23:23:03Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/4325252314",
+   "name": "Darío",
+   "edited": "2021-09-13T22:18:12Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5339787531",
+   "name": "Décimas",
+   "edited": "2023-01-23T16:00:37Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11892163961",
+   "name": "Decolugo",
+   "edited": "2024-05-09T20:13:27Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/2621496370",
+   "name": "Deseo Latino",
+   "edited": "2024-03-28T18:10:11Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/3863358604",
+   "name": "Dielectro Galicia, S.A.",
+   "edited": "2019-10-12T14:49:10Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/3863358605",
+   "name": "Diesel Inyección LUPIGLE, S.L.",
+   "edited": "2019-10-12T14:49:10Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/13360453111",
+   "name": "Diez Hombre Moda",
+   "edited": "2025-12-08T00:04:49Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/7047138855",
+   "name": "Din & Don Jugueterías",
+   "edited": "2020-09-10T18:31:03Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5630345936",
+   "name": "Don León",
+   "edited": "2024-05-27T18:47:56Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/844800038",
+   "name": "Don León",
+   "edited": "2014-11-26T20:04:29Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/4294989218",
+   "name": "Don Minuto",
+   "edited": "2016-07-10T19:28:02Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/842515692",
+   "name": "Dona",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4311689717",
+   "name": "Dvorak 2.0",
+   "edited": "2017-12-26T02:48:13Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11895205702",
+   "name": "Eduardo Souto hair studio",
+   "edited": "2024-05-10T16:24:36Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2428568012",
+   "name": "Egomundi",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4311694278",
+   "name": "El Castillo",
+   "edited": "2016-07-19T19:03:35Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2956228092",
+   "name": "El gran sibarita gastrobar",
+   "edited": "2024-10-15T21:58:04Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5387736651",
+   "name": "El Rincón de Martina",
+   "edited": "2024-10-29T09:39:04Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/12997911549",
+   "name": "Emilio",
+   "edited": "2025-07-13T19:10:57Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "way/107039906",
+   "name": "Eroski",
+   "edited": "2026-02-06T12:11:55Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5339787528",
+   "name": "Esprit",
+   "edited": "2020-11-21T12:35:25Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/3032840407",
+   "name": "Estilos",
+   "edited": "2016-07-10T00:30:11Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5339787527",
+   "name": "Eureka Kids",
+   "edited": "2018-01-14T23:04:55Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4176440989",
+   "name": "Eurofrut",
+   "edited": "2018-05-11T19:42:53Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/14054458869",
+   "name": "Eva María Real & asociados",
+   "edited": "2026-08-10T17:47:28Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/3133100225",
+   "name": "Fábrica de Muebles González",
+   "edited": "2014-10-20T05:56:07Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/3406275193",
+   "name": "Fariñas O Muiñeiro",
+   "edited": "2018-02-04T19:02:52Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11920617234",
+   "name": "FE seguros",
+   "edited": "2024-05-20T21:14:27Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/14085958505",
+   "name": "Feloccjhi",
+   "edited": "2026-08-10T17:47:28Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/2883901602",
+   "name": "Ferreiros",
+   "edited": "2019-01-27T11:29:41Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/6406065176",
+   "name": "Ferretería Lugo",
+   "edited": "2019-04-15T09:03:11Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/7206997031",
+   "name": "Ferretería Veiga, S.L.",
+   "edited": "2020-02-14T20:52:48Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4359448143",
+   "name": "Fersay Lugo",
+   "edited": "2024-05-30T18:48:54Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/3133113394",
+   "name": "Fontaneira",
+   "edited": "2014-10-16T11:17:08Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4921858765",
+   "name": "Forto de Ousá",
+   "edited": "2025-07-14T14:12:15Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/3863358606",
+   "name": "Frigoríficos Alfonso, S.A.",
+   "edited": "2019-10-12T14:49:10Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/7649327676",
+   "name": "Frutas Meilán",
+   "edited": "2020-06-24T11:34:13Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4295284365",
+   "name": "Frutería Miño",
+   "edited": "2016-11-20T21:04:56Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/14054447574",
+   "name": "Frutimar",
+   "edited": "2026-07-27T18:35:15Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/14079015723",
+   "name": "G Galia electrodomésticos",
+   "edited": "2026-08-07T17:42:57Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/3256852689",
+   "name": "Galería de Arte Clérigos",
+   "edited": "2020-10-10T09:55:30Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/839481746",
+   "name": "Gasoleos Ceao",
+   "edited": "2025-02-12T09:00:12Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/6594625163",
+   "name": "Generali",
+   "edited": "2019-07-07T14:32:46Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/12223068294",
+   "name": "Gimods",
+   "edited": "2024-10-04T22:02:10Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/7648962619",
+   "name": "Gonpul",
+   "edited": "2020-06-24T09:50:59Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/12148126782",
+   "name": "Goo!",
+   "edited": "2025-10-10T15:30:51Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4373727503",
+   "name": "Grueira",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5339771467",
+   "name": "H&M",
+   "edited": "2024-08-27T19:43:09Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5339787524",
+   "name": "Hale SHOP",
+   "edited": "2018-01-14T23:04:54Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5055494313",
+   "name": "Hole",
+   "edited": "2024-09-28T22:42:23Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4346174011",
+   "name": "Hostal Illán",
+   "edited": "2016-08-11T16:40:56Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4311680079",
+   "name": "Hugo Boss",
+   "edited": "2020-11-21T12:36:53Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/7245455817",
+   "name": "Ikebana",
+   "edited": "2024-11-04T19:27:19Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/3032840410",
+   "name": "Influence",
+   "edited": "2025-10-25T23:24:45Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5339787523",
+   "name": "Inside",
+   "edited": "2021-12-28T16:36:56Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5630324876",
+   "name": "Instalaciones Pérez Río",
+   "edited": "2018-05-20T11:33:38Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/12194973601",
+   "name": "Intersport",
+   "edited": "2024-09-24T17:17:32Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/3032840397",
+   "name": "Isla",
+   "edited": "2024-06-14T20:18:35Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4325367074",
+   "name": "Ivan motor",
+   "edited": "2016-07-28T15:08:52Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4294977999",
+   "name": "Jenni Flor",
+   "edited": "2016-07-10T19:12:41Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4325236875",
+   "name": "Jimbarán",
+   "edited": "2024-09-16T15:57:15Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/6406064175",
+   "name": "Joyería García",
+   "edited": "2019-04-15T09:02:43Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/7807486844",
+   "name": "k-mon",
+   "edited": "2020-08-12T19:41:04Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/12997981729",
+   "name": "Kantero",
+   "edited": "2025-07-13T20:22:44Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/6404032940",
+   "name": "Kids&Us",
+   "edited": "2025-11-22T12:01:40Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5712441807",
+   "name": "Kiron Peluqueros",
+   "edited": "2018-06-22T22:55:09Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5339795514",
+   "name": "Korner Kids",
+   "edited": "2018-01-14T23:12:57Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4311680078",
+   "name": "Kubica",
+   "edited": "2018-10-11T20:57:07Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4186002985",
+   "name": "Kursal Sports Bar",
+   "edited": "2025-04-04T22:41:39Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5998941885",
+   "name": "La Becada",
+   "edited": "2024-01-02T19:15:44Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4325296300",
+   "name": "La bootique del sexo",
+   "edited": "2016-07-28T14:17:13Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4314868753",
+   "name": "La casa de las empanadas",
+   "edited": "2024-05-27T19:27:59Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11895189620",
+   "name": "La despensa de Maria",
+   "edited": "2024-05-10T16:24:27Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4311680058",
+   "name": "La Fontana",
+   "edited": "2016-07-19T21:40:39Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/12486384341",
+   "name": "La Gramola",
+   "edited": "2025-01-09T23:15:24Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11920618761",
+   "name": "La huerta de Manolo",
+   "edited": "2025-07-25T15:15:43Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/6404062435",
+   "name": "La Lonja",
+   "edited": "2019-04-14T12:46:27Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11446507951",
+   "name": "La Oca",
+   "edited": "2023-12-23T16:26:49Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/3042389976",
+   "name": "La Resistencia",
+   "edited": "2021-10-21T18:23:49Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/7903232367",
+   "name": "La Romana",
+   "edited": "2024-11-21T19:21:21Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11905235353",
+   "name": "La zapatillería",
+   "edited": "2024-05-14T20:52:05Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4921104793",
+   "name": "Lacoste",
+   "edited": "2020-11-21T12:36:53Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4175051960",
+   "name": "Lavandería autoservicio",
+   "edited": "2024-09-20T18:24:07Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4264853189",
+   "name": "Level",
+   "edited": "2016-06-25T19:08:14Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11920629984",
+   "name": "Liber",
+   "edited": "2024-05-20T21:13:48Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/3020887274",
+   "name": "Librería Alecrín",
+   "edited": "2015-04-01T21:19:05Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5712441812",
+   "name": "Librería Medusa",
+   "edited": "2024-05-27T18:38:48Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/6406057323",
+   "name": "Lolita Blu",
+   "edited": "2019-04-15T08:59:47Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5633761340",
+   "name": "Loterías y Apuestas del Estado",
+   "edited": "2026-08-10T17:47:28Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/3032840396",
+   "name": "Lúa Casual Food",
+   "edited": "2016-07-19T18:50:23Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/1357879354",
+   "name": "Luca's Grill",
+   "edited": "2023-04-05T14:09:55Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/12997873056",
+   "name": "Lucus",
+   "edited": "2025-07-13T18:30:14Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4295289097",
+   "name": "Lugo Mascotas",
+   "edited": "2016-07-10T22:49:51Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/1236028786",
+   "name": "Lugoprint servicios gráficos",
+   "edited": "2025-07-20T22:09:58Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/3730959450",
+   "name": "Manger",
+   "edited": "2015-09-25T22:54:56Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5339795510",
+   "name": "Maraca Zapaterías",
+   "edited": "2018-01-14T23:12:57Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/6404731139",
+   "name": "Más Tinta",
+   "edited": "2019-04-14T17:05:42Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/2328111178",
+   "name": "Massimo",
+   "edited": "2021-08-23T16:57:30Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/13369846236",
+   "name": "Medio Ambiente",
+   "edited": "2025-12-11T15:34:56Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5712441815",
+   "name": "Medusa 180",
+   "edited": "2025-10-25T22:54:07Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5339810055",
+   "name": "Mel-fror",
+   "edited": "2024-08-27T19:43:33Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5138165678",
+   "name": "Mercado Os Fidalgo",
+   "edited": "2024-10-29T09:39:04Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4294979002",
+   "name": "Mercafruta",
+   "edited": "2016-07-10T19:15:58Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/9261735369",
+   "name": "Mesón Aromas",
+   "edited": "2024-01-29T18:44:22Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11895189621",
+   "name": "Mesón as rodas",
+   "edited": "2024-05-10T16:24:27Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2883904501",
+   "name": "Mesón da Rúa",
+   "edited": "2016-07-19T18:50:23Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/11920617214",
+   "name": "Mesón Ochoa",
+   "edited": "2024-05-20T21:14:27Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4175066510",
+   "name": "Mesón Pulpería Santiso",
+   "edited": "2017-06-06T18:37:46Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4311680054",
+   "name": "MOM",
+   "edited": "2019-01-27T11:29:42Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/14052269205",
+   "name": "Montes",
+   "edited": "2026-07-26T20:17:00Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4295001015",
+   "name": "Montouto Compra Venta",
+   "edited": "2016-07-10T19:41:11Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4297077230",
+   "name": "Moto Premium",
+   "edited": "2016-07-11T21:05:50Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4294987781",
+   "name": "Motos Núñez Motor",
+   "edited": "2020-09-15T09:10:18Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11829258461",
+   "name": "Mouronte automóviles",
+   "edited": "2024-04-18T21:29:16Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/12703328014",
+   "name": "Mudanzas Alfredo",
+   "edited": "2025-03-26T18:55:47Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4253073737",
+   "name": "Muebles Castro",
+   "edited": "2016-06-19T16:35:00Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/14068902228",
+   "name": "Multitienda Carpal",
+   "edited": "2026-08-02T18:22:33Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/781357217",
+   "name": "Mundo Diner",
+   "edited": "2015-09-29T15:17:09Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/8390313089",
+   "name": "Musa floristas",
+   "edited": "2021-02-03T12:02:56Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/1855479272",
+   "name": "Musical Allegro",
+   "edited": "2019-03-17T04:18:57Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/6406052939",
+   "name": "Nanos",
+   "edited": "2019-04-15T08:57:25Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/6404730995",
+   "name": "Neira",
+   "edited": "2019-04-14T17:05:21Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "way/258560888",
+   "name": "Neumáticos soledad",
+   "edited": "2020-12-10T00:05:53Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/6404692040",
+   "name": "New Square",
+   "edited": "2019-04-14T16:40:16Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/3032840399",
+   "name": "Notre",
+   "edited": "2024-05-20T21:14:27Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4311680052",
+   "name": "O Banco",
+   "edited": "2019-01-27T11:29:42Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5761791650",
+   "name": "O Bodegón de Roci",
+   "edited": "2024-05-20T21:13:48Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/1539346439",
+   "name": "O Cantiño",
+   "edited": "2025-02-05T09:46:15Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5055494279",
+   "name": "O Furancho Folk-Rock",
+   "edited": "2026-05-31T19:09:24Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/2883904801",
+   "name": "O Pedregal",
+   "edited": "2026-10-09T14:29:46Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/3133118964",
+   "name": "O Portalón",
+   "edited": "2015-09-27T16:11:56Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5304889912",
+   "name": "O Rincón de Santos",
+   "edited": "2022-12-29T23:14:59Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2708662245",
+   "name": "O Rocho",
+   "edited": "2026-08-10T17:47:28Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2621496393",
+   "name": "Oficina de Emprego Lugo-Norte",
+   "edited": "2023-06-05T15:51:38Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/846439990",
+   "name": "Oficina de Emprego Lugo-Sur",
+   "edited": "2023-06-05T15:51:38Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4311906894",
+   "name": "Onda Media",
+   "edited": "2024-11-18T19:53:24Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/12644258871",
+   "name": "Opc motor",
+   "edited": "2025-03-07T22:16:55Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/11892163953",
+   "name": "Open Pool",
+   "edited": "2024-05-09T20:13:27Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4325200708",
+   "name": "Orbita",
+   "edited": "2016-07-28T13:07:49Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11920629996",
+   "name": "Os Pepes",
+   "edited": "2024-05-20T21:13:48Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2348616155",
+   "name": "Os sobriños de Cuenca café bar",
+   "edited": "2026-04-18T12:51:46Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4295266014",
+   "name": "Os-Mar",
+   "edited": "2016-07-10T22:32:12Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/8934115817",
+   "name": "Ourizo",
+   "edited": "2025-09-27T22:50:55Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4293724258",
+   "name": "Ousá",
+   "edited": "2016-07-09T21:45:17Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/13023078640",
+   "name": "Outlet Lugo",
+   "edited": "2025-10-11T12:24:38Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5339810050",
+   "name": "Oysho",
+   "edited": "2020-11-03T15:59:58Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/3235812680",
+   "name": "Pacific Soul Tattoo & Co",
+   "edited": "2025-10-10T08:50:35Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5339810049",
+   "name": "Paco Martínez",
+   "edited": "2018-01-14T23:28:14Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/12997882008",
+   "name": "Panadería Friol",
+   "edited": "2025-07-13T18:46:14Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5350929206",
+   "name": "Panadería Ousá",
+   "edited": "2024-05-01T21:15:50Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5631153883",
+   "name": "Parafarmacia naturval",
+   "edited": "2018-05-20T20:26:48Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/6406062694",
+   "name": "Paragüería Lucense",
+   "edited": "2019-04-15T09:01:16Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/6404734125",
+   "name": "Páramo",
+   "edited": "2025-11-22T12:01:40Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/3926214782",
+   "name": "Parrillada Nova Lucense",
+   "edited": "2024-05-26T09:48:55Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4311680057",
+   "name": "Pazo das Pombas",
+   "edited": "2016-07-19T18:51:23Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4314935268",
+   "name": "Peluquería Carlos Carreira",
+   "edited": "2016-07-21T20:19:52Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4325391797",
+   "name": "Peluquería de Caballeros Jorge",
+   "edited": "2016-07-28T15:22:36Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4325253277",
+   "name": "Peluquería Finy",
+   "edited": "2016-07-28T13:51:13Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/846439993",
+   "name": "Peluquerías Low Cost",
+   "edited": "2019-04-14T17:08:33Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4311680067",
+   "name": "Petiscos",
+   "edited": "2020-09-13T19:22:30Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/3133127079",
+   "name": "Plancho Por Ti",
+   "edited": "2014-11-26T20:04:32Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/842645824",
+   "name": "Plural",
+   "edited": "2017-06-17T19:38:26Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4297089842",
+   "name": "Plus Ultra",
+   "edited": "2016-07-11T21:16:38Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/2708662224",
+   "name": "Prenatal",
+   "edited": "2025-10-10T08:50:18Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4894447080",
+   "name": "Pulpería Aurora do Carballiño",
+   "edited": "2022-11-24T13:26:43Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5761791647",
+   "name": "Pulpería Breogán",
+   "edited": "2018-07-15T14:31:35Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4485300597",
+   "name": "Queixería Praza do Campo",
+   "edited": "2019-01-27T11:29:42Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/3863358608",
+   "name": "Recambios al volante, S.L.",
+   "edited": "2019-10-12T14:49:10Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/6404033939",
+   "name": "Redetel",
+   "edited": "2019-04-14T12:21:07Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/8390313088",
+   "name": "Regalucus",
+   "edited": "2021-02-03T12:02:56Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5631263351",
+   "name": "Reparación de calzado O galego",
+   "edited": "2018-05-20T21:49:58Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4058397310",
+   "name": "Restaurante Antonio",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/1705347519",
+   "name": "Restaurante Kina-Kaña",
+   "edited": "2017-02-18T22:43:42Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/781357170",
+   "name": "Restaurante Manuel Manuel",
+   "edited": "2015-10-01T12:22:24Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/4294973449",
+   "name": "Sandra",
+   "edited": "2016-07-10T19:06:46Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "way/1314348464",
+   "name": "Santa Eulalia",
+   "edited": "2024-09-09T11:09:31Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/4921920842",
+   "name": "Santeiros",
+   "edited": "2024-08-29T11:42:09Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/6404730957",
+   "name": "Sensei Depilación Laser",
+   "edited": "2019-04-14T17:05:04Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/6404712135",
+   "name": "Shalom",
+   "edited": "2019-04-14T16:52:24Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4494083603",
+   "name": "Shiku",
+   "edited": "2016-11-11T10:31:09Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/7288962894",
+   "name": "Sindoo Estudio Creativo",
+   "edited": "2020-06-10T20:39:43Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/2514780571",
+   "name": "SoftGalia Aplicaciones Informáticas S.L.",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4293754667",
+   "name": "Sports Bar",
+   "edited": "2016-07-09T22:11:11Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/6404718125",
+   "name": "Sports&Me",
+   "edited": "2019-04-14T16:54:15Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5339810042",
+   "name": "Springfield",
+   "edited": "2020-11-03T15:59:58Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11892163963",
+   "name": "Stop!",
+   "edited": "2024-05-09T20:13:27Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11895189623",
+   "name": "Supermercado Vila Sol",
+   "edited": "2024-05-10T16:24:27Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/11892178869",
+   "name": "Syret",
+   "edited": "2024-05-09T20:13:27Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/11872667015",
+   "name": "Tabacos",
+   "edited": "2024-05-01T21:19:59Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/12644263019",
+   "name": "Tabacos",
+   "edited": "2025-03-07T22:21:32Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5630324880",
+   "name": "Tabacos",
+   "edited": "2024-05-20T21:14:27Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/5350929271",
+   "name": "Taberna de Cuenca",
+   "edited": "2024-05-01T21:15:50Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/6404685280",
+   "name": "Taller de costura Isma",
+   "edited": "2019-04-14T16:38:06Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/11820026609",
+   "name": "Talleres Villar e Hijos S.L",
+   "edited": "2024-04-15T20:06:41Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5713902142",
+   "name": "Tallerivas",
+   "edited": "2024-05-26T13:09:24Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4295256198",
+   "name": "Tan To Ten",
+   "edited": "2025-10-25T23:11:05Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "way/601100849",
+   "name": "Tanatorio as Gándaras",
+   "edited": "2020-02-02T15:38:17Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/2883894504",
+   "name": "Tapas Cunqueiro",
+   "edited": "2019-10-11T20:36:49Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/842515689",
+   "name": "Tato",
+   "edited": "2019-04-14T16:57:53Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4294983152",
+   "name": "Tattoo Nando Studio",
+   "edited": "2016-07-10T19:22:01Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/2477279533",
+   "name": "Taxi - Euro Galicia",
+   "edited": "2023-02-21T14:33:07Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/11870135988",
+   "name": "Terra Meiga",
+   "edited": "2024-04-30T23:03:52Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/3133104008",
+   "name": "The Question",
+   "edited": "2020-11-19T11:18:21Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/3063416553",
+   "name": "Tirabeque",
+   "edited": "2019-01-27T11:29:41Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/2724399034",
+   "name": "Tobarix",
+   "edited": "2025-10-10T08:50:18Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/3133367745",
+   "name": "Tragsa",
+   "edited": "2024-09-28T21:28:46Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/3133357308",
+   "name": "Tragsatec",
+   "edited": "2024-09-28T21:28:34Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4175066790",
+   "name": "Trópico II",
+   "edited": "2018-03-04T11:00:37Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/5415000045",
+   "name": "Tu Paso",
+   "edited": "2018-02-15T19:27:41Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/6404694412",
+   "name": "Vania Diseño Floral",
+   "edited": "2019-04-14T16:42:00Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/2804949432",
+   "name": "Vappeo Store",
+   "edited": "2025-10-10T08:50:22Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/842645813",
+   "name": "Ven que te Peino",
+   "edited": "2019-04-14T16:39:29Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/4294972095",
+   "name": "Vetercan",
+   "edited": "2016-07-10T19:05:31Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/11534650921",
+   "name": "Wenea Charging Station",
+   "edited": "2024-01-20T17:48:29Z",
+   "seen": "renamed"
+  },
+  {
+   "osm": "node/4311699832",
+   "name": "X Distinto",
+   "edited": "2016-07-19T19:09:41Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5339183713",
+   "name": "Xálide",
+   "edited": "2018-01-14T16:11:07Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/5631174462",
+   "name": "Xena cervecería pulpería",
+   "edited": "2018-05-20T20:40:26Z",
+   "seen": "absent"
+  },
+  {
+   "osm": "node/3042389966",
+   "name": "Yoigo",
+   "edited": "2025-09-03T15:29:33Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/11920629986",
+   "name": "Zapping",
+   "edited": "2024-05-20T21:13:48Z",
+   "seen": "elsewhere"
+  },
+  {
+   "osm": "node/4311680065",
+   "name": "Zara",
+   "edited": "2020-11-21T12:36:53Z",
+   "seen": "closed"
+  },
+  {
+   "osm": "node/7179286585",
+   "name": "Zouk",
+   "edited": "2020-02-02T15:38:17Z",
+   "seen": "closed"
+  }
+ ]
+}

@@ -1,0 +1,287 @@
+[
+ {
+  "name": "CAD Drocer",
+  "lat": 43.02152,
+  "lng": -7.58166
+ },
+ {
+  "name": "CDAN Conservatorio Profesional de Danza",
+  "lat": 42.99975,
+  "lng": -7.54626
+ },
+ {
+  "name": "CEE Santa María",
+  "lat": 42.9957,
+  "lng": -7.54642
+ },
+ {
+  "name": "CEIP A Ponte",
+  "lat": 42.99921,
+  "lng": -7.5615
+ },
+ {
+  "name": "CEIP Albeiros",
+  "lat": 43.0303,
+  "lng": -7.5635
+ },
+ {
+  "name": "CEIP Anexa",
+  "lat": 43.00558,
+  "lng": -7.55569
+ },
+ {
+  "name": "CEIP As Gándaras",
+  "lat": 43.02687,
+  "lng": -7.55142
+ },
+ {
+  "name": "CEIP das Mercedes",
+  "lat": 43.00257,
+  "lng": -7.54847
+ },
+ {
+  "name": "CEIP de Casás",
+  "lat": 43.01394,
+  "lng": -7.57417
+ },
+ {
+  "name": "CEIP Illa Verde",
+  "lat": 43.00032,
+  "lng": -7.55098
+ },
+ {
+  "name": "CEIP Paradai",
+  "lat": 43.02253,
+  "lng": -7.55931
+ },
+ {
+  "name": "CEIP Plurilingüe Benigno Quiroga Ballesteros",
+  "lat": 43.01338,
+  "lng": -7.55865
+ },
+ {
+  "name": "CEIP Rosalía de Castro",
+  "lat": 43.00411,
+  "lng": -7.55229
+ },
+ {
+  "name": "CEIP Sagrado Corazón",
+  "lat": 43.01876,
+  "lng": -7.54985
+ },
+ {
+  "name": "CEMU Galén",
+  "lat": 43.02103,
+  "lng": -7.58563
+ },
+ {
+  "name": "CEMU Profesional Fingoi",
+  "lat": 42.99823,
+  "lng": -7.55393
+ },
+ {
+  "name": "Centro de Saúde A Milagrosa",
+  "lat": 43.01746,
+  "lng": -7.56485
+ },
+ {
+  "name": "CIFP As Mercedes",
+  "lat": 42.99874,
+  "lng": -7.54611
+ },
+ {
+  "name": "CMUS Profesional Xoán Montes",
+  "lat": 42.99942,
+  "lng": -7.54683
+ },
+ {
+  "name": "Complexo Hospitalario Universitario de Lugo",
+  "lat": 43.01947,
+  "lng": -7.53319
+ },
+ {
+  "name": "CPR Attelier",
+  "lat": 43.01536,
+  "lng": -7.56025
+ },
+ {
+  "name": "CPR Dioptra",
+  "lat": 43.01496,
+  "lng": -7.55256
+ },
+ {
+  "name": "CPR Fingoi",
+  "lat": 42.99823,
+  "lng": -7.55396
+ },
+ {
+  "name": "CPR Fundación Laboral de la Construcción",
+  "lat": 42.98469,
+  "lng": -7.59008
+ },
+ {
+  "name": "CPR Galén",
+  "lat": 43.0209,
+  "lng": -7.58547
+ },
+ {
+  "name": "CPR Plurilingüe Cervantes",
+  "lat": 43.02206,
+  "lng": -7.56599
+ },
+ {
+  "name": "CPR Plurilingüe La Inmaculada",
+  "lat": 43.00824,
+  "lng": -7.5552
+ },
+ {
+  "name": "CPR Plurilingüe La Milagrosa",
+  "lat": 43.01387,
+  "lng": -7.55768
+ },
+ {
+  "name": "CPR Plurilingüe Padres Franciscanos",
+  "lat": 43.00942,
+  "lng": -7.55631
+ },
+ {
+  "name": "CPR Plurilingüe San José",
+  "lat": 43.00837,
+  "lng": -7.5599
+ },
+ {
+  "name": "CPR Radio ECCA",
+  "lat": 43.02993,
+  "lng": -7.56357
+ },
+ {
+  "name": "CPR Seminario Diocesano-San Lorenzo",
+  "lat": 43.00735,
+  "lng": -7.55531
+ },
+ {
+  "name": "CPR TIC",
+  "lat": 43.00705,
+  "lng": -7.56066
+ },
+ {
+  "name": "EASD Ramón Falcón",
+  "lat": 42.9983,
+  "lng": -7.54275
+ },
+ {
+  "name": "EEI Fingoi nº 2",
+  "lat": 43.00079,
+  "lng": -7.54952
+ },
+ {
+  "name": "EMUSPR Cantarela",
+  "lat": 43.02079,
+  "lng": -7.58563
+ },
+ {
+  "name": "EMUSPR Fábrica de Sons",
+  "lat": 43.01003,
+  "lng": -7.55022
+ },
+ {
+  "name": "EOI de Lugo",
+  "lat": 42.99997,
+  "lng": -7.54576
+ },
+ {
+  "name": "EPAPU Albeiros",
+  "lat": 43.02241,
+  "lng": -7.56232
+ },
+ {
+  "name": "ESMU Municipal de Lugo",
+  "lat": 43.01231,
+  "lng": -7.55837
+ },
+ {
+  "name": "Farmacia (Avda. Coruña 131)",
+  "lat": 43.01904,
+  "lng": -7.56203
+ },
+ {
+  "name": "Farmacia (Avda. Coruña 58)",
+  "lat": 43.01659,
+  "lng": -7.55997
+ },
+ {
+  "name": "Farmacia (Avda. Garabolos (Medusa))",
+  "lat": 43.02908,
+  "lng": -7.57109
+ },
+ {
+  "name": "Farmacia (Montero Ríos 4)",
+  "lat": 43.0119,
+  "lng": -7.55161
+ },
+ {
+  "name": "Farmacia (Montero Ríos 86)",
+  "lat": 43.01431,
+  "lng": -7.55103
+ },
+ {
+  "name": "Farmacia (Nadela (ent. Estda. Sarria))",
+  "lat": 42.96976,
+  "lng": -7.50369
+ },
+ {
+  "name": "Farmacia (Praza Bretaña)",
+  "lat": 43.00732,
+  "lng": -7.5532
+ },
+ {
+  "name": "Farmacia (San Roque 175)",
+  "lat": 43.00309,
+  "lng": -7.55048
+ },
+ {
+  "name": "Hospital Ribera Polusa",
+  "lat": 42.99731,
+  "lng": -7.56873
+ },
+ {
+  "name": "IES Ánxel Fole",
+  "lat": 43.02421,
+  "lng": -7.57076
+ },
+ {
+  "name": "IES Lucus Augusti",
+  "lat": 43.00661,
+  "lng": -7.55677
+ },
+ {
+  "name": "IES Muralla Romana",
+  "lat": 43.02406,
+  "lng": -7.5712
+ },
+ {
+  "name": "IES Nosa Sra. dos Ollos Grandes",
+  "lat": 43.00632,
+  "lng": -7.55627
+ },
+ {
+  "name": "IES Xoán Montes",
+  "lat": 43.01205,
+  "lng": -7.56191
+ },
+ {
+  "name": "Policlínico Lucense",
+  "lat": 42.99731,
+  "lng": -7.56873
+ },
+ {
+  "name": "Sanatorio Nosa Señora dos Ollos Grandes",
+  "lat": 43.01187,
+  "lng": -7.56206
+ },
+ {
+  "name": "Unidade de Saúde Mental e Hospital de Día Psiquiátrico",
+  "lat": 43.01185,
+  "lng": -7.56917
+ }
+]
