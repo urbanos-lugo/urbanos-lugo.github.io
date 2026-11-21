@@ -6518,3 +6518,35 @@ antes onde, porque a API saíra de Cloudflare en setembro polos bloqueos de LaLi
   dicindo Deno: cambian co `API_ORIGIN`, non antes.
 - `audit:browser` non se correu nesta rolda: o cambio non toca a app. Nada está en `develop`
   remoto.
+
+## Rolda 84: as rúas, escritas por quen le a súa entrada — 21 de novembro de 2026
+
+### Por que
+
+- O CI de `develop` en 284c7fb (execución 44922998373) caeu no paso «The shipped dataset is
+  what the generator writes»: `pnpm run data:build` lía `data/osm-walk-network.json`, que está
+  en `.gitignore` e só existe neste disco, e nun checkout limpo non o atopa. A lectura
+  entrou na rolda 81 (027ef09), que dicía que a build de CI xa rexeneraba as rúas: en local
+  pasaba porque o ficheiro estaba alí.
+
+### Feito
+
+- O bloque das rúas pasa de `tools/buildDataset.ts` a `tools/buildWalkGraph.ts`
+  (`pnpm run data:walkgraph`), que xa le ese ficheiro e escribe `src/data/walk-network.json`.
+  As dúas saídas están no repositorio e a entrada non, como xa pasaba co grafo; `data:build`
+  le só o que está versionado. A mesma distancia, redondeada ao metro, e o mesmo formato:
+  `streets.json` sae igual byte a byte.
+- DATA.md e a lista de ferramentas do README din quen o escribe agora.
+
+### Comprobado
+
+- `pnpm run data:walkgraph` aquí: 794 rúas, e `src/data` sen ningún cambio.
+- Nun worktree limpo desde 284c7fb, só co parche e sen o ficheiro ignorado: `pnpm run
+  data:build` e despois `git diff --exit-code --stat -- src/data`, que é o paso do CI, sen
+  diferenzas.
+- As cinco portas: lint, 182 comprobacións, 26 políticas, `check:deep` e a build.
+
+### Queda
+
+- O CI xa non rexenera `streets.json`, igual que non rexenera `walk-network.json`: as dúas
+  só cambian cando alguén refresca a rede peonil (`data:walk`, logo `data:walkgraph`).
