@@ -32,8 +32,8 @@ export const walkHopKey = (from: [number, number], to: [number, number]): string
 
 /**
  * The walk between two points along real pavement. Null means there is no pedestrian route
- * (true for seven stops on the N-VI, where a straight line would be a stroll across fields),
- * or the network chunk could not load; the caller keeps its straight line either way.
+ * (an end more than 150 m of fields from the main network, like a mill at the end of a
+ * track), or the network chunk could not load; the caller keeps its straight line either way.
  */
 export async function fetchWalkingPath(from: [number, number], to: [number, number], signal?: AbortSignal): Promise<WalkingPath | null> {
   if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');

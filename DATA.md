@@ -78,8 +78,8 @@ where no surveyed relation exists.
   under ODbL. It is not covered by the MIT licence. That is `src/data/route-geometry.json`,
   which ships, and the snapshots it is built from: `data/osm-routes.json`,
   `data/routes.json` and `data/stop-amenities.json`.
-- **The same applies to the pedestrian network.** `src/data/walk-network.json` — 21.093
-  junctions, 29.489 edges, 2.516 km of walkable way — is built by `tools/buildWalkGraph.ts`
+- **The same applies to the pedestrian network.** `src/data/walk-network.json` — 21.175
+  junctions, 29.614 edges, 2.524 km of walkable way — is built by `tools/buildWalkGraph.ts`
   from `data/osm-walk-network.json`, which `tools/importWalkNetwork.ts` takes from
   Overpass. Derivative Database, ODbL, same as the route geometry. It exists so that a
   walking time is a real route rather than a straight line, and so that no coordinate has
@@ -95,7 +95,7 @@ where no surveyed relation exists.
   `tourism`, `historic`, `craft`, `place`, `building`, `landuse`, `man_made`, `club` or
   `sport`, with the branches of each chain taken from AllThePlaces (below) where the chain's
   points fall on OSM's. Two of one name are told apart by the stop nearest them.
-  `src/data/streets.json` — the 794 named ways of the walking network, a point
+  `src/data/streets.json` — the 798 named ways of the walking network, a point
   on each — is written by `tools/buildWalkGraph.ts` from `data/osm-walk-network.json`. Both
   Derivative Databases, ODbL. A place no source has is not found: it is added in OSM, and
   arrives with the next import.
@@ -218,7 +218,7 @@ first will not answer. Nothing in the browser ever calls either.
 
 ## Altitude — Instituto Geográfico Nacional (MDT05)
 
-- **What:** how high the ground is under each of the 21.093 junctions of the walking
+- **What:** how high the ground is under each of the 21.175 junctions of the walking
   network, so a route can charge for a climb. OpenStreetMap carries no elevation, and
   without this the router was right about the pavement and silent about the hill — which
   in a city with the Miño at the bottom and a walled town on top is most of the difference
@@ -237,8 +237,8 @@ first will not answer. Nothing in the browser ever calls either.
 - **Consequence:** the heights live in `src/data/walk-network.json` alongside the graph,
   delta-coded, together with what each edge climbs in each direction — the build walks
   every street's own profile at 5 m rather than subtracting the heights of its two ends,
-  because 292 edges hide ten metres or more of climb between their ends. 21.093 heights
-  and 29.489 pairs of ascents for 36 KB gzipped. That file is therefore covered by
+  because 292 edges hide ten metres or more of climb between their ends. 21.175 heights
+  and 29.614 pairs of ascents for 36 KB gzipped. That file is therefore covered by
   **both** ODbL (the geometry, from OSM) and CC BY 4.0 (the heights, from the IGN), and
   both are credited.
 

@@ -2,7 +2,7 @@
  * Walking routes, computed on the device rather than asked of anybody.
  *
  * The network is `src/data/walk-network.json`, built from OpenStreetMap by
- * `tools/buildWalkGraph.ts`: 21,093 junctions and 29,489 edges of real pavement, with the
+ * `tools/buildWalkGraph.ts`: 21,175 junctions and 29,614 edges of real pavement, with the
  * shape of each street kept beside its length. A* over that replaces a request that sent
  * the reader's own coordinates to a third party and needed a connection.
  */
@@ -21,6 +21,14 @@ const SECONDS_PER_METRE_CLIMBED = 6;
 /** Bucket size for the index that finds the nearest street, roughly 200 m. */
 const CELL_LAT = 0.002;
 const CELL_LNG = 0.0025;
+
+/**
+ * How far a point may be walked, straight, to reach the main piece of the network when the
+ * street nearest it is a piece OSM leaves unjoined: a footway in a courtyard or a park, a
+ * lay-by. Measured on the November network: every stop and place left with no walk had the
+ * main piece 13 to 115 m away, but for a mill at the end of a track, 384 m.
+ */
+const MAIN_PIECE_REACH_M = 150;
 
 export interface WalkRoute {
   path: [number, number][];
@@ -43,6 +51,9 @@ interface Graph {
   adjacency: number[][];
   /** Cell key → edge indices whose shape passes through it. */
   grid: Map<string, number[]>;
+  /** Which connected piece each junction is in, and the piece holding most of them. */
+  piece: Int32Array;
+  mainPiece: number;
 }
 
 interface RawNetwork {
@@ -110,9 +121,22 @@ function decode(raw: RawNetwork): Graph {
   }
 
   const edgeCount = edgeA.length;
+  // Union-find over the edges, then each junction labelled with its root.
+  const piece = Int32Array.from({ length: junctionCount }, (_, i) => i);
+  const root = (x: number): number => {
+    while (piece[x] !== x) x = piece[x] = piece[piece[x]];
+    return x;
+  };
+  for (let e = 0; e < edgeCount; e++) piece[root(edgeA[e])] = root(edgeB[e]);
+  const sizes = new Map<number, number>();
+  for (let i = 0; i < junctionCount; i++) sizes.set((piece[i] = root(i)), (sizes.get(piece[i]) ?? 0) + 1);
+  let mainPiece = 0;
+  for (const [id, n] of sizes) if (n > (sizes.get(mainPiece) ?? 0)) mainPiece = id;
   return {
     lat,
     lng,
+    piece,
+    mainPiece,
     up: raw.up?.length === edgeCount ? Int32Array.from(raw.up) : null,
     down: raw.down?.length === edgeCount ? Int32Array.from(raw.down) : null,
     edgeA: Int32Array.from(edgeA),
@@ -170,15 +194,18 @@ interface Snap {
   awayMetres: number;
 }
 
-/** The nearest point on the network to a coordinate, widening the search ring until something turns up. */
-function snap(g: Graph, lat: number, lng: number): Snap | null {
+/**
+ * The nearest point on the network to a coordinate, widening the search ring until something
+ * turns up; with `onMain`, the nearest on the main piece, and only within MAIN_PIECE_REACH_M.
+ */
+function snap(g: Graph, lat: number, lng: number, onMain = false): Snap | null {
   const baseLat = Math.floor(lat / CELL_LAT);
   const baseLng = Math.floor(lng / CELL_LNG);
   for (let ring = 1; ring <= 12; ring++) {
     const candidates = new Set<number>();
     for (let dLat = -ring; dLat <= ring; dLat++) {
       for (let dLng = -ring; dLng <= ring; dLng++) {
-        for (const edge of g.grid.get(`${baseLat + dLat},${baseLng + dLng}`) ?? []) candidates.add(edge);
+        for (const edge of g.grid.get(`${baseLat + dLat},${baseLng + dLng}`) ?? []) if (!onMain || g.piece[g.edgeA[edge]] === g.mainPiece) candidates.add(edge);
       }
     }
     let best: Snap | null = null;
@@ -193,7 +220,7 @@ function snap(g: Graph, lat: number, lng: number): Snap | null {
         travelled += segment;
       }
     }
-    if (best) return best;
+    if (best) return !onMain || best.awayMetres <= MAIN_PIECE_REACH_M ? best : null;
   }
   return null;
 }
@@ -262,14 +289,24 @@ function slice(g: Graph, edge: number, fromMetres: number, toMetres: number): [n
 
 /**
  * The walk between two coordinates, along real pavement. Null when either end is nowhere
- * near the network or the two sit in different pieces of it (98.7% of the graph is one
- * piece; the rest are rural tracks) — the caller keeps its straight line.
+ * near the network, or the two sit in different pieces of it and an end on a lesser piece
+ * (98.7% of the graph is one piece) has the main one beyond MAIN_PIECE_REACH_M; the caller
+ * keeps its straight line.
  */
 export async function routeOnFoot(from: [number, number], to: [number, number]): Promise<WalkRoute | null> {
   const g = await loadWalkNetwork();
-  const start = snap(g, from[0], from[1]);
-  const finish = snap(g, to[0], to[1]);
+  let start = snap(g, from[0], from[1]);
+  let finish = snap(g, to[0], to[1]);
   if (!start || !finish) return null;
+  // Nearest is not always connected: the Museo Provincial sits 13 m from a courtyard footway
+  // OSM leaves unjoined and 33 m from the street, and the walk to it came back null, so the
+  // plan kept its straight line and charged no climb.
+  const pieceOf = (s: Snap) => g.piece[g.edgeA[s.edge]];
+  if (pieceOf(start) !== pieceOf(finish)) {
+    if (pieceOf(start) !== g.mainPiece) start = snap(g, from[0], from[1], true);
+    if (pieceOf(finish) !== g.mainPiece) finish = snap(g, to[0], to[1], true);
+    if (!start || !finish) return null;
+  }
 
   // The walk from where you are to where the network is, at both ends, at the flat speed:
   // a stop in a lay-by can sit tens of metres off the nearest way, and the drawn line

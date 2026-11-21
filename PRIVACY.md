@@ -80,7 +80,7 @@ walking path"* sent both ends of each walking leg — one of which can be your G
 — to OpenStreetMap's public pedestrian router at `routing.openstreetmap.de`. That is why
 it was a button: it was a thing to consent to.
 
-The app now carries the pedestrian network of Lugo itself, 21.093 junctions and 29.489
+The app now carries the pedestrian network of Lugo itself, 21.175 junctions and 29.614
 edges of real pavement built from OpenStreetMap at build time, and works the route out on
 your device in under a millisecond (`src/utils/walkRouter.ts`). So the button is gone,
 because there is nothing left to agree to, and the walking times you see are measured

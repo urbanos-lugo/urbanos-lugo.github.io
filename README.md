@@ -77,7 +77,7 @@ querías consultar o bus, o enlace está arriba.
 | **Arquitectura** | Sitio estático en GitHub Pages: todo o cálculo ocorre no cliente, sobre JSON xerados no build. Só dúas cousas precisan servidor, polo CORS —os avisos do operador e os minutos detrás do QR dun poste—, e sírveas un worker en Deno Deploy ou o `server.ts` de Express. |
 | **Pila** | React 19, Vite 8, Tailwind 4, MapLibre GL e TypeScript estrito; pnpm e Node 22 ou superior. |
 | **Datos** | 24 liñas, 48 sentidos, 417 paradas (271 co código no poste) e 436 km de rede, xerados desde buslugo.com, OpenStreetMap e OSRM por un pipeline reproducible, coas fontes gardadas como instantáneas. |
-| **Sen conexión** | Service Worker. Os horarios, a rede peonil de Lugo (21.093 cruces, con altitude) e o enrutador A\* van dentro: un traxecto calcúlase no teléfono, sen rede e sen terceiros. |
+| **Sen conexión** | Service Worker. Os horarios, a rede peonil de Lugo (21.175 cruces, con altitude) e o enrutador A\* van dentro: un traxecto calcúlase no teléfono, sen rede e sen terceiros. |
 | **Calidade** | Cinco portas en cada push —tipos, a suite de comprobacións, a política do repositorio, varreduras sobre o dataset enteiro e o build— e unha auditoría WCAG 2.2 A e AA nun navegador real, estado por estado e tarefa por tarefa co dedo. `main` só acepta un commit coa CI verde. |
 | **Idiomas** | Galego, castelán e inglés, cun enderezo por idioma. |
 | **Licenzas** | Código MIT; os trazados derivados de OpenStreetMap, ODbL ([`DATA.md`](DATA.md)). |
@@ -354,7 +354,7 @@ non fai «en servizo» o primeiro bus do día seguinte.
 **«Usar a miña localización» sen permiso dío e non calcula**, igual que a pantalla de
 paradas se nega a inventar unha posición que o móbil non deu.
 
-**Calquera rúa ou sitio con nome, non só as paradas.** Ruta atopa as 794 rúas da rede
+**Calquera rúa ou sitio con nome, non só as paradas.** Ruta atopa as 798 rúas da rede
 peonil, tamén co número do portal («Rúa Río Neira 20» vai á rúa, que é o que hai: os
 portais non están nos datos), e 2.179 sitios a menos dun paseo de 1,5 km dunha parada:
 aldeas e lugares, farmacias, igrexas, colexios, bancos, oficinas, supermercados,
@@ -456,7 +456,7 @@ se aplana. Ningunha proposta pode ser absurda porque unha parada só se consider
 camiñar ata ela leva menos que camiñar todo o traxecto.
 
 **Os tramos a pé van polas beirarrúas reais, e calcúlanse neste móbil.** A aplicación
-leva dentro a rede peonil de Lugo — 21.093 cruces e 29.489 arestas levantadas de
+leva dentro a rede peonil de Lugo — 21.175 cruces e 29.614 arestas levantadas de
 OpenStreetMap — e resolve cada camiño cun A\* en menos dun milisegundo
 (`src/utils/walkRouter.ts`). Nin conexión nin terceiros.
 
@@ -467,8 +467,8 @@ que se mida, así que van as dúas:
 
 | | mediana | p90 | peor |
 | :--- | ---: | ---: | ---: |
-| 340 pares de paradas veciñas | ×1,42 | ×3,78 | ×32,96 |
-| 1.022 tramos a pé de plans reais | ×1,36 | ×2,12 | |
+| 260 pares: cada parada e a máis próxima | ×1,43 | ×5,10 | ×32,96 |
+| 1.022 tramos a pé de plans reais (setembro de 2026) | ×1,36 | ×2,12 | |
 
 A segunda é a que importa, porque é a poboación á que se lle aplica a estimación: ti ata a
 túa primeira parada, os transbordos, e a última parada ata onde vas. Aí a constante de
@@ -479,8 +479,12 @@ decenas de metros cun quilómetro de camiño entre eles porque hai unha vía pol
 iso os tramos a pé non dependen dunha.
 
 Cando **non hai camiño peonil**, a opción de ir andando retírase en vez de quedar cunha
-estimación. Nas paradas da N-VI en Ombreiro esa estimación sería un paseo de seis
-quilómetros a campo través, e alí non hai beirarrúa ningunha.
+estimación. Un extremo que cae nun anaco de rede que OSM deixa solto (un carreiro nun
+patio, o apartadoiro dunha parada da N-VI) camiña en recta ata a rede principal se a ten a
+menos de 150 m. Máis alá non: un muíño ao fondo dunha pista, a 384 m de prados, queda sen
+camiño en vez de levar unha liña recta por eles. Antes calquera anaco solto deixaba sen
+camiño, e eran 9 paradas e 16 sitios sen camiño ata a súa parada máis próxima, o Museo
+Provincial entre eles: o plan quedaba coa liña recta e sen cobrar a subida.
 
 **Substituír algo é afirmar que o teu é igual de bo, así que se comproba.**
 `pnpm run compare:walk` colle 40 traxectos reais e pregúntallos aos dous enrutadores, ao
@@ -499,7 +503,7 @@ petición por segundo, e cachea para que repetilo non custe nada.
 
 **E cobra a costa.** OpenStreetMap non leva altitude, e nunha cidade co Miño abaixo e unha
 vila amurallada arriba esa é boa parte da diferenza entre subir e baixar pola mesma rúa.
-Cada un dos 21.093 cruces leva a súa altura, tomada do **MDT05 do IGN**, o modelo do
+Cada un dos 21.175 cruces leva a súa altura, tomada do **MDT05 do IGN**, o modelo do
 terreo español a paso de 5 m levantado con LiDAR aéreo do PNOA.
 
 A regra é a de Naismith: un minuto por cada dez metros de subida, enriba do que xa custa a
@@ -513,8 +517,8 @@ distancia. A baixada é de balde. Medido entre os mesmos dous puntos e nos dous 
 
 **E o que se cobra é a subida da rúa, non a resta dos seus extremos**, que le como chá
 unha rúa que sobe e volve baixar entre dous cruces. Medido contra
-o modelo de 5 m nas 29.489 arestas, co perfil que garda a app: 41.834 m de ascenso polos
-extremos fronte a 49.735 m polo perfil, un 19 % máis, e **3.099 arestas agochan algo de
+o modelo de 5 m nas 29.614 arestas, co perfil que garda a app: 41.855 m de ascenso polos
+extremos fronte a 49.790 m polo perfil, un 19 % máis, e **3.119 arestas agochan algo de
 subida e 292 agochan dez metros ou máis, que é un minuto enteiro**. É unha cola, e son as
 arestas longas: a peor son 1.941 m de estrada rural cos dous extremos ao mesmo nivel e 78 m
 de desnivel polo medio.
@@ -531,8 +535,8 @@ mesmo que para baixar.** O enrutador colle unha rúa máis longa e máis suave p
 que é o que fai unha persoa. Da Ponte Romana á Praza Maior son 1.664 m subindo e 1.653 m
 baixando.
 
-Todo iso vai no mesmo ficheiro que o grafo, codificado en diferenzas: 21.093 alturas e
-29.489 pares de ascensos por 36 KB, e 17.053 arestas son chás de verdade nos dous sentidos.
+Todo iso vai no mesmo ficheiro que o grafo, codificado en diferenzas: 21.175 alturas e
+29.614 pares de ascensos por 36 KB, e 17.141 arestas son chás de verdade nos dous sentidos.
 
 Amosa tamén **canto custa o traxecto** cos dous títulos, aplicando a regra dos 75 minutos:
 un transbordo dentro da ventá vai incluído coa Tarxeta Cidadá, e co billete ordinario
@@ -946,13 +950,13 @@ non chama ningunha.
 │   │   ├── stops.json              XERADO — o que le a app
 │   │   ├── lines.json              XERADO — o que le a app
 │   │   ├── route-geometry.json     XERADO — trazados, baixo demanda
-│   │   ├── walk-network.json       XERADO — 21.093 cruces, 29.489 arestas
+│   │   ├── walk-network.json       XERADO — 21.175 cruces, 29.614 arestas
 │   │   ├── map-style-light.json    XERADO — o estilo do mapa base, paleta clara
 │   │   ├── map-style-dark.json     XERADO — o mesmo, paleta escura
 │   │   ├── squares.json            XERADO — nome e centro das prazas, de OSM (ODbL)
 │   │   ├── places.json             XERADO — 2.122 sitios que atopa Ruta, de OSM e das cadeas (ODbL)
 │   │   ├── official-places.json    XERADO — os outros 57, do SERGAS e da Xunta (CC BY-SA 4.0)
-│   │   ├── streets.json            XERADO — as 794 rúas da rede peonil, un punto en cada unha (ODbL)
+│   │   ├── streets.json            XERADO — as 798 rúas da rede peonil, un punto en cada unha (ODbL)
 │   │   ├── festivos.json           os festivos que corren como domingos, por ano e coa súa fonte
 │   │   ├── structuralNotices.ts    os avisos permanentes, escritos a man, coa data da súa revisión
 │   │   ├── routeGeometry.ts        carga os trazados baixo demanda
@@ -1247,7 +1251,7 @@ servizo que cruzan a medianoite.
 `planTrips` en `src/utils/planner.ts` (a primeira opción é a resposta):
 
 1. **Resolución** — texto libre, código de parada, punto de interese ou coordenadas GPS. O
-   texto busca nas paradas, nos 28 sitios escritos a man, nos 2.179 importados e nas 794
+   texto busca nas paradas, nos 28 sitios escritos a man, nos 2.179 importados e nas 798
    rúas, nesa orde agás cando unha rúa ou un sitio casa mellor ca calquera parada: «A
    Corredoira» ía a «Pintor Corredoira», a 10 km. Un nome escrito enteiro gaña a unha
    parada que só empeza igual («Rúa J» non é «Rúa de Juana Ibarbourou»), pero non a unha que
@@ -1388,23 +1392,23 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 
 | | sen comprimir | gzip | brotli |
 | :--- | ---: | ---: | ---: |
-| Anaco de entrada | 733 KB | 199 KB | **162 KB** |
+| Anaco de entrada | 734 KB | 199 KB | **163 KB** |
 | Anaco compartido, con React | 90 KB | 28 KB | **24 KB** |
 | Folla de estilos | 68 KB | 14 KB | **12 KB** |
 | `index.html` | 5 KB | 2 KB | **2 KB** |
-| **Primeira carga** | **896 KB** | ~243 KB | **~200 KB** |
+| **Primeira carga** | **897 KB** | ~243 KB | **~200 KB** |
 | Tipografía | 51 KB | — | 51 KB, en paralelo |
 | Renderizador do mapa, co estilo e a paleta | 1.133 KB | 300 KB | 245 KB, ao abrir un mapa |
 | Estilos do renderizador | 70 KB | 10 KB | 8 KB, ao abrir un mapa |
 | Worker do renderizador | 538 KB | 154 KB | 127 KB, ao abrir un mapa |
 | Xeometría viaria | 512 KB | 83 KB | 28 KB, ao abrir un mapa |
-| Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
+| Rede peonil con alturas | 1.288 KB | 448 KB | 398 KB, ao trazar o primeiro camiño a pé |
 | Worker do planificador, coa súa copia de paradas, liñas, rúas e sitios | 415 KB | 100 KB | 79 KB, ao calcular a primeira ruta |
 
-Medido o 21 de novembro de 2026 sobre a build dos sitios xa comprobados en Google Maps, con
-Vite 8.3.8 e MapLibre 6.19. As 794 rúas e os 2.179 sitios que atopa Ruta van no anaco de entrada e no
+Medido o 21 de novembro de 2026 sobre a build da rede peonil refrescada (rolda 85), con
+Vite 8.3.8 e MapLibre 6.19. As 798 rúas e os 2.179 sitios que atopa Ruta van no anaco de entrada e no
 worker do planificador: sen eles, a build do 20 de novembro medía ~165 KB de primeira carga e
-45 KB de worker. As medidas anteriores, do 31 de outubro (rolda 52) e do 2, o 19 e o 20 de
+45 KB de worker. As medidas anteriores, do 31 de outubro (rolda 52) e do 2, o 19, o 20 e o 21 (rolda 82) de
 novembro, están no rexistro. Un KB son 1.024
 bytes, gzip ao nivel 9 e brotli á calidade 11. MapLibre non vai no anaco de entrada,
 senón enteiro no do renderizador, que baixa ao abrir un mapa.
@@ -1426,7 +1430,7 @@ páxina pide para pintarse; o service worker é outra cousa. Para que a app func
 cobertura, na primeira visita garda **todo** o que a app usa —fóra quedan só as copias das
 páxinas que son para os buscadores (as de castelán e inglés e as das liñas), `robots.txt`
 e `sitemap.xml`—: 29 ficheiros distintos (o manifesto lista 33: catro iconas van dúas veces
-e baixan unha), 4,90 MB sen comprimir, 1,41 MB en gzip e 1,16 MB en brotli, medidos sobre
+e baixan unha), 4,90 MB sen comprimir, 1,42 MB en gzip e 1,16 MB en brotli, medidos sobre
 `dist/sw.js` o 21 de novembro de 2026, sen esperar a que
 se abra un mapa nin se trace un camiño. Non bloquea nada: vai detrás da primeira
 pantalla, e a partir de aí cada anaco sae da caché. É o prezo de que o planificador e o

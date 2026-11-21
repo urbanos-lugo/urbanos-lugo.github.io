@@ -4027,7 +4027,7 @@ ok('the pedestrian network is a graph and not a pile of lines', () => {
   assert(i === graph.edges.length, 'the edge array does not divide into whole edges');
   assert(edgeCount > 20_000, `only ${edgeCount} edges`);
 
-  // 2.516 km of walkable way over a municipality of some 330 km2, parishes included.
+  // 2.524 km of walkable way over a municipality of some 330 km2, parishes included.
   const km = Math.round(metresTotal / 1000);
   assert(km > 1500 && km < 4000, `${km} km of walkable way is not a plausible total for Lugo`);
 
@@ -4118,6 +4118,27 @@ await okAsync('the walking router returns a route you could actually walk', asyn
   const abrite = BUS_STOPS.find((s) => s.name === 'San Eufrasio 7 (Abrite)')!;
   const uphill = await routeOnFoot([fontinas.lat, fontinas.lng], [abrite.lat, abrite.lng]);
   assert(uphill && uphill.minutes <= 14, `${fontinas.name} -> ${abrite.name} walks ${uphill?.minutes} min, up the last street`);
+});
+
+await okAsync('a point nearest a footway OSM leaves unjoined still walks to its stop', async () => {
+  // The walk went to the nearest street, and when that was a piece the rest of the network
+  // does not reach (a courtyard footway, a lay-by on the N-VI) it came back null: 9 stops and
+  // 16 places had no walk to their nearest stop, and the plan kept a straight line with no
+  // climb. The Museo Provincial was one, 13 m from such a footway and 33 m from the street.
+  const nearestStop = (p: { lat: number; lng: number }) =>
+    BUS_STOPS.filter((s) => s.lat !== p.lat || s.lng !== p.lng).reduce((best, s) => (metresBetween(p.lat, p.lng, s.lat, s.lng) < metresBetween(p.lat, p.lng, best.lat, best.lng) ? s : best));
+  for (const stop of BUS_STOPS) {
+    const other = nearestStop(stop);
+    assert(await routeOnFoot([stop.lat, stop.lng], [other.lat, other.lng]), `${stop.name} has no walk to ${other.name}`);
+  }
+  const museo = PLACES.find((p) => p.name === 'Museo Provincial de Lugo')!;
+  const toMuseo = await routeOnFoot([museo.lat, museo.lng], [nearestStop(museo).lat, nearestStop(museo).lng]);
+  assert(toMuseo && toMuseo.meters < 3 * metresBetween(museo.lat, museo.lng, nearestStop(museo).lat, nearestStop(museo).lng), `the Museo Provincial walks ${toMuseo?.meters} m to its stop`);
+  // But not across any distance: a mill at the end of a track, 384 m of fields from the main
+  // network, keeps no walk rather than a straight line through them. Should OSM join the
+  // track, this one goes and the next import says so.
+  const mazo = [...PLACES, ...OFFICIAL_PLACES].find((p) => p.name === 'Mazo de Santa Comba')!;
+  assert(!(await routeOnFoot([mazo.lat, mazo.lng], [nearestStop(mazo).lat, nearestStop(mazo).lng])), 'the mill is walked to across 384 m of fields');
 });
 
 await okAsync('no option promises a bus the measured walk cannot reach', async () => {
@@ -4255,8 +4276,8 @@ await okAsync('walking up a hill costs more than walking down it', async () => {
   assert(low > 300 && low < 400, `the lowest junction is at ${low} m`);
   assert(high > 600 && high < 900, `the highest junction is at ${high} m`);
 
-  // The climb charged is along the street, not the difference between its ends: 3,169 edges
-  // hide some climb and 287 hide ten metres, and they would all go flat again silently.
+  // The climb charged is along the street, not the difference between its ends: 3,119 edges
+  // hide some climb and 292 hide ten metres, and they would all go flat again silently.
   const withAscent = JSON.parse(
     read('src/data/walk-network.json'),
   ) as { edges: number[]; heights: number[]; up?: number[]; down?: number[] };
