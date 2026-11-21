@@ -6294,3 +6294,169 @@ e non sabe a rúa.
 - A busca de arriba (`TopBar`) segue cos 28 sitios escritos a man: `rankPlaces` ten os
   puntos que precisan as súas filas.
 - `audit:browser` enteiro non se correu; nada desta rolda está en `develop` remoto.
+
+## Rolda 82: os sitios, cada un da fonte que mellor o garda — 21 de novembro de 2026
+
+### Por que
+
+- A rolda 81 deixou dito que OSM non está todo ao día: 366 dos 1.473 comercios sen tocar
+  dende antes de 2023, e un Abanca pechado hai anos entre eles (editado por última vez o 20
+  de xullo de 2022). Pedíase telo o máis ao día posible e comprobar despois canto do que se
+  mostra é certo.
+- Probadas as fontes cos datos de Lugo, unha petición a man cada unha e os scripts fóra do
+  repositorio:
+  - **Overture** (versión 2026-11-18.0, 6.505 sitios na caixa): non serve de filtro. Do
+    Abanca ten o de agora, en Ronda do Carme 62, e nada no punto pechado; pero o Gadis da
+    Praza Fonte dos Ranchos, aberto, non o ten, e dos comercios que OSM tiña revisados dende
+    2023 faltábanlle 533 de 1.107. Marca como pechados 7 dos 1.473. Queda como segunda
+    opinión para a comprobación de despois.
+  - **Foursquare** só dentro de Overture (145 sitios na caixa); pedilo directo precisa
+    rexistrarse.
+  - **AllThePlaces**, os buscadores de oficinas de cada marca: no centro, as nove oficinas
+    de Abanca e as nove de OSM coincidían en oito, e a novena era a pechada, coa da marca a
+    116 m.
+  - **O mapa do SERGAS** e **o rexistro de centros educativos**, da Xunta: 49 farmacias
+    oficiais a un paseo dunha parada fronte a 41 en OSM; centros de saúde e colexios que OSM
+    non tiña. CC BY-SA 4.0, lido nas páxinas dos dous conxuntos.
+  - **REGCESS** (Ministerio de Sanidade): 480 centros autorizados no concello, sen
+    coordenadas. Só serve para comprobar nomes.
+  - **BTN-POI** do IGN: non está na súa API aberta (só topónimos e redes), e a descarga do
+    CNIG pide aceptar a licenza na web. Non se probou.
+  - O cortalumes do SERGAS rexeitou unha consulta á interface propia do servidor do mapa
+    (unha petición). Desde entón só se lle pide o enderezo que publica a ficha de datos
+    abertos.
+
+### Feito
+
+- **`tools/importPlaces.ts`, de catro fontes**, cada resposta na súa caché de `.cache/`:
+  - As cadeas: unha marca que pon un dos seus puntos sobre unha sucursal de OSM (60 m) ten
+    puntos fiables, e os seus son as súas sucursais. Unha de OSM a menos de 300 m dun punto
+    da marca mudouse alí, salvo que alguén a comprobase no sitio (`check_date`) nos 18 meses
+    anteriores á resposta de OSM; unha que a marca non lista quítase, coa mesma excepción.
+    Unha marca da que ningún punto cae nunha sucursal de OSM non se toca: o Decathlon da
+    marca estaba a 7,5 km do de OSM, e o Mercure a 865 m. Un distribuidor co nome seu e a
+    marca na etiqueta («Comunicaciones…», de telefonía) só conta se é do mesmo tipo de sitio.
+  - As farmacias: a do SERGAS manda. Unha de OSM sen farmacia do SERGAS a 150 m quítase;
+    unha do SERGAS sen OSM engádese como «Farmacia»; unha que OSM nomea por unha persoa que o
+    SERGAS non ten de titular alí pasa a «Farmacia». As outras levan «Farmacia» diante do
+    nome: a maioría estaban só co nome do titular, e «farmacia» non as atopaba.
+  - Os centros de saúde e os hospitais: os de OSM onde os ten, cos do SERGAS que faltan,
+    escritos fóra das maiúsculas («Centro de Saúde A Milagrosa»).
+  - Os colexios: os 43 do rexistro, co seu nome e o seu punto, e fóra todas as entradas de
+    OSM que nomean un deles a menos de 400 m: OSM tiña algúns dúas veces, o colexio e o seu
+    edificio.
+- **`src/data/official-places.json`**, á parte e baixo CC BY-SA 4.0, para non mesturar os
+  seus termos coa ODbL de `places.json`. `places.ts` le os dous.
+- **`tools/pmtiles.ts`**: os puntos dun arquivo PMTiles v3 de teselas vectoriais, só con
+  zlib, pedindo anacos do arquivo de 6 GB de AllThePlaces: 298 puntos de 44 teselas en 47
+  peticións, 200 ms entre unha e outra.
+- **`data/places-checked.json`**, á man: os 305 sitios de OSM que a busca de máis abaixo
+  atopou pechados, noutro sitio, ausentes ou co nome doutro, por elemento de OSM e coa marca
+  de tempo da edición sobre a que se xulgou. O importador quítaos; un editado en OSM despois
+  volve, como conta máis nova do sitio, e sae na lista de «buscalo outra vez».
+- O resultado: 2.179 sitios, 1.979 de OSM, 143 das cadeas e 57 oficiais (43 colexios, 8
+  farmacias, 6 centros de saúde e hospitais). Quedan fóra 311 de OSM: os 305 da busca, e 6
+  polas regras das fontes (dúas Movistar e un distribuidor que a marca non lista, un Massimo
+  Dutti sen tocar dende 2020 e dúas farmacias que o SERGAS non ten alí). Catro móvense ao
+  punto da marca (o Abanca pechado, 116 m, a Ronda do Carme 62; un McDonald's, 141 m; unha
+  Movistar, 73 m; un Sabadell, 64 m), e dúas farmacias pasan a «Farmacia». Son 302 menos ca
+  antes da busca e non 305: tres sitios estaban tapados por un xemelgo do mesmo nome a menos
+  de 250 m que agora se quita, e miráronse un a un (unha Ousá que OSM engadiu o 2 de agosto
+  de 2026, un O Rocho de segunda man revisado no sitio en agosto e un estanco que Maps ten a
+  5 m); quedan.
+
+### A busca un a un en Google Maps
+
+- Os 1.336 comercios, bares e oficinas que ningunha lista avala (os grupos dos catro
+  últimos da táboa de embaixo) buscáronse en Google Maps no navegador da sesión, cada un polo
+  seu nome e coa vista no seu punto. Un sitio está se aparece aberto un do mesmo nome a menos
+  de 150 m; o nome compárase polas palabras que o distinguen, sen as de oficio («bar»,
+  «peluquería», «talleres»…), con variantes de escritura e unha letra de diferenza. Só se
+  garda o veredicto; nada do que amosa Google vai aos datos.
+- Tres trampas, atopadas e corrixidas: nas primeiras 672 buscas líase a páxina antes de que
+  Maps puxese as coordenadas, e 374 coincidencias quedaron sen distancia: buscáronse de novo,
+  e 44 estaban lonxe e 12 pechadas. Unha busca feita dentro da páxina, sen recargala, usa a
+  vista do resultado anterior, e cunha cadea ou un nome xenérico atopa a sucursal ou a aldea
+  doutro sitio: todo o que así saíu lonxe ou ausente repetiuse coa vista no punto, e deu o
+  mesmo. E a consulta xenérica «Farmacia» devolve sempre as mesmas sete farmacias, sexa cal
+  sexa a vista: as farmacias buscáronse polo seu nome.
+- Os nomes que Maps escribe doutro xeito revisáronse a man (Luna e «lua», Yisus e «Jesus»,
+  «Cientounvinos» e «Bar 101 Vinos»): quedan. Un sitio co mesmo punto e outro nome xa non é
+  o mesmo (Cualtis é Vítaly, Altafit é VivaGym, «Catalana Occidente» é Occident): sae, como
+  «co nome doutro». Os comprobados no sitio en OSM nos últimos 18 meses que Maps non ten (30)
+  quedan; só sae o que Maps dá por pechado (un).
+
+  | Grupo | Buscados | Abertos no punto | Temporalmente pechados | Pechados | Noutro sitio | Ausentes | Co nome doutro |
+  | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+  | Comprobado no sitio en OSM nos últimos 18 meses | 254 | 221 | 2 | 1 | — | 30, quedan | — |
+  | Ten outra fonte (Overture) | 635 | 526 | 8 | 26 | 37 | 27 | 11 |
+  | Só OSM, tocado en 2023 ou despois | 275 | 189 | 1 | 20 | 36 | 24 | 5 |
+  | Só OSM, sen tocar dende antes de 2023 | 172 | 52 | 3 | 36 | 35 | 39 | 7 |
+
+- **As outras fontes, cunha mostra fixa** (cada k-ésimo sitio do grupo, en orde de nome),
+  buscadas igual: o buscador de cada cadea, 17 de 20 (fallan un BMW Motorrad no concesionario
+  de Mini, un Covirán que Maps ten a 2,9 km e un axente de MoneyGram); as farmacias de OSM que
+  lista o SERGAS, 13 de 14 polo seu nome; o REGCESS, 11 de 12 (Audinor, pechado: tamén sae);
+  as listas do SERGAS e da Xunta, 13 de 14 (o CAD Drocer, que Maps non ten); o que non
+  pecha, 11 de 13 (dúas capelas vellas que Maps non ten).
+- A estimación, cun script sobre os datos finais: 96,0 % de sitios que están e onde din,
+  coas taxas medidas e supoñendo que Google acerta en 97 de cada 100 que dá por abertos, que
+  un temporalmente pechado vale a metade, que dos 30 que quedan sen Maps acertan 60 e que o
+  que non pecha acerta en 99 de cada 100. Substitúe a de máis abaixo (91,7 %), feita antes da
+  busca.
+
+### Comprobado
+
+- As cinco portas: lint, 182 comprobacións, 26 políticas, `check:deep` e a build. Tres
+  novas: as regras da mestura, cun banco pechado, outro movido, un comprobado no verán, unha
+  farmacia que xa non está, outra cun titular vello e un colexio con dúas entradas; os
+  números das teselas, cos exemplos da especificación de PMTiles; e un sitio que a busca deu
+  por desaparecido, que queda fóra ata que OSM o edita outra vez.
+- **Canto do que se mostra é certo**, fóra do repositorio, coas cachés e a descarga de
+  Overture:
+
+  | Grupo | Sitios | |
+  | :--- | ---: | ---: |
+  | Lista oficial (SERGAS, Xunta) | 57 | 2,3 % |
+  | Buscador da propia marca | 143 | 5,8 % |
+  | Farmacia que o SERGAS ten alí | 39 | 1,6 % |
+  | Non pecha: aldea, igrexa, parque, monumento, edificio público | 847 | 34,1 % |
+  | Nomeado no REGCESS | 59 | 2,4 % |
+  | Comprobado no sitio en OSM nos últimos 18 meses | 254 | 10,2 % |
+  | Ten outra fonte (Overture, actualizada en 2025 ou despois) | 635 | 25,6 % |
+  | Só OSM, tocado en 2023 ou despois | 275 | 11,1 % |
+  | Só OSM, sen tocar dende antes de 2023 | 172 | 6,9 % |
+
+  Onde hai unha fonte de verdade (72 sucursais de cadeas con puntos fiables e 41 farmacias),
+  OSM acertaba en 99 de 113 (88 %): 89 de 100 nos tocados dende 2023 e 10 de 13 nos máis
+  vellos. Overture acerta en 74 dos 80 que confirma (93 %); dos que non confirma, OSM acerta
+  en 25 de 33 (76 %). Con esas taxas para os seus grupos e un 98 % supoñido para os cinco
+  primeiros, a estimación é do 91,7 % de sitios onde din. Sen o último grupo, do 92,8 %, a
+  costa de perder uns 130 sitios que están. A mostra é pequena e son cadeas e farmacias,
+  que se coidan máis ca unha tenda dun só dono.
+- O tamaño, coas mesmas regras ca a táboa do README: antes da busca, primeira carga de
+  ~203 KB en brotli (anaco de entrada de 166 KB), worker do planificador de 83 KB, e o que
+  garda o service worker 4,93 MB sen comprimir, 1,42 MB en gzip e 1,17 MB en brotli; despois,
+  ~200 KB (162 KB), 79 KB e 4,90, 1,41 e 1,16 MB.
+- Buscas fóra do panel: «EOI de Lugo», «Policlínico Lucense», «Centro de Saúde A Milagrosa»
+  e «Bankinter» danse a si mesmos; ningún Abanca queda no punto pechado e hai un en Ronda do
+  Carme 62.
+
+### Queda
+
+- A busca envellece: na seguinte importación, os que OSM editase despois do 21 de novembro
+  saen na lista de «buscalo outra vez», e os comercios novos de OSM entran sen buscar.
+- Os 30 comprobados no sitio en OSM que Maps non ten, e os tres fallos da mostra das cadeas
+  (BMW Motorrad, Covirán, MoneyGram), quedan.
+- Google non é a verdade: tarda en quitar os pechados e non ten algún que si está. As taxas
+  de arriba miden o acordo con el.
+- O «Complexo Hospitalario Universitario de Lugo» do SERGAS e o «Hospital Universitario
+  Lucus Augusti» de OSM quedan os dous, a 122 m: son o mesmo complexo.
+- O recolledor de Gadis de AllThePlaces non devolveu nada esta semana: os Gadis quedan como
+  os ten OSM.
+- Os puntos dunha cadea que OSM non ten non se poden contrastar: un buscador pode errar por
+  quilómetros, como o do Decathlon.
+- O REGCESS ten centenares de clínicas, dentistas e ópticas que OSM non ten, pero sen
+  coordenadas: engadilos pide xeolocalizar cada enderezo.
+- A copia da rede peonil segue sen os nomes novos das rúas do polígono: rolda aparte.
+- `audit:browser` non se correu, e no panel non se miraron os sitios novos.
