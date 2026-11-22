@@ -57,6 +57,7 @@ import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
 import festivos from '../src/data/festivos.json';
 import { holidaysDue } from './checkHolidaysAhead';
 import { noticesReviewDue } from './checkNoticesReviewed';
+import { refusedToEveryone } from './checkParsersUnchanged';
 import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
 import { POLE_SEEN_AT_OSM } from './lib';
@@ -3364,6 +3365,18 @@ ok('a public holiday runs the Sunday timetable, and the file that says which day
   assert(holidaysDue(['2026'], new Date(2026, 11, 31))?.includes('2027'), 'the holiday reminder is quiet on 31 December with next year missing');
   assert(holidaysDue(['2026', '2027'], new Date(2026, 10, 1)) === null, 'the holiday reminder fires with next year already in');
   assert(holidaysDue(['2027'], new Date(2027, 0, 5)) === null, 'the holiday reminder fires in January, which the suite already covers');
+});
+
+ok('the weekly re-read fails on a certificate nobody accepts, and lets weather pass', () => {
+  // The pole pages served a certificate that had expired in May 2025, and on 16 November 2026
+  // the weekly job said "nothing claimed" and stayed green while every QR showed estimates.
+  for (const reason of ['CERT_HAS_EXPIRED', 'CERT_NOT_YET_VALID', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'SELF_SIGNED_CERT_IN_CHAIN', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'ERR_TLS_CERT_ALTNAME_INVALID']) {
+    assert(refusedToEveryone(reason), `${reason} reads as weather, and the weekly job stays green`);
+  }
+  // A timeout was the reason on 9 November; a 403 to a cloud runner recurs every week.
+  for (const reason of ['UND_ERR_CONNECT_TIMEOUT', 'TimeoutError', 'ECONNRESET', 'ECONNREFUSED', 'ENOTFOUND', 'HTTP 403', 'HTTP 503']) {
+    assert(!refusedToEveryone(reason), `${reason} fails the weekly job, which a passing outage should not`);
+  }
 });
 
 ok('the board at another time reads the day whose timetable was asked for, a holiday being a Sunday', () => {

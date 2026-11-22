@@ -11,9 +11,19 @@
  * check says which it is), and the capped read against the real transport, which
  * tools/test.ts can only prove locally.
  */
+import { pathToFileURL } from 'url';
 import { parseOperatorTimes } from '../src/services/operatorTimes';
 import { extractConcelloNotices } from '../src/services/alertSyncService';
 import { readCapped } from '../src/services/readCapped';
+
+/**
+ * Whether the reason a page could not be read says something. A timeout or a refused
+ * connection is weather, and a 403 to a cloud runner recurs every week; a certificate the TLS
+ * check refuses is refused to every reader, the app's server among them, until the site
+ * replaces it. The pole pages served one that had expired in May 2025, and this said
+ * "nothing claimed" on 16 November 2026 while every QR in town showed estimates only.
+ */
+export const refusedToEveryone = (reason: string): boolean => /CERT|SELF_SIGNED|UNABLE_TO_VERIFY/.test(reason);
 
 const UA = 'Mozilla/5.0 (compatible; UrbanosLugoOpenData/1.0)';
 /**
@@ -76,7 +86,11 @@ async function main() {
   console.log('\nthe operator’s stop page');
   const operator = await bothWays(poleUrl(POLES[0]));
   if (typeof operator === 'string') {
-    console.log(`  the page could not be read (${operator}); nothing compared, nothing claimed`);
+    if (refusedToEveryone(operator)) {
+      check('the page offers a certificate a reader accepts', false, `${operator}: refused to every reader, the app's server too, so every QR shows estimates only`);
+    } else {
+      console.log(`  the page could not be read (${operator}); nothing compared, nothing claimed`);
+    }
   } else {
     const [uncapped, capped] = operator;
     check('the capped read returns the whole page', uncapped.length === capped.length,
@@ -117,7 +131,11 @@ async function main() {
   console.log('\nthe council’s traffic feed');
   const feed = await bothWays(FEED);
   if (typeof feed === 'string') {
-    console.log(`  the feed could not be read (${feed}); nothing compared, nothing claimed`);
+    if (refusedToEveryone(feed)) {
+      check('the feed offers a certificate a reader accepts', false, `${feed}: refused to every reader, the hourly snapshot and the server too`);
+    } else {
+      console.log(`  the feed could not be read (${feed}); nothing compared, nothing claimed`);
+    }
   } else {
     const [uncapped, capped] = feed;
     check('the capped read returns the whole feed', uncapped.length === capped.length,
@@ -137,4 +155,5 @@ async function main() {
   if (failures) process.exitCode = 1;
 }
 
-main();
+// Run, not imported: tools/test.ts reads refusedToEveryone and must ask nobody anything.
+if (import.meta.url === pathToFileURL(process.argv[1]).href) main();
