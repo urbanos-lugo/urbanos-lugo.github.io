@@ -6792,3 +6792,34 @@ Pedido: pasar o sitio á API de Cloudflare, coa de Deno aínda en marcha.
 ### Queda
 
 - Uns días coas dúas APIs; despois, fóra a de Deno (NOTAS, punto 3).
+
+## Rolda 90: a lectura semanal falla cun certificado que ninguén acepta — 22 de novembro de 2026
+
+Pedido: que a comprobación semanal avise cando a páxina dos postes non se pode ler por algo
+que non pasa só.
+
+### Feito
+
+- `tools/checkParsersUnchanged.ts` daba por «tempo» calquera páxina ilexible: nada
+  comparado, nada afirmado, e o traballo en verde. Así pasou o 9 de novembro (sen conexión)
+  e o 16 (`CERT_HAS_EXPIRED`), mentres os QR de toda a cidade só daban estimacións. Agora un
+  certificado rexeitado (`refusedToEveryone`: caducado, aínda non válido, autoasinado,
+  sen cadea, doutro nome) falla, para a páxina dos postes e para o feed do Concello, porque
+  tamén o rexeita o servidor da app; un tempo esgotado, unha conexión rexeitada, un nome
+  sen resolver ou un 403/503 seguen sen dicir nada.
+- `main()` só corre se se executa o ficheiro, para que a suite poida ler a función sen
+  preguntarlle nada a ninguén.
+- Comprobación nova en `tools/test.ts` coas dúas listas de motivos, e o comentario do paso en
+  `check-source.yml`.
+
+### Comprobado
+
+- `pnpm run check:parsers`, unha vez á man: «FAIL the page offers a certificate a reader
+  accepts — CERT_HAS_EXPIRED», saída 1; o feed, tres «ok».
+- lint, 185 comprobacións e as políticas na árbore compartida (coas edicións a medias da
+  sesión que apaga Deno, que non tocan estes ficheiros); a build, sen a variable da API.
+
+### Queda
+
+- O luns, o traballo semanal sairá en vermello mentres o operador non renove o certificado
+  de `info.urbanoslugo.com`: é o aviso que faltaba, non un fallo novo.
