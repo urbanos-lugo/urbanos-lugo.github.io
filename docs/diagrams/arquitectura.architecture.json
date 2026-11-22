@@ -127,7 +127,7 @@
     {
       "id": "worker",
       "type": "backend",
-      "label": "Worker de Deno",
+      "label": "Worker da API",
       "sublabel": "/api/alerts e /api/paradas",
       "pos": [
         870,
@@ -209,7 +209,7 @@
     },
     {
       "kind": "region",
-      "label": "Deno Deploy (o publicado)",
+      "label": "Cloudflare (o publicado)",
       "wraps": [
         "worker"
       ]
@@ -308,7 +308,7 @@
       "title": "A API, só polo CORS",
       "items": [
         "Dúas cousas: os avisos e os minutos dun poste",
-        "Publicada, un worker en Deno Deploy",
+        "Publicada, un worker en Cloudflare",
         "Autoaloxada, Express: as mesmas dúas e o feed do Concello"
       ]
     },

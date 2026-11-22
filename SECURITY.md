@@ -18,9 +18,9 @@ that list to what the app writes, screen by screen.
 
 So the interesting surface is small:
 
-- **The Express server** in `server.ts`, if you self-host it, and **the Deno worker** in
+- **The Express server** in `server.ts`, if you self-host it, and **the worker** in
   `worker/index.ts`, which answers the same two endpoints for the static site when one is
-  configured. Both read outside sources on the browser's behalf, because CORS stops the
+  configured: on Cloudflare Workers, and on Deno Deploy until that copy is switched off. Both read outside sources on the browser's behalf, because CORS stops the
   browser doing it: buslugo.com, the operator's own stop page behind the QR stickers, and,
   from `server.ts` only, the council's traffic feed (the worker stopped asking it in
   October 2026: from there it never answered). Every one of those reads goes to a fixed host, follows no
@@ -43,9 +43,11 @@ Besides its own and the map tiles' host, the static site trusts one origin: the 
 operator's minutes.
 What comes back is narrowed in the browser before anything is drawn: text as text, and
 links only to buslugo.com or concellodelugo.gal. A hostile answer can be wrong about a
-notice, but it cannot run script, break the screen or send anyone elsewhere. If the Deno
-project or its organization is ever deleted, rebuild the site without `API_ORIGIN` first:
-someone else could register the name that was freed, and the site would go on asking it.
+notice, but it cannot run script, break the screen or send anyone elsewhere. If the worker
+named in `API_ORIGIN`, or the `workers.dev` subdomain or account behind it, is ever deleted,
+rebuild the site without it first: someone else could register the name that was freed, and
+the site would go on asking it. The same holds for the Deno project when it goes, for the
+pages loaded before the move.
 
 ## What is not a vulnerability here
 
@@ -76,8 +78,8 @@ Dependencies and GitHub Actions are updated weekly by Dependabot. No dependency 
 install script: `pnpm-workspace.yaml` rules on the one that has one (esbuild, refused),
 and a new one stops the install until somebody decides. Every workflow installs with
 `--frozen-lockfile`, and both deploys run the type check and the test suite before they
-build anything. Every action is pinned to a commit, with its version beside it, and the one job
-that holds a deploy token runs an exact Deno and an exact `@deno/deploy`, in the
-`deno-deploy` environment: that is where the token belongs, and Settings → Environments
-lets only `main` deploy from it. `pnpm run check:policy` fails if any of that comes loose
+build anything. Every action is pinned to a commit, with its version beside it, and the two
+jobs that hold a deploy token run exact tools: Deno and `@deno/deploy` in the `deno-deploy`
+environment, `wrangler` in `cloudflare`. That is where each token belongs, and Settings →
+Environments lets only `main` deploy from them. `pnpm run check:policy` fails if any of that comes loose
 in the workflows.

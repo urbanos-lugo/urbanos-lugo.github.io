@@ -94,7 +94,7 @@ Opening any web page tells the servers it contacts your IP address. This one con
 | Host | What for | When |
 | :--- | :--- | :--- |
 | `tiles.openfreemap.org` | the map background | when you open a map |
-| the API, if one is configured (on the published site, `urbanos-lugo-api.braisbrg.deno.net`) | service notices, and the operator's own minutes behind a QR | once each time the app opens and when you ask it to check again, and on a stop you reached by scanning its pole or by a shared stop link |
+| the API, if one is configured (on the published site, `urbanos-lugo-api.urbanos-lugo.workers.dev`) | service notices, and the operator's own minutes behind a QR | once each time the app opens and when you ask it to check again, and on a stop you reached by scanning its pole or by a shared stop link |
 
 That is the whole list. The published site has an API configured, so an ordinary visit
 meets it once, for the notices, and meets the map's host when you open a map. The map's
@@ -107,8 +107,9 @@ Google you had opened a bus timetable. It is served from this site now
 (`tools/importFonts.ts`), which changes nothing about what you download and removes the
 one third party that was giving neither the map nor the data.
 
-GitHub Pages runs no code, so the API is a separate small service on Deno Deploy
-(`worker/index.ts`) that reads buslugo.com, and the operator's stop page behind the QR, on
+GitHub Pages runs no code, so the API is a separate small service on Cloudflare Workers
+(`worker/index.ts`; until 22 November 2026 on Deno Deploy, where it still answers for a few
+days the pages loaded before the move) that reads buslugo.com, and the operator's stop page behind the QR, on
 the browser's behalf, because those sites refuse a browser directly. (It read the council's
 traffic feed too until October 2026; from there the feed never answered.) It is sent a stop
 code and nothing else — no identifier, no position. When it does not answer, or a site is
@@ -149,8 +150,9 @@ When the server reads the council's traffic feed, it writes one line saying whet
 answered and how long it took. That line carries nothing of the request that caused it.
 
 Whoever hosts it may of course be keeping their own logs. GitHub Pages does, and so does
-Deno Deploy where the API is configured; that is between you and them, and their policies
-say what they keep.
+Cloudflare where the API is configured (and Deno Deploy, for a page loaded before the move,
+until it is switched off); that is between you and them, and their policies say what they
+keep.
 
 ## Children
 

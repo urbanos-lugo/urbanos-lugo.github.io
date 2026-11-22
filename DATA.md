@@ -257,9 +257,10 @@ are not the same claim:
 
 Both are read **from the server**, never from the browser: neither sends CORS headers.
 Each read is capped at 512 KB and given a deadline. Pages runs no server, so the published
-site asks the Deno worker, and when that does not answer it shows the snapshot the hourly
-build takes and publishes with the site, and says when it was taken. The Deno worker reads
-the operator's page only: from there the council's feed
+site asks the worker, on Cloudflare Workers since 22 November 2026, and when that does not
+answer it shows the snapshot the hourly build takes and publishes with the site, and says
+when it was taken. The worker reads the operator's page only: from Deno Deploy, where it
+ran until then, the council's feed
 never connected (seven logged reads on 6 and 13 October 2026, all timed out at four
 seconds). The scheduled snapshot and a self-hosted `server.ts` still read it, so on the
 published app the council's notices appear only when the screen falls back to that snapshot.

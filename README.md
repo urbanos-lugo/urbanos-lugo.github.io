@@ -74,7 +74,7 @@ querías consultar o bus, o enlace está arriba.
 | | |
 | :--- | :--- |
 | **Que é** | Unha aplicación web progresiva que le os cadros horarios publicados do bus urbano de Lugo e calcula no navegador chegadas, traxectos e onde debería ir cada bus. Ningunha hora é unha medición, e cada unha di se é a publicada ou unha estimada. |
-| **Arquitectura** | Sitio estático en GitHub Pages: todo o cálculo ocorre no cliente, sobre JSON xerados no build. Só dúas cousas precisan servidor, polo CORS —os avisos do operador e os minutos detrás do QR dun poste—, e sírveas un worker en Deno Deploy ou o `server.ts` de Express. |
+| **Arquitectura** | Sitio estático en GitHub Pages: todo o cálculo ocorre no cliente, sobre JSON xerados no build. Só dúas cousas precisan servidor, polo CORS —os avisos do operador e os minutos detrás do QR dun poste—, e sírveas un worker en Cloudflare Workers ou o `server.ts` de Express. |
 | **Pila** | React 19, Vite 8, Tailwind 4, MapLibre GL e TypeScript estrito; pnpm e Node 22 ou superior. |
 | **Datos** | 24 liñas, 48 sentidos, 417 paradas (271 co código no poste) e 436 km de rede, xerados desde buslugo.com, OpenStreetMap e OSRM por un pipeline reproducible, coas fontes gardadas como instantáneas. |
 | **Sen conexión** | Service Worker. Os horarios, a rede peonil de Lugo (21.175 cruces, con altitude) e o enrutador A\* van dentro: un traxecto calcúlase no teléfono, sen rede e sen terceiros. |
@@ -708,9 +708,10 @@ o feed de tráfico do Concello. Se non hai servidor —ou non responde— úsase
 deixou a tarefa programada e amósase **cando se tomou**, en lugar de facela pasar por
 actual. O feed do Concello lese despois da páxina do operador e ten catro segundos. Cada
 lectura deixa unha liña no rexistro do servidor, co que tardou e, se falla, o motivo.
-Desde Deno Deploy o feed non conecta, así que o worker só le buslugo.com; o feed léno a
-copia de cada hora, que desde GitHub conecta algunhas veces, e un `server.ts` propio. Na
-app publicada, logo, os avisos do Concello só aparecen cando se amosa esa copia.
+Desde Deno Deploy, onde estivo o worker ata novembro de 2026, o feed non conectaba, así
+que o worker só le buslugo.com; o feed léno a copia de cada hora, que desde GitHub conecta
+algunhas veces, e un `server.ts` propio. Na app publicada, logo, os avisos do Concello só
+aparecen cando se amosa esa copia.
 
 **Tarifas** (`/tarifas`) leva os títulos de transporte tal e como os publica o operador,
 **cada un coa súa fonte enlazada**: billete ordinario, bono ordinario e bono social da
@@ -859,14 +860,14 @@ expedicións, as dos tres tipos de día, corra o día que corra). Medidas o 31 d
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/arquitectura-dark.png">
-  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: GitHub Pages serve a app e a copia de avisos ao navegador, onde o Service Worker a garda para usala sen rede; src/data/*.json alimenta o motor de horarios, co planificador nun worker, e este a SPA de React, que pide os trazados ao mapa de MapLibre, e o mapa as teselas a OpenFreeMap. A SPA pide /api ao worker de Deno Deploy, que le os avisos de buslugo.com e os minutos dun poste de info.urbanoslugo.com; autoaloxada, pídea a Express 5, co mesmo código, que le ademais o feed de tráfico do Concello.">
+  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: GitHub Pages serve a app e a copia de avisos ao navegador, onde o Service Worker a garda para usala sen rede; src/data/*.json alimenta o motor de horarios, co planificador nun worker, e este a SPA de React, que pide os trazados ao mapa de MapLibre, e o mapa as teselas a OpenFreeMap. A SPA pide /api ao worker de Cloudflare Workers, que le os avisos de buslugo.com e os minutos dun poste de info.urbanoslugo.com; autoaloxada, pídea a Express 5, co mesmo código, que le ademais o feed de tráfico do Concello.">
 </picture>
 
 O reparto que importa é ese: **todo o cálculo de horas ocorre no navegador**, sobre os
 JSON que viaxan no paquete. A app só lle pide á API o que o navegador non pode facer por
 si mesmo, porque esas páxinas non serven CORS: os avisos de buslugo.com e os minutos dun
 poste na páxina do operador detrás do seu QR. E segue funcionando sen ela. No sitio
-publicado en GitHub Pages, a API é un worker en Deno Deploy (`worker/index.ts`), e sen
+publicado en GitHub Pages, a API é un worker en Cloudflare Workers (`worker/index.ts`), e sen
 el os avisos saen da copia que a build toma cada hora. Quen a aloxe el mesmo ten Express
 (`server.ts`), co mesmo `src/services`, que ademais le o feed de tráfico do Concello. As
 outras rutas da [API REST](#api-rest) son de Express, para quen as queira usar; a app
@@ -1891,10 +1892,14 @@ cantas illas haxa pono o propio código, en cada unha: buslugo.com como moito un
 minuto (o feed do Concello non o le), e a páxina do operador detrás do QR como moito 120
 veces por minuto en total, pregunte quen pregunte e pola parada que sexa.
 
-**Vai en Deno Deploy, e múdase a Cloudflare Workers** antes de que Deno Deploy peche (o 9
-de outubro de 2026 anunciou que seguiría seis meses). `.github/workflows/deploy-worker.yml`
+**Vai en Cloudflare Workers desde o 22 de novembro de 2026**, en
+`https://urbanos-lugo-api.urbanos-lugo.workers.dev`. A copia de Deno Deploy segue uns días,
+para as páxinas cargadas antes do cambio, e apágase antes de que Deno Deploy peche (o 9 de
+outubro de 2026 anunciou que seguiría seis meses). `.github/workflows/deploy-worker.yml`
 desprega o mesmo paquete nos dous cando cambia algo do que está feito, e o sitio pregunta ao
-que nomee a variable `API_ORIGIN`. Non hai CLI que instalar nin sesión que iniciar nunha
+que nomee a variable `API_ORIGIN`. O primeiro despregue en Cloudflare, a 1.8.0, lía todo
+como inalcanzable: o seu `fetch` lanza un erro con `redirect: 'error'` antes de preguntar a
+ninguén, e Deno non. Os servizos piden `manual`, e un 3xx é a lectura fallida que era. Non hai CLI que instalar nin sesión que iniciar nunha
 máquina: cada despregue ten o seu token nos segredos do seu ambiente, e **sen ese segredo
 ese traballo non fai nada e dío** —non deixa unha execución en vermello nun repositorio que
 decidiu non montalo. O mesmo código corre nos dous: Cloudflare pásalle os axustes ao `fetch`,
@@ -2383,8 +2388,9 @@ Cartografía © OpenStreetMap contributors, teselas de OpenFreeMap © OpenMapTil
 
 ### O que queda por facer
 
-- **Mudar a API** de Deno Deploy, que pecha en 2027, a Cloudflare Workers: o código está
-  listo, e o por que e o plan B, en [`docs/DECIDIDO.md`](docs/DECIDIDO.md).
+- **Apagar a copia da API en Deno Deploy**, que pecha en 2027, uns días despois de que o
+  sitio pase a Cloudflare Workers (o 22 de novembro de 2026); o por que e o plan B, en
+  [`docs/DECIDIDO.md`](docs/DECIDIDO.md).
 - **Un lector de pantalla de verdade nun teléfono**, VoiceOver e TalkBack, co guión de
   [`docs/PROBA-lector-de-pantalla.md`](docs/PROBA-lector-de-pantalla.md): a auditoría mide
   nomes, estados e orde, pero non como soan.

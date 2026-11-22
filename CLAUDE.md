@@ -17,7 +17,7 @@ Tailwind 4 + MapLibre, TypeScript throughout, pnpm, Node >= 22.
 | `tools/` | Everything run from the CLI: the dataset pipeline, the test suite, the stress and reconciliation checks. Never imported by the app. |
 | `data/` | Snapshots the generator reads. Outside `src/` because nothing in the app imports them. |
 | `server.ts` | Express host for local dev and self-hosting. |
-| `worker/index.ts` | The same two endpoints on Deno Deploy, for the static deployment. |
+| `worker/index.ts` | The same two endpoints on Cloudflare Workers (and Deno Deploy until that copy is switched off), for the static deployment. |
 | `docs/`, `design/`, `DATA.md` | `docs/`: what a reader is owed, the diagrams, the decisions and the guides for testing by hand on a phone. `design/`: the artboards and the working notes, which the README does not send readers to. `DATA.md`: where every dataset comes from and under what terms. What is still to do is one list: `design/NOTAS-fontes-e-autosuficiencia.md` → «Pendente»; `design/REXISTRO-probas.md` is the log of every round of checks, `docs/DECIDIDO.md` the decisions already taken. |
 
 <important if="you need to run, build, test or regenerate anything">
@@ -190,9 +190,11 @@ until they are updated, and that is a bug like any other.
 <important if="you are editing src/services/ or adding a network call">
 
 `src/services/` is imported by three runtimes: the browser, `server.ts` (Node/Express)
-and `worker/index.ts` (Deno Deploy). Use only web standards there — `fetch`, `Response`,
+and `worker/index.ts` (Cloudflare Workers). Use only web standards there — `fetch`, `Response`,
 `ReadableStream`, `TextDecoder`. A Node-only import breaks the worker deployment, and the
-worker exists precisely so the two runtimes never reimplement each other.
+worker exists precisely so the two runtimes never reimplement each other. Cloudflare's
+`fetch` throws on `redirect: 'error'` before asking anyone (1.8.0 read every notice as
+unreachable for it): ask with `'manual'` and treat a 3xx as the failed read it is.
 
 The app is offline-first and computes everything client-side. Only two things need a
 server, both because of CORS: the operator's service notices and the live minutes behind

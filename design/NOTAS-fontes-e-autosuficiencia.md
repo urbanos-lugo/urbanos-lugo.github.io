@@ -276,10 +276,14 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
      válido ata o 17 de maio de 2025, e este equipo tampouco o acepta (`CERT_HAS_EXPIRED`).
      `check:parsers` xa o dixo o 16 de novembro, e pasou en verde porque sen páxina non
      afirma nada. Mentres o operador non o renove, os QR só dan as estimacións da app.
-   - **O cambio:** a variable `API_ORIGIN` ao enderezo novo; a CSP colle a orixe dela só. As
-     dúas APIs en paralelo uns días, e despois a de Deno fóra.
-   - **Os documentos:** PRIVACY.md e SECURITY.md (quen recibe as peticións), CLAUDE.md
-     (`worker/index.ts` «on Deno Deploy»), o README e unha decisión en DECIDIDO.
+   - **O cambio, feito** (22 de novembro de 2026, rolda 89): `API_ORIGIN` é
+     `https://urbanos-lugo-api.urbanos-lugo.workers.dev`, e a CSP colle a orixe dela só.
+     PRIVACY.md, SECURITY.md, DATA.md, CLAUDE.md, o README e o diagrama de arquitectura din
+     Cloudflare.
+   - **O que queda:** a copia de Deno segue uns días para as páxinas cargadas antes do
+     cambio. Despois, fóra: o traballo `deno` de `deploy-worker.yml`, a app en Deno Deploy,
+     o segredo `DENO_DEPLOY_TOKEN` e a variable `DENO_DEPLOY_ORG`, co que os documentos din
+     dela. E nun par de fins de semana de partido, se a IP do enderezo cae nos bloqueos.
 
 ## Feito dende que se escribiu isto
 
