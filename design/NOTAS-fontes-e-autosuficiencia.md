@@ -262,13 +262,14 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
      Cloudflare, e que nada desafía as peticións do navegador. E nun par de fins de semana de
      partido, se a IP do enderezo aparece entre as bloqueadas.
    - **O primeiro despregue** (1.8.0, 22 de novembro de 2026, ás 01:50 UTC): o worker está en
-     `urbanos-lugo-api.urbabos-lugo.workers.dev`. `/api/version` dá o commit (`23a4373`) e a
-     cabeceira CORS da orixe de Pages. **Pero buslugo.com non lle responde:** `/api/alerts`
-     deu `unreachable` dúas veces, a segunda forzada (`?refresh=true`), e a resposta enteira
-     tardou 0,13 e 0,12 s, así que a lectura falla ao momento, non por tempo. A API de Deno,
-     no mesmo minuto, leu os dous avisos activos. Os minutos do poste `gJRz` deron 502 desde
-     as dúas, de noite, e non distinguen nada. O porqué (un 403, a conexión rexeitada, TLS) o
-     di o rexistro do worker no panel de Cloudflare. `API_ORIGIN` segue na de Deno.
+     `urbanos-lugo-api.urbanos-lugo.workers.dev` (o subdominio, corrixido despois). `/api/version`
+     dá o commit (`23a4373`) e a cabeceira CORS da orixe de Pages. Pero `/api/alerts` deu
+     `unreachable` dúas veces, en 0,13 e 0,12 s a resposta enteira, mentres a API de Deno lía
+     os dous avisos activos. **Non era buslugo.com:** o runtime de Cloudflare rexeita
+     `redirect: 'error'` cun TypeError antes de pedir nada (medido en miniflare: 8 ms; con
+     `manual` e `follow`, 200), e os servizos tragábano. Arranxado na rolda 88: o worker
+     construído, no mesmo runtime, le os dous avisos. `API_ORIGIN` segue na de Deno ata que
+     o despregue arranxado responda.
    - **O cambio:** a variable `API_ORIGIN` ao enderezo novo; a CSP colle a orixe dela só. As
      dúas APIs en paralelo uns días, e despois a de Deno fóra.
    - **Os documentos:** PRIVACY.md e SECURITY.md (quen recibe as peticións), CLAUDE.md

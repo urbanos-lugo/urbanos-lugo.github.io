@@ -143,7 +143,7 @@ export function extractConcelloNotices(xml: string): ServiceAlert[] {
 async function fetchConcelloNotices(): Promise<ServiceAlert[]> {
   const started = Date.now();
   try {
-    const res = await fetch(CONCELLO_FEED_URL, { headers: { 'User-Agent': USER_AGENT }, redirect: 'error', signal: AbortSignal.timeout(4_000) });
+    const res = await fetch(CONCELLO_FEED_URL, { headers: { 'User-Agent': USER_AGENT }, redirect: 'manual', signal: AbortSignal.timeout(4_000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const notices = extractConcelloNotices(await readCapped(res)).sort((a, b) => b.date.localeCompare(a.date));
     console.log(`council feed read in ${Date.now() - started} ms, ${notices.length} notice(s) kept`);
@@ -339,7 +339,10 @@ async function fetchAlerts(now: number, council: boolean): Promise<AlertSyncResu
       signal: AbortSignal.timeout(6000),
       headers: { 'User-Agent': USER_AGENT, Accept: 'text/html,application/xhtml+xml' },
       // Every host read here is fixed: a redirect elsewhere is a failed read, not a new destination.
-      redirect: 'error',
+      // 'manual', so the 3xx itself is that failure (not ok), here and for the council's feed:
+      // Cloudflare's runtime throws on 'error' before asking anyone, and the worker read
+      // every notice as unreachable.
+      redirect: 'manual',
     });
     if (response.ok) {
       const operatorAlerts = extractAlertsFromHtml(await readCapped(response)).map((a) => ({ ...a, source: 'operator' as const }));

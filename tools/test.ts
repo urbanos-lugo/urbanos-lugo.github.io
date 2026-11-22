@@ -2527,7 +2527,9 @@ await okAsync('the worker bundle answers as Cloudflare runs it, with no Node and
   // a context holding web standards alone, and asked the questions it exists to answer. A
   // malformed escape in the stop code was an uncaught URIError, a 500 from the runtime.
   // Cloudflare has no `Deno` and hands the settings to fetch: the worker read Deno.env as it
-  // loaded, which on Cloudflare would have stopped it before its first answer.
+  // loaded, which on Cloudflare would have stopped it before its first answer. And its fetch
+  // throws on `redirect: 'error'` before asking anyone, as this one does: 1.8.0's worker read
+  // every notice as unreachable and every pole as a 502, swallowing the TypeError.
   const { outputFiles } = buildSync({ absWorkingDir: root, entryPoints: ['worker/index.ts'], bundle: true, format: 'iife', globalName: 'worker', platform: 'neutral', target: 'es2022', write: false, logLevel: 'silent' });
   const asked: string[] = [];
   const stored = new Map<string, Response>();
@@ -2535,7 +2537,10 @@ await okAsync('the worker bundle answers as Cloudflare runs it, with no Node and
     URL, URLSearchParams, Request, Response, Headers, AbortSignal, AbortController, TextDecoder, TextEncoder, ReadableStream,
     console: { log() {}, warn() {}, error() {} }, setTimeout, clearTimeout, queueMicrotask, encodeURIComponent, decodeURIComponent,
     caches:{ open: async () => ({ match: async (r: Request) => stored.get(r.url)?.clone(), put: async (r: Request, res: Response) => void stored.set(r.url, res), delete: async (r: Request) => stored.delete(r.url) }) },
-    fetch: async (input: unknown) => {
+    fetch: async (input: unknown, init?: RequestInit) => {
+      if (init?.redirect !== undefined && init.redirect !== 'follow' && init.redirect !== 'manual') {
+        throw new TypeError('Invalid redirect value, must be one of "follow" or "manual"');
+      }
       asked.push(String(input));
       return new Response('<div class="sae-content-info"><div class="sae-content-info-line"><p>13</p></div><div class="sae-content-info-time"><p>7</p></div></div></div>', { status: 200 });
     },
@@ -2555,6 +2560,9 @@ await okAsync('the worker bundle answers as Cloudflare runs it, with no Node and
   assert((await minutes.json()).departures.length === 1, 'the operator’s minutes lost their departures on the way through the worker');
   const notices = await handle(new Request('https://api.example/api/alerts'));
   assert(notices.status === 200, `the notices came back ${notices.status}`);
+  // An unreadable page is answered 200 too, saying so: the status inside is what was read.
+  const read = (await notices.json()).status;
+  assert(read === 'operational_normal', `the worker read the operator's page as ${read}`);
   // Deno Deploy's log held seven council reads on 6 and 13 October 2026, every one "not read
   // after 4 s": the worker asks the operator alone, and the snapshot and server.ts the council too.
   assert(!asked.some((url) => url.includes('concellodelugo.gal')), `the worker asked the council's feed: ${asked.join(', ')}`);
@@ -3618,10 +3626,27 @@ await okAsync('every request to somebody else’s site has a deadline, says who 
   assert(hosts.has('buslugo.com') && hosts.has('concellodelugo.gal') && sent.length >= 3, `the services asked ${[...hosts].join(', ')}, so this did not see all three requests`);
   for (const { url, init } of sent) {
     assert(init?.signal instanceof AbortSignal, `${url} is asked with no deadline`);
-    assert(init.redirect === 'error', `${url} follows redirects (${init.redirect ?? 'the default, follow'})`);
+    assert(init.redirect === 'manual', `${url} follows redirects (${init.redirect ?? 'the default, follow'})`);
     const agent = new Headers(init.headers).get('User-Agent') ?? '';
     assert(/^UrbanosLugoBot\/\d+\.\d+ \(\+\S+; unofficial timetable reader\)$/.test(agent) && agent.includes(REPO_URL), `${url} is asked as "${agent}"`);
   }
+  // 'manual' rather than 'error', which Cloudflare's runtime refuses: so the redirect itself has
+  // to read as the failure, and nothing may go where it points.
+  const reached: string[] = [];
+  globalThis.fetch = (async (url: string) => {
+    reached.push(new URL(String(url)).host);
+    return new Response(null, { status: 301, headers: { Location: 'https://elsewhere.example/' } });
+  }) as typeof fetch;
+  console.log = () => {};
+  try {
+    const notices = await syncOfficialAlerts(true, Date.now() + 6 * 60 * 60_000);
+    assert(notices.status === 'unreachable', `a redirected notices page read as ${notices.status}`);
+    assert((await operatorTimesForStop(`redirected-${Date.now()}`)) === null, 'a redirected pole page read as minutes');
+  } finally {
+    globalThis.fetch = realFetch;
+    console.log = realLog;
+  }
+  assert(reached.includes('buslugo.com') && !reached.includes('elsewhere.example'), `the redirected reads went to ${reached.join(', ')}`);
 });
 
 await okAsync('fifty people at one pole are one request to the operator, not fifty', async () => {

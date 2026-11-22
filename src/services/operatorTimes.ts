@@ -127,7 +127,8 @@ export async function operatorTimesForStop(code: string): Promise<OperatorTimes 
   const read = (async (): Promise<OperatorTimes | null> => {
     try {
       // A fixed host and a known code: a redirect elsewhere is a failed read, not a new destination.
-      const res = await fetch(`${ENDPOINT}/${encodeURIComponent(code)}`, { headers: { 'User-Agent': UA }, redirect: 'error', signal: AbortSignal.timeout(8_000) });
+      // 'manual', so the 3xx itself is that failure (not ok): Cloudflare's runtime refuses 'error'.
+      const res = await fetch(`${ENDPOINT}/${encodeURIComponent(code)}`, { headers: { 'User-Agent': UA }, redirect: 'manual', signal: AbortSignal.timeout(8_000) });
       if (!res.ok) return null;
       const result: OperatorTimes = { code, departures: parseOperatorTimes(await readCapped(res)), fetchedAt: new Date().toISOString() };
       cache.set(code, result);
