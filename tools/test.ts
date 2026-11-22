@@ -3,7 +3,7 @@
  * rather than in the browser, and each check names the bug it guards against.
  */
 import assert from 'assert';
-import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'fs';
+import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, openSync, closeSync } from 'fs';
 import { spawn } from 'child_process';
 import { createContext, runInContext } from 'vm';
 import { request as httpRequest } from 'http';
@@ -89,18 +89,56 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path: string) => readFileSync(join(root, path), 'utf8');
 
 
+/**
+ * `pnpm test` runs copies of this file side by side (tools/runTests.ts), and each copy runs a
+ * check only if it is the first to claim it, by creating that check's file in the folder they
+ * share: the copy held up by a slow check falls behind and the others take the rest. Alone,
+ * with no folder, a copy runs every check.
+ */
+const claims = process.env.TEST_CLAIMS;
 let checks = 0;
-const ok = (name: string, fn: () => void) => {
-  fn();
+let declared = 0;
+/** Checks that read one costly sample go to one copy together, or each copy works it out. */
+const groups = new Map<string, boolean>();
+const claim = (together?: string): number => {
+  const index = declared++;
+  if (!claims) return index;
+  // Another copy failed: finish the check in hand, start nothing new.
+  if (existsSync(join(claims, 'stop'))) return -1;
+  if (together && groups.has(together)) return groups.get(together) ? index : -1;
+  let mine = true;
+  try {
+    closeSync(openSync(join(claims, together ?? String(index)), 'wx'));
+  } catch {
+    mine = false;
+  }
+  if (together) groups.set(together, mine);
+  return mine ? index : -1;
+};
+/** A split run is told which check a copy started, to name the one that failed. */
+const starting = (index: number, name: string) => {
+  if (claims) console.log(`run\t${index}\t\t${name}`);
+  return performance.now();
+};
+const passed = (index: number, name: string, since: number) => {
   checks++;
-  console.log(`  ok  ${name}`);
+  console.log(claims ? `ok\t${index}\t${Math.round(performance.now() - since)}\t${name}` : `  ok  ${name}`);
+};
+const ok = (name: string, fn: () => void, together?: string) => {
+  const index = claim(together);
+  if (index < 0) return;
+  const since = starting(index, name);
+  fn();
+  passed(index, name, since);
 };
 
 /** Same, for the handful of checks that have to await something. */
 const okAsync = async (name: string, fn: () => Promise<void>) => {
+  const index = claim();
+  if (index < 0) return;
+  const since = starting(index, name);
   await fn();
-  checks++;
-  console.log(`  ok  ${name}`);
+  passed(index, name, since);
 };
 
 console.log('\nsearch');
@@ -1023,8 +1061,14 @@ const timeline = (plan: { segments: { departureTime?: string; arrivalTime?: stri
   });
 };
 
-/** A fixed spread of city trips, planned at one moment. */
+/**
+ * A fixed spread of city trips, planned at one moment. Planned once a moment and shared: the
+ * checks that use it only read it, and planning it for each was the slowest part of the suite.
+ */
+const sampled = new Map<number, ReturnType<typeof planTrips>>();
 const sampleTrips = (now: Date) => {
+  const known = sampled.get(now.getTime());
+  if (known) return known;
   const urban = BUS_STOPS.filter((s) => s.zone !== 'Rural');
   const out: ReturnType<typeof planTrips> = [];
   for (let i = 0; i < 120; i++) {
@@ -1032,6 +1076,7 @@ const sampleTrips = (now: Date) => {
     const b = urban[(i * 91 + 13) % urban.length];
     if (a.id !== b.id) out.push(...planTrips(a.name, b.name, { now }));
   }
+  sampled.set(now.getTime(), out);
   return out;
 };
 
@@ -1052,7 +1097,7 @@ ok('no itinerary asks you to board a bus that already left', () => {
       }
     }
   }
-});
+}, 'trips-sampled-at-WHEN');
 
 ok('a transfer leaves time to actually change bus', () => {
   for (const now of WHEN) {
@@ -1065,7 +1110,7 @@ ok('a transfer leaves time to actually change bus', () => {
       }
     }
   }
-});
+}, 'trips-sampled-at-WHEN');
 
 ok('no itinerary rides the same line twice', () => {
   // Getting off a 5.1 to wait for another 5.1 was offered, and makes no sense.
@@ -1075,7 +1120,7 @@ ok('no itinerary rides the same line twice', () => {
       assert(new Set(ids).size === ids.length, `rides ${ids.join(' > ')}`);
     }
   }
-});
+}, 'trips-sampled-at-WHEN');
 
 ok('an hours-long walk is never the headline suggestion when a bus exists', () => {
   // Ranking on duration alone made a 168-minute walk beat a bus 285 minutes out on a twice-
@@ -1084,13 +1129,20 @@ ok('an hours-long walk is never the headline suggestion when a bus exists', () =
   const now = new Date(2026, 7, 20, 9, 30);
   const served = BUS_STOPS.filter((s) => s.lines.length > 0);
   let checked = 0;
-  // Widened from 500 pairs: transfers between two poles a short walk apart connected most
-  // of what used to fall back to walking, so the old sample turned up only three cases.
-  for (let i = 0; i < 2000; i++) {
-    const a = served[(i * 67) % served.length];
-    const b = served[(i * 131 + 17) % served.length];
-    if (a.id === b.id) continue;
-    if (getDistanceMeters(a.lat, a.lng, b.lat, b.lng) < 1500) continue;
+  // Only two places too far apart to walk between in 75 minutes can lead with a longer walk,
+  // so the sample is every hundredth such pair. The stride it replaced came back round after
+  // 417 stops: it planned 334 pairs 1,602 times and judged six distinct cases.
+  const at = new Map(served.map((s) => [s.id, resolveLocationQuery(s.name)]));
+  const far = served.flatMap((a) =>
+    served
+      .filter((b) => {
+        const [p, q] = [at.get(a.id), at.get(b.id)];
+        return a.id !== b.id && !!p && !!q && estimateWalk(getDistanceMeters(p.lat, p.lng, q.lat, q.lng)).minutes > 75;
+      })
+      .map((b) => [a, b] as const),
+  );
+  for (let i = 0; i < far.length; i += 100) {
+    const [a, b] = far[i];
     const plans = planTrips(a.name, b.name, { now });
     const top = plans[0];
     if (!top || top.segments.some((seg) => seg.type === 'bus')) continue;
@@ -1099,7 +1151,7 @@ ok('an hours-long walk is never the headline suggestion when a bus exists', () =
     const bus = plans.find((p) => p.segments.some((seg) => seg.type === 'bus'));
     assert(!bus, `${a.name} → ${b.name}: leads with a ${top.durationMinutes} min walk while a bus plan exists (${bus?.durationMinutes} min)`);
   }
-  assert(checked > 5, `only ${checked} long-walk plans found to judge`);
+  assert(checked >= 20, `only ${checked} long-walk plans found to judge`);
 });
 
 ok('the options offered are visibly different from each other', () => {
@@ -2209,6 +2261,19 @@ ok('a name the operator still prints is still findable after merging', () => {
   }
 });
 
+await okAsync('a place found once is the place a fresh search finds, in every language', async () => {
+  // What is found without a position is kept by what was typed alone, the language aside: it
+  // only names "my location", which needs one. A search that came to read the language would
+  // hand one language's answer to the next, so each copy here remembers nothing and is asked
+  // in its language after this one answered in Galician.
+  const queries = ['Praza Maior', '131', 'Rúa do Teatro', 'Cines Cristal', 'HULA', 'Catedral', 'zzzz qqqq'];
+  for (const q of queries) resolveLocationQuery(q, undefined, 'gl');
+  for (const lang of LANGS) {
+    const fresh = ((await import(`../src/utils/places.ts?${lang}`)) as { resolveLocationQuery: typeof resolveLocationQuery }).resolveLocationQuery;
+    for (const q of queries) assert.deepStrictEqual(resolveLocationQuery(q, undefined, lang), fresh(q, undefined, lang), `«${q}» in ${lang} is not what a fresh search finds`);
+  }
+});
+
 ok('no two stops share a point', () => {
   // Nine poles shipped as eighteen stops: same name, same coordinates, two operator ids.
   const seen = new Map<string, string>();
@@ -2695,8 +2760,10 @@ ok('the shortcut past the time-zone database agrees with it at every change of t
   // loads the time-zone database: 150 ms at 6x CPU in the first render of every board. The
   // rule has to be the database's, hour by hour either side of each change, or the board
   // stays silent about a clock that is out.
+  // One formatter for every instant: building one for each was most of this check's time.
+  const database = new Intl.DateTimeFormat('en', { timeZone: 'Europe/Madrid', timeZoneName: 'longOffset' });
   const madrid = (at: Date) => {
-    const name = new Intl.DateTimeFormat('en', { timeZone: 'Europe/Madrid', timeZoneName: 'longOffset' }).formatToParts(at).find((p) => p.type === 'timeZoneName')?.value ?? '';
+    const name = database.formatToParts(at).find((p) => p.type === 'timeZoneName')?.value ?? '';
     const m = /GMT([+-])(\d{2}):(\d{2})/.exec(name);
     return m ? (m[1] === '-' ? -1 : 1) * (Number(m[2]) * 60 + Number(m[3])) : 0;
   };
@@ -4916,10 +4983,15 @@ ok('the planner answers the same across the worker as on the page', () => {
   assert.notDeepEqual(viaTable, direct, 'a 25-minute walk to the first stop changed nothing: the table never reached the planner');
 });
 
-ok('no check reached the network', () => {
+{
   // The other half of the refusal at the top: syncOfficialAlerts and the operator reader turn
   // a failed request into an answer, so a check that forgot its stub would pass on "unreachable".
+  // Not claimed: each copy of a split run keeps its own list, so every copy asks.
+  const index = declared++;
+  const since = starting(index, 'no check reached the network');
   assert(reachedOut.length === 0, `checks tried to reach ${reachedOut.join(', ')}; every gate runs offline`);
-});
+  passed(index, 'no check reached the network', since);
+}
 
-console.log(`\n${checks} checks passed\n`);
+// A split run counts the checks across its copies, by the number each copy declared.
+console.log(claims ? `declared\t${declared}` : `\n${checks} checks passed\n`);

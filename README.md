@@ -1065,6 +1065,7 @@ non chama ningunha.
 │   ├── fullAudit.ts                informe de calidade de datos
 │   ├── lib.ts                      o que cada ferramenta levaba repetido: raíz, JSON, estatísticas
 │   ├── checkPolicy.ts              política do repositorio: fixacións, disparadores, documentos, vocabulario visual
+│   ├── runTests.ts                 test.ts en varias copias á vez, unha por núcleo ata oito: `pnpm test`
 │   └── test.ts                     comprobacións executables
 ├── .github/workflows/
 │   ├── deploy-pages.yml            publica en Pages: push, por calendario e a man
@@ -2050,6 +2051,23 @@ tarde, despois do último bus e domingo) e esixen que ningún itinerario retroce
 tempo, que ningún transbordo sexa imposible, que ningún repita liña e que as opcións
 ofrecidas se distingan entre si. Outras dúas comproban que o cadro horario se reproduce
 tal cal se publica.
+
+`pnpm test` pasa ese ficheiro en varias copias á vez, unha por núcleo ata oito
+(`TEST_JOBS` cambia o número). Cada copia percorre o ficheiro enteiro e só corre as
+comprobacións que reclama primeiro, así que a que se atasca nunha lenta queda atrás e as
+outras levan o resto; as que len unha mesma mostra cara van xuntas á mesma copia. Se unha
+falla, as outras non empezan ningunha máis, e sae o nome da que fallou. Remata coas cinco
+máis lentas. `pnpm exec tsx tools/test.ts` pásaa nun só proceso e en orde.
+
+É o que espera cada cambio antes de saber se rompeu algo, así que se mide. O 21 de
+novembro de 2026, nun equipo de 8 núcleos, mediana de tres pasadas alternas: de 122,6 s a
+12,0 s (29,4 s nun só proceso), e `pnpm run check:deep` de 26,2 a 12,4 s. Sen quitar
+ningunha comprobación: o planificador buscaba de novo os dous nomes de cada viaxe contra
+os 3.431 nomes de paradas, rúas e sitios, desfacendo cada nome outra vez en cada busca (4,7 ms por
+busca, 1,7 agora); tres comprobacións planificaban cada unha a mesma mostra; e a dos
+paseos de horas planificaba 334 pares 1.602 veces, porque o seu paso volvía ao principio
+despois de 417 paradas, e xulgaba seis casos distintos. Agora colle só pares que non se
+poden andar en 75 minutos, e xulga 30.
 
 ```bash
 pnpm reconcile            # contra as páxinas en disco

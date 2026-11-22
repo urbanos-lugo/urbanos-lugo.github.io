@@ -142,8 +142,8 @@ const searchForm = remembering((str: string): string => {
  * three letters only matches itself, or «a» would be the start of half the city.
  */
 export function matchesWordsEitherWay(name: string, query: string): boolean {
-  const have = searchForm(name).split(' ');
-  const want = searchForm(query).split(' ').filter(Boolean);
+  const have = nameForms(name).words;
+  const want = queryForms(query).wanted;
   return want.length > 0 && want.every((w) => have.some((h) => h === w || (w.length >= 3 && h.startsWith(w)) || (w.length >= 4 && h.length >= 4 && w.startsWith(h))));
 }
 
@@ -165,34 +165,48 @@ const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 /** The word-boundary pattern for a query, built once per query rather than once per stop. */
 const wordBoundary = remembering((q) => new RegExp(`\\b${escapeRegex(q)}`, 'i'));
 
+/**
+ * A name's forms, split once however many queries meet it. One query is scored against
+ * every stop, street and place, and working each name and the query out again for every
+ * pair cost 4.7 ms a query and 22 ms a planned trip on a desktop; 1.7 and 14 once kept.
+ */
+const nameForms = remembering((name: string) => {
+  const n = normalizeText(name);
+  const nExp = searchForm(name);
+  return { n, nExp, words: nExp.split(' '), plainWords: n.split(/\s+/) };
+});
+
+/** A query's forms and patterns, worked out once for all the names it is scored against. */
+const queryForms = remembering((query: string) => {
+  const q = normalizeText(query);
+  const qExp = searchForm(query);
+  const words = qExp.split(' ');
+  return { q, qExp, words, wanted: words.filter(Boolean), asLine: asLineNumber(q), boundary: wordBoundary(q), boundaryExp: wordBoundary(qExp) };
+});
+
 /** Relevance of a name to a query, in tiers; 0 for no match. */
 export function calculateRelevanceScore(name: string, code: string, id: string, query: string, context?: string): number {
-  const q = normalizeText(query);
+  const { q, qExp, words: queryWords, asLine, boundary, boundaryExp } = queryForms(query);
   // "." and "../" normalise to nothing, which would prefix-match every name at 800.
   if (!q) return 0;
-  const n = normalizeText(name);
+  const { n, nExp, words: nameWords, plainWords } = nameForms(name);
   const c = normalizeText(code);
   const i = normalizeText(id);
-  const qExp = searchForm(query);
-  const nExp = searchForm(name);
 
-  const asLine = asLineNumber(q);
   if (c === q || i === q || c === asLine || i === asLine) return 1000;
   if (n.startsWith(q) || nExp.startsWith(qExp)) return 800;
-  if (wordBoundary(q).test(n) || wordBoundary(qExp).test(nExp) || nExp.includes(qExp)) return 600;
+  if (boundary.test(n) || boundaryExp.test(nExp) || nExp.includes(qExp)) return 600;
   if (n.includes(q)) return 400;
   // Every word of the query starts a word of the name, not side by side: "Armórica 138"
   // against "Rúa Armórica (enfte. Nº 138)". Word starts, not substrings, or "de la" is
   // inside "Lavandeira" twice over.
-  const queryWords = qExp.split(' ');
-  const nameWords = nExp.split(' ');
   if (queryWords.length > 1 && queryWords.every((w) => nameWords.some((t) => t.startsWith(w)))) return 300;
   // The context (a stop's neighbourhood, a line's termini), below any match on the name itself.
   const a = context ? normalizeText(context) : '';
   if (a.includes(q) || (context && searchForm(context).includes(qExp))) return 200;
   if (q.length >= 4) {
     const allowed = q.length >= 6 ? 2 : 1;
-    for (const w of n.split(/\s+/)) if (withinEditDistance(w, q, allowed)) return 100;
+    for (const w of plainWords) if (withinEditDistance(w, q, allowed)) return 100;
   }
   return 0;
 }

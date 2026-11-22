@@ -40,7 +40,8 @@ as demais que o README marca— pásanse a man, unha vez, e non van nunca nun bu
 - **Un check por erro.** A suite é un só ficheiro, `tools/test.ts`, con `assert` e sen
   *framework*; cada comprobación nomea nun comentario o erro real que a motivou. Se
   arranxas lóxica, deixa o check que fallaría sen o arranxo. Nunca se relaxa nin se borra
-  un check para chegar a verde: se falla, o que está mal é o código.
+  un check para chegar a verde: se falla, o que está mal é o código. `pnpm test` pásaa en
+  varias copias á vez; `pnpm exec tsx tools/test.ts`, nun só proceso e en orde.
 - **A documentación no mesmo commit.** Se o cambio fai que algo do README deixe de ser
   certo —un comportamento, unha cifra—, o README cambia no mesmo commit. As cifras medidas
   viven só en `README.md`; `README.es.md` e `README.en.md` son un resumo cada un.

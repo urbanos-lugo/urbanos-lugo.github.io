@@ -167,10 +167,27 @@ export function rankLandmarks(q: string): { landmark: Landmark; score: number }[
 }
 
 /**
+ * Answers given without a position, by what was typed: every plan asks its two names again,
+ * and a search costs milliseconds. Without a position the language changes nothing (it only
+ * names "my location"). Frozen, being shared by every caller that asks the same.
+ */
+const resolved = new Map<string, LocationResolution | null>();
+
+/**
  * What somebody typed (a stop id or code, a street, a landmark, "my location") as a place,
  * or null when nothing matches: an arbitrary stop instead would plan a confident itinerary from a place nobody asked about.
  */
 export function resolveLocationQuery(query: string, userGps?: [number, number], lang: Lang = 'gl'): LocationResolution | null {
+  if (userGps) return resolveFresh(query, userGps, lang);
+  if (!resolved.has(query)) {
+    if (resolved.size >= 2000) resolved.clear();
+    const answer = resolveFresh(query, undefined, lang);
+    resolved.set(query, answer && Object.freeze(answer));
+  }
+  return resolved.get(query) ?? null;
+}
+
+function resolveFresh(query: string, userGps: [number, number] | undefined, lang: Lang): LocationResolution | null {
   const q = query.trim();
 
   if ((q === 'my_location' || q === 'gps' || matchesQuery(q, 'mi ubicacion') || matchesQuery(q, 'a mina localizacion')) && userGps) {

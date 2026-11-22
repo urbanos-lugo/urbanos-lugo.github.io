@@ -28,7 +28,7 @@
     "check:landmarks": "tsx tools/checkLandmarks.ts",
     "reconcile": "tsx tools/reconcile.ts",
     "reconcile:selftest": "tsx tools/reconcileSelfTest.ts",
-    "test": "tsx tools/test.ts",
+    "test": "tsx tools/runTests.ts",
     "check:deep": "tsx tools/stressInvariants.ts && tsx tools/stressPlanner.ts",
     "check:parsers": "tsx tools/checkParsersUnchanged.ts",
     "check:policy": "tsx tools/checkPolicy.ts",

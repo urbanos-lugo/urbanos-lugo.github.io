@@ -37,9 +37,9 @@ green:
 
 ```
 pnpm run lint          # tsc --noEmit
-pnpm test              # tools/test.ts — prints "N checks passed"
+pnpm test              # tools/test.ts as copies side by side (tools/runTests.ts) — prints "N checks passed in T s"
 pnpm run check:policy  # tools/checkPolicy.ts — pins, triggers, network tools, documents, lockfile, design vocabulary
-pnpm run check:deep    # invariant + planner sweeps over the whole dataset, ~20s
+pnpm run check:deep    # invariant + planner sweeps over the whole dataset, ~12s
 pnpm run build         # vite build + esbuild of the server bundle
 ```
 
@@ -117,6 +117,12 @@ An unlabelled time is a bug, not a simplification. The same goes for the fares i
 
 The whole suite is one file: `tools/test.ts`, plain `assert`, no framework, run with
 `pnpm test`. Each check corresponds to a bug that was real once and names it in a comment.
+
+`pnpm test` runs that file as one copy per core, up to eight, each running the checks it
+claims first; a failure stops the others and names its check. `pnpm exec tsx tools/test.ts`
+runs it in one process, in order. It ends with the five slowest checks: the suite is the
+loop every change waits on, so a check that plans hundreds of trips shares its sample, and
+checks reading one sample go to one copy (`ok(name, fn, group)`), rather than planning it again.
 
 Leave a check behind for logic you add or fix, in that style. Never delete, relax or
 comment out an existing check to get to green — if one fails, the code is what's wrong.
