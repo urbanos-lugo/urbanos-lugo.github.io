@@ -270,6 +270,12 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
      `manual` e `follow`, 200), e os servizos tragábano. Arranxado na rolda 88: o worker
      construído, no mesmo runtime, le os dous avisos. `API_ORIGIN` segue na de Deno ata que
      o despregue arranxado responda.
+   - **Coa 1.8.1** (22 de novembro, `6272767`, ás 11:40 UTC): `/api/alerts` le desde
+     Cloudflare os dous avisos, en 0,47 s. Os minutos do poste `gJRz` dan 502 desde as dúas
+     APIs, pero non é delas: o certificado de `info.urbanoslugo.com` é un de Let's Encrypt
+     válido ata o 17 de maio de 2025, e este equipo tampouco o acepta (`CERT_HAS_EXPIRED`).
+     `check:parsers` xa o dixo o 16 de novembro, e pasou en verde porque sen páxina non
+     afirma nada. Mentres o operador non o renove, os QR só dan as estimacións da app.
    - **O cambio:** a variable `API_ORIGIN` ao enderezo novo; a CSP colle a orixe dela só. As
      dúas APIs en paralelo uns días, e despois a de Deno fóra.
    - **Os documentos:** PRIVACY.md e SECURITY.md (quen recibe as peticións), CLAUDE.md
