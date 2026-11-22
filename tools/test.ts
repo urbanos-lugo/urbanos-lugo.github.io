@@ -3645,9 +3645,10 @@ await okAsync('every request to somebody else’s site has a deadline, says who 
   }
   // 'manual' rather than 'error', which Cloudflare's runtime refuses: so the redirect itself has
   // to read as the failure, and nothing may go where it points.
-  const reached: string[] = [];
+  // Hosts compared whole, as above.
+  const reached = new Set<string>();
   globalThis.fetch = (async (url: string) => {
-    reached.push(new URL(String(url)).host);
+    reached.add(new URL(String(url)).host);
     return new Response(null, { status: 301, headers: { Location: 'https://elsewhere.example/' } });
   }) as typeof fetch;
   console.log = () => {};
@@ -3659,7 +3660,7 @@ await okAsync('every request to somebody else’s site has a deadline, says who 
     globalThis.fetch = realFetch;
     console.log = realLog;
   }
-  assert(reached.includes('buslugo.com') && !reached.includes('elsewhere.example'), `the redirected reads went to ${reached.join(', ')}`);
+  assert(reached.has('buslugo.com') && !reached.has('elsewhere.example'), `the redirected reads went to ${[...reached].join(', ')}`);
 });
 
 await okAsync('fifty people at one pole are one request to the operator, not fifty', async () => {
