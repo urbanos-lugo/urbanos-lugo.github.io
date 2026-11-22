@@ -6729,3 +6729,36 @@ semanal mira.
 
 - Nada desta instantánea. As dúas de OSM sen comprobación semanal quedan ao día: a rede
   peonil do 21 de novembro e os equipamentos do 22.
+
+## Rolda 88: o worker de Cloudflare non lía nada, e non era buslugo.com — 22 de novembro de 2026
+
+Pedido: saber por que a API en Cloudflare lía os avisos como inalcanzables despois do primeiro
+despregue (1.8.0).
+
+### Feito
+
+- **A causa, medida.** O runtime de Cloudflare (workerd, no miniflare que trae wrangler
+  4.158.0, coa data de compatibilidade do worker) rexeita `fetch(..., { redirect: 'error' })`
+  cun TypeError antes de pedir nada: 8 ms, «Invalid redirect value, must be one of "follow"
+  or "manual"». A mesma petición con `manual` e con `follow` deu 200. Os tres `fetch` dos
+  servizos pedían `error`, e os `catch` tragaban o erro: avisos `unreachable` e postes en 502.
+  Deno acepta `error`, e por iso a API de alí lía ben.
+- `src/services/alertSyncService.ts` e `operatorTimes.ts` piden `redirect: 'manual'`. Un 3xx
+  non é `ok`, así que segue sendo unha lectura fallida e ninguén vai onde apunta.
+- `tools/test.ts`: o `fetch` do contorno «como o corre Cloudflare» rexeita `error` igual que
+  workerd, e o check mira o estado lido dos avisos, non só o 200 (un aviso ilexible tamén
+  responde 200). Co `error` posto outra vez, falla: «the operator's minutes came back 502».
+  O das peticións a sitios alleos pide `manual`, e un 301 a outro sitio le os avisos como
+  `unreachable`, o poste como nada, e non pide nada ao destino.
+- A nota de NOTAS, que culpaba a buslugo.com, corrixida.
+
+### Comprobado
+
+- As cinco portas, e a suite outra vez coa build: 184 comprobacións en 14,8 e 13,5 s.
+- O worker construído (`worker:build`, 446.386 bytes) no workerd local, unha petición a man
+  a `/api/alerts`: 200 en 1.115 ms, `active_incidents`, 2 avisos, como a API de Deno.
+
+### Queda
+
+- Despregalo (unha 1.8.1) e mirar `/api/alerts` e os minutos dun poste de día no
+  enderezo novo, antes de cambiar `API_ORIGIN`.
