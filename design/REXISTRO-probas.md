@@ -6702,3 +6702,30 @@ que espera cada cambio, e quen o espera corrixe antes canto antes sabe que rompe
 - O runner de CI ten 4 vCPU: o tempo do paso `pnpm test` alí dirao o primeiro CI.
 - O suelo é o planificador mesmo, uns 10 ms por viaxe sen a busca: `parseTimeToMinutes` e
   `formatMinutes` levan un 8 % do seu perfil, e o resto está repartido.
+
+## Rolda 87: os equipamentos das paradas, refrescados sen nada que cambiar — 22 de novembro de 2026
+
+Pedido: o que quedou da rolda 85, a outra instantánea de OSM que ningunha comprobación
+semanal mira.
+
+### Feito
+
+- `pnpm run data:amenities` (unha consulta a Overpass, á man), coa resposta do 20 de agosto
+  apartada da caché. OSM ten 444 postes de bus na caixa de Lugo, por 443 en agosto: sae un,
+  «Rúa Saúde (dte. antigo Xeral)», e entran dous sen nome a 42,96 N e 7,51 O, lonxe das
+  liñas. Ningún outro se moveu nin cambiou de etiquetas.
+- O poste que sae era un duplicado da parada s676, a 22 m e con `shelter=no`. A parada xa
+  collía o outro, a 10 m e con marquesiña, que segue.
+- `data/stop-amenities.json` sae igual byte a byte: 398 das 417 paradas casadas a menos de
+  45 m, 2 coa posición do poste, 106 con marquesiña e 0 con pavimento táctil.
+
+### Comprobado
+
+- O hash do ficheiro, antes e despois, e `pnpm run data:build` despois: nada cambia en
+  `data/` nin en `src/data/`. Sen cambio no que se constrúe, as portas non teñen nada novo
+  que probar e non se correron.
+
+### Queda
+
+- Nada desta instantánea. As dúas de OSM sen comprobación semanal quedan ao día: a rede
+  peonil do 21 de novembro e os equipamentos do 22.
