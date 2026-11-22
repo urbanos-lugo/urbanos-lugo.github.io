@@ -41,7 +41,7 @@ const BLOCK_OPEN = '<div class="sae-content-info">';
  * whitespace, by a second one. Walked with indexOf, because the lazy pattern it replaces
  * backtracked from every opening that never closed -- half a second at the 512 KB
  * readCapped allows, which was reckoned as "once per stop every 20 s" while a server reads
- * every coded pole in the network and the Deno worker runs the same code.
+ * every coded pole in the network and the worker runs the same code.
  */
 function* departureBlocks(html: string): Generator<string> {
   for (let from = 0; ; ) {
@@ -145,7 +145,7 @@ export async function operatorTimesForStop(code: string): Promise<OperatorTimes 
 
 /**
  * The answer to "the operator's minutes at this stop", shared by the express route and the
- * Deno worker so the two deployments cannot disagree. Only stops this app knows about:
+ * worker so the two deployments cannot disagree. Only stops this app knows about:
  * otherwise either deployment could fire arbitrary codes at the operator's site.
  */
 export async function operatorTimesResponse(rawCode: string): Promise<{ status: number; body: unknown }> {

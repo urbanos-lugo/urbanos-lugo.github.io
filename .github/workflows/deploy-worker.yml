@@ -6,12 +6,12 @@ name: Deploy the API worker
 #
 # It only exists if somebody deploys it. Without it the site is exactly what it is today:
 # the notices come from the copy the hourly job commits, and the QR block does not appear.
-# So each job does nothing at all until its token is set, as a secret of its environment
+# So the job does nothing at all until its token is set, as a secret of its environment
 # below — no red runs on a repository that has decided not to bother.
 #
-# Two jobs while the API moves house. Deno Deploy announced on 9 October 2026 that it shuts
-# down six months on, so the same bundle goes to Cloudflare Workers too; the site asks
-# whichever the API_ORIGIN variable names, and the Deno job goes once nothing asks it.
+# It ran on Deno Deploy until November 2026. Deno Deploy announced on 9 October 2026 that it
+# shuts down six months on, so the same bundle went to Cloudflare Workers, the site was
+# pointed there through the API_ORIGIN variable, and the Deno job left once nothing asked it.
 on:
   push:
     branches: [main]
@@ -27,11 +27,9 @@ on:
       - '.github/workflows/deploy-worker.yml'
   workflow_dispatch:
 
-# Read the tree, and nothing more. There was an `id-token: write` here, "exchanged for a
-# short-lived credential at deploy time", and nothing ever asked for one: the deploy
-# authenticates with the DENO_DEPLOY_TOKEN secret, and @deno/deploy has no GitHub OIDC code
-# at all (read in 0.0.9904; its only OIDC is for AWS cloud connections). A token nobody
-# uses is a token a compromised step could mint.
+# Read the tree, and nothing more. The deploy authenticates with the CLOUDFLARE_API_TOKEN
+# secret and asks for no id-token; a token nobody uses is a token a compromised step could
+# mint.
 permissions:
   contents: read
 
@@ -40,18 +38,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  cloudflare:
     runs-on: ubuntu-24.04
     # Where the token lives: a secret of this environment, which Settings → Environments
     # lets only main deploy from, so a run from any other branch is refused before it starts.
-    # A repository secret of the same name still reaches the job, so moving the token here
-    # works in either order; GitHub creates the environment on first use if it is missing.
-    environment: deno-deploy
+    environment: cloudflare
     env:
       # Read here and not in the step's `if`: the secrets context is available to a job's
       # env and not to a step's condition, where it would quietly evaluate to nothing and
       # skip the deploy on a repository that had configured one.
-      HAS_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN != '' }}
+      HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -70,191 +66,6 @@ jobs:
       # absent and none for wrong.
       - run: pnpm run lint
       - run: pnpm test
-
-      # Deno needs explicit extensions in relative imports and every file under src/ is
-      # written for a bundler, so the worker is bundled first. esbuild is already here for
-      # server.ts; this adds no dependency.
-      - run: pnpm run worker:build
-
-      # An exact version, like the deploy tool below: this step runs with the deploy token in
-      # its environment, and `v2.x` was whatever release was newest that minute. Moving it is
-      # a one-line change made on purpose.
-      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
-        with:
-          deno-version: v2.9.7
-
-      # `deno deploy`, not deployctl. Deploy Classic — the dash.deno.com generation this
-      # workflow was first written against — was shut down on 20 July 2026, and deployctl
-      # along with it. The new platform calls the unit an *app* rather than a project, so
-      # `--project` is gone and `--app` replaces it, with `--org` naming the organisation.
-      #
-      # It uploads a directory, which is why the step below stages the single bundled file
-      # somewhere of its own rather than pointing at the repository.
-      #
-      # `--json --non-interactive` are not decoration. The CLI's own help is explicit:
-      # "For non-interactive use (CI, AI agents), authenticate via the DENO_DEPLOY_TOKEN
-      # env var (or --token) and pass --json --non-interactive to every subcommand."
-      # Without them it tries to prompt, finds no terminal, and fails.
-      #
-      # Invoked through `deno run` and not the `deno deploy` wrapper, because on 2.9.6 the
-      # wrapper cannot pass flags to the tool at all. Both ways of trying are wrong:
-      #
-      #   deno deploy --json …     every flag arrives twice — deno's parser takes them and
-      #                            forwards them — and the tool rejects the duplicate:
-      #                            {"code":"VALIDATION_ERROR","message":"Option \"--json\"
-      #                            can only occur once"}. Not specific to --json; --org and
-      #                            --app duplicate identically.
-      #   deno deploy -- --json …  no duplicate, but nothing reaches the tool either: with
-      #                            a valid token it gets past auth and then reports "Use
-      #                            --app to specify the application" for a line that plainly
-      #                            has one.
-      #
-      # Running the tool directly skips the wrapper's argument handling entirely. That it
-      # receives the flags is visible rather than assumed: without a token it answers with
-      # its own JSON envelope, {"error":{"code":"NON_INTERACTIVE_REQUIRED",…}}, which is a
-      # shape it only emits when --json got through.
-      - name: Deploy
-        if: env.HAS_TOKEN == 'true'
-        env:
-          DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
-          # Required, and it is the *slug*, not the name in the dashboard header. Those
-          # differ here — the header reads "brais" and the slug is "braisbrg" — and a
-          # mismatch comes back as NOT_FOUND with no hint as to what was expected. Leaving
-          # it out is not an option either: the organisation resolves to '' and the tool
-          # reports that an organisation called '' does not exist. `orgs list` below is
-          # what prints the real slug.
-          DENO_DEPLOY_ORG: ${{ vars.DENO_DEPLOY_ORG }}
-        run: |
-          # Stage the bundle outside the repository before uploading it.
-          #
-          # The deploy tool honours .gitignore, and .gitignore excludes worker/dist/ —
-          # deliberately, because the bundle is build output and nothing else built is
-          # committed here. So uploading that directory uploaded nothing at all, and the
-          # build failed with "Entrypoint at '/tmp/build/src/worker.js' not found": not a
-          # wrong path, an empty upload. Copying the one file somewhere no .gitignore
-          # reaches is the fix that does not require un-ignoring build output.
-          #
-          # Deno itself also runs from the temp directory rather than the workspace: in
-          # the workspace it resolves this repository's package.json and fails on npm
-          # dependencies that have nothing to do with the worker. And --node-modules-dir
-          # writes node_modules into the working directory, which is why that is the temp
-          # root and not the upload directory.
-          STAGE="$RUNNER_TEMP/worker-upload"
-          rm -rf "$STAGE"
-          mkdir -p "$STAGE"
-          cp worker/dist/worker.js "$STAGE/worker.js"
-          cd "$RUNNER_TEMP"
-
-          # A pinned version: this runs with -A and the deploy token, and a bare
-          # `jsr:@deno/deploy` was whatever the registry held that minute. The same version
-          # appears in the two steps below; move all three together.
-          DEPLOY="deno run -A --node-modules-dir=auto jsr:@deno/deploy@0.0.9904"
-
-          # Create the app if it is not there, with a build configuration that suits what
-          # this actually uploads: one already-bundled file.
-          #
-          # An app created through the dashboard wizard keeps the build config the wizard
-          # detected — for this repository, `pnpm install` — and disconnecting the GitHub
-          # repository afterwards does not clear it. It then runs that install command
-          # against worker/dist, which has no package.json and is not supposed to have
-          # one, and the revision dies with ERR_PNPM_NO_PKG_MANIFEST. There is no
-          # `apps update`, so the configuration can only be set at creation.
-          if ! $DEPLOY apps get --org "$DENO_DEPLOY_ORG" --app urbanos-lugo-api >/dev/null 2>&1; then
-            $DEPLOY create \
-              --json --non-interactive \
-              --org "$DENO_DEPLOY_ORG" \
-              --app urbanos-lugo-api \
-              --source local \
-              --runtime-mode dynamic \
-              --entrypoint worker.js \
-              --do-not-use-detected-build-config \
-              --region eu \
-              "$STAGE"
-          fi
-
-          # The one thing the worker cannot work without, set here rather than by hand.
-          #
-          # It goes into access-control-allow-origin verbatim, so an app without it
-          # answers 200 with an empty origin header and every browser throws the response
-          # away — a failure that looks like the API being down and is not. It lived on
-          # the app, which meant deleting the app took it with it and the next deploy came
-          # back silently broken. Deriving it from the repository owner also keeps it
-          # correct in a fork, where a hardcoded braisbrg would not be.
-          ORIGIN="https://${GITHUB_REPOSITORY_OWNER}.github.io"
-          $DEPLOY env add ALLOWED_ORIGIN "$ORIGIN" \
-              --org "$DENO_DEPLOY_ORG" --app urbanos-lugo-api \
-            || $DEPLOY env update-value ALLOWED_ORIGIN "$ORIGIN" \
-              --org "$DENO_DEPLOY_ORG" --app urbanos-lugo-api
-
-          # Which commit this is, for /api/version: "is the new worker live yet" is a curl.
-          $DEPLOY env add DEPLOY_SHA "$GITHUB_SHA" \
-              --org "$DENO_DEPLOY_ORG" --app urbanos-lugo-api \
-            || $DEPLOY env update-value DEPLOY_SHA "$GITHUB_SHA" \
-              --org "$DENO_DEPLOY_ORG" --app urbanos-lugo-api
-
-          $DEPLOY \
-            --json --non-interactive \
-            --org "$DENO_DEPLOY_ORG" \
-            --app urbanos-lugo-api \
-            --prod \
-            "$STAGE"
-
-      # The address the site has to be built against. It is not derivable from the app
-      # name — Deno picks the host — so the run prints it rather than leaving somebody to
-      # copy it out of the dashboard into the API_ORIGIN variable from memory.
-      - name: Say where it landed
-        if: success() && env.HAS_TOKEN == 'true'
-        env:
-          DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
-          DENO_DEPLOY_ORG: ${{ vars.DENO_DEPLOY_ORG }}
-        run: |
-          deno run -A --node-modules-dir=auto jsr:@deno/deploy@0.0.9904 apps get \
-            --org "$DENO_DEPLOY_ORG" --app urbanos-lugo-api || true
-
-      # A NOT_FOUND on the organisation says what was not found and nothing about what
-      # would have been. This turns the next red run into an answer instead of a guess.
-      - name: Show what the token can actually reach
-        if: failure() && env.HAS_TOKEN == 'true'
-        env:
-          DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
-        run: |
-          # Same route as the deploy above, for the same reason. This is what printed the
-          # slug when --org was wrong: the dashboard header says "brais", the API wants
-          # "braisbrg", and nothing else in the failure said so.
-          echo "--- organisations this token can see ---"
-          deno run -A --node-modules-dir=auto jsr:@deno/deploy@0.0.9904 orgs list || true
-          echo "--- who the token belongs to ---"
-          deno run -A --node-modules-dir=auto jsr:@deno/deploy@0.0.9904 whoami || true
-
-      - name: Say why nothing was deployed
-        if: env.HAS_TOKEN != 'true'
-        run: |
-          echo "No DENO_DEPLOY_TOKEN secret, so there is nothing to deploy to."
-          echo "The site does not need this: without the worker the notices come from the"
-          echo "committed snapshot and the QR block stays hidden, which is the published"
-          echo "behaviour today. README, 'Devolverlle a Pages as dúas cousas que lle faltan'."
-
-  cloudflare:
-    runs-on: ubuntu-24.04
-    # Same arrangement as the Deno job: the token is a secret of an environment that only
-    # main may deploy from, and its absence is a quiet skip rather than a red run.
-    environment: cloudflare
-    env:
-      HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 24
-
-      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run lint
-      - run: pnpm test
       - run: pnpm run worker:build
 
       # wrangler.toml says what goes up: the bundle just built, as it is. wrangler is fetched
@@ -262,9 +73,9 @@ jobs:
       # would be installed by every other job for this one step. It runs with the token, so
       # it is a release more than two weeks old, moved on purpose.
       #
-      # The origin is derived from the repository owner, as in the Deno job, so a fork is not
-      # left answering for this one; the commit is what /api/version reports. Both go in on
-      # every deploy, and wrangler drops any variable a deploy does not name.
+      # The origin is derived from the repository owner, so a fork is not left answering for
+      # this one; the commit is what /api/version reports. Both go in on every deploy, and
+      # wrangler drops any variable a deploy does not name.
       #
       # The account needs its workers.dev subdomain chosen once in the dashboard (Workers &
       # Pages) before the first deploy: wrangler asks for one otherwise, and with no terminal

@@ -2510,7 +2510,7 @@ ok('the limiter turns an address away past its minute, with a 429 and a time to 
 });
 
 ok('the services and the worker bundle for a runtime with no Node in it', () => {
-  // src/services is imported by the browser, server.ts and the Deno worker, so it may use
+  // src/services is imported by the browser, server.ts and the worker, so it may use
   // web standards only (CLAUDE.md). Only the worker's deploy job, on main, ever bundled it
   // that way, so a Node import would have passed every gate and broken the deployment. This
   // is the same esbuild call as `pnpm run worker:build`, for every service too, in memory.
@@ -3700,7 +3700,7 @@ await okAsync('fifty people at one pole are one request to the operator, not fif
 });
 
 await okAsync('the two servers answer the pole question the same way, and only for poles they know', async () => {
-  // Express and the Deno worker share one decision, so the same code cannot get a 404 from
+  // Express and the worker share one decision, so the same code cannot get a 404 from
   // one and a 502 from the other, and no request leaves for a code we cannot resolve.
   const realFetch = globalThis.fetch;
   const asked: string[] = [];

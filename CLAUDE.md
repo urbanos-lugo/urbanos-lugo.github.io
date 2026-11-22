@@ -17,7 +17,7 @@ Tailwind 4 + MapLibre, TypeScript throughout, pnpm, Node >= 22.
 | `tools/` | Everything run from the CLI: the dataset pipeline, the test suite, the stress and reconciliation checks. Never imported by the app. |
 | `data/` | Snapshots the generator reads. Outside `src/` because nothing in the app imports them. |
 | `server.ts` | Express host for local dev and self-hosting. |
-| `worker/index.ts` | The same two endpoints on Cloudflare Workers (and Deno Deploy until that copy is switched off), for the static deployment. |
+| `worker/index.ts` | The same two endpoints on Cloudflare Workers, for the static deployment. |
 | `docs/`, `design/`, `DATA.md` | `docs/`: what a reader is owed, the diagrams, the decisions and the guides for testing by hand on a phone. `design/`: the artboards and the working notes, which the README does not send readers to. `DATA.md`: where every dataset comes from and under what terms. What is still to do is one list: `design/NOTAS-fontes-e-autosuficiencia.md` → «Pendente»; `design/REXISTRO-probas.md` is the log of every round of checks, `docs/DECIDIDO.md` the decisions already taken. |
 
 <important if="you need to run, build, test or regenerate anything">

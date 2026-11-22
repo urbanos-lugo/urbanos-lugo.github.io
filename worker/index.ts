@@ -1,9 +1,9 @@
 /**
  * The two things GitHub Pages cannot do, and nothing else: the operator's service notices
  * and the minutes their page shows behind the QR sticker. Neither site sends a CORS header,
- * so something with a server has to ask on the browser's behalf. On Cloudflare Workers and,
- * until it shuts down, Deno Deploy, written with web standards only, so the same handlers
- * `server.ts` exposes run here unchanged.
+ * so something with a server has to ask on the browser's behalf. On Cloudflare Workers,
+ * written with web standards only, so the same handlers `server.ts` exposes run here
+ * unchanged.
  */
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
 import { operatorTimesResponse } from '../src/services/operatorTimes';

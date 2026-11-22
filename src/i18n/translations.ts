@@ -4,7 +4,7 @@ import { en } from './en';
 
 /**
  * The dictionaries without React. The engine and the services read these, and the services
- * run in the Deno worker too, where the React context in `index.ts` would bring React along.
+ * run in the worker too, where the React context in `index.ts` would bring React along.
  */
 
 export const LANGS = ['gl', 'es', 'en'] as const;

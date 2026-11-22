@@ -111,7 +111,7 @@ async function startServer() {
   });
 
   app.get('/api/alerts', async (req, res) => res.json(await syncOfficialAlerts(queryString(req.query.refresh) === 'true')));
-  // The operator's own minutes at a stop; only a server can ask (no CORS header on their side). Shared with the Deno worker.
+  // The operator's own minutes at a stop; only a server can ask (no CORS header on their side). Shared with the worker.
   app.get('/api/paradas/:code/agora', async (req, res) => {
     const { status, body } = await operatorTimesResponse(queryString(req.params.code));
     return res.status(status).json(body);

@@ -1,7 +1,7 @@
 /**
  * The operator's service notices and the council's traffic notices, read by a server:
  * neither site sends a CORS header, so the browser cannot. Web standards only — this runs
- * under Node and under Deno.
+ * under Node and in the worker.
  */
 import { readCapped } from './readCapped';
 import { asciiLower, plainText } from '../utils/html';

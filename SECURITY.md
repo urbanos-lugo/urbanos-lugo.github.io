@@ -20,7 +20,7 @@ So the interesting surface is small:
 
 - **The Express server** in `server.ts`, if you self-host it, and **the worker** in
   `worker/index.ts`, which answers the same two endpoints for the static site when one is
-  configured: on Cloudflare Workers, and on Deno Deploy until that copy is switched off. Both read outside sources on the browser's behalf, because CORS stops the
+  configured, on Cloudflare Workers. Both read outside sources on the browser's behalf, because CORS stops the
   browser doing it: buslugo.com, the operator's own stop page behind the QR stickers, and,
   from `server.ts` only, the council's traffic feed (the worker stopped asking it in
   October 2026: from there it never answered). Every one of those reads goes to a fixed host, follows no
@@ -46,8 +46,9 @@ links only to buslugo.com or concellodelugo.gal. A hostile answer can be wrong a
 notice, but it cannot run script, break the screen or send anyone elsewhere. If the worker
 named in `API_ORIGIN`, or the `workers.dev` subdomain or account behind it, is ever deleted,
 rebuild the site without it first: someone else could register the name that was freed, and
-the site would go on asking it. The same holds for the Deno project when it goes, for the
-pages loaded before the move.
+the site would go on asking it. The Deno Deploy copy the site asked until 22 November 2026
+went the same way: the site stopped naming it first, and the app was deleted only once the
+pages loaded before the move had updated.
 
 ## What is not a vulnerability here
 
@@ -78,8 +79,7 @@ Dependencies and GitHub Actions are updated weekly by Dependabot. No dependency 
 install script: `pnpm-workspace.yaml` rules on the one that has one (esbuild, refused),
 and a new one stops the install until somebody decides. Every workflow installs with
 `--frozen-lockfile`, and both deploys run the type check and the test suite before they
-build anything. Every action is pinned to a commit, with its version beside it, and the two
-jobs that hold a deploy token run exact tools: Deno and `@deno/deploy` in the `deno-deploy`
-environment, `wrangler` in `cloudflare`. That is where each token belongs, and Settings →
-Environments lets only `main` deploy from them. `pnpm run check:policy` fails if any of that comes loose
+build anything. Every action is pinned to a commit, with its version beside it, and the
+job that holds the deploy token runs an exact `wrangler`, in the `cloudflare` environment.
+That is where the token belongs, and Settings → Environments lets only `main` deploy from it. `pnpm run check:policy` fails if any of that comes loose
 in the workflows.

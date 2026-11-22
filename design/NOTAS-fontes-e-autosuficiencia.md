@@ -293,10 +293,13 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
      `https://urbanos-lugo-api.urbanos-lugo.workers.dev`, e a CSP colle a orixe dela só.
      PRIVACY.md, SECURITY.md, DATA.md, CLAUDE.md, o README e o diagrama de arquitectura din
      Cloudflare.
-   - **O que queda:** a copia de Deno segue uns días para as páxinas cargadas antes do
-     cambio. Despois, fóra: o traballo `deno` de `deploy-worker.yml`, a app en Deno Deploy,
-     o segredo `DENO_DEPLOY_TOKEN` e a variable `DENO_DEPLOY_ORG`, co que os documentos din
-     dela. E nun par de fins de semana de partido, se a IP do enderezo cae nos bloqueos.
+   - **A copia de Deno, fóra** (rolda 91): `deploy-worker.yml` só ten o traballo de
+     Cloudflare, `check:policy` xa non pide a versión de Deno, e os documentos xa non a dan
+     por viva. Do dono, uns días despois do 22 de novembro: borrar a app `urbanos-lugo-api`
+     na consola de Deno Deploy, o ambiente `deno-deploy` co seu segredo `DENO_DEPLOY_TOKEN` e
+     a variable de repositorio `DENO_DEPLOY_ORG`, e despois publicar.
+   - **O que queda:** nun par de fins de semana de partido, se a IP do enderezo cae nos
+     bloqueos.
 
 ## Feito dende que se escribiu isto
 
