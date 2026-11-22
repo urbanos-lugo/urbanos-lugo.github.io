@@ -276,6 +276,19 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
      válido ata o 17 de maio de 2025, e este equipo tampouco o acepta (`CERT_HAS_EXPIRED`).
      `check:parsers` xa o dixo o 16 de novembro, e pasou en verde porque sen páxina non
      afirma nada. Mentres o operador non o renove, os QR só dan as estimacións da app.
+   - **Os QR, mirados** (22 de novembro): o 9 de novembro `check:parsers` nin conectaba
+     (`UND_ERR_CONNECT_TIMEOUT`), e o 16 xa saía o certificado de maio de 2025: algo cambiou
+     nese servidor entre as dúas datas. Na mesma máquina (212.145.223.10) `urbanoslugo.com`
+     ten un certificado de Let's Encrypt renovado o 20 de outubro de 2026, pero non serve as
+     páxinas dos postes (o seu https leva a http, e o http dá 404); por http,
+     `info.urbanoslugo.com` leva a https. O mesmo día, buslugo.com publica para todas as
+     liñas «Error en el sistema de geolocalización», o que fai pensar que o sistema dos
+     minutos en directo tamén falla, aínda que iso non se pode medir desde fóra. Non se
+     atopou outra fonte deses minutos: nin GTFS-Realtime no punto de acceso nacional nin
+     datos abertos do Concello; unha app de iOS dun particular di ter chegadas en tempo
+     real, sen dicir de onde; e o Concello prevé un SAE novo con app e Google Maps, aínda
+     non en marcha. Ler sen validar TLS non é opción. O arranxo é do operador (Monbus
+     Urbanos): engadir `info.urbanoslugo.com` á renovación que xa fai.
    - **O cambio, feito** (22 de novembro de 2026, rolda 89): `API_ORIGIN` é
      `https://urbanos-lugo-api.urbanos-lugo.workers.dev`, e a CSP colle a orixe dela só.
      PRIVACY.md, SECURITY.md, DATA.md, CLAUDE.md, o README e o diagrama de arquitectura din
