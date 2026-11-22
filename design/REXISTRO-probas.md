@@ -6762,3 +6762,33 @@ despregue (1.8.0).
 
 - Despregalo (unha 1.8.1) e mirar `/api/alerts` e os minutos dun poste de día no
   enderezo novo, antes de cambiar `API_ORIGIN`.
+
+## Rolda 89: o sitio pregúntalle á API en Cloudflare — 22 de novembro de 2026
+
+Pedido: pasar o sitio á API de Cloudflare, coa de Deno aínda en marcha.
+
+### Feito
+
+- A 1.8.1 (`6272767`) despregada: ás 11:40 UTC o worker de
+  `urbanos-lugo-api.urbanos-lugo.workers.dev` leu os dous avisos de buslugo.com en 0,47 s,
+  co commit e a cabeceira CORS correctos. Os minutos dun poste non, pero tampouco desde Deno
+  nin desde este equipo: o certificado de `info.urbanoslugo.com` caducou (NOTAS).
+- A variable de repositorio `API_ORIGIN`, de `https://urbanos-lugo-api.braisbrg.deno.net` a
+  `https://urbanos-lugo-api.urbanos-lugo.workers.dev`, posta xusto antes do push a `main`
+  para que a build dese push xa a colla.
+- PRIVACY.md (o host da táboa, quen aloxa a API e quen garda rexistros), SECURITY.md (o
+  worker, o nome que se libera se se borra, os dous traballos con token), DATA.md, CLAUDE.md
+  (o mapa e, nos servizos, que o `fetch` de Cloudflare non acepta `redirect: 'error'`), o
+  README (a táboa de arquitectura, o texto e o alt do diagrama, a sección da API e «O que
+  queda») e o diagrama de arquitectura, redebuxado co Chrome 157 da caché de Puppeteer. O
+  script reescribiu tamén `datos-light.png` e `etiquetas-dark.png` sen cambiar as súas
+  fontes, e quedan como estaban.
+- NOTAS: o cambio, feito; o que queda para apagar a copia de Deno.
+
+### Comprobado
+
+- As cinco portas.
+
+### Queda
+
+- Uns días coas dúas APIs; despois, fóra a de Deno (NOTAS, punto 3).
