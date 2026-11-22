@@ -6823,3 +6823,40 @@ que non pasa só.
 
 - O luns, o traballo semanal sairá en vermello mentres o operador non renove o certificado
   de `info.urbanoslugo.com`: é o aviso que faltaba, non un fallo novo.
+
+## Rolda 91: fóra a copia de Deno da API — 22 de novembro de 2026
+
+Pedido: retirar a copia da API en Deno Deploy, agora que o sitio publicado lle pregunta á de
+Cloudflare.
+
+### Feito
+
+- `deploy-worker.yml`: fóra o traballo de Deno e o seu ambiente `deno-deploy`. Queda o de
+  Cloudflare, que colle os comentarios que explicaban o ambiente e `HAS_TOKEN`; a cabeceira
+  e o permiso contan a mudanza en pasado.
+- `tools/checkPolicy.ts`: fóra a comprobación de `deno-version`, que xa non tiña nada que
+  ler. Seguen as de `jsr:`/`npm:` e `pnpm dlx`, e esta última é a que fixa `wrangler`.
+- README (a árbore, a integración continua, a sección da API e «O que queda»), SECURITY.md
+  (o worker, o nome que se libera e o traballo con token), PRIVACY.md, CLAUDE.md, NOTAS
+  (punto 3) e DECIDIDO. DATA.md xa contaba Deno en pasado. Os comentarios que dicían «the
+  Deno worker» en `server.ts`, `src/services/`, `src/i18n/translations.ts` e `tools/test.ts`,
+  e a cabeceira de `worker/index.ts`, din «the worker». A lectura de `Deno.env` en
+  `worker/index.ts` queda: non estorba, e deixa correlo nun Deno propio.
+
+### Comprobado
+
+- Antes de tocar nada, ás 12:36 UTC: `/api/version` do worker de Cloudflare dá `6272767`
+  (a 1.8.1; entre ela e `main` non cambiou nada do que está feito o worker), e
+  `/api/alerts` coa orixe `https://urbanos-lugo.github.io` dá 200, `active_incidents`, dous
+  avisos e a cabeceira CORS desa orixe.
+- As cinco portas: lint; 185 comprobacións en 10,4 s; 26 políticas, coa de `pnpm dlx`
+  fixando `wrangler@4.158.0`; as dúas varridas («every answer held up», «every journey
+  held together»); a build.
+
+### Queda
+
+- Do dono, uns días despois do 22 de novembro, cando as páxinas cargadas antes do cambio xa
+  se actualizasen: borrar a app `urbanos-lugo-api` na consola de Deno Deploy, o ambiente
+  `deno-deploy` co segredo `DENO_DEPLOY_TOKEN` e a variable de repositorio `DENO_DEPLOY_ORG`;
+  despois, publicar, que os documentos xa a dan por apagada. Borrado o segredo antes, o
+  traballo de Deno que aínda está en `main` non fai nada e dío.
