@@ -6634,3 +6634,71 @@ sitios, coas costas.
   lelo contra os arranxos feitos a man.
 - Despois do arranxo hai camiños rurais longos que antes eran unha recta: ao Castro de Ramil,
   7.980 m para 1.089 m en recta. É o que dá a rede sen a N-VI.
+
+## Rolda 86: a suite, de dous minutos a doce segundos — 21 de novembro de 2026
+
+Pedido: que as comprobacións tarden o menos posible sen perder ningunha, porque son o bucle
+que espera cada cambio, e quen o espera corrixe antes canto antes sabe que rompeu algo.
+
+### Feito
+
+- **Medido primeiro.** As cinco portas en develop: lint 2,2 s, `pnpm test` 125,3, política
+  2,0, `check:deep` 27,5 e build 16,9. Cada comprobación cronometrada: cinco levaban 88 dos
+  120 s, todas planificando ou buscando. O perfil do planificador (22,1 ms por viaxe) tiña
+  arredor da metade en `calculateRelevanceScore` e `matchesWordsEitherWay`: cada viaxe busca
+  os seus dous nomes contra todos os nomes que se poden buscar, e cada nome se volvía
+  normalizar, expandir e partir en cada busca.
+- `src/utils/searchUtils.ts`: as formas de cada nome (`nameForms`) e as da busca
+  (`queryForms`, cos seus patróns) gárdanse unha vez. 4,7 ms por busca a 1,7, e 22,1 ms por
+  viaxe a 14,0. A versión vella e a nova, comparadas: 1.151 buscas contra 3.431 nomes,
+  3.949.081 pares, ningunha diferenza nin na puntuación nin en `matchesWordsEitherWay`.
+- `src/utils/places.ts`: `resolveLocationQuery` lembra o que respondeu sen posición, polo
+  texto tal cal, conxelado por ser compartido. Sen posición o idioma non cambia nada: só nomea
+  «a miña localización», que a precisa. Comprobación nova: unha copia do módulo que non lembra
+  nada responde o mesmo en cada idioma despois de que este respondese en galego. Rota a
+  propósito (en `es` sen posición, nada), falla en «Praza Maior».
+- `tools/test.ts`:
+  - A mostra de viaxes de `sampleTrips` planifícase unha vez por momento; tres comprobacións
+    planificaban cada unha a mesma.
+  - **A dos paseos de horas era máis débil do que dicía.** O seu paso (`i * 67`, `i * 131 +
+    17`, módulo 417) volvía ao principio despois de 417 paradas: 2.000 voltas planificaban
+    334 pares 1.602 veces e xulgaban 28 casos, seis distintos, co mínimo en «máis de 5». O
+    comentario contaba que se ampliara de 500 a 2.000 pares, e non entrara ningún par novo.
+    Agora colle un de cada cen pares que non se poden andar en 75 minutos (47.428 dos
+    173.472), mirando a distancia entre os dous sitios que resolve cada nome, que é a que usa
+    o paseo enteiro: 475 viaxes, 30 casos distintos, mínimo 20. Coa regra do planificador
+    rota a propósito, falla: «San Roque (Jardín) → Cruce Farxocos - Bóveda: leads with a 89
+    min walk while a bus plan exists».
+  - A da zona horaria creaba un `Intl.DateTimeFormat` en cada un dos 14.112 instantes; agora
+    un só.
+- **`tools/runTests.ts`, o que corre `pnpm test`.** Pasa `tools/test.ts` en copias á vez,
+  unha por núcleo ata oito (`TEST_JOBS`). Cada copia percorre o ficheiro e corre só as
+  comprobacións que reclama primeiro, creando o seu ficheiro nun cartafol común (creación
+  exclusiva). Sen dependencias escondidas entre comprobacións: pasaron con 4, 6, 8 e 16
+  copias. As que len a mesma mostra van xuntas (`ok(nome, fn, grupo)`): repartidas, cada
+  copia planificaba a súa. A de que ningunha tocou a rede corre en todas, porque cada copia
+  leva a súa lista. Se unha copia falla, as outras non empezan ningunha máis en vez de
+  matalas, porque unha matada a medias deixa vivo o servidor que lanzou e en Windows non o
+  remata ninguén; sae o erro e o nome da comprobación. Remata coas cinco máis lentas.
+  `pnpm exec tsx tools/test.ts` pásaa nun proceso, en orde, como antes.
+- README (a árbore de `tools/` e o que custa a verificación), CLAUDE.md e CONTRIBUTING.md.
+
+### Comprobado
+
+- Tres pasadas alternas nun equipo de 8 núcleos físicos (16 lóxicos), sen nada máis pesado
+  correndo: a suite vella 122,1/128,7/122,6 s; a nova nun proceso 28,7/32,3/29,4; a nova
+  repartida 13,2/12,0/11,1; `check:deep` vello 26,2/27,0/24,5 e novo 12,7/12,4/11,5.
+- Copias, antes de agrupar a mostra: 4 en 17,1 s, 8 en 15,5, 16 en 16,9; despois, 4 en
+  16,9, 6 en 13,6 e 8 en 10,3. Unha copia que non corre nada (todo reclamado) tarda 0,5 s
+  en cargar e percorrer o ficheiro: o que custa non é arrancar, senón que cada copia enche
+  as súas propias memorias e que pasado o oito comparten núcleo.
+- O fallo, co lanzador: «failed: a place found once is the place a fresh search finds, in
+  every language», e as outras copias saen soas.
+- As cinco portas na árbore da rama: lint, 184 comprobacións, 26 políticas, `check:deep` e a
+  build.
+
+### Queda
+
+- O runner de CI ten 4 vCPU: o tempo do paso `pnpm test` alí dirao o primeiro CI.
+- O suelo é o planificador mesmo, uns 10 ms por viaxe sen a busca: `parseTimeToMinutes` e
+  `formatMinutes` levan un 8 % do seu perfil, e o resto está repartido.
