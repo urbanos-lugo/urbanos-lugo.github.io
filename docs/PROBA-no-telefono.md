@@ -52,7 +52,11 @@ Chrome › Instalar a app. Abrila desde a icona.
    en Chrome.
 3. Poñer «Avisarme ao chegar» nunha parada e mirar o mapa: ao volver á parada, o aviso
    segue posto.
-4. Escribir algo no buscador e, co teclado aínda aberto, saír a outra app e volver; despois,
+4. Tocar a campá dunha saída a uns seis minutos, aceptar as notificacións e deixar a app
+   aberta e a pantalla acesa: ao faltar cinco sae a notificación. Pasar entón a outra app e
+   tocala: volve á que xa estaba aberta. En Android, e nun iPhone coa app instalada. O mesmo con
+   «Avisarme ao chegar», chegando á parada coa app diante.
+5. Escribir algo no buscador e, co teclado aínda aberto, saír a outra app e volver; despois,
    o mesmo coa app instalada, e bloqueando o teléfono. Cada vez, a barra de abaixo está
    pegada ao bordo da pantalla, sen oco debaixo, desde o primeiro instante.
 

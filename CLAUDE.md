@@ -39,7 +39,7 @@ green:
 pnpm run lint          # tsc --noEmit
 pnpm test              # tools/test.ts as copies side by side (tools/runTests.ts) — prints "N checks passed in T s"
 pnpm run check:policy  # tools/checkPolicy.ts — pins, triggers, network tools, documents, lockfile, design vocabulary
-pnpm run check:deep    # invariant + planner sweeps over the whole dataset, ~12s
+pnpm run check:deep    # invariant + planner + best-route sweeps over the whole dataset, ~20s
 pnpm run build         # vite build + esbuild of the server bundle
 ```
 
@@ -143,8 +143,8 @@ show — what the workflows pin and run, what the documents name, which values a
 the interface may spell — is repository policy, and lives in `tools/checkPolicy.ts`, not in
 the suite.
 
-`pnpm run check:deep` is the other half: two sweeps over the full dataset that `pnpm
-test` cannot reach. Run it before claiming a data or planner change works.
+`pnpm run check:deep` is the other half: three sweeps over the full dataset that `pnpm
+test` cannot reach; the third looks for the best trip on its own and compares the planner with it. Run it before claiming a data or planner change works.
 
 </important>
 

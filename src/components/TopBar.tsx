@@ -2,7 +2,7 @@ import { useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode 
 import { Landmark, MapPin, Menu, Navigation, QrCode, Search, Star, X } from 'lucide-react';
 import { BUS_LINES, poleCode } from '../data/transitData';
 import { MAX_QUERY_LENGTH, calculateRelevanceScore, matchesQuery } from '../utils/searchUtils';
-import { getNearestStopToCoords, rankLandmarks, rankStops } from '../utils/places';
+import { getNearestStopToCoords, rankSites, rankStops } from '../utils/places';
 import { BusLine, BusStop } from '../types';
 import { useT } from '../i18n';
 import { LineBadge } from './ui/LineBadge';
@@ -44,9 +44,7 @@ function searchAll(q: string) {
       .sort((a, b) => b.score - a.score)
       .slice(0, 4)
       .map((x) => x.l),
-    places: rankLandmarks(q)
-      .slice(0, 3)
-      .map(({ landmark }) => ({ lm: landmark, ...getNearestStopToCoords(landmark.lat, landmark.lng) })),
+    places: rankSites(q, 3).map((lm) => ({ lm, ...getNearestStopToCoords(lm.lat, lm.lng) })),
   };
 }
 
@@ -117,7 +115,10 @@ export function TopBar({ onSelectStop, onSelectLine, onSelectPlace, onShowPlace,
       }}
       className="relative border-b border-line bg-bg px-cap-3.5 py-3 lg:px-6"
     >
-      <div className="flex items-center gap-2">
+      {/* Over the page and under the rows and the bars: a tap past the list puts it away and does nothing
+          else. Whatever the list's edge left of a button, 21 px of one at "catedral", was a target (2.5.8). */}
+      {open && q.length > 0 && <div aria-hidden="true" onClick={() => setOpen(false)} className="fixed inset-0 z-map-sheet lg:left-(--container-rail)" />}
+      <div className={`flex items-center gap-2 ${open && q.length > 0 ? 'relative z-map-sheet' : ''}`}>
         {/* The buttons in the bar are sized in px like the bar itself: in rem they doubled with
             the type inside a 46 px bar, and at 200% the QR button was pushed half out of it.
             The field's focus ring is drawn on this box, the shape the eye takes for the field:

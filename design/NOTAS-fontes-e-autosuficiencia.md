@@ -295,11 +295,19 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
      Cloudflare.
    - **A copia de Deno, fóra** (rolda 91): `deploy-worker.yml` só ten o traballo de
      Cloudflare, `check:policy` xa non pide a versión de Deno, e os documentos xa non a dan
-     por viva. Do dono, uns días despois do 22 de novembro: borrar a app `urbanos-lugo-api`
-     na consola de Deno Deploy, o ambiente `deno-deploy` co seu segredo `DENO_DEPLOY_TOKEN` e
-     a variable de repositorio `DENO_DEPLOY_ORG`, e despois publicar.
+     por viva. A app da consola de Deno Deploy está borrada, en GitHub xa non hai o ambiente
+     `deno-deploy` nin a variable `DENO_DEPLOY_ORG` (mirado o 23 de novembro), e na rolda 92
+     saíu do worker a lectura de `Deno.env`, que xa non usaba ninguén.
    - **O que queda:** nun par de fins de semana de partido, se a IP do enderezo cae nos
      bloqueos.
+
+4. **As notificacións, nun teléfono de verdade**, cousa do dono: desde a rolda 92 amósaas o
+   *service worker* onde a páxina non pode, e só se probou no código
+   ([`PROBA-no-telefono.md`](../docs/PROBA-no-telefono.md), apartado 3).
+5. **Tres zonas lonxe de onde OSM pon o barrio do mesmo nome** (rolda 92): «Acea de Olga»
+   (1,7 km), «O Ceao» (1,6) e «A Cheda» (1,1). Hai que saber que lle chama así a xente.
+6. **A segunda pasada polo mesmo poste, en Ruta e na ficha da liña** (3.1, 3.2 e 6): só a ten o
+   taboleiro (`callsAt`).
 
 ## Feito dende que se escribiu isto
 

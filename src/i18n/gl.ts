@@ -186,8 +186,10 @@ export const gl = {
     phones: 'Teléfonos de atención',
     portals: 'Portais de referencia',
     lastCheck: 'Última verificación oficial:',
+    /** Under a notice still up after the day it was to end. */
+    forecastOver: (date: string) => `O operador prevía que rematase o ${date} e aínda non o retirou: pode que xa non siga así.`,
     snapshotNotice: (at: string) =>
-      `Isto non se acaba de comprobar: é a copia que deixou a tarefa programada o ${at}. Esta versión da web non ten servidor que poida preguntarlle ao operador agora mesmo, así que un aviso pode xa non estar vixente. Comproba en buslugo.com se che afecta.`,
+      `Isto non se acaba de comprobar: é o que dicía o operador na última lectura, o ${at}. Agora mesmo non hai resposta súa, así que un aviso pode xa non estar vixente. Comproba en buslugo.com se che afecta.`,
     source: 'Fonte oficial:',
     /** Said, not shown, when a check the reader asked for has answered. */
     checked: (count: number) => (count === 0 ? 'Comprobado: o operador non ten avisos' : count === 1 ? 'Comprobado: 1 aviso do operador' : `Comprobado: ${count} avisos do operador`),
@@ -253,7 +255,8 @@ export const gl = {
     /* Sen o reconto.
        Dicía «4 de 55», que soa a que gardamos corenta e nove respostas nun caixón. O que
        queda fóra son as mesmas liñas saíndo máis tarde: o planificador ordena por
-       isBetterPlan — servizo en marcha primeiro, despois quen chega antes — e amosa as
+       isBetterPlan — servizo en marcha primeiro, despois quen chega antes, ou quen sae máis
+       tarde se se pide chegar a unha hora — e amosa as
        catro primeiras, así que son as mellores e non unha mostra. */
     optionsTitle: 'Mellores opcións de traxecto',
     moreOptions: (count: number) => (count === 1 ? '1 opción máis' : `${count} opcións máis`),
@@ -267,6 +270,8 @@ export const gl = {
     walkLeg: (metres: number, minutes: number) => `A pé · ${metres} m · ${minutes} min`,
     tripInfoTitle: 'Información',
     unreachableWalk: 'A pé non chegas a tempo a este bus',
+    /** Asked to be there by a time, and the walk at the far end, measured, ends after it. */
+    lateWalk: 'Co paseo medido chegas despois da hora pedida',
     stepByStepTitle: 'Paso a paso',
     timeProvenanceMeasured:
       'Os tramos a pé están medidos sobre as rúas de OpenStreetMap, neste dispositivo, non estimados. As horas de bus seguen a vir do cadro horario oficial; as marcadas con ~ dedúcense do tempo de percorrido medido por estrada.',

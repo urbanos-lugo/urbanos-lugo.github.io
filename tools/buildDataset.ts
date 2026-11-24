@@ -41,6 +41,8 @@ const ZONES: { name: string; lat: number; lng: number }[] = [
   { name: 'Garabolos', lat: 43.0288, lng: -7.5721 },
   { name: 'O Ceao', lat: 43.0385, lng: -7.5671 },
   { name: 'As Gándaras', lat: 43.0395, lng: -7.546 },
+  // The neighbourhood, as OSM places it, south of its industrial estate: with the estate alone, Czda. Gándaras was A Piringalla's.
+  { name: 'As Gándaras', lat: 43.02707, lng: -7.54995 },
   { name: 'HULA', lat: 43.0195, lng: -7.5332 },
   { name: 'Fontiñas', lat: 43.0065, lng: -7.5428 },
   { name: 'A Tolda / Montirón', lat: 43.0018, lng: -7.5401 },
@@ -51,10 +53,12 @@ const ZONES: { name: string; lat: number; lng: number }[] = [
   { name: 'Oeste / Américas', lat: 43.0118, lng: -7.5696 },
   { name: 'Fonte dos Ranchos', lat: 43.0135, lng: -7.5672 },
   { name: 'A Piringalla', lat: 43.0265, lng: -7.5582 },
+  { name: 'A Piringalla', lat: 43.02375, lng: -7.57041 }, // where OSM places it, across Avda. Coruña
   { name: 'Casás / Abella', lat: 43.0218, lng: -7.5684 },
   { name: 'A Ponte', lat: 43.0012, lng: -7.5662 },
   { name: 'A Cheda', lat: 42.9975, lng: -7.5741 },
-  { name: 'Cemiterio', lat: 43.0325, lng: -7.5812 },
+  // San Froilán's, by the Friol road: at 43.0325, -7.5812 it named 16 stops of the N-VI, the nearest 5.4 km from it.
+  { name: 'Cemiterio', lat: 42.9855, lng: -7.5807 },
   { name: 'Rural', lat: 42.95, lng: -7.5 },
 ];
 
@@ -389,12 +393,17 @@ const lines = raw.lines.map((line: any) => {
     let stopIds: string[] = [];
     let geoPos = -1;
     let recovered = false;
-    dir.stops.forEach((ps: number) => {
+    const twice: { stop: string; after: string; before: string | undefined }[] = [];
+    dir.stops.forEach((ps: number, at: number) => {
       const canonical = canonicalByPs.get(ps);
       if (!canonical) return; // no coordinates: the router never saw it either
       const routed = !RECOVERED_BY_TOKEN.has(ps);
       if (routed) geoPos++;
-      if (stopIds.includes(canonical)) return; // a pole listed twice (a terminus loop) would break the leg indices
+      // Kept once, or the leg indices break; a pole the route comes back by is noted on the side.
+      if (stopIds.includes(canonical)) {
+        twice.push({ stop: canonical, after: stopIds[stopIds.length - 1], before: dir.stops.slice(at + 1).map((next: number) => canonicalByPs.get(next)).find(Boolean) });
+        return;
+      }
       if (routed) kept.push(geoPos);
       else recovered = true;
       stopIds.push(canonical);
@@ -419,6 +428,14 @@ const lines = raw.lines.map((line: any) => {
       dirStops = surveyed.order.map((i: number) => dirStops[i]);
     }
 
+    // Where along the way from one stop to the next it comes back by: the share of the two straight lines. Not at the end, where nobody boards.
+    const again = twice.flatMap(({ stop, after, before }) => {
+      if (!before) return [];
+      const [a, b, c] = [after, stop, before].map((id) => stopById.get(id) as any);
+      const [to, from] = [haversine(a.lat, a.lng, b.lat, b.lng), haversine(b.lat, b.lng, c.lat, c.lng)];
+      return [{ stop, after, share: Number((to / (to + from || 1)).toFixed(2)) }];
+    });
+
     const path: [number, number][] = surveyed ? round(surveyed.path) : geo ? round(geo.path) : dirStops.map((st: any) => [st.lat, st.lng] as [number, number]);
     const stopPathIndex = surveyed || geo ? stopVertices(path, dirStops) : [];
 
@@ -440,6 +457,7 @@ const lines = raw.lines.map((line: any) => {
       origin: dir.origin,
       destination: dir.destination,
       stops: stopIds,
+      ...(again.length ? { again } : {}),
       geometrySource: surveyed ? 'osm' : geo ? 'osrm' : 'straight',
       pathCoordinates: path,
       stopPathIndex,
@@ -454,7 +472,6 @@ const lines = raw.lines.map((line: any) => {
     number: line.number,
     name: line.name,
     color,
-    textColor: '#ffffff',
     category: categoryFor(line),
     days: line.days,
     frequency: line.frequency,

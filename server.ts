@@ -1,7 +1,6 @@
 import express from 'express';
 import { existsSync } from 'fs';
 import path from 'path';
-import { createServer as createViteServer } from 'vite';
 import { BUS_STOPS, BUS_LINES, FARE_INFO } from './src/data/transitData';
 import { getArrivalsForStop } from './src/utils/arrivals';
 import { getScheduledBuses } from './src/utils/vehicles';
@@ -123,7 +122,9 @@ async function startServer() {
   // Which client to serve is the caller's intent: `--dev` gets Vite, everything else the build, and no build is an error rather than a quiet fallback.
   const distPath = path.join(process.cwd(), 'dist');
   if (isDev) {
-    const vite = await createViteServer({ server: { middlewareMode: true }, appType: 'spa' });
+    // Only here: imported above, the built server would not start without a development tool.
+    const { createServer } = await import('vite');
+    const vite = await createServer({ server: { middlewareMode: true }, appType: 'spa' });
     app.use(vite.middlewares);
   } else if (existsSync(path.join(distPath, 'index.html'))) {
     // Serve the compressed copy the build already wrote (vite.config.ts), when the browser accepts one:
@@ -132,16 +133,19 @@ async function startServer() {
       res.setHeader('Vary', 'Accept-Encoding');
       if (req.method !== 'GET' && req.method !== 'HEAD') return next();
       const accepted = String(req.headers['accept-encoding'] ?? '');
+      // A page's address is its folder's, and what was compressed is the index.html in it.
+      const file = req.path.endsWith('/') ? `${req.path}index.html` : req.path;
       for (const [token, suffix] of ENCODINGS) {
         if (!accepted.includes(token)) continue;
         // A request is not allowed to name a file outside the build -- with the separator:
         // `startsWith(distPath)` alone let /../dist-server/ through, a sibling that also begins "dist".
-        const target = path.join(distPath, req.path + suffix);
+        const target = path.join(distPath, file + suffix);
         if (!target.startsWith(distPath + path.sep) || !existsSync(target)) continue;
-        const type = TYPES[path.extname(req.path).toLowerCase()];
+        const type = TYPES[path.extname(file).toLowerCase()];
         if (type) res.setHeader('Content-Type', type);
         res.setHeader('Content-Encoding', token);
-        req.url = req.url.replace(req.path, req.path + suffix);
+        const query = req.url.indexOf('?');
+        req.url = file + suffix + (query < 0 ? '' : req.url.slice(query));
         return next();
       }
       return next();

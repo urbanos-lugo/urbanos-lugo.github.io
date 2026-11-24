@@ -7,9 +7,9 @@ import { atStop, type NoticeChanges } from '../utils/noticeChanges';
 import { NoticeHere, NotHere } from './ui/NoticeHere';
 import { LazyNearbyMiniMap } from './Map/LazyNearbyMiniMap';
 import { lineById, poleCode } from '../data/transitData';
-import { getArrivalsForStop, nextServiceAtStop, rowKeys, timingPointStopCount } from '../utils/arrivals';
+import { busKey, dueWatches, getArrivalsForStop, nextServiceAtStop, rowKeys, timingPointStopCount } from '../utils/arrivals';
 import { getNearbyLines, getNearbyStops } from '../utils/places';
-import { dayWord } from '../utils/serviceLabels';
+import { dayWord, dueWord } from '../utils/serviceLabels';
 import { LOCALE, useLang, useT } from '../i18n';
 import type { Tab } from '../routes';
 import { newIssueUrl } from '../project';
@@ -111,9 +111,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
     if (!atTime && kind !== today) setAtTime(formatMinutes(Math.floor(minutesNow())));
   };
 
-  /** "Tell me before the bus gets here": one watch per line, checked on the board's own refresh. Fires once. */
-  const [watches, setWatches] = useState<Record<string, number>>({});
-  const firedRef = useRef<Set<string>>(new Set());
+  /** "Tell me before the bus gets here": the buses asked about, by their busKey. Each rings once. */
+  const [watches, setWatches] = useState<string[]>([]);
   const [firedMessage, setFiredMessage] = useState<string | null>(null);
 
   /** Computed once: a timezone does not change while somebody reads a bus board. */
@@ -122,21 +121,14 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const polesNearby = useMemo(() => getNearbyStops(selectedStop.lat, selectedStop.lng).filter((s) => s.id !== selectedStop.id && s.walkMeters <= 350).slice(0, 8), [selectedStop]);
   const timingPoints = timingPointStopCount();
 
-  const toggleWatch = async (lineId: string) => {
-    setWatches((prev) => {
-      const next = { ...prev };
-      if (next[lineId] === WATCH_LEAD_MINUTES) delete next[lineId];
-      else next[lineId] = WATCH_LEAD_MINUTES;
-      return next;
-    });
-    firedRef.current.delete(lineId);
-    await requestNotificationPermission();
+  const toggleWatch = (key: string) => {
+    setWatches((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+    void requestNotificationPermission();
   };
 
   // Watches belong to one stop.
   useEffect(() => {
-    setWatches({});
-    firedRef.current.clear();
+    setWatches([]);
     setFiredMessage(null);
   }, [selectedStop.id]);
 
@@ -164,11 +156,13 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
     setAlarmFired(false);
     // On before the watch: a browser with no geolocation answers inside watchForStop, and the off that answer sets must come last.
     setAlarmOn(true);
+    void requestNotificationPermission();
     alarmRef.current = watchForStop(
       selectedStop,
       () => {
         setAlarmFired(true);
         ringAlarm();
+        notify(t.arrivals.watchTitle, t.arrivals.alarmFired(selectedStop.name));
       },
       setAlarmDistance,
       (reason) => {
@@ -207,17 +201,26 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   // Another stop, or another time asked for, is the reader's own doing: drawn at once.
   const arrivals = useMemo<StopArrival[]>(() => getArrivalsForStop(selectedStop.id, boardMoment()).arrivals, [selectedStop.id, atTime, daysAhead, tick]);
 
+  // Read on a clock of its own, off the timetable now: the rows may be another hour's, where a
+  // watch rang for a bus at the time looked up, or be waiting for a finger to lift.
   useEffect(() => {
-    for (const arrival of arrivals) {
-      const lead = watches[arrival.lineId];
-      if (lead === undefined || firedRef.current.has(arrival.lineId) || arrival.etaMinutes > lead) continue;
-      firedRef.current.add(arrival.lineId);
-      const message = t.arrivals.watchFired(arrival.lineNumber, arrival.etaMinutes, selectedStop.name);
+    if (!watches.length) return;
+    const check = () => {
+      const { due, waiting } = dueWatches(watches, getArrivalsForStop(selectedStop.id).arrivals, WATCH_LEAD_MINUTES);
+      if (waiting.length < watches.length) setWatches(waiting);
+      if (!due.length) return;
+      const message = due.map((a) => t.arrivals.watchFired(a.lineNumber, a.etaMinutes, selectedStop.name)).join(' ');
       setFiredMessage(message);
       ringAlarm();
       notify(t.arrivals.watchTitle, message);
-    }
-  }, [arrivals, watches, selectedStop.name]);
+    };
+    const interval = setInterval(check, 15_000);
+    const unshown = onShown(check);
+    return () => {
+      clearInterval(interval);
+      unshown();
+    };
+  }, [watches, selectedStop, t]);
 
   // Read again every 15 s because the minutes count down against the wall clock, and the moment
   // the phone is woken; nothing is fetched, so no "last updated". While a finger is on the board
@@ -274,8 +277,9 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
     }
     for (const group of byKey.values()) {
       // Two departures give one gap, a sample of one; from three, the median says something.
-      if (group.departures.length < 3) continue;
-      const gaps = group.departures.slice(1).map((d, i) => d.etaMinutes - group.departures[i].etaMinutes).sort((a, b) => a - b);
+      const buses = group.departures.filter((d) => !d.again);
+      if (buses.length < 3) continue;
+      const gaps = buses.slice(1).map((d, i) => d.etaMinutes - buses[i].etaMinutes).sort((a, b) => a - b);
       group.headwayMinutes = Math.round(gaps[Math.floor(gaps.length / 2)]);
     }
     return [...byKey.values()].sort((a, b) => a.lineNumber.localeCompare(b.lineNumber, 'es', { numeric: true }) || a.destination.localeCompare(b.destination, 'es'));
@@ -302,20 +306,21 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
   const shareStop = () => link.share(`${window.location.origin}${window.location.pathname}?parada=${selectedStop.id}`, selectedStop.name);
 
   /** Minutes, with the tilde carrying "derived" in the figure; overdue is quieter, the least certain thing on the screen. */
-  const Minutes = ({ arrival }: { arrival: StopArrival }) => (
-    <span className={`figure shrink-0 ${arrival.overdueMinutes ? 'text-ink-3' : arrival.etaMinutes === 0 ? 'text-accent' : 'text-ink-max'}`}>
-      {arrival.overdueMinutes ? (
-        <span className="text-emph">{t.common.overdue(arrival.overdueMinutes)}</span>
-      ) : arrival.etaMinutes === 0 ? (
-        <span className="text-emph">{t.common.arrivingNow}</span>
-      ) : (
-        <>
-          <Approx on={arrival.precision === 'estimated'} />
-          {arrival.etaMinutes}
-        </>
-      )}
-    </span>
-  );
+  const Minutes = ({ arrival }: { arrival: StopArrival }) => {
+    const word = dueWord(lang, arrival);
+    return (
+      <span className={`figure shrink-0 ${arrival.overdueMinutes ? 'text-ink-3' : word ? 'text-accent' : 'text-ink-max'}`}>
+        {word ? (
+          <span className="text-emph">{word}</span>
+        ) : (
+          <>
+            <Approx on={arrival.precision === 'estimated'} />
+            {arrival.etaMinutes}
+          </>
+        )}
+      </span>
+    );
+  };
   const provenance = (a: StopArrival) => <Provenance precision={a.precision} extra={a.etaTime} title={a.precision === 'published' ? t.arrivals.publishedHint : t.arrivals.estimatedHint} />;
   // The line is in the name, not only on the badge: fourteen in a row read as "7, button".
   // `at` is the stop its page marks: this one, or the pole nearby where that line passes.
@@ -331,24 +336,28 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
     />
   );
   // No bell for a bus the notice says will not stop here: there is nothing to be told about.
-  const watchButton = (a: StopArrival) =>
-    !atTime && a.etaMinutes > WATCH_LEAD_MINUTES && !skipsHere(a.lineNumber) ? (
+  const watchButton = (a: StopArrival) => {
+    if (atTime || a.etaMinutes <= WATCH_LEAD_MINUTES || skipsHere(a.lineNumber)) return null;
+    const key = busKey(a);
+    const on = watches.includes(key);
+    return (
       <button
-        onClick={() => toggleWatch(a.lineId)}
+        onClick={() => toggleWatch(key)}
         title={t.arrivals.watchHint(WATCH_LEAD_MINUTES)}
-        aria-pressed={watches[a.lineId] !== undefined}
-        aria-label={watches[a.lineId] !== undefined ? t.arrivals.watchOn : t.arrivals.watchCta(WATCH_LEAD_MINUTES)}
-        className={`flex h-tap min-w-tap items-center justify-center gap-1.5 rounded-control border px-3 text-label font-semibold ${watches[a.lineId] !== undefined ? 'border-warn bg-warn text-warn-ink' : 'border-edge text-ink-2'}`}
+        aria-pressed={on}
+        aria-label={on ? t.arrivals.watchOn : t.arrivals.watchCta(WATCH_LEAD_MINUTES)}
+        className={`flex h-tap min-w-tap items-center justify-center gap-1.5 rounded-control border px-3 text-label font-semibold ${on ? 'border-warn bg-warn text-warn-ink' : 'border-edge text-ink-2'}`}
       >
         <Bell className="h-4 w-4 shrink-0" aria-hidden="true" />
         {/* The words from sm up. On a 375 px phone the official chip and the full label were
             363 px in a 323 px row, so the button fell to a third line on every official row
             and on no estimated one; at 320 px on all of them. */}
         <span className="hidden sm:inline" aria-hidden="true">
-          {watches[a.lineId] !== undefined ? t.arrivals.watchOn : t.arrivals.watchCta(WATCH_LEAD_MINUTES)}
+          {on ? t.arrivals.watchOn : t.arrivals.watchCta(WATCH_LEAD_MINUTES)}
         </span>
       </button>
-    ) : null;
+    );
+  };
   const minUnit = (a: StopArrival) => a.etaMinutes > 0 && <span className="shrink-0 self-end pb-1 text-label text-ink-2">{t.common.min}</span>;
 
   return (
@@ -597,7 +606,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
           className="mx-3 mb-3"
         />
       </Disclosure>
-      {Object.keys(watches).length > 0 && <Notice className="mt-3">{t.arrivals.watchForeground}</Notice>}
+      {watches.length > 0 && <Notice className="mt-3">{t.arrivals.watchForeground}</Notice>}
 
       {/* Drawn above the question it serves: the other poles nearby are how you tell which one is yours. */}
       <section className="rule-above mt-4">

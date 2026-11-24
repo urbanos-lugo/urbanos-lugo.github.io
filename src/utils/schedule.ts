@@ -7,7 +7,7 @@
  * move, so minute arithmetic is the right model and Date arithmetic the wrong one.
  */
 import festivos from '../data/festivos.json';
-import { BusLine, BusStop, DayKind } from '../types';
+import { BusDirection, BusLine, BusStop, DayKind } from '../types';
 import { normalizeText } from './searchUtils';
 
 export const MINUTES_PER_DAY = 1440;
@@ -77,12 +77,15 @@ export function isWithinServiceWindow(line: BusLine, minutes: number): boolean {
 }
 
 /**
- * Cumulative seconds from the first stop to each stop. Two allowances the operator does
- * not publish: 90 s for a leg the build could not measure, 20 s standing at each stop.
+ * Seconds from one stop to the next. Two allowances the operator does not publish: 90 s for a
+ * leg the build could not measure, 20 s standing at each stop.
  */
+export const secondsOfLeg = (legSeconds: number[], leg: number): number => (legSeconds[leg] ?? 90) + 20;
+
+/** Cumulative seconds from the first stop to each stop. */
 function cumulativeSeconds(legSeconds: number[], stopCount: number): number[] {
   const out = [0];
-  for (let i = 1; i < stopCount; i++) out.push(out[i - 1] + (legSeconds[i - 1] ?? 90) + 20);
+  for (let i = 1; i < stopCount; i++) out.push(out[i - 1] + secondsOfLeg(legSeconds, i - 1));
   return out;
 }
 
@@ -95,6 +98,25 @@ export interface ScheduledRun {
   publishedStopIndices: number[];
   /** Last stop pinned to a printed timing point; past it the clock is measured road time. */
   lastTimingPointIndex: number;
+}
+
+/**
+ * When a run calls at a stop it can be boarded at, in minutes: where its route has it, and again
+ * where it comes back by. The 3.1, the 3.2 and the 6 pass one pole twice, about five minutes
+ * apart, and with the first pass alone the board said the bus had gone while it was on its way
+ * back. Not where the run ends: listing that offers a ride nobody can take.
+ * shortcut: the planner and a line's page know the first pass only, until a trip is lost to it.
+ */
+export function callsAt(direction: BusDirection, stopId: string, run: ScheduledRun): { minutes: number; published: boolean; again?: true }[] {
+  const at = run.minutesByStopIndex;
+  const index = direction.stops.indexOf(stopId);
+  const calls: ReturnType<typeof callsAt> = index >= 0 && index < direction.stops.length - 1 ? [{ minutes: at[index], published: run.publishedStopIndices.includes(index) }] : [];
+  for (const { stop, after, share } of direction.again ?? []) {
+    const from = direction.stops.indexOf(after);
+    // Between two stops, so never a time the operator prints.
+    if (stop === stopId) calls.push({ minutes: at[from] + (at[from + 1] - at[from]) * share, published: false, again: true });
+  }
+  return calls.filter((call) => Number.isFinite(call.minutes));
 }
 
 /**

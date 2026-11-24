@@ -38,7 +38,9 @@ export interface BusDirection {
   id: DirectionId;
   origin: string;
   destination: string;
-  stops: string[]; // stop ids in sequence
+  stops: string[]; // stop ids in sequence, each once
+  /** The poles the route comes back by: the stop it was at before, and how far along to the next one. */
+  again?: { stop: string; after: string; share: number }[];
   pathCoordinates: [number, number][]; // [lat, lng] polyline along the real streets
   /** Index into pathCoordinates for each stop, so the path can be sliced per leg. */
   stopPathIndex: number[];
@@ -62,7 +64,6 @@ export interface BusLine {
   number: string;
   name: string; // e.g. "Campus USC - Fingoi - O Ceao"
   color: string;
-  textColor: string;
   category: 'urbano' | 'hospital' | 'periferia' | 'rural' | 'especial';
   /** The operator's prose about the line, kept only so the search matches a line by what it says. */
   description: string;
@@ -87,6 +88,8 @@ export interface StopArrival {
    * timetable cannot tell a late bus from one already gone — just the fact that it passed.
    */
   overdueMinutes?: number;
+  /** A bus that has a row before it, or had one, coming back by the pole (BusDirection.again): no interval is counted from it. */
+  again?: true;
 }
 
 /**
@@ -192,10 +195,13 @@ export interface RoutePlanResult {
   walkFromEndMeters: number;
   totalWaitMinutes: number;
   /**
-   * How much later than asked this plan sets off because the bus was not there yet. It is
-   * the only cushion available when the walk turns out longer than estimated.
+   * How much sooner this plan could set off: the minutes it waits at home because the bus was
+   * not there yet, or, asked to be there by a time, the minutes since the first departure
+   * looked at. It is the only cushion available when the walk turns out longer than estimated.
    */
   slackMinutes: number;
+  /** The time it was asked to be there by, in minutes of the day; absent in a plan that was asked to leave. */
+  arriveBy?: number;
   isServiceActive: boolean;
   serviceNotice?: string;
   /** The day the first bus leaves on, from today: absent or 0 today, 1 tomorrow. */

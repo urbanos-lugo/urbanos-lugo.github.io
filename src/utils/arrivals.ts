@@ -6,7 +6,7 @@ import { BUS_STOPS, BUS_LINES, lineById, stopName } from '../data/transitData';
 import { dayWord, daysLabel } from './serviceLabels';
 import { Lang, translations } from '../i18n/translations';
 import { BusStop, BusLine, DayKind, Precision, StopArrival } from '../types';
-import { MINUTES_PER_DAY, anchorIndex, buildRuns, dayKind, formatMinutes, isHoliday, lineRunsOn, minutesNow, parseTimeToMinutes, type ScheduledRun } from './schedule';
+import { MINUTES_PER_DAY, anchorIndex, buildRuns, callsAt, dayKind, formatMinutes, isHoliday, lineRunsOn, minutesNow, parseTimeToMinutes, type ScheduledRun } from './schedule';
 import { findStop } from './places';
 
 /** Expected crowding from the time of day alone: a prior, labelled as such wherever shown. */
@@ -62,6 +62,20 @@ export function rowKeys(arrivals: readonly Pick<StopArrival, 'lineId' | 'etaTime
   });
 }
 
+/** One bus of a board, whichever row it stands in: its line, its way and the time it is due. */
+export const busKey = ({ lineId, destination, etaTime }: Pick<StopArrival, 'lineId' | 'destination' | 'etaTime'>): string => `${lineId}|${destination}|${etaTime}`;
+
+/**
+ * Of the buses a reader asked to be warned about, those to warn of now and those still to wait
+ * for. By the bus and not by its line: the bell on a 10:39 rang at once for the 09:39, gone three
+ * minutes and still on the board, and had nothing left to say at 10:34. One whose time is
+ * past went by while the phone slept: the row says how long ago, and the bell would say "in 0 min".
+ */
+export function dueWatches(watched: readonly string[], arrivals: readonly StopArrival[], leadMinutes: number): { due: StopArrival[]; waiting: string[] } {
+  const asked = arrivals.filter((a) => watched.includes(busKey(a)));
+  return { due: asked.filter((a) => a.etaMinutes <= leadMinutes && !a.overdueMinutes), waiting: asked.filter((a) => a.etaMinutes > leadMinutes).map(busKey) };
+}
+
 /**
  * Which way of a line to show for a stop it was opened from: the first that can be boarded
  * there. Where a run ends is no call anybody boards, as on the board; a stop no way boards at
@@ -89,24 +103,20 @@ export function getArrivalsForStop(stopIdOrCode: string, now: Date = new Date())
     if (!line || !lineRunsOn(line, today)) continue;
 
     line.directions.forEach((direction, dirIndex) => {
-      const stopIndex = direction.stops.indexOf(stop.id);
-      // The last stop is where the run ends: listing those offers a ride nobody can take.
-      if (stopIndex === -1 || stopIndex === direction.stops.length - 1) return;
-
       buildRuns(line, dirIndex, BUS_STOPS, today)
-        .map((run) => ({
-          minutes: run.minutesByStopIndex[stopIndex],
-          // Per run: a headway-generated run passing a timing point has no published time of its own.
-          published: run.publishedStopIndices.includes(stopIndex),
-        }))
-        .filter((r) => r.minutes !== undefined)
-        // A run listed as 23:50 is still "next" at 00:05, so compare on the same day arc.
-        .map((r) => ({ ...r, minutes: r.minutes < nowMinutes - OVERDUE_GRACE_MINUTES ? r.minutes + MINUTES_PER_DAY : r.minutes }))
-        .filter((r) => r.minutes >= nowMinutes - OVERDUE_GRACE_MINUTES && r.minutes <= nowMinutes + ARRIVALS_HORIZON_MINUTES)
-        .sort((a, b) => a.minutes - b.minutes)
-        // Three, so the by-line view can derive a headway instead of asserting a frequency.
-        .slice(0, 3)
-        .forEach(({ minutes, published }) => {
+        .map((run) =>
+          callsAt(direction, stop.id, run)
+            // A run listed as 23:50 is still "next" at 00:05, so compare on the same day arc.
+            .map((r) => ({ ...r, minutes: r.minutes < nowMinutes - OVERDUE_GRACE_MINUTES ? r.minutes + MINUTES_PER_DAY : r.minutes }))
+            .filter((r) => r.minutes >= nowMinutes - OVERDUE_GRACE_MINUTES && r.minutes <= nowMinutes + ARRIVALS_HORIZON_MINUTES),
+        )
+        .filter((calls) => calls.length > 0)
+        .sort(([a], [b]) => a.minutes - b.minutes)
+        // Three buses, so the by-line view can derive a headway instead of asserting a frequency; one
+        // already on its way back by the pole (`again`) is no interval, and is not one of the three.
+        .filter((_, i, runs) => runs.slice(0, i).filter(([first]) => !first.again).length < 3)
+        .flat()
+        .forEach(({ minutes, published, again }) => {
           // Late is counted from the minute the board prints: rounded separately, a run at
           // 08:16.5 printed as 08:17 was marked overdue at 08:17:00, before its own row's time.
           const late = Math.floor(nowMinutes) - Math.round(minutes);
@@ -120,6 +130,7 @@ export function getArrivalsForStop(stopIdOrCode: string, now: Date = new Date())
             etaTime: formatMinutes(minutes),
             precision: published ? 'published' : 'estimated',
             overdueMinutes: late > 0 ? late : undefined,
+            again,
           });
         });
     });
@@ -199,13 +210,9 @@ export function nextServiceAtStop(stopIdOrCode: string, now: Date = new Date()):
       const line = lineById(lineId);
       if (!line || !lineRunsOn(line, kind)) continue;
       line.directions.forEach((direction, dirIndex) => {
-        const stopIndex = direction.stops.indexOf(stop.id);
         // The board leaves out the bus that ends its run here, and so does this: at 03:00 the
         // HULA pole offered "5ES at 07:30 to HULA" -- a bus nobody can board there.
-        if (stopIndex === -1 || stopIndex === direction.stops.length - 1) return;
-        for (const run of buildRuns(line, dirIndex, BUS_STOPS, kind)) {
-          const minutes = run.minutesByStopIndex[stopIndex];
-          if (minutes === undefined) continue;
+        for (const { minutes, published } of buildRuns(line, dirIndex, BUS_STOPS, kind).flatMap((run) => callsAt(direction, stop.id, run))) {
           const away = minutes + offset - nowMinutes;
           if (away > 0 && (!best || away < best.minutesAway)) {
             best = {
@@ -215,7 +222,7 @@ export function nextServiceAtStop(stopIdOrCode: string, now: Date = new Date()):
               time: formatMinutes(minutes % MINUTES_PER_DAY),
               minutesAway: Math.round(away),
               daysAhead: Math.floor((minutes + offset) / MINUTES_PER_DAY),
-              precision: run.publishedStopIndices.includes(stopIndex) ? 'published' : 'estimated',
+              precision: published ? 'published' : 'estimated',
             };
           }
         }
@@ -246,7 +253,7 @@ const runsByStop = new Map<string, ScheduledRun[]>();
  * planner asks it thousands of times a plan, and filtering and sorting on every question
  * was a tenth of a plan's time. Read-only for callers.
  */
-function runsPassing(line: BusLine, dirIndex: number, kind: DayKind, stopIndex: number): ScheduledRun[] {
+export function runsPassing(line: BusLine, dirIndex: number, kind: DayKind, stopIndex: number): ScheduledRun[] {
   const key = `${line.id}|${dirIndex}|${kind}|${stopIndex}`;
   let runs = runsByStop.get(key);
   if (!runs) {
@@ -275,7 +282,7 @@ interface NextRun {
 let nextRunAt = Number.NaN;
 const nextRuns = new Map<string, NextRun>();
 
-function nextRun(line: BusLine, dirIndex: number, stopIndex: number, targetMinutes: number, now: Date): NextRun {
+export function nextRun(line: BusLine, dirIndex: number, stopIndex: number, targetMinutes: number, now: Date): NextRun {
   if (now.getTime() !== nextRunAt) {
     nextRuns.clear();
     nextRunAt = now.getTime();

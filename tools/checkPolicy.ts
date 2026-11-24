@@ -210,8 +210,8 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
   assert(weekly.includes('pnpm exec tsx tools/checkHolidaysAhead.ts'), 'check-source.yml no longer warns from November that next year’s holidays are missing');
   assert(weekly.includes('pnpm exec tsx tools/checkNoticesReviewed.ts'), 'check-source.yml no longer asks every Monday for the structural notices to be reviewed');
   const pkg = JSON.parse(read('package.json'));
-  assert(pkg.scripts['check:deep'] === 'tsx tools/stressInvariants.ts && tsx tools/stressPlanner.ts', `check:deep runs "${pkg.scripts['check:deep']}", not the two offline sweeps`);
-  for (const sweep of ['tools/stressInvariants.ts', 'tools/stressPlanner.ts']) assert(!/\bfetch\(|overpass\(/.test(read(sweep)), `${sweep} reaches the network, and it is a gate`);
+  assert(pkg.scripts['check:deep'] === 'tsx tools/stressInvariants.ts && tsx tools/stressPlanner.ts && tsx tools/stressRoutes.ts', `check:deep runs "${pkg.scripts['check:deep']}", not the three offline sweeps`);
+  for (const sweep of ['tools/stressInvariants.ts', 'tools/stressPlanner.ts', 'tools/stressRoutes.ts']) assert(!/\bfetch\(|overpass\(/.test(read(sweep)), `${sweep} reaches the network, and it is a gate`);
 
   // Deploying is a push to main or the clock, never a proposal, and checks before it builds.
   for (const [name, build] of [['deploy-pages.yml', 'pnpm run build'], ['deploy-worker.yml', 'pnpm run worker:build']] as const) {

@@ -261,6 +261,3 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
     },
   };
 }
-
-/** What a tap a name took leaves on the event, for the stop dots and the route layer under it. */
-export type TappedEvent = ClaimedEvent;

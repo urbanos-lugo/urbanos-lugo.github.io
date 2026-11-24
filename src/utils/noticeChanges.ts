@@ -1,6 +1,6 @@
 import type { BusStop, ServiceAlert } from '../types';
 import { BUS_LINES, BUS_STOPS, lineById } from '../data/transitData';
-import { buildRuns, dayKind, isoDay, lineRunsOn } from './schedule';
+import { buildRuns, callsAt, dayKind, isoDay, lineRunsOn } from './schedule';
 
 /**
  * What an operator notice changes, read out of its words so the app can use it and not
@@ -45,20 +45,37 @@ const MONTHS: Record<string, number> = {
   agosto: 8, septiembre: 9, setiembre: 9, setembro: 9, octubre: 10, outubro: 10, noviembre: 11, novembro: 11, diciembre: 12, decembro: 12,
 };
 
-/** "los días 3, 4, 5, 9, 10, 11 y 12 de octubre", "os días 3, 4 e 5 de outubro". */
-const DAYS = /\b(?:los|os)\s+dias\s+((?:\d{1,2}\s*(?:,|\by\b|\be\b)\s*)*\d{1,2})\s+de\s+([a-z]+)/;
+/** "los días 3, 4, 5, 9, 10, 11 y 12 de octubre", "os días 3, 4 e 5 de outubro", and a list that goes on: "los días 31 de diciembre y 1 de enero". */
+const DAYS = /\b(?:los|os)\s+dias\s+/g;
+// Each space has one place to go, or a long list that names no month takes a second and doubles with each day more.
+const OF_A_MONTH = /((?:\d{1,2}(?:\s*,\s*(?:[ye]\s+)?|\s+[ye]\s+))*\d{1,2})\s+de\s+([a-z]+)(?:\s+de\s+\d{4})?/y;
+const AND_OF_ANOTHER = /\s*(?:,\s*(?:[ye]\s+)?|[ye]\s+)(?:(?:los|os)\s+dias\s+)?/y;
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** The days a sentence names, in the given year; none when it names none or a month we do not know. */
-export function daysIn(text: string, year: number): string[] {
-  const match = DAYS.exec(fold(text));
-  const month = match ? MONTHS[match[2]] : undefined;
-  if (!match || !month) return [];
-  return match[1]
-    .split(/\s*(?:,|\by\b|\be\b)\s*/)
-    .map(Number)
-    .filter((day) => day >= 1 && day <= 31)
-    .map((day) => `${year}-${pad(month)}-${pad(day)}`);
+/**
+ * The days a text is for: the first list of them it gives, whatever months it runs to, each day in
+ * the year nearest `near` (one in January read in December is next year's, and the other way
+ * round). Read as far as the first month, "los días 31 de diciembre y 1 de enero" was over, and
+ * off every screen, at noon on the second of its two days. None when it names none.
+ */
+function daysIn(text: string, near: Date): string[] {
+  const said = fold(text);
+  for (const { index, 0: opening } of said.matchAll(DAYS)) {
+    const days: string[] = [];
+    AND_OF_ANOTHER.lastIndex = index + opening.length;
+    do {
+      OF_A_MONTH.lastIndex = AND_OF_ANOTHER.lastIndex;
+      const named = OF_A_MONTH.exec(said);
+      const month = named && MONTHS[named[2]];
+      if (!named || !month) break;
+      const gap = month - (near.getMonth() + 1);
+      const year = near.getFullYear() + (gap > 6 ? -1 : gap < -6 ? 1 : 0);
+      for (const day of named[1].match(/\d+/g)!.map(Number)) if (day >= 1 && day <= 31) days.push(`${year}-${pad(month)}-${pad(day)}`);
+      AND_OF_ANOTHER.lastIndex = OF_A_MONTH.lastIndex;
+    } while (AND_OF_ANOTHER.test(said));
+    if (days.length) return days;
+  }
+  return [];
 }
 
 const UNTIL = /\b(?:hasta|ata)\s+(?:las|as)\s+(\d{1,2}:\d{2})(?:\s*\(([^)]+)\))?/i;
@@ -173,11 +190,11 @@ function stretchStops(line: string, from: string, to: string, candidates: BusSto
   return [...closed];
 }
 
-/** Everything the operator's sectioned notices change, or null when none says anything this can use. */
-export function readNoticeChanges(alerts: ServiceAlert[], year: number): NoticeChanges | null {
+/** Everything the operator's sectioned notices change, read at `near`, or null when none says anything this can use. */
+export function readNoticeChanges(alerts: ServiceAlert[], near: Date): NoticeChanges | null {
   const notices = alerts.filter((a) => a.source !== 'concello' && (a.sections?.length ?? 0) > 0);
   if (!notices.length) return null;
-  const days = [...new Set(notices.flatMap((n) => daysIn(`${n.description} ${n.title}`, year)))];
+  const days = [...new Set(notices.flatMap((n) => daysIn(`${n.description} ${n.title}`, near)))];
   const lines: LineChange[] = [];
   const general: string[] = [];
   for (const section of notices.flatMap((n) => n.sections ?? [])) {
@@ -192,7 +209,7 @@ export function readNoticeChanges(alerts: ServiceAlert[], year: number): NoticeC
         const until = UNTIL.exec(paragraph);
         if (until && !ENDS.test(paragraph)) change.until = { time: until[1].padStart(5, '0'), to: unmask(until[2]) };
         const ends = ENDS.exec(paragraph);
-        if (ends) change.endsEarly = { days: daysIn(paragraph, year), time: ends[1].padStart(5, '0') };
+        if (ends) change.endsEarly = { days: daysIn(paragraph, near), time: ends[1].padStart(5, '0') };
         const closed = CLOSED.exec(paragraph);
         const closedId = closed && matchStop(unmask(closed[1])!, candidates);
         if (closedId) change.closed.push({ stopId: closedId, instead: unmask(closed[2]) });
@@ -225,20 +242,35 @@ export function serviceDay(now: Date): string {
   return isoDay(day);
 }
 
+/** "desde el día 19/10/26 se verán afectadas … (previsión 2 semanas)": from when, and for how long the operator expected it. */
+const FORECAST = /\bdesde\s+(?:el|o)\s+dia\s+(\d{1,2})\/(\d{1,2})\/(?:20)?(\d{2})\b.{0,300}?\bprevision\s+(?:de\s+)?(\d{1,2})\s+(dia|semana)/;
+
+/** When a notice was to be over, by its own words; null when it does not say. */
+export function forecastEnd(alert: ServiceAlert, times = 1): Date | null {
+  const said = FORECAST.exec(fold(alert.description));
+  if (!said) return null;
+  const [day, month, year, length] = said.slice(1, 5).map(Number);
+  return new Date(2000 + year, month - 1, day + times * length * (said[5] === 'semana' ? 7 : 1));
+}
+
+/**
+ * Whether a notice has been up for twice what it was to last. The works of 19 October 2026 were to
+ * take two weeks; five later the notice was still on the operator's page, and the 7, the 8 and the
+ * 9 still struck out of their first stop. Works run late, and so it goes on applying as long
+ * again; from there it is told in Avisos, with its forecast, and changes nothing else.
+ */
+export function outlivedForecast(alert: ServiceAlert, now: Date): boolean {
+  const end = forecastEnd(alert, 2);
+  return end !== null && now >= end;
+}
+
 /**
  * Whether a notice's own days are all behind: one for «los días 3, 4, 5, 9, 10, 11 y 12 de
  * octubre» says nothing of the 13th, however long the operator's page keeps it. A notice
- * that names no day never ends by this. A day named in January and read in December is next
- * year's, and one named in December and read in January was last year's.
+ * that names no day never ends by this.
  */
 export function noticeOver(alert: ServiceAlert, now: Date): boolean {
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
-  const nearest = (day: string) => {
-    const gap = Number(day.slice(5, 7)) - month;
-    return gap > 6 ? `${year - 1}${day.slice(4)}` : gap < -6 ? `${year + 1}${day.slice(4)}` : day;
-  };
-  const days = daysIn(`${alert.description} ${alert.title}`, year).map(nearest);
+  const days = daysIn(`${alert.description} ${alert.title}`, now);
   const today = serviceDay(now);
   return days.length > 0 && days.every((day) => day < today);
 }
@@ -294,7 +326,7 @@ export function pastTimetable(change: LineChange, stopId: string, now: Date): bo
       const at = direction.stops.indexOf(stopId);
       if (at < 0 || at === direction.stops.length - 1) return;
       boardable = true;
-      if (lineRunsOn(line, kind)) for (const run of buildRuns(line, d, BUS_STOPS, kind)) last = Math.max(last, run.minutesByStopIndex[at] ?? -1);
+      if (lineRunsOn(line, kind)) for (const run of buildRuns(line, d, BUS_STOPS, kind)) last = Math.max(last, ...callsAt(direction, stopId, run).map((call) => call.minutes));
     });
   }
   // A line that only ends its run here has no call to be past: the 7 at Rúa Montevideo was said

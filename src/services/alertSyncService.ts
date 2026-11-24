@@ -158,10 +158,19 @@ async function fetchConcelloNotices(): Promise<ServiceAlert[]> {
 /** Warnings rather than notes: something is being held up, cut or withdrawn. */
 const SERIOUS = /retenc|corte|peche|suprim|desv[ií]o|cancel/i;
 
-/** "Liña 1.2", "L5", "L-4.1" — whatever the notice happens to call them. */
+/**
+ * "Liña 1.2", "L5", "L-4.1" — whatever the notice happens to call it, as a word of its own: the l of
+ * "del 4 al 12 de octubre" put the lines 4 and 12 on a notice of none. After a plural, the list as the
+ * operator writes it ("Cambios líneas 7, 8, 9 y 12 por obras"), when no number follows that could
+ * be a day, an hour or one more line; otherwise every line, rather than some and not the reader's.
+ */
+const ONE_LINE = /(?:^|[^\p{L}\p{N}])(?:liña|l[ií]nea|L-?)\s*([0-9]+(?:\.[0-9]+)?(?:ES|DS)?)/giu;
+const N = String.raw`[0-9]+(?:\.[0-9])?(?:ES|DS)?`;
+const LINE_LIST = new RegExp(String.raw`(?:liñas|l[ií]neas)\s+(${N}(?:\s*,\s*${N})*,?\s+[ye]\s+${N})\D*$`, 'iu');
+
 function linesNamedIn(text: string): string[] {
-  const found = (text.match(/(?:liña|l[ií]nea|L-?)\s*([0-9]+(?:\.[0-9]+)?(?:ES|DS)?)/gi) || []).map((s) => s.replace(/(?:liña|l[ií]nea|L-?)\s*/i, '').trim());
-  return [...new Set(found)];
+  const list = LINE_LIST.exec(text)?.[1].match(new RegExp(N, 'gi'));
+  return [...new Set(list ?? [...text.matchAll(ONE_LINE)].map(([, line]) => line))];
 }
 
 const noticeFrom = (id: string, text: string, title: string): ServiceAlert => ({
@@ -295,6 +304,19 @@ export function noticeOnPage(html: string, lower = asciiLower(html)): { title: s
   return kept.some((s) => s.lines.length > 0) ? { title, days, sections: kept } : null;
 }
 
+/**
+ * The first heading's text in an article, its two tags found one after the other: the pattern
+ * this replaces, `/<h[234][^>]*>(.*?)<\/h[234]>/i`, read to the end from every heading that
+ * never closed, 17.6 s for the 512 KB readCapped allows.
+ */
+function headingIn(block: string): string {
+  const lower = asciiLower(block);
+  const open = lower.search(/<h[234][\s>]/);
+  const start = open === -1 ? -1 : lower.indexOf('>', open) + 1;
+  const length = start > 0 ? lower.slice(start).search(/<\/h[234]>/) : -1;
+  return length === -1 ? '' : plainText(block.slice(start, start + length), '');
+}
+
 /** Every notice on the operator's page: the navigation bell, plus any article that reads like one. */
 export function extractAlertsFromHtml(html: string): ServiceAlert[] {
   const lower = asciiLower(html);
@@ -304,14 +326,14 @@ export function extractAlertsFromHtml(html: string): ServiceAlert[] {
   if (notice) {
     const severity = SERIOUS.test(notice.sections.map((s) => s.paragraphs.join(' ')).join(' ')) ? 'warning' : 'info';
     const headline = alerts.find((a) => a.link === OPERATOR_URL || a.link === `${OPERATOR_URL}/`);
-    if (headline) Object.assign(headline, { description: notice.days || headline.description, sections: notice.sections, severity });
+    // Its days, or else its own title, which the bell shortens: «Cambios líneas 7, 8, 9 y 12 por obras» left out since when, and for how long.
+    if (headline) Object.assign(headline, { description: notice.days || notice.title || headline.description, sections: notice.sections, severity });
     else alerts.push({ ...noticeFrom('page-notice-1', notice.title, clip(notice.title || notice.days, 90)), description: notice.days || notice.title, sections: notice.sections, severity, link: `${OPERATOR_URL}/` });
   }
   [...blocks(html, lower, '<article', '</article>')].forEach((block, i) => {
     const cleanText = plainText(block);
     if (!/desv[ií]o|corte|obras|reforzo|aviso|modificaci[oó]n|parada/i.test(cleanText) || cleanText.length <= 20) return;
-    const titleMatch = block.match(/<h[234][^>]*>(.*?)<\/h[234]>/i);
-    const title = titleMatch ? plainText(titleMatch[1], '') : 'Aviso de servizo en Lugo';
+    const title = headingIn(block) || 'Aviso de servizo en Lugo';
     alerts.push({ ...noticeFrom(`article-alert-${i + 1}`, cleanText, title), description: clip(cleanText, 250) });
   });
   return alerts;

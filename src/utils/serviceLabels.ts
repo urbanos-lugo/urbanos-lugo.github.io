@@ -3,7 +3,7 @@
  * written once, in one language, and cannot follow the reader. These say the same facts
  * from the structured fields, in any of the three. Place names stay as published.
  */
-import { BusDirection, BusLine } from '../types';
+import { BusDirection, BusLine, StopArrival } from '../types';
 import { Lang, translations } from '../i18n/translations';
 import { median } from './schedule';
 
@@ -21,6 +21,17 @@ export function dayWord(lang: Lang, daysAhead: number, from: Date = new Date()):
   const day = new Date(from);
   day.setDate(day.getDate() + daysAhead);
   return t.onWeekday(t.weekdays[day.getDay()]);
+}
+
+/**
+ * What a departure says in place of its minutes: that it is arriving, or how long ago its time
+ * went by; null while it has minutes to count. One rule for the board, the map's sheet and the
+ * saved stops, which read the minutes alone and said "arriving" for five minutes of a bus whose
+ * time was past: on 6,484 of 35,746 boards.
+ */
+export function dueWord(lang: Lang, { etaMinutes, overdueMinutes }: Pick<StopArrival, 'etaMinutes' | 'overdueMinutes'>): string | null {
+  const t = translations(lang).common;
+  return overdueMinutes ? t.overdue(overdueMinutes) : etaMinutes === 0 ? t.arrivingNow : null;
 }
 
 export function directionLabel(direction: BusDirection, lang: Lang): string {

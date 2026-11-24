@@ -22,6 +22,9 @@ export function walkHopsOf(plan: { segments: { type: string; fromStop?: Point; t
   return hops.filter(([a, b]) => a[0] !== b[0] || a[1] !== b[1]);
 }
 
+/** Of those hops, the one the trip sets off on. None from the pole its bus is boarded at, where the first hop walked is the one at the far end. */
+export const hopFromOrigin = ([first]: Hop[], origin?: Point): Hop | undefined => (first && first[0][0] === origin?.lat && first[0][1] === origin?.lng ? first : undefined);
+
 export type WalkingPath = WalkRoute;
 /** Real pedestrian routes for a plan's walking hops, keyed by walkHopKey; null where there is no pedestrian route. */
 export type WalkPaths = Record<string, WalkingPath | null>;

@@ -4,7 +4,7 @@ import { BusStop, BusLine, StopArrival } from '../../types';
 import { lineById, poleCode } from '../../data/transitData';
 import { getArrivalsForStop, nextServiceAtStop, rowKeys } from '../../utils/arrivals';
 import { atStop, type NoticeChanges } from '../../utils/noticeChanges';
-import { dayWord } from '../../utils/serviceLabels';
+import { dayWord, dueWord } from '../../utils/serviceLabels';
 import { useLang, useT } from '../../i18n';
 import { useClock } from '../../hooks/useClock';
 import { MapSheet } from './MapSheet';
@@ -54,8 +54,8 @@ export function StopSheet({ stop, changes = null, onClose, onChooseLine, onOpenL
 
   const code = poleCode(stop);
   const when = (a: StopArrival) => {
-    if (a.overdueMinutes) return <span className="text-ink-2">{t.common.overdue(a.overdueMinutes)}</span>;
-    if (a.etaMinutes === 0) return <span className="font-bold text-ink">{t.common.arrivingNow}</span>;
+    const word = dueWord(lang, a);
+    if (word) return <span className={a.overdueMinutes ? 'text-ink-2' : 'font-bold text-ink'}>{word}</span>;
     return (
       <span className="tnum font-bold text-ink">
         <Approx on={a.precision === 'estimated'} />

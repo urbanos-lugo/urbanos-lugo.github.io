@@ -14,7 +14,7 @@ import { join, dirname, sep } from 'path';
 import { fileURLToPath } from 'url';
 import { BUS_STOPS, BUS_LINES } from '../src/data/transitData';
 import { MAX_OPERATOR_REQUESTS_PER_MINUTE, CACHE_TTL_MS as OPERATOR_CACHE_MS, operatorTimesForStop, operatorTimesResponse, parseOperatorTimes } from '../src/services/operatorTimes';
-import { dayWord, daysLabel, frequencyLabel } from '../src/utils/serviceLabels';
+import { dayWord, daysLabel, dueWord, frequencyLabel } from '../src/utils/serviceLabels';
 import { CSP_HEADER, CSP_META, THEME_INIT_HASH } from '../src/security/csp';
 import { apiUrl } from '../src/services/apiUrl';
 import { createHash } from 'node:crypto';
@@ -32,27 +32,27 @@ import STREETS from '../src/data/streets.json';
 import { LANGS, translations } from '../src/i18n';
 import type { RoutePlanResult, ServiceAlert, TripSegment } from '../src/types';
 import { tripProgress, rememberPassed, AT_STOP_RADIUS_M, MISSED_AFTER_MIN, BOARDING_SOON_MIN, boardingIsNow, startTrip, advanceTrip, tripPhase, currentLeg, legTimes, shouldAskIfMissed, confirmBoarded, missedBus, packTrip, unpackTrip } from '../src/utils/tripProgress';
-import { ALARM_RADIUS_M, subscribePosition, watchForStop } from '../src/services/stopAlarm';
+import { ALARM_RADIUS_M, notify, subscribePosition, watchForStop } from '../src/services/stopAlarm';
 import { poleCode, FARES, linesByNumber } from '../src/data/transitData';
 import { STALE_AFTER_MS, isSnapshotStale } from '../src/utils/snapshotAge';
 import { MAX_PER_WINDOW, MAX_PLANS_PER_WINDOW, rateLimit } from '../src/security/rateLimit';
 import { RECENT_ROUTES, remembered, toggled } from '../src/hooks/useStoredList';
-import { SNAPSHOT_AFTER_MS, readSnapshot } from '../src/hooks/useServiceAlerts';
+import { SNAPSHOT_AFTER_MS, datedNotices, readSnapshot } from '../src/hooks/useServiceAlerts';
 import { readOperatorTimes } from '../src/hooks/useOperatorTimes';
 import { noticeLink } from '../src/utils/operatorNotices';
-import { atStop, changesNow, matchStop, noticeOver, pastTimetable, readNoticeChanges, runsAt, runsUntil, serviceDay, setsOff, stopSkipper, underNotice } from '../src/utils/noticeChanges';
+import { atStop, changesNow, forecastEnd, matchStop, noticeOver, outlivedForecast, pastTimetable, readNoticeChanges, runsAt, runsUntil, serviceDay, setsOff, stopSkipper, underNotice } from '../src/utils/noticeChanges';
 import { escapeHtml, plainText } from '../src/utils/html';
 import { lineBySlug, screenFromLink, tripSearch } from '../src/utils/links';
 import { badgeHtml } from '../src/components/Map/popupHtml';
 import { STORAGE_KEYS, readJson, readString, writeJson, writeString } from '../src/utils/storage';
 import { LANG_PREFIX, PATHS, SLUGS, isCrawler, lineSlug, parsePath, pathFor, pickLang } from '../src/routes';
-import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src/services/walkingPath';
+import { fetchWalkingPath, hopFromOrigin, walkHopKey, walkHopsOf, type WalkPaths } from '../src/services/walkingPath';
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
 import { projectOnto, routeOnFoot } from '../src/utils/walkRouter';
 import { accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
 import { giveWay, nameAt, nameBox, placeNames, placeOn, sideOf } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
-import { HOLIDAY_YEARS, buildRuns, dayKind, daysUntilKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, nextRunAt, scheduledDuration } from '../src/utils/schedule';
+import { HOLIDAY_YEARS, buildRuns, dayKind, daysUntilKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, isoDay, anchorIndex, nextRunAt, scheduledDuration } from '../src/utils/schedule';
 import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
 import festivos from '../src/data/festivos.json';
 import { holidaysDue } from './checkHolidaysAhead';
@@ -61,10 +61,10 @@ import { refusedToEveryone } from './checkParsersUnchanged';
 import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
 import { POLE_SEEN_AT_OSM } from './lib';
-import { fareFor, planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
+import { byRank, fareFor, planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
 import { answerJob, rejoin } from '../src/utils/plannerJob';
-import { estimateWalk, getNearbyStops, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
-import { directionBoardingAt, getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
+import { estimateWalk, getNearbyStops, rankLandmarks, rankSites, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
+import { busKey, directionBoardingAt, dueWatches, getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
 import { busStopsInOrder, getScheduledBuses } from '../src/utils/vehicles';
 import { squaresOf } from './importSquares';
 import { getDistanceMeters } from '../src/utils/geo';
@@ -745,6 +745,38 @@ ok('an official time belongs to the run that shows it, not to the direction', ()
       });
       assert(backing, `${stop.id}: ${arrival.lineNumber} at ${arrival.etaTime} claims official with no published run`);
     }
+  }
+});
+
+ok('a bus whose route comes back by a pole is on its board both times', () => {
+  // The operator lists Rda. Mercedes 53 twice on the 3.1 and the 3.2, and Avda. Magoi 92 twice on
+  // the 6, and OSM's route goes by twice: with the first pass alone the board said the bus had
+  // gone, next in an hour, five minutes before it came back.
+  const back = BUS_LINES.flatMap((line) => line.directions.flatMap((direction, d) => (direction.again ?? []).map((again) => ({ line, direction, d, again }))));
+  assert.deepEqual(back.map(({ line, again }) => `${line.id} ${again.stop}`).sort(), ['3.1 s246', '3.2 s246', '6 s613'], 'the poles a route comes back by');
+  for (const { line, direction, d, again } of back) {
+    assert(direction.stops.filter((id) => id === again.stop).length === 1 && again.share > 0 && again.share < 1, `${line.id}: the second pass is not between two stops`);
+    const runs = buildRuns(line, d, BUS_STOPS, 'laborable');
+    const run = runs[3];
+    const [first, second] = [run.minutesByStopIndex[direction.stops.indexOf(again.stop)], run.minutesByStopIndex[direction.stops.indexOf(again.after)]];
+    const now = new Date(2026, 7, 19, 0, 0, 0);
+    now.setMinutes(Math.ceil(first) + 1);
+    const times = getArrivalsForStop(again.stop, now).arrivals.filter((a) => a.lineId === line.id && a.destination === direction.destination);
+    const later = times.find((a) => parseTimeToMinutes(a.etaTime) >= Math.round(second) && parseTimeToMinutes(a.etaTime) <= Math.round(first) + 15);
+    const next = nextServiceAtStop(again.stop, now);
+    assert(next && next.minutesAway <= 15, `${line.id} at ${again.stop}: the next service is ${next?.minutesAway} min off`);
+    // One bus seen twice is one bus: three of them stand on the board, and the interval is between buses.
+    const buses = getArrivalsForStop(again.stop, new Date(2026, 7, 19, 10, 0)).arrivals.filter((a) => a.lineId === line.id && a.destination === direction.destination && !a.again);
+    const starts = runs.map((r) => Math.round(r.minutesByStopIndex[direction.stops.indexOf(again.stop)]));
+    const shown = starts.filter((s) => s >= 10 * 60 - 5 && s <= 12 * 60).slice(0, 3);
+    assert.deepEqual(buses.map((a) => parseTimeToMinutes(a.etaTime)), shown, `${line.id} at ${again.stop}: the buses on the board`);
+    // Three of them at every minute, or no interval is said: one seen only on its way back was one of the three.
+    for (let m = 0; m < 60; m++) {
+      const due = getArrivalsForStop(again.stop, new Date(2026, 7, 19, 10, m)).arrivals.filter((a) => a.lineId === line.id && a.destination === direction.destination && !a.again);
+      const ahead = starts.filter((s) => s >= 10 * 60 + m - 4 && s <= 10 * 60 + m + 119).length;
+      assert(due.length >= Math.min(3, ahead), `${line.id} at ${again.stop}, 10:${m}: ${due.length} of ${ahead} buses on the board`);
+    }
+    assert(later && later.precision === 'estimated' && later.again, `${line.id} at ${again.stop}: gone at ${formatMinutes(first)}, the board says ${times.map((a) => a.etaTime).join(' ')}`);
   }
 });
 
@@ -1787,7 +1819,7 @@ ok('what the API sends is read, not trusted: text as text, and links only to the
   const [notice] = hostile.alerts;
   assert(notice.title === '' && notice.linesAffected.length === 0 && notice.link === undefined && notice.severity === 'info' && notice.source === undefined, `a hostile notice came through: ${JSON.stringify(notice)}`);
   assert(notice.sections?.length === 1 && notice.sections[0].heading === '' && notice.sections[0].paragraphs.length === 0, 'a hostile section came through');
-  assert(readSnapshot('nonsense').status === 'operational_normal' && readSnapshot(null).alerts.length === 0, 'an answer that is not an object was not narrowed');
+  assert(readSnapshot('nonsense').status === 'unreachable' && readSnapshot(null).alerts.length === 0, 'an answer that is not an object was not narrowed');
 
   const day = new Date().toUTCString();
   const feed = (link: string) => `<rss><channel><item><title>Corte de tráfico na rúa</title><pubDate>${day}</pubDate><link>${link}</link></item></channel></rss>`;
@@ -1843,7 +1875,7 @@ ok('an operator notice becomes changes the app uses: stops closed and moved, lin
   // moved one for another, on seven named days. The app showed the notice and nothing else:
   // its boards said "no buses" at one in the morning, and the planner sent people to a stop
   // the 1.2 and the 1.4 did not call at.
-  const changes = readNoticeChanges([SAN_FROILAN], 2026);
+  const changes = readNoticeChanges([SAN_FROILAN], new Date(2026, 9, 1));
   assert(changes, 'a notice with three lines of changes read as none');
   assert(changes.days.join(' ') === '2026-10-03 2026-10-04 2026-10-05 2026-10-09 2026-10-10 2026-10-11 2026-10-12', `the notice's days came out as ${changes.days.join(' ')}`);
   const line = (n: string) => changes.lines.find((c) => c.line === n);
@@ -1868,7 +1900,7 @@ ok('an operator notice becomes changes the app uses: stops closed and moved, lin
   assert(!runsAt(line('1.2')!, new Date(2026, 9, 10, 5, 30)) && runsAt(line('1.2')!, new Date(2026, 9, 10, 23, 30)), 'a festival morning before the first bus read as the festival night');
   assert(runsUntil(line('1.2')!, new Date(2026, 9, 11, 3, 0))?.time === '03:07' && runsUntil(line('1.2')!, new Date(2026, 9, 11, 4, 0)) === undefined, 'an end time already gone was still announced');
   assert(runsUntil(line('13')!, new Date(2026, 9, 10, 23, 30))?.to === 'Cementerio' && runsUntil(line('13')!, new Date(2026, 9, 12, 23, 30))?.to === undefined, 'the early end was given the place written with the late one');
-  const backwards = readNoticeChanges([{ ...SAN_FROILAN, sections: [...SAN_FROILAN.sections!].reverse() }], 2026);
+  const backwards = readNoticeChanges([{ ...SAN_FROILAN, sections: [...SAN_FROILAN.sections!].reverse() }], new Date(2026, 9, 1));
   assert(backwards?.lines.map((c) => c.line).join(' ') === '1.2 10 13', `the lines came out in the notice's order, ${backwards?.lines.map((c) => c.line).join(' ')}`);
   // From a line's last printed call at a stop the notice is the only answer the board has, so
   // it is said there unfolded; not before, not after its end, and not on a night it does not extend.
@@ -1900,7 +1932,7 @@ ok('what the notice does at one stop is read one way for the board, the map and 
   // The board struck through the 1.2 at Praza Bretaña on San Froilán; the map's stop sheet and
   // the saved stops on the home screen did not read the notice, and gave the 1.2 in minutes there
   // as if it would stop.
-  const changes = readNoticeChanges([SAN_FROILAN], 2026);
+  const changes = readNoticeChanges([SAN_FROILAN], new Date(2026, 9, 1));
   const stop = (id: string) => BUS_STOPS.find((s) => s.id === id)!;
   const day = new Date(2026, 9, 9, 10, 0);
   const bretana = atStop(changes, stop('s15'), day);
@@ -1948,7 +1980,7 @@ ok('a notice that closes stops in a list closes each one it names clearly, and n
   // The works of November 2026 closed three stops for the 12 in one bracket; the notice was read
   // as nothing at all, and every screen and the planner went on boarding the 12 at Obras Públicas
   // and Montevideo. Only «Se suprime la parada de …» was read, and its short names matched no stop.
-  const changes = readNoticeChanges([OBRAS_NOV_2026], 2026);
+  const changes = readNoticeChanges([OBRAS_NOV_2026], new Date(2026, 10, 1));
   const twelve = changes?.lines.find((c) => c.line === '12');
   const named = (id: string) => BUS_STOPS.find((s) => s.id === id)!.name;
   assert.deepStrictEqual(twelve?.closed.map((s) => named(s.stopId)), ['Rda. Muralla (Obras Públicas)', 'Rúa Montevideo 7 (Sanatorio NSOG)'], `the 12's closed stops came out as ${JSON.stringify(twelve?.closed)}`);
@@ -1976,7 +2008,7 @@ ok('a dropped stretch closes its first end and the stops before the road it name
   // Ribadeneira 1, Rda. Muralla 95 and 118, then Obras Públicas: a stretch to «Obras Públicas»
   // closes the first three. The 9 leaves Bolaño by Avda. Coruña, with no «Muralla» after it:
   // only Bolaño closes, rather than the whole way.
-  const read = (line: string, text: string) => readNoticeChanges([{ ...OBRAS_NOV_2026, sections: [{ heading: `Línea ${line}`, lines: [line], paragraphs: [text] }] }], 2026)?.lines.find((c) => c.line === line);
+  const read = (line: string, text: string) => readNoticeChanges([{ ...OBRAS_NOV_2026, sections: [{ heading: `Línea ${line}`, lines: [line], paragraphs: [text] }] }], new Date(2026, 10, 1))?.lines.find((c) => c.line === line);
   const named = (c: ReturnType<typeof read>) => c?.closed.map((s) => BUS_STOPS.find((b) => b.id === s.stopId)!.name);
   const way = BUS_LINES.find((l) => l.number === '7')!.directions[0].stops.slice(0, 4).map((id) => BUS_STOPS.find((s) => s.id === id)!.name);
   assert.deepStrictEqual(way, ['Bolaño Ribadeneira 1', 'Rda. Muralla 95 (S. Fernando)', 'Rda. Muralla 118', 'Rda. Muralla (Obras Públicas)'], `the 7 starts another way now, so this proves nothing: ${way.join(' | ')}`);
@@ -1998,13 +2030,13 @@ ok('the planner never boards or leaves a line at a stop the notice closes', () =
   assert(!closed.some((s) => (s.line?.id === '1.2' || s.line?.id === '1.4') && atBretana(s)), 'a plan still boards or leaves the 1.2 or the 1.4 at the closed stop');
   assert(closed.some((s) => atBretana(s)), 'closing the stop for two lines closed it for every line');
   // And what the screens are given is what the notice says: the predicate comes from it.
-  const skips = stopSkipper(readNoticeChanges([SAN_FROILAN], 2026), now);
-  assert(skips?.('1.2', 's15') && !skips('1.1', 's15') && stopSkipper(readNoticeChanges([SAN_FROILAN], 2026), new Date(2026, 9, 8, 10, 0)) === undefined, 'the notice closes the wrong lines, or closes them on a day it does not name');
+  const skips = stopSkipper(readNoticeChanges([SAN_FROILAN], new Date(2026, 9, 1)), now);
+  assert(skips?.('1.2', 's15') && !skips('1.1', 's15') && stopSkipper(readNoticeChanges([SAN_FROILAN], new Date(2026, 9, 1)), new Date(2026, 9, 8, 10, 0)) === undefined, 'the notice closes the wrong lines, or closes them on a day it does not name');
 
   // Under the notice of the night the trip is on, not of the moment it is asked. Asked at 01:00
   // on the 13th, the night was still the 12th's and the planner kept the 1.2 off Praza Bretaña
   // for the 07:10 of a morning the notice no longer names; at 23:50 on the 8th, the other way.
-  const changes = readNoticeChanges([SAN_FROILAN], 2026);
+  const changes = readNoticeChanges([SAN_FROILAN], new Date(2026, 9, 1));
   const asked = (from: Date, departureTime: string, daysAhead: number) => {
     const seen: boolean[] = [];
     const result = underNotice(changes, from, (skipsStop) => {
@@ -2030,6 +2062,125 @@ ok('a notice whose own days are over leaves the app as it was', () => {
   assert(!noticeOver(newYear, new Date(2026, 11, 30, 12, 0)) && noticeOver(newYear, new Date(2027, 0, 3, 12, 0)), 'a January notice read in December was taken as this January, already gone');
   const newYearsEve = { ...SAN_FROILAN, description: 'Servicio especial los días 30 y 31 de diciembre', title: 'Fin de año' };
   assert(noticeOver(newYearsEve, new Date(2027, 0, 2, 12, 0)) && !noticeOver(newYearsEve, new Date(2026, 11, 29, 12, 0)), 'a December notice read in January was taken as next December');
+});
+
+ok('a notice says for how long it was to be, and stops changing the app when that is long gone', () => {
+  // The works of 19 October 2026, as the operator's page had them five weeks later: the bell shortens
+  // the title, and with it went that they were to take two weeks. The 7, the 8 and the 9 were still
+  // struck out of their first stop, and the planner kept off it.
+  const page = `<ul class="x msg_list"><li><a href="https://buslugo.com">Cambios líneas 7, 8, 9 y 12 por obras</a></li></ul>
+    <h1>Debido al corte Puerta San Fernando desde el día 19/10/26 se verán afectadas las siguientes líneas en su recorrido (previsión 2 semanas)</h1>
+    <p>&nbsp;</p><h2><strong>Línea 7:  Bolaño Rivadeneira &#8211; A Ponte</strong></h2><p>(queda suprimido el tramo Bolaño Rivadeneira &#8211; Ronda Muralla)</p>
+    <p><a href="/lineas"><button class="btn">Consulta de líneas</button></a></p>`;
+  const [notice] = extractAlertsFromHtml(page);
+  assert(notice.title === 'Cambios líneas 7, 8, 9 y 12 por obras' && notice.description.endsWith('(previsión 2 semanas)') && notice.sections?.length === 1, `the notice came out as ${JSON.stringify(notice)}`);
+  assert(isoDay(forecastEnd(notice)!) === '2026-11-02' && forecastEnd(SAN_FROILAN) === null, `two weeks from 19 October end on ${forecastEnd(notice)}`);
+  // Works run late: it holds as long again, and no longer, whoever still has it up.
+  for (const [day, holds] of [[new Date(2026, 9, 25), true], [new Date(2026, 10, 10), true], [new Date(2026, 10, 15, 23), true], [new Date(2026, 10, 16), false], [new Date(2026, 10, 24), false]] as const) {
+    assert(outlivedForecast(notice, day) === !holds && !noticeOver(notice, day), `on ${day.toDateString()} the notice ${holds ? 'no longer holds' : 'still holds'}, or is taken down`);
+  }
+  for (const [words, end] of [['desde el día 1/12/2026 (previsión de 10 días)', '2026-12-11'], ['desde o día 28/12/26 (previsión 1 semana)', '2027-01-04']] as const) assert.equal(isoDay(forecastEnd({ ...notice, description: words })!), end, words);
+  assert(forecastEnd({ ...notice, description: 'desde el día 19/10/26 hasta nuevo aviso' }) === null && forecastEnd({ ...notice, description: 'previsión 2 semanas' }) === null, 'a notice with no start, or no length, was given an end');
+});
+
+ok('a notice for days in two months holds on all of them', () => {
+  // It was read as far as its first month: for "los días 31 de diciembre y 1 de enero" the
+  // notice was over, off the badge and every board, at noon on the first of January.
+  const named = (description: string) => ({ ...SAN_FROILAN, title: 'Cambios', description });
+  for (const [words, last, after] of [
+    ['Los días 31 de diciembre y 1 de enero', new Date(2027, 0, 1, 12), new Date(2027, 0, 2, 12)],
+    ['Los días 30 y 31 de octubre y 1 y 2 de noviembre', new Date(2026, 10, 2, 12), new Date(2026, 10, 3, 12)],
+    ['Los días 24, 25 y 31 de diciembre de 2026 y los días 1 y 6 de enero de 2027', new Date(2027, 0, 6, 12), new Date(2027, 0, 7, 12)],
+    ['Os días 30 de outubro, 1, 2, e 3 de novembro', new Date(2026, 10, 3, 12), new Date(2026, 10, 4, 12)],
+    ['Refuerzo de transporte urbano los días 24, 25 y 31 de diciembre y 1 de enero hasta las 03:00', new Date(2027, 0, 1, 12), new Date(2027, 0, 2, 12)],
+    // Another sentence's days are not its own.
+    ['Los días 3 y 4 de octubre. Los días 5 y 6 de octubre servicio normal', new Date(2026, 9, 4, 12), new Date(2026, 9, 5, 12)],
+    ['Los días 3 y 4 de octubre y el 5 de octubre se recupera el servicio', new Date(2026, 9, 4, 12), new Date(2026, 9, 5, 12)],
+  ] as const) {
+    assert(!noticeOver(named(words), last) && noticeOver(named(words), after), `"${words}" is not over exactly after ${last.toDateString()}`);
+    for (const near of [last, new Date(last.getTime() - 5 * 86_400_000)]) assert(changesNow(readNoticeChanges([named(words)], near), last), `"${words}", read on ${near.toDateString()}, changes nothing on ${last.toDateString()}`);
+  }
+  // The small hours of New Year are the night of the 31st, whatever year the clock says.
+  const eve = named('Los días 30 y 31 de diciembre');
+  const night = new Date(2027, 0, 1, 2, 0);
+  assert(!noticeOver(eve, night) && changesNow(readNoticeChanges([eve], night), night), 'the notice for New Year’s Eve did not hold at two in the morning');
+  // A list that names no month is read once and not over and over: 26 days took 1.8 s, and each one more doubled it.
+  const since = performance.now();
+  assert(!noticeOver(named(`Los días ${Array.from({ length: 31 }, (_, i) => i + 1).join(', ')} del presente mes`), new Date(2026, 9, 7)), 'a notice that names no month ended');
+  assert(performance.now() - since < 500, `thirty-one days of no month took ${Math.round(performance.now() - since)} ms to read`);
+  // The end a line has on its days is not the next list's.
+  const early = { ...named('Los días 3, 4, 5 y 12 de octubre'), sections: [{ heading: 'Línea 13', lines: ['13'], paragraphs: ['Los días 5 y 12 de octubre el final del servicio tendrá lugar a la 1:00. Los días 3 y 4 de octubre, hasta las 03:00.'] }] };
+  assert.deepEqual(readNoticeChanges([early], new Date(2026, 9, 2))?.lines[0]?.endsEarly?.days, ['2026-10-05', '2026-10-12'], 'a line ends early on days the notice gives another hour for');
+  // A street with a date for a name is no day of the notice's.
+  assert(noticeOver(named('Los días 5 y 6 de octubre, en la Rúa 8 de Marzo'), new Date(2026, 9, 7, 12)), 'a street name kept a notice up');
+});
+
+ok('when the server does not answer, what is newest is what is shown, with its own date', () => {
+  // A failed question put the saved copy on screen, which on a phone can be days older than the
+  // answer it already had; and asked once a page, an answer was never old.
+  const answer = { data: { ...readSnapshot({ status: 'active_incidents' }), lastSyncTime: '2026-11-23T10:00:00.000Z' }, snapshotAt: null };
+  const copy = (fetchedAt?: string) => ({ ...readSnapshot({ status: 'operational_normal' }), fetchedAt });
+  const kept = datedNotices(answer, copy('2026-11-20T10:00:00.000Z'));
+  assert(kept.data === answer.data && kept.snapshotAt === answer.data.lastSyncTime, 'an answer gave way to an older copy, or lost its date');
+  const newer = copy('2026-11-23T12:00:00.000Z');
+  assert(datedNotices(answer, newer).data === newer && datedNotices(kept, newer).data === newer, 'a newer copy was left for an older answer');
+  assert(datedNotices(answer, readSnapshot({ status: 'unreachable' })).data === answer.data, 'an answer gave way to a copy that could not be read');
+  const first = copy('2026-11-20T10:00:00.000Z');
+  assert(datedNotices({ data: null, snapshotAt: null }, first).data === first, 'with nothing on screen the copy is not shown');
+});
+
+ok('the lines a notice names are the ones it names', () => {
+  // "del 4 al 12 de octubre" was the lines 4 and 12, by the l of "del" and "al", and after a
+  // plural no line was read: "el 5 de enero, líneas 1.2, 9 y 12" was the line 5.
+  const lines = (text: string) => extractAlertsFromHtml(`<ul class="x msg_list"><li>${text}</li></ul>`)[0]?.linesAffected.join(' ');
+  for (const [text, named] of [
+    ['Corte de tráfico del 4 al 12 de octubre', 'Todas'],
+    ['Desvío hasta el 15 de noviembre por obras', 'Todas'],
+    ['Retenciones el 5 de enero, líneas 1.2, 9 y 12', '1.2 9 12'],
+    ['Liñas 5ES e 13 por Ronda da Muralla', '5ES 13'],
+    ['Líneas 7, 8, y 9 desviadas', '7 8 9'],
+    ['Liña 1.2 modificada', '1.2'],
+    ['Desvío da L5 e da L-4.1', '5 4.1'],
+    ['Desvío na liña 8, 10 de novembro por obras', '8'],
+    ['Corte na liña 5 e 6 de decembro', '5'],
+    ['Liña 1.2, 9:30 a 11:00', '1.2'],
+    ['Suprimida la línea 9, 24 y 25 de diciembre', '9'],
+    ['Línea 12 y 3 paradas afectadas por corte', '12'],
+    // The bell's own words, in October and November of 2026.
+    ['Cambios líneas 7, 8, 9 y 12 por obras', '7 8 9 12'],
+    ['Cambios en las líneas por San Froilán', 'Todas'],
+    ['Error en el sistema de geolocalización', 'Todas'],
+    // A list that does not plainly end is every line: some of them is the wrong lines.
+    ['Corte de las líneas 8 y 9, 10 de noviembre', 'Todas'],
+    ['Retenciones en las líneas 8, 9 y 10:30 horas', 'Todas'],
+    ['Retenciones en las líneas 8, 9 y 10.30 horas', 'Todas'],
+    ['Líneas 5/8', 'Todas'],
+    ['Líneas 5 y la 8', 'Todas'],
+  ]) assert.equal(lines(text), named, `"${text}"`);
+});
+
+await okAsync('a notification is shown where the page itself may not make one', async () => {
+  // Chrome on Android, like nearly every phone browser, throws on the constructor (MDN): the
+  // permission was asked for, the error swallowed, and nothing was ever shown.
+  const g = globalThis as unknown as { Notification?: unknown };
+  const shown: string[] = [];
+  const real = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  const fake = (constructor: () => void) => (g.Notification = Object.assign(function () { constructor(); }, { permission: 'granted' }));
+  Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { serviceWorker: { ready: Promise.resolve({ showNotification: async (title: string) => void shown.push(title) }) } } });
+  try {
+    fake(() => { throw new TypeError('Illegal constructor'); });
+    notify('a title', 'a body');
+    await new Promise((r) => setTimeout(r, 0));
+    assert.deepEqual(shown, ['a title'], 'a phone shows nothing');
+    let made = 0;
+    fake(() => void made++);
+    notify('another', 'a body');
+    await new Promise((r) => setTimeout(r, 0));
+    assert(made === 1 && shown.length === 1, 'where the page may make one it is made once');
+  } finally {
+    delete g.Notification;
+    if (real) Object.defineProperty(globalThis, 'navigator', real);
+  }
 });
 
 console.log('\nuntested corners');
@@ -2340,6 +2491,8 @@ ok('a trip never rides a bus to reach a stop it could have walked to', () => {
       const simpler = options.find(
         (p) =>
           p.durationMinutes === best.durationMinutes &&
+          // The same time and not only as long: one that sets off a quarter of an hour later is another trip.
+          p.slackMinutes === best.slackMinutes &&
           legs(p).length > 0 &&
           legs(p).length < legs(best).length,
       );
@@ -2350,6 +2503,41 @@ ok('a trip never rides a bus to reach a stop it could have walked to', () => {
       }
     }
   }
+});
+
+ok('a line that goes there is offered whole, and a bus more only where it earns it', () => {
+  // The stops were chosen by line and not by the way it goes, so the pole across the street stood for
+  // the right one: to be at As Termas by 17:42 the answer was to leave at 16:44 and change from one
+  // minute on the 1.1 to the 2, with none of the five lines that go there offered whole.
+  // tools/stressRoutes.ts compares hundreds of answers with the best there is; these are the two reported.
+  const buses = (plan: RoutePlanResult) => plan.segments.filter((seg) => seg.type === 'bus');
+  const [from, to] = ['Fonte dos Ranchos', 'Centro Comercial As Termas'];
+  const by = planTrips(from, to, { now: new Date(2026, 10, 24, 15, 0), arriveBy: 17 * 60 + 42 });
+  assert(buses(by[0]).length === 1 && parseTimeToMinutes(by[0].departureTime) >= 17 * 60, `there by 17:42: ${buses(by[0]).map((seg) => seg.line?.number).join(' > ')}, leaving at ${by[0].departureTime}`);
+  const now = planTrips(from, to, { now: new Date(2026, 10, 24, 16, 44) });
+  for (const number of ['1.1', '1.2', '1.3', '1.4', '2']) assert(now.some((plan) => buses(plan).length === 1 && buses(plan)[0].line!.number === number), `the ${number} goes there and is not offered`);
+  // Where the second bus passes three times a day, the first is the last that makes it: the first there
+  // was, at half past eight, was a wait of four hours, and was refused.
+  const rural = planTrips('Estda. Nova Santiago (Monte Segade)', 'Pías 11', { now: new Date(2026, 7, 19, 8, 13) })[0];
+  assert(rural.arrivalTime === '13:33' && rural.totalWaitMinutes < 30, `to Pías 11 from 08:13: ${rural.departureTime} -> ${rural.arrivalTime}, waiting ${rural.totalWaitMinutes} min`);
+  // Nothing on the list but what gets there five minutes sooner than a simpler trip, or spares five of walking.
+  const walked = (plan: RoutePlanResult) => plan.segments.reduce((sum, seg) => sum + (seg.type === 'walk' ? seg.durationMinutes : 0), 0);
+  const reached = (plan: RoutePlanResult) => plan.slackMinutes + plan.durationMinutes;
+  const at = (plan: RoutePlanResult, id: string) => buses(plan).some((seg) => seg.fromStop?.id === id || seg.toStop?.id === id);
+  let changes = 0;
+  for (const [i, stop] of BUS_STOPS.filter((_, n) => n % 29 === 0).entries()) {
+    const other = BUS_STOPS[(i * 131 + 17) % BUS_STOPS.length];
+    const now = new Date(2026, 7, 19, 7 + i, 20);
+    const plans = planTrips(stop.name, other.name, { now });
+    // A stop a notice closes to every line is none to change at.
+    changes += plans.filter((plan) => buses(plan).length > 1 && at(plan, 's19')).length;
+    assert(!planTrips(stop.name, other.name, { now, skipsStop: (_, id) => id === 's19' }).some((plan) => at(plan, 's19')), `${stop.name} -> ${other.name}: a bus is changed at a closed stop`);
+    for (const plan of plans) {
+      const simpler = plans.find((p) => p.isServiceActive && buses(p).length < buses(plan).length && reached(p) - reached(plan) < 5 && walked(p) - walked(plan) < 5);
+      if (simpler) assert(false, `${stop.name} -> ${other.name}: ${buses(plan).map((seg) => seg.line?.number).join(' > ')} at ${plan.departureTime} earns nothing over ${buses(simpler).map((seg) => seg.line?.number).join(' > ') || 'walking'} at ${simpler.departureTime}`);
+    }
+  }
+  assert(changes > 10, 'the sample changes bus at no stop to close, so this proves nothing');
 });
 
 ok('the built page’s one inline script is the one its policy admits', () => {
@@ -2522,13 +2710,12 @@ ok('the services and the worker bundle for a runtime with no Node in it', () => 
   }
 });
 
-await okAsync('the worker bundle answers as Cloudflare runs it, with no Node and no Deno, and turns a malformed address away', async () => {
+await okAsync('the worker bundle answers as Cloudflare runs it, with no Node, and turns a malformed address away', async () => {
   // A bundle that builds can still reach for `process` or `Buffer` at run time, which esbuild
   // cannot see and the edge runtime throws on. So the worker is bundled as it deploys and run in
   // a context holding web standards alone, and asked the questions it exists to answer. A
   // malformed escape in the stop code was an uncaught URIError, a 500 from the runtime.
-  // Cloudflare has no `Deno` and hands the settings to fetch: the worker read Deno.env as it
-  // loaded, which on Cloudflare would have stopped it before its first answer. And its fetch
+  // The settings come with each request, and Cloudflare's fetch
   // throws on `redirect: 'error'` before asking anyone, as this one does: 1.8.0's worker read
   // every notice as unreachable and every pole as a 502, swallowing the TypeError.
   const { outputFiles } = buildSync({ absWorkingDir: root, entryPoints: ['worker/index.ts'], bundle: true, format: 'iife', globalName: 'worker', platform: 'neutral', target: 'es2022', write: false, logLevel: 'silent' });
@@ -2593,6 +2780,7 @@ async function startServer(args: string[], settings: Record<string, string> = {}
   mkdirSync(join(folder, 'dist'));
   mkdirSync(join(folder, 'dist-server'));
   writeFileSync(join(folder, 'dist', 'index.html'), '<!doctype html><html lang="gl"><head><title>x</title></head><body><div id="root"></div></body></html>');
+  writeFileSync(join(folder, 'dist', 'index.html.br'), brotliCompressSync('<!doctype html><title>compressed</title>'));
   writeFileSync(join(folder, 'dist', 'app.js'), 'console.log("app");');
   writeFileSync(join(folder, 'dist', 'app.js.br'), brotliCompressSync('console.log("app");'));
   writeFileSync(join(folder, 'dist-server', 'secret.cjs'), 'SERVER BUNDLE');
@@ -2681,6 +2869,9 @@ await okAsync('the built server sends its policy and headers, and keeps the rate
     // The compressed copy is served where it exists, so the next question is not answered by its absence.
     const app = await ask(server.port, '/app.js', { headers: { 'accept-encoding': 'br' } });
     assert(app.headers['content-encoding'] === 'br' && String(brotliDecompressSync(app.body)) === 'console.log("app");', 'the build’s compressed copy is not served, so the guard below proves nothing');
+    // A page's too: its address is a folder's, and the copy looked for was "/.br", so every page went out whole.
+    const root = await ask(server.port, '/?x=1', { headers: { 'accept-encoding': 'br' } });
+    assert(root.headers['content-encoding'] === 'br' && /text\/html/.test(String(root.headers['content-type'])) && /compressed/.test(String(brotliDecompressSync(root.body))), `the page came back as ${root.headers['content-encoding'] ?? 'it is on disk'}, ${root.headers['content-type']}`);
     for (const path of ['/../dist-server/secret.cjs', '/%2e%2e/dist-server/secret.cjs', '/..%2fdist-server/secret.cjs']) {
       const res = await ask(server.port, path, { headers: { 'accept-encoding': 'br, gzip' } });
       assert(!res.headers['content-encoding'], `${path} was answered with the compressed copy of a file outside dist/`);
@@ -2694,6 +2885,16 @@ await okAsync('the built server sends its policy and headers, and keeps the rate
   } finally {
     await server.stop();
   }
+});
+
+ok('the built server starts with nothing that is only there to develop it', () => {
+  // Vite was imported at the top: after an install without development dependencies
+  // `pnpm start` found no such module, and its version asks for a newer Node than this app.
+  const { devDependencies } = JSON.parse(read('package.json')) as { devDependencies: Record<string, string> };
+  const { metafile } = buildSync({ absWorkingDir: root, entryPoints: ['server.ts'], bundle: true, platform: 'node', format: 'cjs', packages: 'external', write: false, metafile: true, outdir: 'x', logLevel: 'silent' });
+  const needed = Object.values(metafile.outputs).flatMap((o) => o.imports).filter((i) => i.kind !== 'dynamic-import').map((i) => i.path);
+  assert(needed.includes('express'), 'what the server imports was not read, so this proves nothing');
+  assert.deepEqual(needed.filter((name) => name in devDependencies), [], 'the built server needs a development dependency to start');
 });
 
 await okAsync('behind a named proxy each visitor has their own rate limit', async () => {
@@ -3568,6 +3769,7 @@ ok('hostile markup at the read cap parses in milliseconds, not minutes', () => {
     ['unclosed departure blocks', MAX_BODY_BYTES / 1024, (kb) => '<div class="sae-content-info">'.repeat((kb * 1024) / 30), parseOperatorTimes],
     // The walker that reads a notice off the home page, linear from the start; this keeps it so.
     ['a notice with a page of paragraphs', MAX_BODY_BYTES / 1024, (kb) => `<h1>x</h1><h2>Línea 1 : y</h2>${'<p>z</p>'.repeat((kb * 1024) / 8)}`, extractAlertsFromHtml],
+    ['an article of unclosed headings', MAX_BODY_BYTES / 1024, (kb) => `<article>aviso de desvío na parada ${'<h2>'.repeat((kb * 1024) / 4)}</article>`, extractAlertsFromHtml],
     ['a notice of unclosed paragraphs', MAX_BODY_BYTES / 1024, (kb) => `<h1>x</h1><h2>Línea 1 : y</h2>${'<p>z'.repeat((kb * 1024) / 4)}`, extractAlertsFromHtml],
   ];
   const fastest = (parse: (html: string) => unknown, html: string) => {
@@ -3774,19 +3976,70 @@ await okAsync('one server asks the operator’s site a bounded number of times a
   }
 });
 
+await okAsync('a pole page that fails is asked for once and not by every reader of it', async () => {
+  // Only good answers were kept at the edge: while the operator's page failed, as it did from
+  // November 2026 with its certificate run out, every reader of every board was one more request
+  // to it from every isolate, up to a hundred and twenty a minute each.
+  const g = globalThis as unknown as { caches?: unknown };
+  const [realCaches, realFetch, realNow] = [g.caches, globalThis.fetch, Date.now];
+  const stored = new Map<string, Response>();
+  let asked = 0;
+  // Clear of whatever the checks above left in the service's own cache and budget.
+  Date.now = () => realNow() + 60 * 86_400_000;
+  g.caches = { open: async () => ({ match: async (r: Request) => stored.get(r.url)?.clone(), put: async (r: Request, res: Response) => void stored.set(r.url, res), delete: async (r: Request) => stored.delete(r.url) }) };
+  globalThis.fetch = (async () => {
+    asked++;
+    throw new Error('certificate has expired');
+  }) as typeof fetch;
+  try {
+    const { handle } = (await import(`../worker/index.ts?${'failing'}`)) as { handle: (r: Request, env: unknown) => Promise<Response> };
+    const env = { ALLOWED_ORIGIN: 'https://owner.github.io' };
+    const pole = BUS_STOPS.filter((s) => poleCode(s))[5];
+    const ask = (path: string) => handle(new Request(`https://api.example${path}`), env);
+    for (let i = 0; i < 30; i++) assert((await ask(`/api/paradas/${pole.id}/agora`)).status === 502, 'a page that cannot be read is not a 502');
+    assert(asked === 1, `thirty readers of one failing page asked the operator ${asked} times`);
+    // For as long as a good answer, and no longer.
+    const [key, copy] = [...stored][0];
+    const old = new Headers(copy.headers);
+    old.set('x-stored-at', String(Date.now() - 25_000));
+    stored.set(key, new Response(await copy.clone().text(), { status: 502, headers: old }));
+    await ask(`/api/paradas/${pole.id}/agora`);
+    assert(Number(asked) === 2, 'a failure is kept past its twenty seconds');
+    // Nor does a failure take the place of an answer another reader got while it was failing.
+    const other = BUS_STOPS.filter((s) => poleCode(s))[6];
+    const failing: ((error: Error) => void)[] = [];
+    globalThis.fetch = (() => new Promise((_, reject) => failing.push(reject))) as typeof fetch;
+    const slow = ask(`/api/paradas/${other.id}/agora`);
+    while (!failing.length) await new Promise((r) => setTimeout(r, 5));
+    const good = new Response(JSON.stringify({ departures: [] }), { status: 200, headers: { 'cache-control': 'public, max-age=20', 'x-stored-at': String(Date.now()), 'access-control-allow-origin': env.ALLOWED_ORIGIN } });
+    stored.set([...stored.keys()][0].replace(pole.id, other.id), good);
+    await new Promise((r) => setTimeout(r, 20));
+    failing[0](new Error('timed out'));
+    assert((await slow).status === 200, 'a reader whose own read failed was not given the answer already kept');
+    assert([...stored.values()].some((r) => r === good), 'a failure was kept over a good answer');
+    // A question with no answer is not kept: nothing here grows with made-up addresses.
+    const before = stored.size;
+    for (const path of ['/api/paradas/no-such-stop/agora', '/api/nope', '/api/paradas/%E0%A4%A/agora']) await ask(path);
+    assert(stored.size === before, 'an unknown address is kept at the edge');
+  } finally {
+    Date.now = realNow;
+    g.caches = realCaches;
+    globalThis.fetch = realFetch;
+  }
+});
+
 await okAsync('the worker answers only for the origin it was given, and keeps one copy per question', async () => {
   // What the worker does and nothing held. With no ALLOWED_ORIGIN it answers with no
   // allow-origin and stores nothing, since a browser throws that answer away. The origin is in
   // the cache key: changed, it served the old origin's copies for half an hour. A copy past
   // its age is not served, because cache.match ignores cache-control and a half-hour answer
   // went out for three days. And a made-up query string was one more stored copy each time.
-  const g = globalThis as unknown as { Deno?: unknown; caches?: unknown };
-  const [realDeno, realCaches, realFetch] = [g.Deno, g.caches, globalThis.fetch];
+  const g = globalThis as unknown as { caches?: unknown };
+  const [realCaches, realFetch] = [g.caches, globalThis.fetch];
   const stored = new Map<string, Response>();
   // Read through a call, or TypeScript narrows the size to 0 after the first assert.
   const copies = () => stored.size;
   const env: Record<string, string> = {};
-  g.Deno = { env: { get: (key: string) => env[key] } };
   g.caches = {
     open: async () => ({
       match: async (r: Request) => stored.get(r.url)?.clone(),
@@ -3796,7 +4049,10 @@ await okAsync('the worker answers only for the origin it was given, and keeps on
   };
   globalThis.fetch = (async () => new Response('<div class="sae-content-info"><div class="sae-content-info-time"><p>4</p></div></div></div>', { status: 200 })) as typeof fetch;
   // A fresh copy of the module per setting, so nothing a copy read as it loaded carries over.
-  const load = async (tag: string): Promise<(r: Request) => Promise<Response>> => (await import(`../worker/index.ts?${tag}`)).handle;
+  const load = async (tag: string): Promise<(r: Request) => Promise<Response>> => {
+    const { handle } = (await import(`../worker/index.ts?${tag}`)) as { handle: (r: Request, settings: unknown) => Promise<Response> };
+    return (r) => handle(r, env);
+  };
   try {
     const pole = BUS_STOPS.filter((s) => poleCode(s))[3];
     const ask = (handle: (r: Request) => Promise<Response>, query = '') => handle(new Request(`https://api.example/api/paradas/${pole.id}/agora${query}`));
@@ -3821,7 +4077,6 @@ await okAsync('the worker answers only for the origin it was given, and keeps on
     const again = await ask(open);
     assert(Number(again.headers.get('x-stored-at')) > Date.now() - 5_000, 'a copy past its age was served from the edge store');
   } finally {
-    g.Deno = realDeno;
     g.caches = realCaches;
     globalThis.fetch = realFetch;
   }
@@ -4358,6 +4613,134 @@ await okAsync('the route options are listed in the order of the arrivals they pr
   assert(disordered > 0, 'no question in the sample prints its rows out of order any more, so this check proves nothing');
 });
 
+await okAsync('asked to be there by a time, the first answer is in time on the walks as measured and no bus on offer leaves later', async () => {
+  // The last probe that still caught a bus ran for it, with no margin, and its cushion was the
+  // probe's: a walk measured one minute longer left the bus out as missed, though its reader had
+  // only to leave a minute sooner. And the rows were put in the order of a question asked to
+  // leave now, the shortest first. From the Campus to HULA by 08:30 the answer was to walk and
+  // be there at 08:38, with no bus on the list; of 168 questions, 62 were answered late, with a
+  // bus marked as missed, or with one that left too soon.
+  const QUESTIONS: [string, string, number][] = [
+    ['Intercentros Campus Universitario USC', 'Hospital Lucus Augusti (HULA)', 8 * 60 + 30],
+    ['Hospital Lucus Augusti (HULA)', 'Intercentros Campus Universitario USC', 14 * 60],
+    ['Hospital Lucus Augusti (HULA)', 'Rda. Muralla 56 (Sindicatos)', 14 * 60],
+    ['Intercentros Campus Universitario USC', 'Rda. Muralla 56 (Sindicatos)', 18 * 60 + 30],
+    ['Praza Maior / Concello de Lugo', 'Hospital Lucus Augusti (HULA)', 18 * 60 + 30],
+  ];
+  let moved = 0;
+  for (const [from, to, by] of QUESTIONS) {
+    const now = new Date(2026, 10, 24, Math.floor(by / 60) - 3, 0);
+    const [origin, destination] = [resolveLocationQuery(from), resolveLocationQuery(to)];
+    assert(origin && destination, `${from} -> ${to}: one of the ends is not in the dataset`);
+    const ends = { origin: { ...origin, name: from }, destination: { ...destination, name: to } };
+    const plans = planTrips(from, to, { now, arriveBy: by });
+    for (const plan of plans) {
+      const earliest = Math.max(now.getHours() * 60, by - 180);
+      assert(plan.arriveBy === by && plan.slackMinutes === parseTimeToMinutes(plan.departureTime) - earliest, `${from} -> ${to}: leaving ${plan.departureTime} it could leave ${plan.slackMinutes} min sooner`);
+      assert(parseTimeToMinutes(plan.arrivalTime) <= by, `${from} -> ${to}: ${plan.arrivalTime} is past ${formatMinutes(by)}`);
+    }
+    const options = plans.slice(0, 4).map((option, idx) => ({ option, idx }));
+    // The four shown wait at the pole what any plan does, rather than run for the bus.
+    for (const { option } of options) {
+      const bus = option.segments.find((seg) => seg.type === 'bus');
+      const walk = option.segments[0].type === 'walk' ? option.segments[0].durationMinutes : 0;
+      const margin = bus ? parseTimeToMinutes(bus.departureTime!) - parseTimeToMinutes(option.departureTime) - walk : Infinity;
+      assert(margin >= (bus?.precision === 'published' ? TRANSFER_BUFFER_MIN : TRANSFER_BUFFER_ESTIMATED_MIN), `${from} -> ${to}: leaving ${option.departureTime} it reaches the pole ${margin} min before the ${bus?.line?.number}`);
+    }
+    const paths: WalkPaths = {};
+    for (const { option } of options) for (const [a, b] of walkHopsOf(option, origin, destination)) paths[walkHopKey(a, b)] = await routeOnFoot(a, b);
+    const fix = (plan: RoutePlanResult) => correctionFor(plan, ends, paths);
+    const rides = (plan: RoutePlanResult) => plan.segments.some((seg) => seg.type === 'bus');
+    const rows = rankMeasured(options, fix).map(({ option }) => ({ rides: rides(option), ...withMeasuredWalk(option, fix(option)) }));
+    if (options.some(({ option }) => fix(option).before > 0)) moved++;
+    // Three hours ahead there is time to leave sooner: no bus is out of reach for a longer walk.
+    assert(rows.every((row) => row.reachable), `${from} -> ${to} by ${formatMinutes(by)}: a bus three hours off reads as missed`);
+    assert(rows.every((row) => row.rides || !row.lateBy), `${from} -> ${to} by ${formatMinutes(by)}: walking it all, measured longer, is set off on no sooner`);
+    const [first] = rows;
+    assert(!first.lateBy && parseTimeToMinutes(first.arrival) <= by, `${from} -> ${to}: asked for ${formatMinutes(by)}, the first answer arrives ${first.arrival}`);
+    const inTime = rows.filter((row) => row.rides && !row.lateBy).map((row) => parseTimeToMinutes(row.departure));
+    assert(parseTimeToMinutes(first.departure) >= Math.max(...inTime), `${from} -> ${to} by ${formatMinutes(by)}: the first answer leaves ${first.departure}, and a bus on offer at ${formatMinutes(Math.max(...inTime))}`);
+  }
+  assert(moved > 0, 'no walk in the sample measures longer than its estimate any more, so this check proves nothing');
+
+  // The walk at the far end can still make it late, and that is said and goes last.
+  const tight = { departureTime: '23:20', arrivalTime: '23:48', durationMinutes: 28, slackMinutes: 100, arriveBy: 23 * 60 + 50, isServiceActive: true, segments: [{ type: 'bus' }] } as unknown as RoutePlanResult;
+  assert(withMeasuredWalk(tight, { before: 0, after: 14 }).lateBy === 12, `arriving 00:02 for 23:50 reads ${JSON.stringify(withMeasuredWalk(tight, { before: 0, after: 14 }))}`);
+  assert(withMeasuredWalk({ ...tight, arriveBy: 10, arrivalTime: '23:58' }, { before: 0, after: 2 }).lateBy === 0, 'arriving at midnight for 00:10 reads late');
+  const pair = [tight, { ...tight, departureTime: '23:00', arrivalTime: '23:20', durationMinutes: 20 }].map((option, idx) => ({ option, idx }));
+  assert(rankMeasured(pair, (plan) => ({ before: 0, after: plan === tight ? 14 : 0 }))[0].idx === 1, 'a bus that gets there after the time asked heads one that does not');
+  for (const lang of LANGS) assert(translations(lang).planner.lateWalk.trim().length > 0, `${lang}: nothing to say it with`);
+  // Ranked on the departure each row prints: a longer walk to the first bus puts it behind the second.
+  const close = [{ ...tight, departureTime: '23:05', arrivalTime: '23:30' }, { ...tight, departureTime: '23:02', arrivalTime: '23:30' }].map((option, idx) => ({ option, idx }));
+  assert(rankMeasured(close, (plan) => ({ before: plan === close[0].option ? 6 : 0, after: 0 }))[0].idx === 1, 'the row that leaves 22:59 heads the one that leaves 23:02');
+  // For 00:30, leaving at 00:05 is later than at 23:50, whatever the clocks read.
+  const [eve, night] = ['23:50', '00:05'].map((departureTime) => ({ ...tight, departureTime, arrivalTime: '00:25', durationMinutes: 20, arriveBy: 30 }) as RoutePlanResult);
+  assert(byRank(night, eve) < 0 && byRank(eve, night) > 0, 'for 00:30, leaving the evening before counts as the later');
+  // The day goes with the clock it is printed beside.
+  assert(withMeasuredWalk({ ...night, departureTime: '00:00', daysAhead: 1 }, { before: 2, after: 0 }).daysAhead === 0, 'a walk for 00:30 set off on at 23:58 is tomorrow’s');
+
+  // Walking it all has no bus to miss: with no time left to set off sooner, it arrives later.
+  const [campus, magoi] = ['Intercentros Campus Universitario USC', 'Avenida de Magoi'].map((name) => ({ ...resolveLocationQuery(name)!, name }));
+  const [onFoot] = planTrips(campus.name, magoi.name, { now: new Date(2026, 10, 24, 22, 20), arriveBy: 22 * 60 + 48 });
+  const walked = { [walkHopKey([campus.lat, campus.lng], [magoi.lat, magoi.lng])]: await routeOnFoot([campus.lat, campus.lng], [magoi.lat, magoi.lng]) };
+  const walk = withMeasuredWalk(onFoot, correctionFor(onFoot, { origin: campus, destination: magoi }, walked));
+  assert(walk.reachable && !walk.lateBy && walk.arrival === '22:48' && walk.durationMinutes === 28, `a walk there in time reads ${JSON.stringify(walk)}`);
+
+  // The walk between two buses moves no arrival: the second leaves when it leaves, or is missed.
+  const [a, b, c, d] = [0, 1, 2, 3].map((i) => BUS_STOPS[i * 40]);
+  const twoBuses = { ...tight, departureTime: '10:00', arrivalTime: '10:40', arriveBy: 11 * 60, segments: [{ type: 'bus', fromStop: a, toStop: b, departureTime: '10:00', arrivalTime: '10:10' }, { type: 'bus', fromStop: c, toStop: d, departureTime: '10:20', arrivalTime: '10:40' }] } as unknown as RoutePlanResult;
+  const between = (minutes: number) => correctionFor(twoBuses, { origin: { ...a }, destination: { ...d } }, { [walkHopKey([b.lat, b.lng], [c.lat, c.lng])]: { path: [], meters: 0, minutes } });
+  const made = withMeasuredWalk(twoBuses, between(9));
+  assert(made.reachable && made.arrival === '10:40', `a change made in time reads ${JSON.stringify(made)}`);
+  assert(!withMeasuredWalk(twoBuses, between(13)).reachable, 'a change that takes longer than there is is offered');
+});
+
+ok('a time to be there by is held to across midnight', () => {
+  // The arrival was compared by its clock, so a walk ending at 00:30 was before 23:50: asked at
+  // 23:00 for 23:50, the one answer was to set off at 23:50. And a deadline just past midnight
+  // was looked for from midnight on: at 23:30 nothing got anybody anywhere by 00:30.
+  const [from, to] = ['Praza Maior / Concello de Lugo', 'Hospital Lucus Augusti (HULA)'];
+  const asked = (hour: number, minute: number, arriveBy: number) => planTrips(from, to, { now: new Date(2026, 10, 24, hour, minute), arriveBy });
+  for (const [hour, minute, by] of [[23, 0, 23 * 60 + 50], [21, 0, 23 * 60 + 30], [20, 0, 23 * 60 + 50]] as const) {
+    const plans = asked(hour, minute, by);
+    assert(plans.length > 0, `asked at ${hour}:00 for ${formatMinutes(by)}, nothing gets there`);
+    for (const plan of plans) assert(parseTimeToMinutes(plan.departureTime) + plan.durationMinutes <= by, `asked for ${formatMinutes(by)}, ${plan.departureTime}-${plan.arrivalTime} is offered`);
+  }
+  assert(asked(23, 30, 23 * 60 + 50).length === 0, 'twenty minutes were enough to walk to the HULA');
+  const tonight = asked(23, 30, 30);
+  assert(tonight.length === 1 && tonight[0].daysAhead === 0 && tonight[0].arrivalTime === '00:30', `asked at 23:30 for 00:30: ${tonight.map((p) => `${p.departureTime}-${p.arrivalTime} in ${p.daysAhead} day(s)`).join(', ') || 'nothing'}`);
+  // Setting off after midnight for it is tomorrow's.
+  const [near] = planTrips(from, 'Praza de Santo Domingo', { now: new Date(2026, 10, 24, 23, 30), arriveBy: 30 });
+  assert(near.daysAhead === 1 && near.departureTime.startsWith('00:'), `a walk of minutes for 00:30 sets off ${near.departureTime} in ${near.daysAhead} day(s)`);
+});
+
+await okAsync('from the pole its bus leaves from, no walk is in the way of a trip', async () => {
+  // The first hop walked was taken for the walk to the bus, and from the bus's own pole there is
+  // none: the first hop is the one at the far end. A walk measured twelve minutes longer at As
+  // Termas said "on foot you will not make this bus" to somebody standing at it, on 64 of 465
+  // plans, and that walk was handed to the planner as the way to the pole when it asked again.
+  let sampled = 0;
+  for (let i = 0; i < 40; i++) {
+    const stop = BUS_STOPS[(i * 53) % BUS_STOPS.length];
+    const origin = resolveLocationQuery(stop.name);
+    const destination = resolveLocationQuery('Centro Comercial As Termas');
+    assert(origin && destination, `${stop.name}: one of the ends is not in the dataset`);
+    const ends = { origin: { ...origin, name: stop.name }, destination: { ...destination, name: 'As Termas' } };
+    for (const plan of planTrips(stop.name, 'Centro Comercial As Termas', { now: new Date(2026, 10, 24, 10, 0) }).slice(0, 4)) {
+      const boarded = plan.segments.find((seg) => seg.type === 'bus')?.fromStop;
+      if (boarded?.lat !== origin.lat || boarded.lng !== origin.lng) continue;
+      const hops = walkHopsOf(plan, origin, destination);
+      const paths: WalkPaths = {};
+      for (const [a, b] of hops) paths[walkHopKey(a, b)] = await routeOnFoot(a, b);
+      const fix = correctionFor(plan, ends, paths);
+      if (fix.after > 0) sampled++;
+      assert(fix.before === 0 && withMeasuredWalk(plan, fix).reachable, `from ${stop.name}, boarding there, the walk to the bus is ${fix.before} min longer than none`);
+      assert(hopFromOrigin(hops, origin) === undefined, `from ${stop.name}, boarding there, the walk at the far end reads as the walk to the bus`);
+    }
+  }
+  assert(sampled > 0, 'no walk at the far end measures longer than its estimate any more, so this check proves nothing');
+});
+
 await okAsync('walking up a hill costs more than walking down it', async () => {
   // OpenStreetMap has no elevation; until the IGN model was added every walk cost the same
   // both ways, and the climb from the river to the old town is about ninety metres.
@@ -4812,6 +5195,78 @@ ok('the favourites show a stop’s lines by their number, each once', () => {
     const distinct = new Set(stop.lines.map((id) => BUS_LINES.find((l) => l.id === id)?.number));
     assert(linesByNumber(stop.lines).length === distinct.size, `${stop.name}: the badges do not match its lines' numbers`);
   }
+});
+
+ok('the bell on a departure rings for that bus and no other of its line', () => {
+  // It watched the line: at 09:42 the bell on the 5.2 of 10:39 rang at once for the one of 09:39,
+  // three minutes gone and kept on the board, and had nothing left to say at 10:34. Over a
+  // weekday, 16,240 of 87,923 bells had another bus of their line within its five minutes.
+  const at = (hour: number, minute: number) => getArrivalsForStop('s6', new Date(2026, 10, 24, hour, minute)).arrivals;
+  const board = at(9, 42);
+  const gone = board.find((a) => a.lineNumber === '5.2' && a.overdueMinutes);
+  const next = board.find((a) => a.lineNumber === '5.2' && a.etaMinutes > 20);
+  assert(gone && next, 'the board this check stands on has no 5.2 gone and another to come');
+  const watched = [busKey(next)];
+  const now = dueWatches(watched, board, 5);
+  assert(now.due.length === 0 && now.waiting.length === 1, `pressed on the ${next.etaTime}, the bell rings for the ${now.due[0]?.etaTime}`);
+  const [h, m] = next.etaTime.split(':').map(Number);
+  const then = dueWatches(watched, at(h, m - 5), 5);
+  assert(then.due.length === 1 && then.due[0].etaTime === next.etaTime && then.waiting.length === 0, `five minutes before the ${next.etaTime} the bell says nothing`);
+  // Woken to just after it, the bell does not say a bus gone three minutes arrives in none.
+  const past = dueWatches(watched, at(h, m + 3), 5);
+  assert(past.due.length === 0 && past.waiting.length === 0, `three minutes past the ${next.etaTime} the bell rings for it`);
+  // Slept through, it is let go rather than left ringing for the next one.
+  const after = dueWatches(watched, at(h, m + 10), 5);
+  assert(after.due.length === 0 && after.waiting.length === 0, 'a bus ten minutes gone is still waited for');
+});
+
+ok('a bus whose time is past is never said to be arriving', () => {
+  // The saved stops read the minutes alone: zero was "arriving" for the five minutes a departure
+  // is kept past its time, on 6,484 of 35,746 boards, where the board said how long ago it was.
+  for (const lang of LANGS) {
+    const { common } = translations(lang);
+    assert.equal(dueWord(lang, { etaMinutes: 0, overdueMinutes: 3 }), common.overdue(3));
+    assert.equal(dueWord(lang, { etaMinutes: 0 }), common.arrivingNow);
+    assert.equal(dueWord(lang, { etaMinutes: 4 }), null);
+  }
+});
+
+ok('the search box finds a street, and a row of it is one place', () => {
+  // It asks for "a stop, a line or a street" and knew 28 places. A row is drawn where it is and
+  // planned to by its name: with the streets and the places in it, 49 of 2,995 rows planned
+  // somewhere else, «A Ponte» 7.8 km off, and "praza maior" was three rows of one square.
+  const names = (q: string) => rankSites(q, 3).map((s) => s.name);
+  assert(names('Rúa do Teatro').includes('Rúa do Teatro') && names('Cines Cristal').includes('Cine Cristal'), 'the box does not find what Ruta finds');
+  for (const q of ['a ponte', 'a tolda', 'vilar', 'piscina', 'praza maior', 'estacion', 'calzada das gandaras', 'mercadona']) {
+    const sites = rankSites(q, 3);
+    assert(new Set(sites.map((s) => s.name)).size === sites.length, `"${q}" offers one name twice`);
+    for (const [i, site] of sites.entries()) {
+      const planned = resolveLocationQuery(site.name)!;
+      assert(LUGO_LANDMARKS.some((l) => l.name === site.name) || getDistanceMeters(planned.lat, planned.lng, site.lat, site.lng) <= 150, `"${q}": ${site.name} is planned to ${planned.name}`);
+      for (const before of sites.slice(0, i)) assert(getDistanceMeters(before.lat, before.lng, site.lat, site.lng) >= 50, `"${q}" offers one place twice: ${before.name}, ${site.name}`);
+    }
+  }
+  assert.deepEqual(names('catedral').filter((name) => name.startsWith('Catedral')), ['Catedral de Lugo (Porta de Santiago)'], 'the cathedral is offered twice');
+  // And no landmark gives way to them on a word of its own: "lucus" was three shops and not the hospital.
+  for (const word of new Set(LUGO_LANDMARKS.flatMap((l) => [l.name, ...l.name.split(/[s/(),.]+/).filter((w) => w.length > 3)]))) {
+    const landmarks = rankLandmarks(word).filter((l) => l.score >= 300).slice(0, 3).map((l) => l.landmark.name);
+    assert.deepEqual(names(word).slice(0, landmarks.length), landmarks, `"${word}" offers other places before the landmarks it names`);
+  }
+});
+
+ok('an area is where its name says, on the stops and in the search for a line', () => {
+  // «Cemiterio» was sixteen stops of the N-VI, the nearest 5.4 km from the cemetery, whose own were
+  // «A Cheda»; and Czda. Gándaras was A Piringalla's. The search for a line reads the areas, so
+  // "cemiterio" offered the 1.1, the 1.2 and the 2.
+  const cemetery = LUGO_LANDMARKS.find((l) => l.name.startsWith('Cemiterio Municipal'))!;
+  for (const stop of BUS_STOPS) {
+    const metres = getDistanceMeters(stop.lat, stop.lng, cemetery.lat, cemetery.lng);
+    if (stop.zone === 'Cemiterio') assert(metres < 1000, `${stop.name} is ${metres} m from the cemetery it is named after`);
+    if (metres < 300) assert(stop.zone === 'Cemiterio', `${stop.name}, ${metres} m from the cemetery, is in ${stop.zone}`);
+    if (stop.name.startsWith('Czda. Gándaras')) assert(stop.zone !== 'A Piringalla', `${stop.name} is in ${stop.zone}`);
+  }
+  const lines = BUS_LINES.filter((line) => lineZones(line).some(({ zone }) => matchesQuery(zone, 'cemiterio'))).map((line) => line.id);
+  assert.deepEqual(lines, ['10', '11-Calde'], 'the lines an area’s name finds');
 });
 
 ok('a board row keeps its key while the buses ahead of it leave', () => {

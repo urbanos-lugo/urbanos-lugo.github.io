@@ -1,12 +1,11 @@
-import { useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { AlertTriangle, HelpCircle, Newspaper, RefreshCw, CheckCircle2, Clock } from 'lucide-react';
 import { LOCALE, useLang, useT } from '../i18n';
 import { BusStop, ServiceAlert } from '../types';
 import { stopById } from '../data/transitData';
-import { atStop, type NoticeChanges } from '../utils/noticeChanges';
+import { atStop, forecastEnd, type NoticeChanges } from '../utils/noticeChanges';
 import { NoticeHere } from './ui/NoticeHere';
 import { Notice } from './ui/controls';
-import { isSnapshotStale } from '../utils/snapshotAge';
 import { NOTICE_LANG } from '../utils/operatorNotices';
 import type { ServiceAlerts } from '../hooks/useServiceAlerts';
 import { NOTICE_META, NOTICES_REVIEWED_ON } from '../data/structuralNotices';
@@ -88,6 +87,8 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
   const warning = alert.severity === 'warning';
   /** A notice with a source was read off somebody else's site, in their words. */
   const quoted = source ? NOTICE_LANG : undefined;
+  const locale = LOCALE[useLang()];
+  const expected = forecastEnd(alert);
   return (
     <div className={`py-5 px-cap-5 rounded-card border transition-all ${warning ? 'bg-warn/quiet border-warn' : 'bg-surface/quiet border-edge'}`}>
       {source && <span className="caps-label text-ink-3">{source}</span>}
@@ -100,6 +101,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
         </div>
       </div>
       <NoticeBody title={alert.title} description={alert.description} link={alert.link} lang={quoted}>
+        {expected && expected <= new Date() && <p className="mt-1.5 text-note font-semibold text-warn-ink">{t.fares.forecastOver(expected.toLocaleDateString(locale))}</p>}
         {/* A notice the operator wrote out line by line, read off its home page: each part in its words, its heading naming the line. */}
         {alert.sections?.map((section, i) => (
           <div key={i} lang={quoted} className="rule-above mt-3">
@@ -119,9 +121,7 @@ function AlertCard({ alert, when, source }: { alert: ServiceAlert; when: string;
 export function AlertsView({ alerts, changes = null, favoriteStopIds = [], onSelectStop }: AlertsViewProps) {
   const t = useT();
   const locale = LOCALE[useLang()];
-  const { data, snapshotAt, isSyncing, cooldown, refresh } = alerts;
-  /** The reader pressed the button: from then on, what the check found is said, not only drawn. */
-  const [asked, setAsked] = useState(false);
+  const { data, snapshotAt, stale, isSyncing, asked, cooldown, refresh } = alerts;
 
   // The operator is talking about its own buses; the council is publishing news about the city.
   const published = data?.alerts || [];
@@ -129,7 +129,6 @@ export function AlertsView({ alerts, changes = null, favoriteStopIds = [], onSel
   const councilNews = published.filter((a) => a.source === 'concello');
   /** "Could not read the page" is not the same claim as "nothing is wrong". */
   const unreachable = data?.status === 'unreachable';
-  const stale = isSnapshotStale(snapshotAt);
   const hour = new Date().getHours();
   const monthsSinceReview = Math.floor((Date.now() - new Date(NOTICES_REVIEWED_ON).getTime()) / (1000 * 60 * 60 * 24 * 30.4));
   const structuralNotices: ServiceAlert[] = NOTICE_META.map((meta, i) => ({ ...meta, ...t.faresContent.notices[i], date: NOTICES_REVIEWED_ON, active: true }));
@@ -141,11 +140,15 @@ export function AlertsView({ alerts, changes = null, favoriteStopIds = [], onSel
     .filter((s): s is BusStop => !!s)
     .map((stop) => ({ stop, here: atStop(changes, stop, now) }))
     .filter(({ here }) => here.speaks);
-  const [statusTitle, statusDesc] = unreachable
-    ? [t.fares.unknownStatusTitle, t.fares.unknownStatusDesc]
-    : stale
-      ? [t.fares.staleStatusTitle, t.fares.staleStatusDesc]
-      : [t.fares.normalStatusTitle, t.fares.normalStatusDesc];
+  const [statusTitle, statusDesc] = !data
+    ? [t.fares.refreshing, '']
+    : unreachable
+      ? [t.fares.unknownStatusTitle, t.fares.unknownStatusDesc]
+      : stale
+        ? [t.fares.staleStatusTitle, t.fares.staleStatusDesc]
+        : [t.fares.normalStatusTitle, t.fares.normalStatusDesc];
+  /** Read, and lately enough to speak for now: the only state the tick goes on. */
+  const verified = !!data && !unreachable && !stale;
 
   return (
     <div className="page page-gutter py-6 space-y-8">
@@ -169,10 +172,7 @@ export function AlertsView({ alerts, changes = null, favoriteStopIds = [], onSel
           </div>
           <button
             id="sync-alerts-btn"
-            onClick={() => {
-              setAsked(true);
-              refresh(true);
-            }}
+            onClick={() => refresh(true)}
             disabled={isSyncing || cooldown > 0}
             // In the cooldown the button is disabled but its countdown must stay legible: full strength, in ink-3.
             className={`btn shrink-0 self-start sm:self-auto ${cooldown > 0 ? 'btn-secondary text-ink-3 disabled:opacity-100' : 'btn-primary'}`}
@@ -182,9 +182,10 @@ export function AlertsView({ alerts, changes = null, favoriteStopIds = [], onSel
           </button>
           {/* The check, for the ear: that it is under way, and what it found. It changed only the
               button's words and the cards below, which a screen reader is not told about (4.1.3).
-              A copy that came back instead of an answer is said as what it is. */}
+              A copy that came back instead of an answer is said as what it is, and what the app
+              asks by itself every half hour is not said. */}
           <span role="status" className="sr-only">
-            {isSyncing ? t.fares.refreshing : asked ? (snapshotAt || unreachable ? t.fares.unknownStatusTitle : t.fares.checked(liveAlerts.length)) : ''}
+            {data && !asked ? '' : isSyncing ? t.fares.refreshing : asked ? (snapshotAt || unreachable ? t.fares.unknownStatusTitle : t.fares.checked(liveAlerts.length)) : ''}
           </span>
         </div>
 
@@ -224,13 +225,13 @@ export function AlertsView({ alerts, changes = null, favoriteStopIds = [], onSel
           <div className="py-5 px-cap-5 rounded-card bg-surface border border-edge flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             {/* The words under the tick when both do not fit, rather than "comprobació-n". */}
             <div className="flex min-w-0 flex-wrap items-start gap-3.5">
-              {/* A green tick is a claim. It only goes on the state actually verified. */}
-              <div className={`shrink-0 rounded-control p-2 mt-0.5 ${unreachable ? 'bg-surface text-ink-2 border border-edge' : 'bg-official text-on-official'}`}>
-                {unreachable ? <HelpCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+              {/* A green tick is a claim, and it stood over a screen still waiting for its first answer and over a copy days old. */}
+              <div className={`shrink-0 rounded-control p-2 mt-0.5 ${verified ? 'bg-official text-on-official' : 'bg-surface text-ink-2 border border-edge'}`}>
+                {verified ? <CheckCircle2 className="w-5 h-5" /> : <HelpCircle className="w-5 h-5" />}
               </div>
               <div className="min-w-floor-status flex-1">
-                <h3 className={`break-words text-body font-bold ${unreachable || stale ? 'text-ink' : 'text-official'}`}>{statusTitle}</h3>
-                <p className="text-note text-ink-2 mt-0.5">{statusDesc}</p>
+                <h3 className={`break-words text-body font-bold ${verified ? 'text-official' : 'text-ink'}`}>{statusTitle}</h3>
+                {statusDesc && <p className="text-note text-ink-2 mt-0.5">{statusDesc}</p>}
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-label text-official font-medium">
                   <span>
                     {t.fares.lastCheck} <b>{formatInstant(snapshotAt ?? data?.lastSyncTime, locale)}</b>

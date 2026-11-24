@@ -6860,3 +6860,150 @@ Cloudflare.
   `deno-deploy` co segredo `DENO_DEPLOY_TOKEN` e a variable de repositorio `DENO_DEPLOY_ORG`;
   despois, publicar, que os documentos xa a dan por apagada. Borrado o segredo antes, o
   traballo de Deno que aínda está en `main` non fai nada e dío.
+
+## Rolda 92: auditoría enteira, e o que se arranxou dela — 23 de novembro de 2026
+
+Pedido: auditar o repositorio, volver comprobar cada achado e arranxar os que fosen certos,
+contando cunha carga de centos a poucos miles de persoas. Vinte achados, o último dunha
+segunda mirada. Os que se caeron ao revisalos van abaixo, co porqué.
+
+### Arranxado
+
+- **«Chegar antes das»** (`planner.ts`, `walkCorrection.ts`, `RoutePlannerView.tsx`). De 168
+  preguntas coa pantalla enteira simulada, segundo intento incluído, 62 saían mal: 21 tarde, 2
+  con bus perdido, 39 saíndo antes do preciso. Agora unha, que sae dez minutos antes. Eran catro
+  cousas: gardábase o último intento, que corre ao bus sen marxe (432 de 580 plans das catro
+  opcións; agora 2 de 579); o colchón contábase dese intento e non da primeira saída mirada; a
+  lista ordenábase como se se saíse agora, pola viaxe máis curta; e un paseo final máis longo
+  ca o estimado facía chegar tarde sen dicilo.
+- **A medianoite**: a chegada comparábase polo texto da hora, e 00:30 era antes de 23:50.
+- **Desde o poste do seu bus**, o paseo do final lérase como o camiño ao bus: 64 de 465 plans
+  dicían «a pé non chegas a tempo a este bus» a quen estaba nel.
+- **A campá** vixiaba a liña: 16.240 de 87.923 campás dun día laborable tiñan outro bus da súa
+  liña dentro dos cinco minutos, e soaban no acto. Agora é un bus, e mírase co reloxo de agora.
+- **As paradas gardadas** dicían «Chegando» dun bus xa pasado en 6.484 de 35.746 taboleiros.
+- **Avisos**: o tic verde saía antes da primeira resposta e sobre unha copia caducada; unha
+  resposta sen estado lía «todo normal»; preguntábase unha vez por carga; unha pregunta fallida
+  cambiaba a resposta da pantalla por unha copia máis vella; un aviso de dous meses acababa co
+  primeiro; e «do 4 ao 12» eran as liñas 4 e 12.
+- **Zonas**: «Cemiterio» estaba ao norte: das súas 16 paradas, a máis próxima ao cemiterio quedaba a 5,4 km.
+  Agora son 11, da 10 e da 11-Calde. «As Gándaras» gaña a Czda. Gándaras (39) e
+  «A Piringalla» un segundo punto onde a pon OSM (26). 417 paradas e 24 liñas, coma antes; só
+  cambia a zona, en 47.
+- **Segunda pasada polo mesmo poste** (3.1 e 3.2, Rda. Mercedes 53; 6, Avda. Magoi 92): o
+  operador lístaas dúas veces e o percorrido de OSM pasa dúas veces. Vai á parte, en `again`.
+- **O lector**: o título dun artigo tardaba 17,6 s cos 512 KB de tope; agora 6 ms.
+- **O cadro de arriba** promete rúas e só tiña 28 sitios. Busca os
+  mesmos ca Ruta, cos sitios escritos a man diante polo seu nome.
+- **Notificacións**: os navegadores de teléfono negan o construtor á páxina (MDN); amósaas o
+  *service worker*. «Avisarme ao chegar» non mandaba ningunha.
+- **`server.ts`**: Vite impórtase só en desenvolvemento; as páxinas saen comprimidas.
+- **O worker** garda vinte segundos tamén un 502, que antes era unha petición por lector.
+  Nunca por riba dunha boa.
+- **Deno, do todo**: a rolda 91 deixara a lectura de `Deno.env` no worker porque «non estorba»;
+  a app de alí está borrada, e con ela non a usaba ninguén. Fóra, co ficheiro dos seus tipos.
+- Pezas mortas: opcións de `tsconfig.json`, `textColor`, `-mx-cap-*` e dous tipos. E os 90 s
+  e 20 s por tramo, nun sitio só.
+
+### Catro revisións, e o cambio de criterio
+
+Catro voltas de axentes sobre o cambio, cada achado con outro que tentaba tombalo, deron 19, 10, 15
+e 3 fallos certos nos propios arranxos. Cada volta atopaba casos máis raros e cada arranxo engadía
+casos: o lector de avisos chegou a ter regras para frases que ninguén escribiu, e a pantalla de
+Avisos cinco memorias para preguntas que se adiantaban. Desde aí só conta o que vai peor ca na
+versión publicada (8a61efc) ou o problema de partida, con datos de verdade. O lector quedou nas
+formas que o operador escribe (San Froilán, as obras de novembro); a pantalla, nunha memoria,
+porque mentres hai unha pregunta en marcha o botón non pon outra; e Ruta resolve os nomes coma antes.
+
+### Comparado coa publicada
+
+- **Taboleiros**: 480.384, todos iguais menos os de dous postes (s246 e s613), que só gañan a
+  segunda pasada. A seguinte saída, só distinta en s613; os buses do mapa, iguais.
+- **Nomes**: 4.223 nomes e 6.361 anacos tecleados resólvense igual. No cadro de arriba apareceu o que
+  ningunha revisión vira: «lucus» ofrecía tres tendas e non o hospital. Agora ningún sitio sinalado
+  se perde polo seu nome.
+- **Avisos de verdade**: os mesmos días e os mesmos taboleiros; «Cambios líneas 7, 8, 9 y 12 por
+  obras» dá esas catro liñas e non todas.
+- **Servidor propio**: mesmas respostas; cambia que as páxinas saen comprimidas, e os datos.
+
+- **Píxeles**: 478 fotogramas do teléfono e do escritorio en galego. Cambia o que debía (as paradas
+  gardadas, as zonas, as filas da busca, o tic de Avisos) e apareceu un fallo: cos filtros do mapa
+  abertos, a barra de arriba quedaba clara por riba do veo. Agora só se eleva coas filas abertas.
+
+### Ruta: o fallo de fondo, e por que ninguén o vira
+
+Chegou dunha ruta probada a man: de Fonte dos Ranchos a As Termas, antes das 17:42, a resposta era
+saír ás 16:44, andar 15 minutos, ir un minuto na 1.1 e cambiar á 2. Co arranxo, a 1.4 soa, saíndo ás
+17:06.
+
+- **A causa.** Os postes de embarque escollíanse por liña e non por sentido. O 25 de agosto (6256855),
+  ao arranxar outra queixa da mesma orixe, pasouse das dez paradas máis próximas a «unha parada só
+  entra se serve unha liña nova»; e o poste do outro lado da rúa, que vai ao revés, xa «servía» a
+  liña. Das cinco liñas que van a As Termas non se ofrecía ningunha enteira, en ningún dos tres modos.
+- **Por que non se vía.** Todas as comprobacións preguntan se unha viaxe se sostén (o comentario de
+  `stressPlanner.ts` dío), e todas se sostiñan. Nada comparaba con algo de fóra do planificador;
+  esta mesma rolda medira «chegar antes das» usando o planificador de referencia.
+- **Canto era.** Contra unha busca feita á parte, sobre o cadro: na publicada, 169 de 1.269 respostas
+  da cidade chegan cinco minutos ou máis despois do que se pode, 99 con dous buses cando un chega
+  antes; e manda andar a 339. Agora 1 de 1.269 (un paseo de 17 minutos), e 211 andando.
+- **O arranxo.** Como todas as expedicións dun día gardan os mesmos intervalos, para cada liña e sentido
+  hai un só mellor poste onde subir e un onde baixar: a busca é exacta e non unha escolla. Cada par de
+  liñas, no sitio de cambio que máis deixa coller. E o primeiro bus é o último que enlaza: unha viaxe
+  rural saía dúas horas máis tarde porque o primeiro das 08:30 esperaba catro horas e se descartaba.
+- **Un bus máis ten que gañar** cinco minutos ou cinco de paseo, ou non se ofrece.
+- **O custo.** `measure:engine`: `planTrips` igual (8,9 e 8,6 ms de mediana); «chegar antes das», 241
+  e 170 ms.
+- **O que se buscou ademais**, sobre 1.800 viaxes novas: noite, madrugada, festivos, toda a rede, as
+  paradas pechadas polo aviso real, posición no canto de nome, «saír ás» contra «agora» (o mesmo
+  plan sempre, tamén para mañá): 0 chegan cinco minutos tarde e 0 fan saír oito minutos antes. Con
+  paseos medidos e a pantalla enteira, 2.000 viaxes: 1.961 ben na publicada e 1.991 agora. Das nove que
+  quedan, catro son buses que saen no minuto da pregunta desde o poste do lado, e cinco danse por
+  perdidos cando aínda se collerían gastando a marxe do poste.
+- **A comprobación que faltaba**: `tools/stressRoutes.ts`, en `check:deep`. Co planificador vello falla
+  de tres maneiras; con 4.017 respostas no canto das 339 que corre, ningunha.
+
+Unha comprobación cambiou: «ningunha que empate en tempo pode ir por riba dunha con menos buses»
+comparaba só a duración, e unha viaxe igual de longa que sae un cuarto de hora despois non empata.
+
+### O aviso das obras
+
+Pedido: mirar se o corte que segue na páxina do operador rematou. A súa páxina di «Debido al corte
+Puerta San Fernando desde el día 19/10/26 … (previsión 2 semanas)», e a app non o dicía: collía o título
+curto da campá. Ningunha noticia das que se atoparon (Concello, El Progreso, LugoXa, aquilugo) di que se
+reabrise. Agora lese esa frase: Avisos amósaa, e un aviso que leva o dobre do que prevía deixa de cambiar
+taboleiros, Ruta e o número do menú (README, «Un aviso remata cos seus propios días»). O 16 de novembro
+para este. Do dono, se ve que a rúa segue cortada: dicilo, e queda aplicándose.
+
+### A carga, medida
+
+Todo o que sae, simulado. Servidor propio: 1.500 primeiras visitas en 20 s (53.400 peticións),
+p95 de 11 ms e ningún erro; con 4.000 en 30 s satura (p50 de 1,5 s). Unha primeira visita son
+1.237 KB en brotli, coa precarga enteira. No worker publicado, a Cache API si garda en
+`workers.dev`: a segunda e a terceira lectura de `/api/alerts` deron `HIT` co mesmo selo.
+
+### Mirado e descartado
+
+- **`express.json` (32 KB)**: hai unha comprobación que garda o 413. Queda.
+- **As nove rutas da API do servidor propio**: están documentadas e probadas; non é un fallo.
+- **`isWithinServiceWindow`**: só a usan `fullAudit.ts` e tres comprobacións. Queda.
+
+### Comprobado
+
+- As cinco portas: lint; 201 comprobacións en 9,6 s; 26 políticas; as tres varridas (339 respostas
+  contra a mellor); a build. `data:build` deixa `src/data/` como está.
+- `audit:browser` enteiro sobre a build final, 254 medicións de 170 estados, secuencias e viaxes: 0 fallos
+  de tarefa, volta, teclado, foco, nomes, reaxuste, consola e promesas. Correu en Brave, porque o Chrome
+  de Puppeteer xa non estaba no disco.
+- Deu 118 de contraste, todos dun número de liña sobre a súa cor, entre 4,41 e 4,50. É de Brave, que move un
+  nivel as cores que unha páxina le dun lenzo: a build publicada, medida en dúas pantallas, deu 17 da mesma
+  clase en 12 medicións, e as 24 cores, iguais ás publicadas, pasan todas (a 5ES, a máis xusta, 4,502).
+- As fotos, coas do mapa, favoritos, menú, QR, liñas e tarifas: 31 de 68 difiren da publicada en Brave, e a
+  publicada contra si mesma noutro porto, 29, os mesmos menos dous cadros do QR que nese par saíron en claro
+  e non en escuro (puntos e nomes do mapa). A barra por riba do veo dos filtros xa non aparece.
+
+### Queda
+
+- `audit:browser` co Chrome de sempre, que é o que conta para o contraste: o da CI valerá.
+- As zonas «Acea de Olga» (1,7 km), «A Cheda» (1,1 km) e «O Ceao» (1,6 km) tampouco están onde
+  OSM pon o barrio do mesmo nome; non se tocaron sen saber cal chama así a xente.
+- As notificacións nun teléfono de verdade, sen probar.

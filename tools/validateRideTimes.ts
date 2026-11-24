@@ -12,7 +12,7 @@
  */
 import { pathToFileURL } from 'node:url';
 import { BUS_LINES, BUS_STOPS } from '../src/data/transitData';
-import { buildRuns } from '../src/utils/schedule';
+import { buildRuns, secondsOfLeg } from '../src/utils/schedule';
 import { mean, median } from './lib';
 
 export interface RideTimeLeg {
@@ -49,7 +49,7 @@ export function rideTimeReport() {
 
       // Road time vs printed time, on the one thing that can be checked: consecutive anchors.
       const cum = [0];
-      for (let i = 0; i < direction.stops.length - 1; i++) cum.push(cum[i] + (direction.legSeconds?.[i] ?? 90) + 20);
+      for (let i = 0; i < direction.stops.length - 1; i++) cum.push(cum[i] + secondsOfLeg(direction.legSeconds, i));
       const run = runs.find((r) => r.publishedStopIndices.length > 1);
       if (!run) return;
       for (let k = 1; k < run.publishedStopIndices.length; k++) {

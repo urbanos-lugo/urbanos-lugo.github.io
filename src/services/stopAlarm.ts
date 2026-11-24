@@ -108,12 +108,14 @@ export async function requestNotificationPermission(): Promise<boolean> {
 
 /** Show a system notification if allowed. Never throws. */
 export function notify(title: string, body: string): void {
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+  const icon = `${import.meta.env?.BASE_URL ?? '/'}icon-192.png`;
+  const options = { body, tag: 'urbanos-lugo', badge: icon, icon };
   try {
-    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-      new Notification(title, { body, tag: 'urbanos-lugo', badge: '/icon-192.png', icon: '/icon-192.png' });
-    }
+    new Notification(title, options);
   } catch {
-    // some browsers refuse the constructor outside a service worker
+    // Phones refuse the constructor to a page: there the service worker shows it, and opens the app when it is tapped.
+    navigator.serviceWorker?.ready.then((worker) => worker.showNotification(title, options)).catch(() => {});
   }
 }
 

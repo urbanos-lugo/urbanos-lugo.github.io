@@ -6,7 +6,7 @@ import { NEARBY_STOP_LIMIT_METRES, NearbyStop, getNearbyStops } from '../utils/p
 import { getArrivalsForStop, nextServiceAtStop } from '../utils/arrivals';
 import { atStop, type NoticeChanges } from '../utils/noticeChanges';
 import { NoticeHere, NotHere } from './ui/NoticeHere';
-import { dayWord } from '../utils/serviceLabels';
+import { dayWord, dueWord } from '../utils/serviceLabels';
 import { useLang, useT } from '../i18n';
 import { useClock } from '../hooks/useClock';
 import { LazyNearbyMiniMap } from './Map/LazyNearbyMiniMap';
@@ -197,10 +197,8 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                     {arrivals.map((a, i) => (
                       <span key={`${a.lineId}-${i}`} className="flex items-center gap-1.5">
                         <LineBadge number={a.lineNumber} color={a.lineColor} size="row" />
-                        <span className={`tnum text-body font-semibold ${here.skips(a.lineNumber) ? 'line-through opacity-struck' : ''}`}>
-                          {a.etaMinutes === 0 ? (
-                            t.common.arrivingNow
-                          ) : (
+                        <span className={`tnum text-body font-semibold ${a.overdueMinutes ? 'text-ink-3' : ''} ${here.skips(a.lineNumber) ? 'line-through opacity-struck' : ''}`}>
+                          {dueWord(lang, a) ?? (
                             <>
                               <Approx on={a.precision === 'estimated'} />
                               {a.etaMinutes}
@@ -235,11 +233,15 @@ export function StopHome({ favoriteStopIds, favoriteLineIds, onSelectLine, recen
                   <NameStack name={line.name} hint={stop ? t.stopHome.savedLinesAt(stop.name) : t.stopHome.savedLinesNoStop} floor onTint />
                   {next && (
                     <span className="tnum ml-auto shrink-0 text-right">
-                      <span className="block text-emph font-bold">
-                        <Approx on={next.precision !== 'published'} />
-                        {next.etaMinutes}
-                      </span>
-                      <span className="block text-label text-ink-2">{t.common.min}</span>
+                      {dueWord(lang, next) ?? (
+                        <>
+                          <span className="block text-emph font-bold">
+                            <Approx on={next.precision !== 'published'} />
+                            {next.etaMinutes}
+                          </span>
+                          <span className="block text-label text-ink-2">{t.common.min}</span>
+                        </>
+                      )}
                     </span>
                   )}
                 </button>

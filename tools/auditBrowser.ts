@@ -223,7 +223,7 @@ const REGULAR = {
 /* The two API answers, as fixtures                                                      */
 /* ------------------------------------------------------------------------------------- */
 
-type Api = 'incidents' | 'quiet' | 'down' | 'offline' | 'slow';
+type Api = 'incidents' | 'quiet' | 'down' | 'offline' | 'slow' | 'unread';
 
 const iso = new Date(DAY).toISOString();
 /** An operator notice written out line by line, and a council press note: every branch of the notices UI. */
@@ -236,7 +236,7 @@ const INCIDENTS = {
     {
       id: 'fixture-operator',
       title: 'Desvíos provisionales por obras',
-      description: 'Del 28 de septiembre al 3 de octubre',
+      description: 'Corte desde el día 10/9/26 (previsión 2 semanas)',
       severity: 'warning',
       linesAffected: ['1.2', '3.1', '3.2', '5ES', '7', '8', '11'],
       date: iso,
@@ -289,12 +289,15 @@ async function guard(page: Session, mode: () => Api, seen: (url: URL) => void = 
     if (url.host !== audited) return void page.send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }).catch(() => undefined);
     const m = mode();
     if (url.pathname.endsWith('/alerts.json') && m === 'offline') return void page.send('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' }).catch(() => undefined);
+    if (url.pathname.endsWith('/alerts.json') && m === 'unread') return send(200, { ...QUIET, fetchedAt: iso });
     if (!url.pathname.includes('/api/')) return void page.send('Fetch.continueRequest', { requestId }).catch(() => undefined);
     if (m === 'offline') return void page.send('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' }).catch(() => undefined);
     if (m === 'down') return send(500, { error: 'fixture' });
     if (url.pathname.includes('/agora')) return send(200, AGORA);
+    // The operator does not answer whoever is not the reader, and takes its time about it.
+    if (m === 'unread' && !url.searchParams.has('refresh')) return void setTimeout(() => send(200, { ...QUIET, status: 'unreachable' }), 1500);
     if (m === 'slow') return void setTimeout(() => send(200, INCIDENTS), Number(process.env.AUDIT_SLOW_MS ?? 3000));
-    send(200, m === 'quiet' ? QUIET : INCIDENTS);
+    send(200, m === 'quiet' || m === 'unread' ? QUIET : INCIDENTS);
   });
 }
 
@@ -953,6 +956,9 @@ const words = (d: typeof gl) => ({
   clearRecent: d.stopHome.clearRecent,
   undoClear: d.planner.undoClear,
   alerts: d.menu.alerts,
+  allNormal: d.fares.normalStatusTitle,
+  notChecked: d.fares.unknownStatusTitle,
+  checkedNone: d.fares.checked(0),
   scan: d.qr.scanBtn,
   operatorSays: d.arrivals.operatorSaysTitle,
 });
@@ -1200,6 +1206,34 @@ export const STATES: State[] = [
   { screen: 'avisos', name: 'sen avisos', api: 'quiet' },
   { screen: 'avisos', name: 'servidor caido', api: 'down', setup: `await pause(800); return true;` },
   { screen: 'avisos', name: 'sen rede', api: 'offline', setup: `await pause(2500); return true;` },
+  // The copy of an hour ago says there is nothing, and the server that the operator could not be
+  // read: it had the green tick, before any answer too.
+  {
+    screen: 'avisos',
+    name: 'operador caido',
+    api: 'unread',
+    setup: `const main = document.querySelector('main'); let claimed = false;
+      if (!(await until(() => { claimed ||= main.textContent.includes(T.allNormal); return main.textContent.includes(T.notChecked); }))) return 'nothing says the notices could not be checked';
+      await pause(300); window.__claimed = claimed; return true;`,
+    expect: `return window.__claimed || document.querySelector('main').textContent.includes(T.allNormal) ? ['with the operator unread, the screen says all is normal'] : [];`,
+  },
+  // Woken after the night: the app asks by itself, what was answered before no longer says how
+  // things are now, and only what the reader asked is announced.
+  {
+    screen: 'avisos',
+    name: 'unha noite despois',
+    api: 'unread',
+    setup: `const main = document.querySelector('main'), said = () => main.querySelector('[role=status]').textContent.trim();
+      if (!(await until(() => main.textContent.includes(T.notChecked)))) return 'nothing says the notices could not be checked';
+      document.getElementById('sync-alerts-btn').click();
+      if (!(await until(() => said() === T.checkedNone && main.textContent.includes(T.allNormal)))) return 'the check the reader asked for is not announced';
+      const asks = () => performance.getEntriesByType('resource').filter((e) => e.name.endsWith('/api/alerts')).length, before = asks();
+      window.__auditLock(13 * 3600000); await pause(500);
+      if (main.textContent.includes(T.allNormal)) return 'an answer half a day old still says all is normal';
+      if (!(await until(() => asks() > before))) return 'half a day later nothing was asked';
+      await pause(300); return true;`,
+    expect: `return document.querySelector('main [role=status]').textContent.trim() ? ['what the reader did not ask is announced'] : [];`,
+  },
   {
     screen: 'avisos',
     name: 'comprobando',

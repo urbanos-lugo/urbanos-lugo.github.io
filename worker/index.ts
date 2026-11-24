@@ -15,17 +15,11 @@ import { operatorTimesResponse } from '../src/services/operatorTimes';
  */
 const EDGE_SECONDS = { alerts: 30 * 60, unreachable: 60, operator: 20 };
 
-/**
- * A setting of the deployment. Cloudflare hands them to `fetch` as its second argument;
- * Deno Deploy keeps them in `Deno.env` and passes connection details there instead, which
- * name none of these. Read per request: Cloudflare has no `Deno`, and touching it while the
- * module loaded would have stopped the worker before it answered anything.
- */
-const setting = (env: unknown, key: 'ALLOWED_ORIGIN' | 'DEPLOY_SHA'): string | undefined => {
-  const given = env && typeof env === 'object' ? (env as Record<string, unknown>)[key] : undefined;
-  if (typeof given === 'string') return given;
-  return typeof Deno === 'undefined' ? undefined : Deno.env.get(key);
-};
+/** What the deployment passes with every request (deploy-worker.yml). */
+interface Settings {
+  ALLOWED_ORIGIN?: string;
+  DEPLOY_SHA?: string;
+}
 
 /** Never store an answer no browser will accept: an answer without a usable allow-origin is not stale, it is unusable. */
 const cacheableFor = (maxAge: number, origin: string): number => (origin ? maxAge : 0);
@@ -44,10 +38,10 @@ const json = (body: unknown, status: number, maxAge: number, origin: string): Re
     },
   });
 
-export async function handle(request: Request, env?: unknown): Promise<Response> {
+export async function handle(request: Request, env: Settings = {}): Promise<Response> {
   const url = new URL(request.url);
   /** The one site allowed to call this. No default on purpose: unset, the response carries no allow-origin and a browser refuses it. */
-  const ALLOWED_ORIGIN = setting(env, 'ALLOWED_ORIGIN') ?? '';
+  const ALLOWED_ORIGIN = env.ALLOWED_ORIGIN ?? '';
   if (request.method !== 'GET') return json({ error: 'Only GET' }, 405, 0, ALLOWED_ORIGIN);
 
   // `caches.open(name)` is the web standard; the allowed origin goes in the key because it goes in the response.
@@ -59,25 +53,30 @@ export async function handle(request: Request, env?: unknown): Promise<Response>
 
   // `cache.match` does not read `cache-control` — a half-hour answer was served for three
   // days — so both freshness and the allow-origin are checked on the way out.
-  const hit = await cache.match(cacheKey);
-  if (hit) {
+  const kept = async (): Promise<Response | undefined> => {
+    const hit = await cache.match(cacheKey);
+    if (!hit) return undefined;
     const storedAt = Number(hit.headers.get('x-stored-at'));
     const maxAge = Number(/max-age=(\d+)/.exec(hit.headers.get('cache-control') ?? '')?.[1] ?? 0);
     const fresh = Number.isFinite(storedAt) && storedAt > 0 && (Date.now() - storedAt) / 1000 < maxAge;
     const usable = (hit.headers.get('access-control-allow-origin') ?? '') === ALLOWED_ORIGIN;
     if (fresh && usable) return hit;
     await cache.delete(cacheKey);
-  }
+  };
+  const hit = await kept();
+  if (hit) return hit;
 
   const respond = async (body: unknown, status: number, maxAge: number): Promise<Response> => {
+    // A failure never takes the place of an answer another reader got while this one was failing.
+    const better = status === 200 ? undefined : await kept();
+    if (better) return better;
     const res = json(body, status, maxAge, ALLOWED_ORIGIN);
-    // Only a real answer is cached: an error cached for half an hour is half an hour of the same error.
-    if (status === 200 && cacheableFor(maxAge, ALLOWED_ORIGIN) > 0) await cache.put(cacheKey, res.clone());
+    if (cacheableFor(maxAge, ALLOWED_ORIGIN) > 0) await cache.put(cacheKey, res.clone());
     return res;
   };
 
   // Which commit is answering, null when run by hand: the only way to tell a fresh deployment from an edge cache still serving the last one.
-  if (url.pathname === '/api/version') return respond({ sha: setting(env, 'DEPLOY_SHA') ?? null }, 200, 0);
+  if (url.pathname === '/api/version') return respond({ sha: env.DEPLOY_SHA ?? null }, 200, 0);
 
   if (url.pathname === '/api/alerts') {
     const force = url.searchParams.get('refresh') === 'true';
@@ -98,7 +97,9 @@ export async function handle(request: Request, env?: unknown): Promise<Response>
       return respond({ error: 'Bad request' }, 400, 0);
     }
     const { status, body } = await operatorTimesResponse(code);
-    return respond(body, status, status === 200 ? EDGE_SECONDS.operator : 0);
+    // A failed read too, for as long as a good one: while the operator's page failed, every reader
+    // of every board was one more request to it, from every isolate.
+    return respond(body, status, status === 200 || status === 502 ? EDGE_SECONDS.operator : 0);
   }
 
   return respond({ error: 'Unknown endpoint' }, 404, 0);

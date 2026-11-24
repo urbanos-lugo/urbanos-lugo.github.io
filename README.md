@@ -142,7 +142,8 @@ estimadas, e o taboleiro explica por que en lugar de deixalo a interpretación.
 
 **Un bus que vai tarde non desaparece.** Unha saída segue no taboleiro cinco minutos
 despois da súa hora, marcada como «hai 3 min» e non como «Chegando», porque esta web non
-sabe onde está o bus e só sabe que a hora pasou. Cinco minutos, e non outro número, porque
+sabe onde está o bus e só sabe que a hora pasou; o mesmo na folla do mapa e nas paradas
+gardadas, con unha regra só. Cinco minutos, e non outro número, porque
 son os que cobren o 84% dos atrasos medidos contra o seguimento do propio operador.
 
 **Outras liñas preto**, pregado, son as que non paran nese poste pero si a menos de 400 m
@@ -152,12 +153,14 @@ quere saber quen está agardando noutro.
 ### Avisos de bus e de baixada
 Dous avisos, os dous opcionais:
 
-- **"Avisar 5 min antes"** en calquera liña do taboleiro —nun móbil, unha campá co
-  mesmo nome para o lector de pantalla—, para non perder o bus por despiste.
+- **"Avisar 5 min antes"** en calquera saída do taboleiro —nun móbil, unha campá co
+  mesmo nome para o lector de pantalla—, para non perder o bus por despiste. Avisa dese
+  bus e de ningún outro da súa liña, aínda que mentres se mire o taboleiro doutra hora.
 - **"Avisarme ao chegar"**, que soa ao achegarte a menos de 300 m da parada elixida,
   para non pasarte de largo.
 
-Ambos usan vibración, son e notificación do sistema se a concedes. Funcionan só coa
+Ambos usan vibración, son e notificación do sistema se a concedes; nun teléfono, onde a
+páxina non pode facela, amósaa o *service worker*, e tocala abre a app. Funcionan só coa
 pantalla aberta: unha páxina web non pode espertarse en segundo plano, e a interface dío
 en lugar de dar a entender o contrario. O segundo é tamén o que soa na pantalla
 [«Vou nesta»](#vou-nesta-a-pantalla-para-a-viaxe) do planificador: a mesma alarma, chamada
@@ -335,7 +338,10 @@ unha parada mellor comunicada adoita compensar.
 
 Tres modos: **agora**, **saír ás** e **chegar antes das**. O terceiro devolve a saída
 máis tardía que aínda chega a tempo, que é a pregunta real antes dunha cita no HULA ou
-dunha clase no Campus.
+dunha clase no Campus. Cos paseos xa medidos: un paseo máis longo ata a parada é saír antes
+e non un bus perdido, coa mesma marxe no poste ca en calquera outra resposta, e un paseo
+final que pasa da hora pedida volve preguntar por unha anterior. Ao redor da medianoite a
+hora é a que é: para as 00:30 sáese ás 23:50.
 
 **Unha hora que xa pasou é a de mañá.** Ás 21:00, «chegar antes das 08:30» é a mañá
 seguinte: a resposta sae do cadro dese día —un venres á noite, o do sábado—, só con buses
@@ -698,7 +704,10 @@ hora final xa pasada non se di, e o lugar vai coa hora con que se escribiu: «at
 
 **Un aviso remata cos seus propios días.** Se o do San Froilán segue na páxina do operador
 o 13, a app volve ser a de antes desde as 05:00 dese día, tamén o «1» do menú e Avisos;
-un aviso que non nomea días non remata así. E Ruta le o aviso da noite na que sae a
+un aviso que non nomea días non remata así. O que di desde cando e para canto tempo («desde el
+día 19/10/26 … (previsión 2 semanas)») dío Avisos, e pasada esa data engade que o operador aínda
+non o retirou; as obras tardan, así que segue pechando paradas outro tanto, e despois deixa de
+contar nos taboleiros, en Ruta e no «1». E Ruta le o aviso da noite na que sae a
 viaxe, non o do momento da pregunta: á unha da madrugada do 13 a noite aínda é a do 12,
 pero o primeiro bus da mañá xa para en Praza Bretaña. Fóra dos días do aviso, nada se pecha
 nin se risca.
@@ -706,7 +715,12 @@ nin se risca.
 A consulta faise **desde o servidor** (o navegador non pode por CORS), contra buslugo.com e
 o feed de tráfico do Concello. Se non hai servidor —ou non responde— úsase a copia que
 deixou a tarefa programada e amósase **cando se tomou**, en lugar de facela pasar por
-actual. O feed do Concello lese despois da páxina do operador e ten catro segundos. Cada
+actual; se o que xa está na pantalla é máis novo ca a copia, queda iso, coa súa data. Coa app
+aberta pregúntase outra vez cando a última pregunta ten media hora, ou ao volver a ela: unha
+app instalada espértase e non se carga, e cunha pregunta por carga os avisos do luns seguían
+o mércores. Unha pregunta que falla repítese aos dous minutos, porque un teléfono esperta antes
+ca a súa rede. O tic de «todo normal» só vai sobre unha lectura de menos de doce horas, e non
+cando o servidor di que o operador non lle respondeu. O feed do Concello lese despois da páxina do operador e ten catro segundos. Cada
 lectura deixa unha liña no rexistro do servidor, co que tardou e, se falla, o motivo.
 Desde Deno Deploy, onde estivo o worker ata novembro de 2026, o feed non conectaba, así
 que o worker só le buslugo.com; o feed léno a copia de cada hora, que desde GitHub conecta
@@ -1258,14 +1272,15 @@ servizo que cruzan a medianoite.
    Corredoira» ía a «Pintor Corredoira», a 10 km. Un nome escrito enteiro gaña a unha
    parada que só empeza igual («Rúa J» non é «Rúa de Juana Ibarbourou»), pero non a unha que
    empeza coas súas palabras: «A Ponte» segue sendo a parada do barrio, non un camiño de aldea.
-2. **Candidatas de embarque** — ata 10 paradas servidas a menos de 2 km de cada extremo,
-   e nunca unha que obrigue a camiñar máis para coller o bus que para chegar andando.
-   **Escóllense pola cobertura de liñas, non pola distancia**: pasadas as catro máis
-   próximas, unha parada só entra se serve unha liña que ningunha máis preto ofrece.
-3. **Opcións** — a liña directa, os transbordos por calquera parada alcanzable desde a
-   orixe e desde a que se poida chegar ao destino (as 40 mellor conectadas), **os
-   transbordos entre dous postes distintos a menos de 300 m** co paseo escrito no
-   itinerario, e sempre a opción de ir andando todo o camiño.
+2. **Postes** — contan todos os que están a menos de 2 km de cada extremo, e nunca un que
+   obrigue a camiñar máis para coller o bus que para chegar andando. De cada liña, **en cada
+   sentido**, tómase o poste ao que se pode saír máis tarde e aquel desde o que se chega antes,
+   polas horas do cadro: as expedicións dun día gardan todas os mesmos intervalos, así que é o
+   mesmo a calquera hora.
+3. **Opcións** — cada liña directa, do seu mellor poste ao seu mellor poste; todos os
+   transbordos entre dúas liñas, no mesmo poste ou **entre dous postes a menos de 300 m** co
+   paseo escrito no itinerario, co último primeiro bus que aínda enlaza; e sempre a opción de
+   ir andando todo o camiño.
 4. **Selección** — gaña a que chega antes, priorizando as liñas realmente en servizo. En
    caso de empate gaña a que leva menos tramos de bus: un cambio que non precisas segue
    sendo un cambio que podes perder. «En servizo» é no día da pregunta: un bus de mañá non
@@ -1300,7 +1315,10 @@ Regras que evitan suxestións absurdas ou perigosas:
   cousas deixan de ser a mesma: o traxecto máis curto de Fonte dos Ranchos a HULA é un
   5ES de 22 minutos que sae ás 14:08, e preguntando ás 09:00 encabezaría a lista. O que se
   compara é a hora á que estás alí; entre dúas que chegan á vez gaña a que che come menos
-  o día.
+  o día. En «chegar antes das» é ao revés: todas chegan a tempo, e gaña a que sae máis tarde.
+- **Un bus máis ten que gañar algo.** Un bus no canto de andar, ou dous no canto dun, só se
+  ofrece se chega cinco minutos antes ou aforra cinco de paseo: un cambio é outro billete e
+  outro bus que se pode perder.
 - **Nunca unha soa parada en bus.** Medido sobre 2.254 tramos ao mediodía, un tramo
   dunha parada son 1,2 min de viaxe tras 5,3 de espera, fronte a un paseo de 5 min entre
   eses dous postes: custa o que custa andar. Os nove que si lle gañaban ao paseo aforraban
@@ -1331,9 +1349,11 @@ Normaliza tildes (NFD) e expande abreviaturas (`rda`→`ronda`, `avda`→`avenid
 `sta`→`santa`, `pza`/`plz`→`praza`, …). A consulta escápase antes de construír a
 expresión regular.
 
-O cadro de arriba atopa paradas, liñas e sitios, e tamén as pantallas da propia app polo seu
-nome: «tarifas» ou «avisos» abren a súa, porque a WCAG (2.4.5) pide máis dun camiño a cada
-páxina dun conxunto.
+O cadro de arriba atopa paradas, liñas, sitios e rúas, os mesmos ca os campos de Ruta, e
+tamén as pantallas da propia app polo seu nome: «tarifas» ou «avisos» abren a súa, porque a
+WCAG (2.4.5) pide máis dun camiño a cada páxina dun conxunto. Os 28 sitios escritos a man van
+diante polo seu nome, e unha rúa ou un sitio que Ruta entende doutro punto non sae na lista (unha
+rúa longa que Ruta responde cun poste seu ten ese poste entre as paradas).
 
 Un sitio ten dúas cousas que facer con el, e as dúas están na súa fila. A fila fai a da
 pestana: no **mapa**, o mapa vai ata o sitio, pon un pin e abre a súa folla, co nome, a
@@ -1645,8 +1665,8 @@ rápidos, tema, idioma e pestana de entrada) e a navegación usa `aria-current="
 **Conformidade con WCAG 2.2, niveis A e AA.** Os 55 criterios, un por un, en cada
 pantalla e estado: claro e escuro, galego, castelán e inglés, teléfono e escritorio, só
 teclado, texto ao 200 %, 320 px, espazado do texto, teléfono deitado, movemento reducido,
-cores forzadas, sen rede, erros e baleiros: 242 medicións de 162 estados, 0 fallos en
-Windows e no executor de GitHub, e `audit:browser` é unha porta da CI. Os traballos piden
+cores forzadas, sen rede, erros e baleiros: 254 medicións de 170 estados, 0 fallos en
+Windows, e `audit:browser` é unha porta da CI, que o corre no executor de GitHub. Os traballos piden
 `ubuntu-24.04` polo seu nome e non `ubuntu-latest`: outro sistema trae outras letras e
 outro Chrome —ao 200 % a monoespazada do executor xa é máis ancha ca a de Windows—, e
 cambialo é unha decisión con auditoría, non algo que pase un luns. A imaxe de 24.04 si se
@@ -1885,7 +1905,7 @@ abonda cun servizo pequeno que responda `/api/…`.
 `worker/index.ts` é ese servizo. Non reimplementa nada: chama ás mesmas funcións de
 `src/services/`, que só usan `fetch`, `Response`, `ReadableStream` e `TextDecoder`. Diante
 delas pon a Cache API —trinta minutos para os avisos, un se a lectura fallou, vinte segundos
-para unha parada—, que é a que mantén preto de unha por xanela as preguntas que chegan ao
+para unha parada, tamén se a súa páxina non se puido ler—, que é a que mantén preto de unha por xanela as preguntas que chegan ao
 código, porque a caché en memoria dos módulos vive por illa. O teito que non depende de
 cantas illas haxa pono o propio código, en cada unha: buslugo.com como moito unha vez por
 minuto (o feed do Concello non o le), e a páxina do operador detrás do QR como moito 120
@@ -1901,8 +1921,7 @@ como inalcanzable: o seu `fetch` lanza un erro con `redirect: 'error'` antes de 
 ninguén, e Deno non. Os servizos piden `manual`, e un 3xx é a lectura fallida que era. Non hai CLI que instalar nin sesión que iniciar nunha
 máquina: o despregue ten o seu token nos segredos do seu ambiente, e **sen ese segredo
 o traballo non fai nada e dío** —non deixa unha execución en vermello nun repositorio que
-decidiu non montalo. Cloudflare pásalle os axustes ao `fetch`; se non llos pasan, o worker
-míraos en `Deno.env`, así que un Deno propio tamén o corre.
+decidiu non montalo. Cloudflare pásalle os axustes ao `fetch`.
 
 Volve a Cloudflare, de onde saíu en setembro de 2026 por dúas razóns. A primeira, a
 telemetría da súa ferramenta de despregue, xa non conta: o despregue corre con
@@ -1916,7 +1935,7 @@ aparece—, e as alternativas gratuitas eran peores no demais. Por que, e o plan
 Todo `src/` está escrito para un empaquetador, así que o workflow empaqueta antes con
 esbuild, que xa está aquí por `server.ts`. `pnpm run worker:build` fai o mesmo en local, e
 Cloudflare sobe ese mesmo ficheiro tal cal (`wrangler.toml`): o que corre alí é o que a
-suite executa sen Node e sen Deno.
+suite executa sen Node.
 
 Fai falta, unha vez: unha conta de Cloudflare (o plan gratuíto abonda), o subdominio
 `workers.dev` escollido no panel (*Workers & Pages*) antes do primeiro despregue, un token
@@ -2047,6 +2066,12 @@ tarde, despois do último bus e domingo) e esixen que ningún itinerario retroce
 tempo, que ningún transbordo sexa imposible, que ningún repita liña e que as opcións
 ofrecidas se distingan entre si. Outras dúas comproban que o cadro horario se reproduce
 tal cal se publica.
+
+Iso di que unha viaxe se sostén, non que sexa boa. Ata novembro de 2026 unha resposta de cada
+seis chegaba cinco minutos ou máis despois do que podía, e ningunha comprobación o vía porque
+ningunha tiña con que comparar fóra do planificador. `tools/stressRoutes.ts`, a terceira
+varrida de `check:deep`, busca a mellor viaxe á parte, só coas horas do cadro, e ningunha
+resposta pode chegar dez minutos despois ca ela nin facer saír un cuarto de hora antes.
 
 `pnpm test` pasa ese ficheiro en varias copias á vez, unha por núcleo ata oito
 (`TEST_JOBS` cambia o número). Cada copia percorre o ficheiro enteiro e só corre as
@@ -2243,14 +2268,15 @@ s por minuto. Segue por riba dos 5 s do orzamento, e o perfil di de que: o mapa
 debuxándose no SwiftShader do navegador da medida, uns cinco cadros por segundo, que nun
 teléfono fai a GPU. Con movemento reducido (medido o 31 de outubro) baixa a 4,4–5,2 s,
 pero alí cambian máis cousas ca o punto. `audit:browser` mide a app contra as WCAG 2.2 nos
-niveis A e AA, estado por estado. Son corenta e un estados —a portada baleira e a dunha
+niveis A e AA, estado por estado. Son corenta e tres estados —a portada baleira e a dunha
 persoa con paradas gardadas, a busca con e sen resultados, o taboleiro (por hora, por
 liña, a outra hora e aberto desde o QR), «preto de min» con permiso e sen el, o menú, os
 favoritos, o lector de QR e o seu erro, as liñas, o mapa cos buses e coa ficha dunha
 parada, o planificador baleiro, coas suxestións abertas, planificado, coas rutas recentes
 borradas, a outra hora, sen ruta e sen GPS, a viaxe agardando o bus e xa nel (o reloxo da
 páxina pasa da saída e respóndese «Si, vou nel»), os avisos con incidencias, sen elas,
-comprobando, co servidor caído e sen rede, as tarifas, e a noite na portada, nunha parada
+comprobando, co servidor caído, sen rede, co operador sen responder e cunha noite polo medio,
+as tarifas, e a noite na portada, nunha parada
 e no planificador—, cada un alcanzado como o alcanza unha persoa, nun teléfono e nun
 escritorio, en galego, castelán e inglés e nos dous temas. O reloxo da páxina vai fixado
 (un martes ás 09:12, e ás 03:00 para a noite), as dúas respostas da API son fixtures e
@@ -2333,8 +2359,10 @@ artefacto, para que unha regresión non dependa de que alguén se lembre.
   San Froilán, Noitevella e datas semellantes existen pero anúncianse como aviso puntual,
   sen cadro horario, así que a aplicación non inventa unha liña: cando non hai servizo,
   o aviso remite á sección de avisos, que é onde aparecerían.
+- **Un poste polo que a liña pasa dúas veces** (a 3.1 e a 3.2 por Rda. Mercedes 53, a 6 por
+  Avda. Magoi 92): o seu taboleiro ten as dúas pasadas; Ruta e a ficha da liña, só a primeira.
 - **Zonas de parada**: asígnanse por proximidade e suavízanse por veciñanza. Aínda así,
-  arredor do 18% das paradas teñen algunha veciña a menos de 200 m nunha zona distinta,
+  arredor do 17% das paradas teñen algunha veciña a menos de 200 m nunha zona distinta,
   o normal nas fronteiras entre barrios.
 - **Non hai historial de fiabilidade** («este bus non pasou»): necesita unha base de datos
   ([máis adiante](#historial-de-fiabilidade)).

@@ -114,4 +114,3 @@ export function hoverLabels(map: MapLibre) {
     },
   };
 }
-export type HoverLabels = ReturnType<typeof hoverLabels>;

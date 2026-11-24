@@ -185,6 +185,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // A notification tapped on a phone opens the app: the generated worker answers no tap by itself.
+        importScripts: ['notification-click.js'],
         // The largest file, the walking network, is ~1.3 MB (31 October 2026); the default 2 MB
         // cap drops a file over it silently, and these chunks only grow.
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
@@ -194,7 +196,7 @@ export default defineConfig({
         // The Spanish and English copies of each page, and the 24 lines' pages, are for crawlers
         // and first loads; offline, a navigation falls back to index.html and the app reads the
         // language and the line from the address.
-        globIgnores: ['es/**', 'en/**', 'linhas/*/**'],
+        globIgnores: ['es/**', 'en/**', 'linhas/*/**', 'notification-click.js'],
         navigateFallback: `${base}index.html`,
         navigateFallbackDenylist: [/\/api\//],
         runtimeCaching: [

@@ -740,7 +740,7 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - **As dúas APIs en paralelo** ata que `API_ORIGIN` nomee a nova; despois, fóra o traballo de
   Deno e o que o nomea (PRIVACY.md, SECURITY.md, CLAUDE.md, a arquitectura do README e o
   seu diagrama). `API_ORIGIN` cambiou o 22 de novembro de 2026 (1.8.2), e o traballo de
-  Deno saíu na rolda 91.
+  Deno saíu na rolda 91, e o que quedaba del no worker, coa app xa borrada alí, na 92.
 
 ## Quedou aberto
 

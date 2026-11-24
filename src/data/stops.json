@@ -753,7 +753,7 @@
       "2",
       "5ES"
     ],
-    "zone": "Garabolos",
+    "zone": "A Piringalla",
     "shelter": true,
     "bench": true
   },
@@ -857,7 +857,7 @@
       "1.2",
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "Garabolos",
     "shelter": null,
     "bench": null
   },
@@ -1306,7 +1306,7 @@
       "1.2",
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "Garabolos",
     "shelter": false,
     "bench": null
   },
@@ -1436,7 +1436,7 @@
       "2",
       "5ES"
     ],
-    "zone": "Garabolos",
+    "zone": "A Piringalla",
     "shelter": true,
     "bench": true
   },
@@ -1466,7 +1466,7 @@
       "5ES",
       "11"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Piringalla",
     "shelter": true,
     "bench": true
   },
@@ -3399,7 +3399,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -3417,7 +3417,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -3435,7 +3435,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -3453,7 +3453,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -3471,7 +3471,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -3489,7 +3489,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -3508,7 +3508,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "Rural",
     "shelter": true,
     "bench": null
   },
@@ -3544,7 +3544,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": true,
     "bench": null
   },
@@ -3562,7 +3562,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": true,
     "bench": null
   },
@@ -3580,7 +3580,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -3598,7 +3598,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -3616,7 +3616,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -3634,7 +3634,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": true,
     "bench": null
   },
@@ -3652,7 +3652,7 @@
     "lines": [
       "2"
     ],
-    "zone": "Cemiterio",
+    "zone": "O Ceao",
     "shelter": false,
     "bench": null
   },
@@ -4518,7 +4518,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -4536,7 +4536,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -4850,7 +4850,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -4868,7 +4868,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -5056,7 +5056,7 @@
       "4.2",
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -5076,7 +5076,7 @@
       "4.2",
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -5094,7 +5094,7 @@
     "lines": [
       "4.2"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": true,
     "bench": null
   },
@@ -5115,7 +5115,7 @@
       "4.2",
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": true,
     "bench": null
   },
@@ -5135,7 +5135,7 @@
       "4.2",
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -5155,7 +5155,7 @@
       "4.2",
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": true,
     "bench": null
   },
@@ -5175,7 +5175,7 @@
       "4.2",
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -6501,7 +6501,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Garabolos",
+    "zone": "A Piringalla",
     "shelter": false,
     "bench": false
   },
@@ -6519,7 +6519,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Piringalla",
     "shelter": true,
     "bench": null
   },
@@ -6861,7 +6861,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Garabolos",
+    "zone": "A Piringalla",
     "shelter": false,
     "bench": false
   },
@@ -6879,7 +6879,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Garabolos",
+    "zone": "A Piringalla",
     "shelter": false,
     "bench": false
   },
@@ -7562,7 +7562,7 @@
     "lines": [
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": false,
     "bench": null
   },
@@ -7582,7 +7582,7 @@
       "10",
       "11-Calde"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": true,
     "bench": null
   },
@@ -7602,7 +7602,7 @@
       "10",
       "11-Calde"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": true,
     "bench": null
   },
@@ -7620,7 +7620,7 @@
     "lines": [
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": false,
     "bench": null
   },
@@ -7638,7 +7638,7 @@
     "lines": [
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": false,
     "bench": null
   },
@@ -7657,7 +7657,7 @@
     "lines": [
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": true,
     "bench": null
   },
@@ -7677,7 +7677,7 @@
       "10",
       "11-Calde"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": false,
     "bench": null
   },
@@ -7697,7 +7697,7 @@
       "10",
       "11-Calde"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": true,
     "bench": null
   },
@@ -7715,7 +7715,7 @@
     "lines": [
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": false,
     "bench": null
   },
@@ -8170,7 +8170,7 @@
     "lines": [
       "11-Calde"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": false,
     "bench": null
   },
@@ -8207,7 +8207,7 @@
     "lines": [
       "11-Calde"
     ],
-    "zone": "A Cheda",
+    "zone": "Cemiterio",
     "shelter": false,
     "bench": null
   },
@@ -8964,7 +8964,7 @@
     "lines": [
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -8982,7 +8982,7 @@
     "lines": [
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": true,
     "bench": null
   }

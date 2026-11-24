@@ -153,8 +153,9 @@ export const es: Dict = {
     phones: 'Teléfonos de atención',
     portals: 'Portales de referencia',
     lastCheck: 'Última verificación oficial:',
+    forecastOver: (date: string) => `El operador preveía que terminase el ${date} y todavía no lo ha retirado: puede que ya no siga así.`,
     snapshotNotice: (at: string) =>
-      `Esto no se acaba de comprobar: es la copia que dejó la tarea programada el ${at}. Esta versión de la web no tiene servidor que pueda preguntarle al operador ahora mismo, así que un aviso puede ya no estar vigente. Comprueba en buslugo.com si te afecta.`,
+      `Esto no se acaba de comprobar: es lo que decía el operador en la última lectura, el ${at}. Ahora mismo no hay respuesta suya, así que un aviso puede ya no estar vigente. Comprueba en buslugo.com si te afecta.`,
     source: 'Fuente oficial:',
     checked: (count: number) => (count === 0 ? 'Comprobado: el operador no tiene avisos' : count === 1 ? 'Comprobado: 1 aviso del operador' : `Comprobado: ${count} avisos del operador`),
   },
@@ -221,6 +222,7 @@ export const es: Dict = {
     walkLeg: (metres: number, minutes: number) => `A pie · ${metres} m · ${minutes} min`,
     tripInfoTitle: 'Información',
     unreachableWalk: 'A pie no llegas a tiempo a este bus',
+    lateWalk: 'Con el paseo medido llegas después de la hora pedida',
     stepByStepTitle: 'Paso a paso',
     timeProvenanceMeasured:
       'Los tramos a pie están medidos sobre las calles de OpenStreetMap, en este dispositivo, no estimados. Las horas de bus siguen viniendo del cuadro horario oficial; las marcadas con ~ se deducen del tiempo de recorrido medido por carretera.',

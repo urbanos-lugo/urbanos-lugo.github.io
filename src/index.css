@@ -770,9 +770,6 @@
 @utility pl-cap-* {
   padding-left: min(calc(var(--spacing) * --value(number)), calc(var(--cap-step) * --value(number)));
 }
-@utility -mx-cap-* {
-  margin-inline: calc(-1 * min(calc(var(--spacing) * --value(number)), calc(var(--cap-step) * --value(number))));
-}
 
 @layer base {
   html {

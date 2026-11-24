@@ -164,8 +164,9 @@ export const en: Dict = {
     phones: 'Information lines',
     portals: 'Reference websites',
     lastCheck: 'Last official check:',
+    forecastOver: (date: string) => `The operator expected this to be over on ${date} and has not taken it down: it may no longer be so.`,
     snapshotNotice: (at: string) =>
-      `This was not just checked: it is the copy a scheduled job committed on ${at}. This build has no server to ask the operator with, so a notice may no longer be current. Check buslugo.com if it affects you.`,
+      `This was not just checked: it is what the operator said when last read, on ${at}. There is no answer from it right now, so a notice may no longer be current. Check buslugo.com if it affects you.`,
     source: 'Official source:',
     checked: (count: number) => (count === 0 ? 'Checked: no notices from the operator' : count === 1 ? 'Checked: 1 notice from the operator' : `Checked: ${count} notices from the operator`),
   },
@@ -232,6 +233,7 @@ export const en: Dict = {
     walkLeg: (metres: number, minutes: number) => `On foot · ${metres} m · ${minutes} min`,
     tripInfoTitle: 'Details',
     unreachableWalk: 'On foot you will not make this bus in time',
+    lateWalk: 'With the walk as measured you arrive after the time asked',
     stepByStepTitle: 'Step by step',
     timeProvenanceMeasured:
       'The walking legs are measured along OpenStreetMap’s streets, on this device, not estimated. Bus times still come from the official timetable; those marked ~ are worked out from the driving time measured along the road.',

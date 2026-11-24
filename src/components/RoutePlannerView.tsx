@@ -9,7 +9,7 @@ import { changesNow, pastTimetable, runsUntil, setsOff, underNotice, type Notice
 import { FARES, formatEuros, stopById } from '../data/transitData';
 import { resolveLocationQuery, QUICK_DESTINATIONS } from '../utils/places';
 import { dayWord } from '../utils/serviceLabels';
-import { fetchWalkingPath, walkHopKey, walkHopsOf, type Hop, type WalkPaths } from '../services/walkingPath';
+import { fetchWalkingPath, hopFromOrigin, walkHopKey, walkHopsOf, type Hop, type WalkPaths } from '../services/walkingPath';
 import { useRecentRoutes, type RecentRoute } from '../hooks/useStoredList';
 import { useWalkPaths } from '../hooks/useWalkPaths';
 import { useClock } from '../hooks/useClock';
@@ -24,7 +24,7 @@ import { ChoiceChip, Disclosure, Notice, NoticeDisclosure, Segmented, TimeField 
 import { PlaceField, suggestionsFor, type Suggestion } from './planner/PlaceField';
 import { TripOptions } from './planner/TripOptions';
 import { Itinerary } from './planner/Itinerary';
-import { correctionFor, formatKm, measuredWalkFor, rankMeasured, withMeasuredWalk, type Endpoints } from './planner/walkCorrection';
+import { answers, correctionFor, formatKm, measuredWalkFor, rankMeasured, withMeasuredWalk, type Endpoints } from './planner/walkCorrection';
 // The map renderer loads with the map, not with the app.
 const RouteMap = lazy(() => import('./Map/RouteMap').then((m) => ({ default: m.RouteMap })));
 
@@ -220,26 +220,29 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
    * set off `missedBy` minutes later, with every walk the router has traced handed back
    * keyed by the stop it leads to (moving the clock alone picked a different wrong stop).
    * Once, because the new plan may board somewhere unmeasured and a second round can oscillate.
+   * And when the walk at the far end makes it late: asked for that much sooner, and still held
+   * to the time the reader gave.
    */
   useEffect(() => {
-    if (replannedRef.current || !planResult || !shown || shown.reachable) return;
+    if (replannedRef.current || !planResult || !shown || answers(shown)) return;
     replannedRef.current = true;
     const known = new Map<string, number>();
     for (const option of shownOptions) {
       const boarding = option.segments.find((seg) => seg.type === 'bus')?.fromStop;
-      const first = walkHopsOf(option, endpoints.origin, endpoints.destination)[0];
+      const first = hopFromOrigin(walkHopsOf(option, endpoints.origin, endpoints.destination), endpoints.origin);
       const path = first && walkPaths[walkHopKey(first[0], first[1])];
       if (boarding && path) known.set(boarding.id, path.minutes);
     }
     const { orig, dest, opts } = askedRef.current;
-    askPlanner(jobFor(orig, dest, opts, Object.fromEntries(known)))
+    const sooner = opts.arriveBy === undefined ? opts : { ...opts, arriveBy: opts.arriveBy - shown.lateBy };
+    askPlanner(jobFor(orig, dest, sooner, Object.fromEntries(known)))
       .then((again) => {
         if (!again.length) return; // nothing better at the later time: keep what is on screen, marked
-        setPlanOptions(again);
+        setPlanOptions(again.map((plan) => ({ ...plan, arriveBy: opts.arriveBy })));
         setChosenOption(null);
       })
       .catch(() => {}); // a new question came first, and its answer is the one that counts
-  }, [planResult, shown?.reachable, lang]);
+  }, [planResult, shown?.reachable, shown?.lateBy, lang]);
 
   /** A question as it goes to the planner (askPlanner.ts): the page's clock and the notice with it. */
   const jobFor = (orig: string, dest: string, opts: PlanJob['opts'], measured?: Record<string, number>): PlanJob => ({
@@ -738,16 +741,16 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 <span className="flex flex-wrap items-baseline gap-x-2">
                   <span className="sr-only">{t.planner.departureLabel}</span>
                   {/* Past the last bus the answer is another day's: said beside the clock, where the eye goes. */}
-                  {!!planResult.daysAhead && <span className="text-body font-semibold text-estimated">{dayWord(lang, planResult.daysAhead)}</span>}
+                  {shown.daysAhead > 0 && <span className="text-body font-semibold text-estimated">{dayWord(lang, shown.daysAhead)}</span>}
                   <span className="tnum text-emph font-semibold">{shown.departure}</span>
                   <ArrowRight className="h-4 w-4 shrink-0 self-center text-ink-3" aria-hidden="true" />
                   <span className="sr-only">{t.planner.arrivalLabel}</span>
                   <span className="tnum text-emph font-semibold">~{shown.arrival}</span>
                 </span>
-                {/* These times are for a bus the measured walk no longer reaches, and the replan found nothing better. */}
-                {!shown.reachable && (
+                {/* These times are for a bus the measured walk no longer reaches, or that gets there after the time asked, and the replan found nothing better. */}
+                {!answers(shown) && (
                   <Notice warn size="inline" icon={AlertCircle}>
-                    {t.planner.unreachableWalk}
+                    {shown.reachable ? t.planner.lateWalk : t.planner.unreachableWalk}
                   </Notice>
                 )}
               </div>

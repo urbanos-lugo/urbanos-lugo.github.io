@@ -29,7 +29,7 @@
     "reconcile": "tsx tools/reconcile.ts",
     "reconcile:selftest": "tsx tools/reconcileSelfTest.ts",
     "test": "tsx tools/runTests.ts",
-    "check:deep": "tsx tools/stressInvariants.ts && tsx tools/stressPlanner.ts",
+    "check:deep": "tsx tools/stressInvariants.ts && tsx tools/stressPlanner.ts && tsx tools/stressRoutes.ts",
     "check:parsers": "tsx tools/checkParsersUnchanged.ts",
     "check:policy": "tsx tools/checkPolicy.ts",
     "measure:engine": "tsx tools/stressEngine.ts",

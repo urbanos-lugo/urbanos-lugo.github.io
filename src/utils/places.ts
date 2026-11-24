@@ -228,6 +228,37 @@ function resolveFresh(query: string, userGps: [number, number] | undefined, lang
   return stopByWords ? atStop(stopByWords) : null;
 }
 
+/** Two names this close are one place on a screen; a landmark's point is a door of it or its middle, and OSM's own can be further («Catedral», 83 m). */
+const ONE_PLACE_M = 50;
+const ONE_LANDMARK_M = 100;
+/** A name Ruta finds further off than this is another place's. */
+const ITS_OWN_M = 150;
+/** From here up a score is a match of the name itself and not of its area or of a misspelling (calculateRelevanceScore). */
+const BY_NAME = 300;
+
+/**
+ * The search box's places: the landmarks, the streets and the places OSM names, as Ruta's fields
+ * have them (the box asks for a street, and knew 28 places). A row is shown on the map where it
+ * is and planned to by its name, so a place or a street whose name Ruta takes for another point is
+ * left out («A Ponte», 7.8 km off; a long street answered by one of its poles, which is a row of
+ * its own), and so is one a better row already stands for. A landmark goes first on its name:
+ * ranked with the rest, "lucus" was three shops and not the hospital.
+ */
+export function rankSites(q: string, limit: number): Named[] {
+  const sites: (Named & { landmark: boolean })[] = [];
+  const ranked = [...rankLandmarks(q).map(({ landmark, score }) => ({ place: landmark as Named, score: score >= BY_NAME ? score + 1000 : score, landmark: true })), ...rankPlaces(q).map((r) => ({ ...r, landmark: false }))].sort((a, b) => b.score - a.score);
+  for (const { place, landmark } of ranked) {
+    if (sites.length >= limit) break;
+    if (!landmark) {
+      if (sites.some((s) => s.name === place.name || getDistanceMeters(s.lat, s.lng, place.lat, place.lng) < (s.landmark ? ONE_LANDMARK_M : ONE_PLACE_M))) continue;
+      const planned = resolveLocationQuery(place.name);
+      if (!planned || getDistanceMeters(planned.lat, planned.lng, place.lat, place.lng) > ITS_OWN_M) continue;
+    }
+    sites.push({ ...place, landmark });
+  }
+  return sites;
+}
+
 /**
  * The stop a code names, or nothing. Deliberately exact: every caller is resolving an
  * identifier (a scanned QR, a `?parada=` link), and a ranked fallback once turned a

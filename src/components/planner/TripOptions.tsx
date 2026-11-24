@@ -6,7 +6,7 @@ import { LONG_WAIT_MIN } from '../../utils/planner';
 import { dayWord } from '../../utils/serviceLabels';
 import { LineBadge } from '../ui/LineBadge';
 import { SectionLabel } from '../ui/SectionLabel';
-import { withMeasuredWalk, type WalkCorrection } from './walkCorrection';
+import { answers, withMeasuredWalk, type WalkCorrection } from './walkCorrection';
 
 /** How many alternatives stand on the screen before you ask for the rest: the answer and the one somebody would weigh. */
 const VISIBLE_OPTIONS = 2;
@@ -46,9 +46,10 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
     setShownFor(resetKey);
     setShowAll(false);
   }
-  // A bus the measured walk cannot catch is no option: listed, two such rows under the answer
-  // read as two warnings nobody could act on. The one open stays, to say so.
-  const catchable = options.filter(({ option, idx }) => idx === chosen || withMeasuredWalk(option, correctionFor(option)).reachable);
+  // A bus the measured walk cannot catch, or that gets there after the time asked, is no option:
+  // listed, two such rows under the answer read as two warnings nobody could act on. The one
+  // open stays, to say so.
+  const catchable = options.filter(({ option, idx }) => idx === chosen || answers(withMeasuredWalk(option, correctionFor(option))));
   // Never fold away the row that is currently open: by where it stands in the list, which is
   // not its number once the rows are ranked on the measured walks.
   const openAt = catchable.findIndex((o) => o.idx === chosen);
@@ -60,7 +61,7 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
     const busLegs = option.segments.filter((seg) => seg.type === 'bus');
     const shown = withMeasuredWalk(option, correctionFor(option));
     // The row draws the change ("6 → 4.2"); the words stay for a screen reader.
-    const notes = shown.reachable
+    const notes = answers(shown)
       ? [option.totalWaitMinutes > 0 && option.totalWaitMinutes <= LONG_WAIT_MIN ? t.planner.waitShort(option.totalWaitMinutes) : '', busLegs.length === 0 ? t.planner.noWaitNoFare : ''].filter(Boolean)
       : [];
     return (
@@ -90,12 +91,12 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
         <span className="col-span-2 row-start-2 min-w-0 @min-option-row:col-span-1 @min-option-row:row-start-auto">
           <span className="tnum block font-mono text-label font-semibold text-ink">
             {/* Not today: the day goes before the clock, or "07:00" reads as this morning's. */}
-            {!!option.daysAhead && <span className="mr-1.5 font-sans text-estimated">{dayWord(lang, option.daysAhead)}</span>}
+            {shown.daysAhead > 0 && <span className="mr-1.5 font-sans text-estimated">{dayWord(lang, shown.daysAhead)}</span>}
             {shown.departure} → ~{shown.arrival}
           </span>
           {notes.length > 0 && <span className="block text-label text-ink-3">{notes.join(' · ')}</span>}
           {/* The one thing on the row that must be read whole: it was cut to "Co paseo medido xa ...". */}
-          {!shown.reachable && <span className="block text-label font-semibold text-warn-ink">{t.planner.unreachableWalk}</span>}
+          {!answers(shown) && <span className="block text-label font-semibold text-warn-ink">{shown.reachable ? t.planner.lateWalk : t.planner.unreachableWalk}</span>}
           {busLegs.length > 1 && <span className="sr-only">{t.planner.transfersShort(busLegs.length - 1)}</span>}
         </span>
         <span className={`tnum shrink-0 justify-self-end whitespace-nowrap font-mono text-body @min-option-row:justify-self-auto ${idx === chosen ? 'font-black' : 'font-bold text-ink-2'}`}>{shown.durationMinutes} min</span>

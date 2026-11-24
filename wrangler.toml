@@ -1,6 +1,6 @@
 # The API on Cloudflare Workers, deployed by .github/workflows/deploy-worker.yml.
 # What goes up is the bundle `pnpm run worker:build` makes, as it is: the same file the
-# suite runs with no Node and no Deno in it, so wrangler does not bundle it a second time.
+# suite runs with no Node in it, so wrangler does not bundle it a second time.
 # ALLOWED_ORIGIN and DEPLOY_SHA are not here: the workflow passes them on every deploy.
 name = "urbanos-lugo-api"
 main = "worker/dist/worker.js"

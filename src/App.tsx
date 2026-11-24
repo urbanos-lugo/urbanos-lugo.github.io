@@ -30,8 +30,7 @@ import { networkAtRest } from './utils/arrivals';
 import { dayWord } from './utils/serviceLabels';
 import { readString, writeString } from './utils/storage';
 import { sectionedNotices } from './utils/operatorNotices';
-import { changesNow, latestRun, readNoticeChanges, runsAt } from './utils/noticeChanges';
-import { isSnapshotStale } from './utils/snapshotAge';
+import { changesNow, outlivedForecast, latestRun, readNoticeChanges, runsAt } from './utils/noticeChanges';
 import { BusStop, BusLine } from './types';
 import { Pane } from './components/ui/Pane';
 
@@ -122,9 +121,9 @@ export default function App() {
   /** The operator's notices, fetched once here for everybody who shows them, and only while their own days last. */
   const alerts = useServiceAlerts(now);
   // A notice written out line by line goes on the lines and boards it names; a stale snapshot's would be last week's news.
-  const operatorNotices = isSnapshotStale(alerts.snapshotAt) ? [] : sectionedNotices(alerts.data?.alerts);
+  const operatorNotices = alerts.stale ? [] : sectionedNotices(alerts.data?.alerts).filter((notice) => !outlivedForecast(notice, now));
   // What those notices change, read once: closed and moved stops, lines running late. Each screen asks it about its own moment.
-  const noticeChanges = useMemo(() => readNoticeChanges(operatorNotices, now.getFullYear()), [alerts.data, alerts.snapshotAt, now]);
+  const noticeChanges = useMemo(() => readNoticeChanges(operatorNotices, now), [alerts.data, alerts.snapshotAt, now]);
   // A festival night the notice extends: the timetable says nothing runs, and the banner must not.
   const runningTonight = isOutOfService ? (changesNow(noticeChanges, now)?.lines ?? []).filter((change) => runsAt(change, now)) : [];
   /** The ride in progress, above the tabs: it goes on whatever screen the reader looks at. */
