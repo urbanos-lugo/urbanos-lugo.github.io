@@ -1,11 +1,11 @@
 /**
- * The operator's service notices and the council's traffic notices, read by a server:
+ * The operator's service notices and the council's news of the streets, read by a server:
  * neither site sends a CORS header, so the browser cannot. Web standards only — this runs
  * under Node and in the worker.
  */
 import { readCapped } from './readCapped';
 import { asciiLower, plainText } from '../utils/html';
-import { noticeLink } from '../utils/operatorNotices';
+import { COUNCIL_NEWS_MS, noticeLink } from '../utils/operatorNotices';
 import { NoticeSection, ServiceAlert } from '../types';
 import { REPO_URL } from '../project';
 
@@ -41,20 +41,35 @@ function cacheHolds(cached: AlertSyncResult, elapsed: number, forceRefresh: bool
 }
 
 /**
- * The council's traffic tag alone: audited against sixty days of three feeds, it was the
- * only one carrying anything a passenger could use (closures, diversions), and only for a
- * week, which is how long such a thing lasts.
+ * The council's whole list of news, its last ten with their headings and leads, in Spanish. Its tags were
+ * read for a year, the traffic one alone by the end: of 473 items in the six months to November 2026, what a
+ * rider could use went out under six tags, and traffic's headlines had one of them. A detour of nine
+ * lines was under «Water». Chosen here by what they say.
  */
-const CONCELLO_FEED_URL = 'https://concellodelugo.gal/es/taxonomy/term/707/feed';
-const CONCELLO_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+const CONCELLO_LIST_URL = 'https://concellodelugo.gal/es/actualidad';
 /** A press release runs for pages; a card wants the first thought. */
 const CONCELLO_EXCERPT = 220;
+const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
-/** Headlines announcing a closure, diversion or restriction — only the event words; "tráfico" alone matched a road-safety course. */
-const ABOUT_GETTING_AROUND =
-  /\b(cortes?|cortad[oa]s?|cierres?|cerrad[oa]s?|peches?|pechad[oa]s?|desv[íi]os?|desviad[oa]s?|restricci[óo]n(?:es)?|restrici[óo]ns?)\b/i;
+/** A headline that closes or diverts a street: the event with the traffic or the street, as "tráfico" alone matched a road-safety course, and "corte" a water cut. */
+const STREET = String.raw`(?:tr[áa]fico|circulaci[óo]n|calles?|r[úu]as?|avenida|avda|plaza|praza|ronda|puente|ponte)\b`;
+const STREET_CLOSED = new RegExp(
+  String.raw`\b(?:cortes?|cierres?|peches?|restricci[óo]n(?:es)?|restrici[óo]ns?)\b(?!\s+d[eo]\s+(?:agua|auga|luz|sumin|submin)).{0,30}\b${STREET}|\b${STREET}.{0,40}\b(?:cortad|cerrad|pechad)[oa]s?\b|(?:cortad|cerrad|pechad)[oa]s?\s+[^.]{0,20}${STREET}|\bdesv[íi]os?\b`,
+  'i',
+);
+/** A sentence about the city's own buses, and that something of theirs changes. */
+const CITY_BUS = /\b(?:autob[úu]s(?:es)?|bus(?:es)?|transporte)\s+urban[oa]s?\b/i;
+const BUS_CHANGES = /desv[íi]|recorridos?\b|percorrido|provisional|suprim|refuer?z|reforz/i;
 
-/** Plain prose out of an RSS field, which carries its body as entity-encoded markup: decode, then strip. Rendered as text by React, never as HTML. */
+/** What an item says that a rider can use, or null: its own sentence on the buses, or, under a headline of the streets, its lead. */
+function aboutGettingAround(title: string, lead: string): string | null {
+  const sentences = `${title}. ${lead}`.split(/(?<=[.!?])\s+/);
+  const at = sentences.findIndex((s) => CITY_BUS.test(s) && BUS_CHANGES.test(s));
+  if (at > 0) return sentences.slice(at).join(' ');
+  return at === 0 || STREET_CLOSED.test(title) ? lead : null;
+}
+
+/** Plain prose out of a field that may carry its markup encoded: decode, then strip. Rendered as text by React, never as HTML. */
 function decodedText(raw: string): string {
   const decoded = raw
     .replace(/&lt;/g, '<')
@@ -88,44 +103,42 @@ function* blocks(text: string, lower: string, open: string, close: string): Gene
 
 const clip = (text: string, max: number) => (text.length > max ? `${text.slice(0, max - 3)}...` : text);
 
-/**
- * One field of a feed item, CDATA wrapper off, walked with indexOf: the lazy pattern it
- * replaces scanned to the end of the item from every `<title>` that never closed, 11 s for
- * one item at the 512 KB readCapped allows. The first opening and the first closing after
- * it, as the pattern read them.
- */
-function feedField(block: string, lower: string, name: string): string {
-  const open = lower.indexOf(`<${name}>`);
+/** What stands in a row after `from` and before `to`, or ''. With indexOf alone: nothing in a page that breaks off is walked twice. */
+function after(row: string, from: string, to: string): string {
+  const open = row.indexOf(from);
   if (open === -1) return '';
-  const start = open + name.length + 2;
-  const end = lower.indexOf(`</${name}>`, start);
-  if (end === -1) return '';
-  const cdata = lower.startsWith('<![cdata[', start) ? 9 : 0;
-  const inner = block.slice(start + cdata, end);
-  return decodedText(inner.endsWith(']]>') ? inner.slice(0, -3) : inner);
+  const end = row.indexOf(to, open + from.length);
+  return end === -1 ? '' : row.slice(open + from.length, end);
 }
 
-export function extractConcelloNotices(xml: string): ServiceAlert[] {
+/** The items of the council's list that say something of the streets or the buses, of the last week. */
+export function extractConcelloNotices(html: string): ServiceAlert[] {
   const notices: ServiceAlert[] = [];
-  for (const block of blocks(xml, asciiLower(xml), '<item>', '</item>')) {
-    const lower = asciiLower(block);
-    const field = (name: string) => feedField(block, lower, name.toLowerCase());
-    const title = field('title');
-    if (!title || !ABOUT_GETTING_AROUND.test(title)) continue;
-    // Their pubDate is RFC 822 and occasionally missing a timezone; unparseable or old is dropped rather than shown.
-    const published = new Date(field('pubDate'));
-    if (Number.isNaN(published.getTime()) || Date.now() - published.getTime() > CONCELLO_MAX_AGE_MS) continue;
-    const body = field('description');
+  const ROW = '<div class="views-row';
+  for (let at = html.indexOf(ROW); at !== -1; ) {
+    const next = html.indexOf(ROW, at + ROW.length);
+    const row = next === -1 ? html.slice(at) : html.slice(at, next);
+    at = next;
+    const heading = after(row, 'texto-titular"><a href="', '</a>');
+    const title = decodedText(heading.slice(heading.indexOf('>') + 1));
+    // The day, in words, and no hour: an old one, or one that is none, is dropped rather than shown.
+    const day = /(\d{1,2}) de ([a-z]+) de (\d{4})/i.exec(after(row, 'date-display-single">', '<'));
+    const published = day ? Date.UTC(Number(day[3]), MONTHS.indexOf(day[2].toLowerCase()), Number(day[1]), 12) : Number.NaN;
+    if (!heading.includes('>') || !title || !day || !MONTHS.includes(day[2].toLowerCase()) || Date.now() - published > COUNCIL_NEWS_MS) continue;
+    const lead = after(row, 'views-field-field-entradilla', 'views-field-term');
+    const says = aboutGettingAround(title, decodedText(after(lead, 'field-content">', '</div>')));
+    if (says === null) continue;
+    const href = heading.slice(0, Math.max(0, heading.indexOf('"')));
     notices.push({
       id: `concello-${notices.length + 1}`,
       title: clip(title, 110),
       severity: 'info',
       linesAffected: ['Todas'],
-      date: published.toISOString(),
-      description: body.length > CONCELLO_EXCERPT ? `${body.slice(0, CONCELLO_EXCERPT - 1)}…` : body,
+      date: new Date(published).toISOString(),
+      description: says.length > CONCELLO_EXCERPT ? `${says.slice(0, CONCELLO_EXCERPT - 1)}…` : says,
       active: true,
       source: 'concello',
-      link: noticeLink(field('link')),
+      link: noticeLink(href.startsWith('/') ? new URL(href, CONCELLO_LIST_URL).href : href),
     });
   }
   return notices;
@@ -143,7 +156,7 @@ export function extractConcelloNotices(xml: string): ServiceAlert[] {
 async function fetchConcelloNotices(): Promise<ServiceAlert[]> {
   const started = Date.now();
   try {
-    const res = await fetch(CONCELLO_FEED_URL, { headers: { 'User-Agent': USER_AGENT }, redirect: 'manual', signal: AbortSignal.timeout(4_000) });
+    const res = await fetch(CONCELLO_LIST_URL, { headers: { 'User-Agent': USER_AGENT }, redirect: 'manual', signal: AbortSignal.timeout(4_000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const notices = extractConcelloNotices(await readCapped(res)).sort((a, b) => b.date.localeCompare(a.date));
     console.log(`council feed read in ${Date.now() - started} ms, ${notices.length} notice(s) kept`);

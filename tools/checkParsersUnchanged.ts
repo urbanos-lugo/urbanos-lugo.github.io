@@ -35,7 +35,7 @@ const POLES = ['uilP', 'Zjge', 'mivY'];
 const poleUrl = (code: string) => `https://info.urbanoslugo.com/qr-demo-paradas/${code}`;
 /** The page is up and its departures container holds nothing before the closing marker. */
 const emptyArea = (page: string) => /<div class="sae-content"[^>]*>\s*<!-- \/app -->/.test(page);
-const FEED = 'https://concellodelugo.gal/es/taxonomy/term/707/feed';
+const LIST = 'https://concellodelugo.gal/es/actualidad';
 
 let failures = 0;
 const check = (label: string, ok: boolean, detail = '') => {
@@ -128,27 +128,26 @@ async function main() {
     }
   }
 
-  console.log('\nthe council’s traffic feed');
-  const feed = await bothWays(FEED);
+  console.log('\nthe council’s list of news');
+  const feed = await bothWays(LIST);
   if (typeof feed === 'string') {
     if (refusedToEveryone(feed)) {
-      check('the feed offers a certificate a reader accepts', false, `${feed}: refused to every reader, the hourly snapshot and the server too`);
+      check('the list offers a certificate a reader accepts', false, `${feed}: refused to every reader, the hourly snapshot and the server too`);
     } else {
-      console.log(`  the feed could not be read (${feed}); nothing compared, nothing claimed`);
+      console.log(`  the list could not be read (${feed}); nothing compared, nothing claimed`);
     }
   } else {
     const [uncapped, capped] = feed;
-    check('the capped read returns the whole feed', uncapped.length === capped.length,
+    check('the capped read returns the whole list', uncapped.length === capped.length,
       `${uncapped.length} vs ${capped.length} chars`);
     const before = JSON.stringify(extractConcelloNotices(uncapped));
     const after = JSON.stringify(extractConcelloNotices(capped));
     const n = JSON.parse(before).length;
     check('the same notices come out', before === after, `${n} notice(s)`);
-    // The feed is a feed whatever the week holds: items or not, it has <item> elements
-    // and a <channel>, and losing those is the shape changing under the parser.
-    const items = (uncapped.match(/<item\b/gi) ?? []).length;
-    check('the feed still has the shape of a feed', /<channel\b/i.test(uncapped) && items > 0,
-      `${items} item(s) in the raw feed, ${n} of them closures or diversions from the last week`);
+    // The list is a list whatever the week holds: its rows, each with a day and a heading the
+    // parser finds, and losing those is the shape changing under it.
+    const items = uncapped.split('<div class="views-row').slice(1).filter((row) => /date-display-single">[^<]*\d de [a-z]+ de \d{4}/i.test(row) && row.includes('texto-titular"><a href="')).length;
+    check('the list still has the shape of one', items > 0, `${items} item(s) on the page, ${n} of them of the streets or the buses from the last week`);
   }
 
   console.log('');

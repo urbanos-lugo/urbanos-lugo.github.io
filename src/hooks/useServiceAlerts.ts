@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AlertSyncResult } from '../services/alertSyncService';
 import type { ServiceAlert } from '../types';
 import { isSnapshotStale } from '../utils/snapshotAge';
-import { readNotice } from '../utils/operatorNotices';
+import { councilNews, readNotice } from '../utils/operatorNotices';
 import { noticeOver, outlivedForecast } from '../utils/noticeChanges';
 import { apiUrl } from '../services/apiUrl';
 import { isCrawler } from '../routes';
@@ -118,6 +118,9 @@ export function useServiceAlerts(now: Date): ServiceAlerts {
         unread = answer.status === 'unreachable';
         if (unread) throw new Error(answer.status);
         setShown({ data: answer, snapshotAt: null });
+        // The council's news is in the copy alone: the server in front of buslugo.com cannot read it.
+        const news = councilNews((await loadSnapshot()).alerts, Date.now());
+        if (!councilNews(answer.alerts, Date.now()).length && news.length) setShown((shown) => (shown.data === answer ? { ...shown, data: { ...answer, alerts: [...answer.alerts, ...news] } } : shown));
       } catch {
         if (askedAt.current !== Infinity) askedAt.current = Date.now() - ASK_AGAIN_MS + RETRY_MS;
         // No server (static hosting), or it or the operator is down: what is newest, dated, never

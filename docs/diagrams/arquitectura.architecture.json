@@ -184,7 +184,7 @@
       "id": "concello",
       "type": "external",
       "label": "Concello de Lugo",
-      "sublabel": "feed de tráfico",
+      "sublabel": "lista de novas",
       "pos": [
         1150,
         540
@@ -309,7 +309,7 @@
       "items": [
         "Dúas cousas: os avisos e os minutos dun poste",
         "Publicada, un worker en Cloudflare",
-        "Autoaloxada, Express: as mesmas dúas e o feed do Concello"
+        "Autoaloxada, Express: as mesmas dúas e as novas do Concello"
       ]
     },
     {

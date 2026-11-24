@@ -10,6 +10,7 @@
  * brackets. This says whether that is a slow response or a server that stops.
  */
 import { extractAlertsFromHtml, extractConcelloNotices } from '../src/services/alertSyncService';
+import { councilRow } from './lib';
 import { parseOperatorTimes } from '../src/services/operatorTimes';
 import { plainText } from '../src/utils/html';
 
@@ -49,18 +50,17 @@ for (const kb of KB) time(`${kb} KB of unclosed sae-content-info opens`, () => p
 for (const mb of [1, 4, 16]) time(`${mb} MB of well-formed departures`, () => parseOperatorTimes(goodBlock.repeat((mb * 1024 * 1024) / goodBlock.length)));
 
 console.log('\nalertSyncService.extractConcelloNotices');
-const item = (body: string) =>
-  `<item><title>Corte de tráfico na rúa Nova</title><description>${body}</description><pubDate>${new Date(Date.now() - 86400000).toUTCString()}</pubDate><link>https://concellodelugo.gal/x</link></item>`;
-const feed = (items: string) => `<rss><channel>${items}</channel></rss>`;
+const item = (body: string) => councilRow('Corte de tráfico na rúa Nova', new Date(Date.now() - 86400000), '/es/noticias/x', body);
+const feed = (items: string) => `<div class="view-content">${items}</div>`;
 for (const n of [10, 100, 1000]) time(`${n} well-formed items`, () => extractConcelloNotices(feed(item('corpo').repeat(n))));
 // Entity-encoded markup is decoded before tags are stripped: the worst case for that pass.
 for (const kb of KB) time(`${kb} KB of entity-encoded markup in one item`, () => extractConcelloNotices(feed(item('&lt;p&gt;'.repeat((kb * 1024) / 8)))));
-for (const kb of KB) time(`${kb} KB of unclosed items`, () => extractConcelloNotices(`<rss><channel>${'<item><title>x</title>'.repeat((kb * 1024) / 22)}`));
-// One item whose field never closes, and one whose encoded body is all openings of a script.
-for (const kb of CAP) time(`${kb} KB item of unclosed <title>s`, () => extractConcelloNotices(`<item>${'<title>'.repeat((kb * 1024) / 7)}</item>`));
+for (const kb of KB) time(`${kb} KB of unclosed rows`, () => extractConcelloNotices('<div class="views-row texto-titular"><a href="'.repeat((kb * 1024) / 46)));
+// One row whose heading never closes, and one whose encoded body is all openings of a script.
+for (const kb of CAP) time(`${kb} KB row of unclosed headings`, () => extractConcelloNotices(`<div class="views-row ${'texto-titular"><a href="'.repeat((kb * 1024) / 24)}`));
 for (const kb of CAP) {
   const body = '&lt;script '.repeat((kb * 1024) / 11);
-  time(`${kb} KB item body of encoded <script openings`, () => extractConcelloNotices(`<item><title>Corte</title><pubDate>${new Date().toUTCString()}</pubDate><description>${body}</description></item>`));
+  time(`${kb} KB row of encoded <script openings`, () => extractConcelloNotices(councilRow('Corte de tráfico', new Date(), '/es/noticias/x', body)));
 }
 
 console.log('\nthe operator home page, and the tag stripper under everything');

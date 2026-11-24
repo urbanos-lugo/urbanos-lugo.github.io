@@ -307,7 +307,10 @@ export function planTrips(fromQuery: string, toQuery: string, options: PlanOptio
     options.arriveBy !== undefined
       ? planArrivingBy(lang, question, options.arriveBy, day, tomorrow ? nowMinutes - MINUTES_PER_DAY : nowMinutes)
       : planDeparting(lang, question, plannedFrom(day, options.departAt));
-  const plans = found.filter((plan) => !found.some((simpler) => makesNeedless(simpler, plan)));
+  let plans = found.filter((plan) => !found.some((simpler) => makesNeedless(simpler, plan)));
+  // The soonest there gives way to a simpler trip, not to what comes after it: for a 2 four minutes later a change
+  // was left out, and the trip that led was one to the same minute with 33 of them on foot and not nine.
+  if (plans[0] !== found[0] && !makesNeedless(plans[0], found[0])) plans = [found[0], ...plans];
   if (!tomorrow) return plans;
   // That day's buses answer it, as they always have «chegar antes das»: one that does not run
   // then carries a notice worded from that day, "non presta servizo hoxe", read the day before.
@@ -319,7 +322,7 @@ export function planTrips(fromQuery: string, toQuery: string, options: PlanOptio
 interface Question {
   fromRes: LocationResolution;
   toRes: LocationResolution;
-  /** Each line's own way there, with no change. */
+  /** Each line's own ways there, with no change. */
   rides: { lineId: string; from: BoardingCandidate; to: BoardingCandidate }[];
   /** Every change there is, by the line it starts on and the pole that is boarded at. */
   changes: { first: Way; i: number; from: BoardingCandidate; onto: Change[] }[];
@@ -421,6 +424,11 @@ function planDeparting(lang: Lang, { fromRes, toRes, rides, changes }: Question,
 const isWalkOnly = (p: RoutePlanResult) => !p.segments.some((seg) => seg.type === 'bus');
 const busLegCount = (p: RoutePlanResult) => p.segments.filter((s) => s.type === 'bus').length;
 const walkMinutes = (p: RoutePlanResult) => p.segments.reduce((sum, seg) => sum + (seg.type === 'walk' ? seg.durationMinutes : 0), 0);
+/** Whether one list of figures comes before another: the first that differs says it. */
+const isBefore = (a: number[], b: number[]): boolean => {
+  const at = a.findIndex((figure, i) => figure !== b[i]);
+  return at >= 0 && a[at] < b[at];
+};
 /**
  * What a plan costs, in minutes: until it puts you there, counted from the moment the question
  * was asked; or, asked to be there by a time, how long before it you have to set off.
@@ -443,8 +451,8 @@ export function isBetterPlan(a: RoutePlanResult, b: RoutePlanResult): boolean {
   if (costOf(a) !== costOf(b)) return costOf(a) < costOf(b);
   // Same arrival, or same departure: less time on the way is strictly better than waiting at the pole.
   if (a.durationMinutes !== b.durationMinutes) return a.durationMinutes < b.durationMinutes;
-  // Still level: the simpler trip. A change you do not need is still a change you can miss.
-  return busLegCount(a) < busLegCount(b);
+  // Still level: the simpler trip, a change you do not need being one you can miss; and then the one that walks less.
+  return isBefore([busLegCount(a), walkMinutes(a)], [busLegCount(b), walkMinutes(b)]);
 }
 
 /** Best first. Equal is said as equal: a comparator that never answers 0 leaves the order to the engine. */
@@ -492,8 +500,8 @@ function callsOf(stopId: string): [line: BusLine, way: number, at: number][] {
 /**
  * Every way of riding there, found and not guessed at. For a bus at any of its stops there is one
  * pole it is best to be on it from, the one that can be set off for latest, whatever the hour, its
- * runs all keeping the same gaps; and one it is best to get off at. So each line's own ride is the
- * best there is of it, and each pair of lines meets wherever they do.
+ * runs all keeping the same gaps; and one it is best to get off at. So each line's own rides are the
+ * best there are of it, and each pair of lines meets wherever they do.
  *
  * Until November 2026 the poles were chosen at each end apart, the nearest of each line: often the
  * one across the street, going the other way. From Fonte dos Ranchos to As Termas none of the
@@ -507,27 +515,34 @@ function waysThere(near: BoardingCandidate[], far: BoardingCandidate[], day: Day
   for (const line of BUS_LINES) {
     ways.set(line, line.directions.map(({ stops }, index): Way => {
       const at = minutesAlong(line, index, day) ?? [];
+      const printed = buildRuns(line, index, BUS_STOPS, day)[0]?.publishedStopIndices ?? [];
       const pole = (poles: Map<string, BoardingCandidate>, i: number) => (at.length && stops[i] && !skips(line.id, stops[i]) ? poles.get(stops[i]) : undefined);
+      // In the minutes the reader is told, so that of two poles in the same one the shorter walk is taken: on,
+      // the last minute to set off and catch it, then the one it would say to, its margin kept; off, the minute there.
+      const boarding = (i: number, { walkMinutes: walk }: BoardingCandidate) => [walk - Math.floor(at[i]), walk + bufferFor(printed.includes(i) ? 'published' : 'estimated') - Math.round(at[i]), walk];
+      const alighting = (i: number, { walkMinutes: walk }: BoardingCandidate) => [Math.round(at[i]) + walk, walk];
       const on: number[] = [];
       const off: number[] = [];
       let best = -1;
-      let ride = { minutes: Infinity, i: -1, j: -1 };
+      let boarded: number[] = [];
       stops.forEach((_, j) => {
         const from = pole(ons, j - 2);
-        if (from && (best < 0 || at[j - 2] - from.walkMinutes > at[best] - ons.get(stops[best])!.walkMinutes)) best = j - 2;
+        if (from && (best < 0 || isBefore(boarding(j - 2, from), boarded))) [best, boarded] = [j - 2, boarding(j - 2, from)];
         on[j] = best;
-        const to = pole(offs, j);
-        if (!to || best < 0) return;
-        const minutes = ons.get(stops[best])!.walkMinutes + at[j] - at[best] + to.walkMinutes;
-        if (minutes < ride.minutes) ride = { minutes, i: best, j };
       });
-      if (ride.i >= 0) rides.push({ lineId: line.id, from: ons.get(stops[ride.i])!, to: offs.get(stops[ride.j])! });
       best = -1;
       for (let k = stops.length - 1; k >= 0; k--) {
         const to = pole(offs, k + 2);
-        if (to && (best < 0 || at[k + 2] + to.walkMinutes < at[best] + offs.get(stops[best])!.walkMinutes)) best = k + 2;
+        if (to && (best < 0 || isBefore(alighting(k + 2, to), alighting(best, offs.get(stops[best])!)))) best = k + 2;
         off[k] = best;
       }
+      // Boarding further on, a bus is still caught that has gone by before, and it may be too late to get off where it
+      // is best: each pole there is to board at, but those that get there no sooner than the next.
+      const poles = [...new Set(on)].filter((i) => off[i] >= 0);
+      const arrives = (i: number) => alighting(off[i], offs.get(stops[off[i]])!)[0];
+      poles.forEach((i, n) => {
+        if (n + 1 === poles.length || arrives(i) < arrives(poles[n + 1])) rides.push({ lineId: line.id, from: ons.get(stops[i])!, to: offs.get(stops[off[i]])! });
+      });
       return { line, index, at, on, off };
     }));
   }
@@ -572,7 +587,9 @@ interface TimedChange {
   boardAt: number;
 }
 
-/** Of every change there is, the best of each pair of lines at this hour: running, sooner there, set off for later, and less of a walk between the two. */
+const onFootOf = ({ from, walk, to }: Change): number => from.walkMinutes + walk.minutes + to.walkMinutes;
+
+/** Of every change there is, the best of each pair of lines at this hour: running, sooner there, set off for later, and less of a walk. */
 function bestChanges(changes: Question['changes'], now: Date): TimedChange[] {
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
   const best = new Map<string, TimedChange & { days: number; arrives: number; leaves: number }>();
@@ -604,7 +621,7 @@ function bestChanges(changes: Question['changes'], now: Date): TimedChange[] {
       const found = { change, boardAt, days: next.day, arrives: Math.round(next.run.minutesByStopIndex[m] + offset) + to.walkMinutes, leaves: Math.round(boardAt) - from.walkMinutes };
       const key = `${first.line.number}>${second.line.number}`;
       const kept = best.get(key);
-      const order = kept ? Math.sign(found.days - kept.days) || found.arrives - kept.arrives || kept.leaves - found.leaves || walk.minutes - kept.change.walk.minutes : -1;
+      const order = kept ? Math.sign(found.days - kept.days) || found.arrives - kept.arrives || kept.leaves - found.leaves || onFootOf(change) - onFootOf(kept.change) : -1;
       if (order < 0) best.set(key, found);
     }
   }

@@ -24,7 +24,7 @@
       "1.3",
       "1.4"
     ],
-    "zone": "Acea de Olga",
+    "zone": "Campus USC",
     "shelter": false,
     "bench": false
   },
@@ -48,7 +48,7 @@
       "1.3",
       "1.4"
     ],
-    "zone": "Acea de Olga",
+    "zone": "Campus USC",
     "shelter": true,
     "bench": true
   },
@@ -142,7 +142,7 @@
       "5DS",
       "5.2"
     ],
-    "zone": "Campus USC",
+    "zone": "Magoi",
     "shelter": false,
     "bench": false
   },
@@ -196,7 +196,7 @@
       "5DS",
       "5.2"
     ],
-    "zone": "Campus USC",
+    "zone": "Fingoi",
     "shelter": false,
     "bench": false
   },
@@ -693,7 +693,7 @@
       "11",
       "12"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": true,
     "bench": true
   },
@@ -725,7 +725,7 @@
       "6",
       "11"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": true,
     "bench": true
   },
@@ -1494,7 +1494,7 @@
       "2",
       "5ES"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": true,
     "bench": true
   },
@@ -1526,7 +1526,7 @@
       "11",
       "12"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": true,
     "bench": true
   },
@@ -1692,7 +1692,7 @@
       "8",
       "12"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Centro / Muralla",
     "shelter": true,
     "bench": true
   },
@@ -1730,7 +1730,7 @@
       "11",
       "12"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Centro / Muralla",
     "shelter": true,
     "bench": true
   },
@@ -1766,7 +1766,7 @@
       "6",
       "11-Calde"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Centro / Muralla",
     "shelter": true,
     "bench": true
   },
@@ -2051,7 +2051,7 @@
       "1.4",
       "5DS"
     ],
-    "zone": "Campus USC",
+    "zone": "Fingoi",
     "shelter": false,
     "bench": null
   },
@@ -2077,7 +2077,7 @@
       "5DS",
       "5.2"
     ],
-    "zone": "Campus USC",
+    "zone": "Magoi",
     "shelter": false,
     "bench": false
   },
@@ -2165,7 +2165,7 @@
       "1.2",
       "1.4"
     ],
-    "zone": "Acea de Olga",
+    "zone": "Campus USC",
     "shelter": true,
     "bench": true
   },
@@ -2230,7 +2230,7 @@
       "1.4",
       "4.2"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": true,
     "bench": null
   },
@@ -2509,7 +2509,7 @@
       "3.1",
       "3.2"
     ],
-    "zone": "Acea de Olga",
+    "zone": "Campus USC",
     "shelter": true,
     "bench": true
   },
@@ -2552,7 +2552,7 @@
       "1.3",
       "6"
     ],
-    "zone": "Fingoi",
+    "zone": "Campus USC",
     "shelter": false,
     "bench": false
   },
@@ -2646,7 +2646,7 @@
       "5.1",
       "5.2"
     ],
-    "zone": "Fingoi",
+    "zone": "Montirón",
     "shelter": false,
     "bench": null
   },
@@ -2672,7 +2672,7 @@
       "5.1",
       "5.2"
     ],
-    "zone": "A Tolda / Montirón",
+    "zone": "Fontiñas",
     "shelter": false,
     "bench": null
   },
@@ -2724,7 +2724,7 @@
       "5.1",
       "5.2"
     ],
-    "zone": "Sur / Ramón Ferreiro",
+    "zone": "Fontiñas",
     "shelter": false,
     "bench": null
   },
@@ -2804,7 +2804,7 @@
       "5.2",
       "11-Igrexa de Bóveda"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": false,
     "bench": null
   },
@@ -2854,7 +2854,7 @@
       "11-Igrexa de Bóveda",
       "13"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": false,
     "bench": null
   },
@@ -3020,7 +3020,7 @@
       "3.2",
       "11-Igrexa de Bóveda"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": true,
     "bench": null
   },
@@ -3104,7 +3104,7 @@
       "5.1",
       "5.2"
     ],
-    "zone": "Sur / Ramón Ferreiro",
+    "zone": "Fontiñas",
     "shelter": false,
     "bench": null
   },
@@ -3160,7 +3160,7 @@
       "5.1",
       "5.2"
     ],
-    "zone": "A Tolda / Montirón",
+    "zone": "Fontiñas",
     "shelter": false,
     "bench": null
   },
@@ -3191,7 +3191,7 @@
       "5.1",
       "5.2"
     ],
-    "zone": "Fingoi",
+    "zone": "Montirón",
     "shelter": false,
     "bench": null
   },
@@ -3292,7 +3292,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Fingoi",
+    "zone": "As Pedreiras",
     "shelter": false,
     "bench": null
   },
@@ -3381,7 +3381,7 @@
       "2",
       "5.1"
     ],
-    "zone": "Sur / Ramón Ferreiro",
+    "zone": "Fontiñas",
     "shelter": true,
     "bench": null
   },
@@ -3544,7 +3544,7 @@
     "lines": [
       "2"
     ],
-    "zone": "O Ceao",
+    "zone": "Rural",
     "shelter": true,
     "bench": null
   },
@@ -3766,7 +3766,7 @@
       "11-Igrexa de Bóveda",
       "13"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": false,
     "bench": null
   },
@@ -3844,7 +3844,7 @@
     "lines": [
       "3.1"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": false,
     "bench": null
   },
@@ -3880,7 +3880,7 @@
     "lines": [
       "3.1"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": false,
     "bench": null
   },
@@ -3902,7 +3902,7 @@
       "3.2",
       "11-Igrexa de Bóveda"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": false,
     "bench": null
   },
@@ -3923,7 +3923,7 @@
       "3.1",
       "3.2"
     ],
-    "zone": "Fingoi",
+    "zone": "Montirón",
     "shelter": false,
     "bench": null
   },
@@ -3944,7 +3944,7 @@
       "3.1",
       "3.2"
     ],
-    "zone": "Fingoi",
+    "zone": "Montirón",
     "shelter": false,
     "bench": null
   },
@@ -3966,7 +3966,7 @@
       "3.1",
       "3.2"
     ],
-    "zone": "A Tolda / Montirón",
+    "zone": "Montirón",
     "shelter": false,
     "bench": null
   },
@@ -3988,7 +3988,7 @@
       "3.1",
       "3.2"
     ],
-    "zone": "A Tolda / Montirón",
+    "zone": "Montirón",
     "shelter": false,
     "bench": null
   },
@@ -4010,7 +4010,7 @@
       "3.1",
       "3.2"
     ],
-    "zone": "A Tolda / Montirón",
+    "zone": "Montirón",
     "shelter": false,
     "bench": null
   },
@@ -4032,7 +4032,7 @@
       "3.1",
       "3.2"
     ],
-    "zone": "Fingoi",
+    "zone": "Campus USC",
     "shelter": true,
     "bench": true
   },
@@ -4054,7 +4054,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "As Pedreiras",
     "shelter": false,
     "bench": null
   },
@@ -4078,7 +4078,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": false,
     "bench": null
   },
@@ -4100,7 +4100,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": false,
     "bench": null
   },
@@ -4125,7 +4125,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": true,
     "bench": null
   },
@@ -4147,7 +4147,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": true,
     "bench": null
   },
@@ -4169,7 +4169,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": false,
     "bench": null
   },
@@ -4191,7 +4191,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "As Pedreiras",
     "shelter": false,
     "bench": null
   },
@@ -4213,7 +4213,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Fingoi",
+    "zone": "As Pedreiras",
     "shelter": false,
     "bench": null
   },
@@ -4231,7 +4231,7 @@
     "lines": [
       "3.1"
     ],
-    "zone": "Fingoi",
+    "zone": "Montirón",
     "shelter": null,
     "bench": null
   },
@@ -4275,7 +4275,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": false,
     "bench": null
   },
@@ -4295,7 +4295,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": false,
     "bench": null
   },
@@ -4315,7 +4315,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": true,
     "bench": null
   },
@@ -4336,7 +4336,7 @@
       "3.2",
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": false,
     "bench": null
   },
@@ -4372,7 +4372,7 @@
     "lines": [
       "3.2"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": true,
     "bench": null
   },
@@ -4390,7 +4390,7 @@
     "lines": [
       "3.2"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": true,
     "bench": null
   },
@@ -4408,7 +4408,7 @@
     "lines": [
       "3.2"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": false,
     "bench": null
   },
@@ -4428,7 +4428,7 @@
       "4.1",
       "4.2"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": true,
     "bench": null
   },
@@ -4446,7 +4446,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": null
   },
@@ -4464,7 +4464,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": null
   },
@@ -4482,7 +4482,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": null
   },
@@ -4500,7 +4500,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": null
   },
@@ -4886,7 +4886,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -4904,7 +4904,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": null
   },
@@ -4922,7 +4922,7 @@
     "lines": [
       "4.1"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": null
   },
@@ -4942,7 +4942,7 @@
       "4.1",
       "13"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": true,
     "bench": true
   },
@@ -4964,7 +4964,7 @@
       "4.2",
       "13"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": false,
     "bench": false
   },
@@ -4982,7 +4982,7 @@
     "lines": [
       "4.2"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": false
   },
@@ -5000,7 +5000,7 @@
     "lines": [
       "4.2"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": null
   },
@@ -5018,7 +5018,7 @@
     "lines": [
       "4.2"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": null
   },
@@ -5036,7 +5036,7 @@
     "lines": [
       "4.2"
     ],
-    "zone": "Estación",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -5193,7 +5193,7 @@
     "lines": [
       "4.2"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": false,
     "bench": null
   },
@@ -5211,7 +5211,7 @@
     "lines": [
       "4.2"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": true,
     "bench": null
   },
@@ -5229,7 +5229,7 @@
     "lines": [
       "4.2"
     ],
-    "zone": "Estación",
+    "zone": "Sagrado Corazón",
     "shelter": true,
     "bench": true
   },
@@ -5306,7 +5306,7 @@
       "5.2",
       "7"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "O Carme",
     "shelter": false,
     "bench": null
   },
@@ -5328,7 +5328,7 @@
       "5.2",
       "7"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "O Carme",
     "shelter": false,
     "bench": null
   },
@@ -5372,7 +5372,7 @@
       "5.2",
       "6"
     ],
-    "zone": "Sur / Ramón Ferreiro",
+    "zone": "Acea de Olga",
     "shelter": false,
     "bench": null
   },
@@ -5394,7 +5394,7 @@
       "5.2",
       "6"
     ],
-    "zone": "A Ponte",
+    "zone": "Magoi",
     "shelter": false,
     "bench": null
   },
@@ -5416,7 +5416,7 @@
       "5.2",
       "6"
     ],
-    "zone": "Campus USC",
+    "zone": "Magoi",
     "shelter": false,
     "bench": null
   },
@@ -5439,7 +5439,7 @@
       "5.2",
       "6"
     ],
-    "zone": "Campus USC",
+    "zone": "Magoi",
     "shelter": true,
     "bench": null
   },
@@ -5463,7 +5463,7 @@
       "5.2",
       "11-Igrexa de Bóveda"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": false,
     "bench": null
   },
@@ -5821,7 +5821,7 @@
       "5.2",
       "11-Igrexa de Bóveda"
     ],
-    "zone": "Centro / Muralla",
+    "zone": "Estación",
     "shelter": false,
     "bench": null
   },
@@ -5841,7 +5841,7 @@
       "5DS",
       "6"
     ],
-    "zone": "Campus USC",
+    "zone": "Magoi",
     "shelter": true,
     "bench": null
   },
@@ -5863,7 +5863,7 @@
       "5.2",
       "6"
     ],
-    "zone": "Campus USC",
+    "zone": "Magoi",
     "shelter": true,
     "bench": null
   },
@@ -5885,7 +5885,7 @@
       "5.2",
       "6"
     ],
-    "zone": "A Ponte",
+    "zone": "Magoi",
     "shelter": true,
     "bench": null
   },
@@ -5907,7 +5907,7 @@
       "5.2",
       "6"
     ],
-    "zone": "Sur / Ramón Ferreiro",
+    "zone": "Acea de Olga",
     "shelter": true,
     "bench": null
   },
@@ -5955,7 +5955,7 @@
       "7",
       "11-Calde"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "O Carme",
     "shelter": false,
     "bench": true
   },
@@ -5977,7 +5977,7 @@
       "5.2",
       "7"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "O Carme",
     "shelter": false,
     "bench": null
   },
@@ -6053,7 +6053,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Casás / Abella",
     "shelter": false,
     "bench": null
   },
@@ -6073,7 +6073,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Casás / Abella",
     "shelter": true,
     "bench": null
   },
@@ -6093,7 +6093,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Casás / Abella",
     "shelter": false,
     "bench": null
   },
@@ -6113,7 +6113,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Casás / Abella",
     "shelter": false,
     "bench": null
   },
@@ -6151,7 +6151,7 @@
     "lines": [
       "5ES"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": false,
     "bench": false
   },
@@ -6171,7 +6171,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": false,
     "bench": null
   },
@@ -6191,7 +6191,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": false,
     "bench": false
   },
@@ -6211,7 +6211,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Casás / Abella",
     "shelter": false,
     "bench": null
   },
@@ -6231,7 +6231,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Casás / Abella",
     "shelter": false,
     "bench": null
   },
@@ -6251,7 +6251,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Casás / Abella",
     "shelter": false,
     "bench": null
   },
@@ -6271,7 +6271,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Casás / Abella",
     "shelter": false,
     "bench": null
   },
@@ -6291,7 +6291,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "Casás / Abella",
     "shelter": false,
     "bench": null
   },
@@ -6311,7 +6311,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "Casás / Abella",
     "shelter": false,
     "bench": null
   },
@@ -6332,7 +6332,7 @@
       "5ES",
       "9"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "Casás / Abella",
     "shelter": null,
     "bench": null
   },
@@ -6446,7 +6446,7 @@
       "10",
       "11-Calde"
     ],
-    "zone": "Sur / Ramón Ferreiro",
+    "zone": "Acea de Olga",
     "shelter": false,
     "bench": true
   },
@@ -6464,7 +6464,7 @@
     "lines": [
       "5.2"
     ],
-    "zone": "Sur / Ramón Ferreiro",
+    "zone": "Fingoi",
     "shelter": null,
     "bench": null
   },
@@ -6537,7 +6537,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Piringalla",
     "shelter": false,
     "bench": null
   },
@@ -6555,7 +6555,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": false,
     "bench": false
   },
@@ -6573,7 +6573,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": false,
     "bench": false
   },
@@ -6645,7 +6645,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Centro / Muralla",
     "shelter": false,
     "bench": null
   },
@@ -6717,7 +6717,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Campus USC",
+    "zone": "Magoi",
     "shelter": false,
     "bench": null
   },
@@ -6735,7 +6735,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Campus USC",
+    "zone": "Magoi",
     "shelter": false,
     "bench": null
   },
@@ -6771,7 +6771,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Fingoi",
+    "zone": "Campus USC",
     "shelter": true,
     "bench": false
   },
@@ -6843,7 +6843,7 @@
     "lines": [
       "6"
     ],
-    "zone": "Sur / Ramón Ferreiro",
+    "zone": "Acea de Olga",
     "shelter": false,
     "bench": null
   },
@@ -6986,7 +6986,7 @@
       "7",
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "A Ponte",
     "shelter": null,
     "bench": null
   },
@@ -7153,7 +7153,7 @@
       "7",
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "A Ponte",
     "shelter": null,
     "bench": null
   },
@@ -7177,7 +7177,7 @@
       "9",
       "12"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Centro / Muralla",
     "shelter": false,
     "bench": null
   },
@@ -7195,7 +7195,7 @@
     "lines": [
       "8"
     ],
-    "zone": "Fonte dos Ranchos",
+    "zone": "Centro / Muralla",
     "shelter": false,
     "bench": null
   },
@@ -7269,7 +7269,7 @@
     "lines": [
       "8"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "A Cheda",
     "shelter": true,
     "bench": null
   },
@@ -7287,7 +7287,7 @@
     "lines": [
       "8"
     ],
-    "zone": "A Ponte",
+    "zone": "A Cheda",
     "shelter": false,
     "bench": null
   },
@@ -7305,7 +7305,7 @@
     "lines": [
       "8"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "A Cheda",
     "shelter": false,
     "bench": null
   },
@@ -7323,7 +7323,7 @@
     "lines": [
       "8"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "A Cheda",
     "shelter": false,
     "bench": null
   },
@@ -7342,7 +7342,7 @@
     "lines": [
       "8"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "A Cheda",
     "shelter": null,
     "bench": null
   },
@@ -7360,7 +7360,7 @@
     "lines": [
       "8"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "A Cheda",
     "shelter": false,
     "bench": null
   },
@@ -7378,7 +7378,7 @@
     "lines": [
       "8"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "A Cheda",
     "shelter": true,
     "bench": null
   },
@@ -7396,7 +7396,7 @@
     "lines": [
       "8"
     ],
-    "zone": "Oeste / Américas",
+    "zone": "A Cheda",
     "shelter": false,
     "bench": null
   },
@@ -7526,7 +7526,7 @@
     "lines": [
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "A Ponte",
     "shelter": false,
     "bench": null
   },
@@ -7544,7 +7544,7 @@
     "lines": [
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "A Ponte",
     "shelter": false,
     "bench": null
   },
@@ -7733,7 +7733,7 @@
     "lines": [
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "A Ponte",
     "shelter": true,
     "bench": null
   },
@@ -7751,7 +7751,7 @@
     "lines": [
       "10"
     ],
-    "zone": "A Cheda",
+    "zone": "A Ponte",
     "shelter": false,
     "bench": null
   },
@@ -7787,7 +7787,7 @@
     "lines": [
       "10"
     ],
-    "zone": "Casco Histórico",
+    "zone": "A Ponte",
     "shelter": false,
     "bench": null
   },
@@ -8132,7 +8132,7 @@
     "lines": [
       "11-Calde"
     ],
-    "zone": "A Cheda",
+    "zone": "A Ponte",
     "shelter": true,
     "bench": null,
     "positionSource": "osm"
@@ -8152,7 +8152,7 @@
     "lines": [
       "11-Calde"
     ],
-    "zone": "A Cheda",
+    "zone": "A Ponte",
     "shelter": false,
     "bench": null
   },
@@ -8460,7 +8460,7 @@
     "lines": [
       "11-Santa Comba"
     ],
-    "zone": "A Tolda / Montirón",
+    "zone": "A Tolda",
     "shelter": false,
     "bench": null
   },
@@ -8478,7 +8478,7 @@
     "lines": [
       "11-Santa Comba"
     ],
-    "zone": "A Tolda / Montirón",
+    "zone": "A Tolda",
     "shelter": true,
     "bench": null
   },
@@ -8496,7 +8496,7 @@
     "lines": [
       "11-Santa Comba"
     ],
-    "zone": "Acea de Olga",
+    "zone": "A Tolda",
     "shelter": false,
     "bench": null
   },
@@ -8514,7 +8514,7 @@
     "lines": [
       "12"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": false,
     "bench": false
   },
@@ -8532,7 +8532,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "A Milagrosa",
     "shelter": true,
     "bench": null
   },
@@ -8550,7 +8550,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": true,
     "bench": null
   },
@@ -8568,7 +8568,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": true,
     "bench": true
   },
@@ -8586,7 +8586,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": false,
     "bench": null
   },
@@ -8604,7 +8604,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": false,
     "bench": null
   },
@@ -8622,7 +8622,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": false,
     "bench": null
   },
@@ -8640,7 +8640,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -8658,7 +8658,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -8676,7 +8676,7 @@
     "lines": [
       "12"
     ],
-    "zone": "O Ceao",
+    "zone": "As Gándaras",
     "shelter": true,
     "bench": null
   },
@@ -8730,7 +8730,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": true,
     "bench": null
   },
@@ -8748,7 +8748,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -8766,7 +8766,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": true,
     "bench": null
   },
@@ -8784,7 +8784,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": false,
     "bench": null
   },
@@ -8802,7 +8802,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": false,
     "bench": null
   },
@@ -8820,7 +8820,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": false,
     "bench": null
   },
@@ -8838,7 +8838,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "Albeiros",
     "shelter": false,
     "bench": null
   },
@@ -8856,7 +8856,7 @@
     "lines": [
       "12"
     ],
-    "zone": "A Piringalla",
+    "zone": "A Milagrosa",
     "shelter": false,
     "bench": null
   },
@@ -8874,7 +8874,7 @@
     "lines": [
       "12"
     ],
-    "zone": "Casás / Abella",
+    "zone": "A Milagrosa",
     "shelter": false,
     "bench": false
   },
@@ -8910,7 +8910,7 @@
     "lines": [
       "13"
     ],
-    "zone": "A Milagrosa",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },
@@ -8928,7 +8928,7 @@
     "lines": [
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": true
   },
@@ -8946,7 +8946,7 @@
     "lines": [
       "13"
     ],
-    "zone": "A Piringalla",
+    "zone": "As Gándaras",
     "shelter": false,
     "bench": null
   },

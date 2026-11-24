@@ -50,6 +50,12 @@ export function readNotice(raw: unknown, index: number): ServiceAlert | null {
   };
 }
 
+/** How long a press release of the council's is news: a closure or a diversion lasts about as long. */
+export const COUNCIL_NEWS_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** The council's, as long as it is news. */
+export const councilNews = (alerts: ServiceAlert[], now: number): ServiceAlert[] => alerts.filter((alert) => alert.source === 'concello' && now - Date.parse(alert.date) <= COUNCIL_NEWS_MS);
+
 /** The operator's notices that came written out line by line, as San Froilán 2026 did; never the council's press feed. */
 export const sectionedNotices = (alerts: ServiceAlert[] = []): ServiceAlert[] =>
   alerts.filter((alert) => alert.source !== 'concello' && (alert.sections?.length ?? 0) > 0);

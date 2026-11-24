@@ -7007,3 +7007,136 @@ p95 de 11 ms e ningún erro; con 4.000 en 30 s satura (p50 de 1,5 s). Unha prime
 - As zonas «Acea de Olga» (1,7 km), «A Cheda» (1,1 km) e «O Ceao» (1,6 km) tampouco están onde
   OSM pon o barrio do mesmo nome; non se tocaron sen saber cal chama así a xente.
 - As notificacións nun teléfono de verdade, sen probar.
+
+## Rolda 93: as rutas caso por caso, as zonas e a segunda pasada — 24 de novembro de 2026
+
+Pedido: comprobar que os cambios de Ruta da rolda 92 son todos a favor de quen viaxa, explicar por que
+baixou «andar primeiro», revisar as zonas e a segunda pasada, e mirar a obra da avenida da Coruña.
+
+### As rutas, unha por unha
+
+3.000 preguntas (paradas, sitios, rúas; laborable, sábado, domingo e festivo), a resposta publicada
+(8a61efc) e a de agora á mesma pregunta.
+
+- **«Agora»**, 1.495: 537 melloran (198 en cinco minutos ou máis), 887 iguais, e 51 chegan de un a catro
+  minutos despois: 45 son un bus que a publicada non vía no canto dun paseo, e 6 un bus menos. Ningunha
+  en cinco. Vinte máis empatan en hora e perden en algo (doce andan máis, de un a sete minutos).
+- **«Chegar antes das»**, 1.505, xulgadas polo bus que se colle: 573 melloran, 893 iguais ou o mesmo
+  bus saíndo coa súa marxe, 16 saen de un a catro minutos antes. As dez que saen máis cedo aínda
+  viñan de paseos de 77 a 125 minutos, tres deles chegando despois do prazo. Dez empatan e andan máis ou
+  levan un bus máis, e en tres non hai resposta en ningunha das dúas.
+- **«Andar primeiro»** pasou de 436 a 305 (de 696 a 391 en «chegar antes»). Non era a medida do paseo,
+  a mesma nas dúas: a publicada non atopaba o bus, e o paseo gañaba por quedar só. Das 148 que pasaron a
+  bus, en 93 chégase antes, en 10 igual e en 45 ata catro minutos despois; andando a metade (42 e 21 min).
+- **O que se arranxou ao miralas**, e xa estaba no commit anterior:
+  - Dous postes no mesmo minuto impreso non se distinguían, e saía o que máis fai andar: 19 minutos a
+    pé e non 7, chegando á vez. Agora 112 de 1.495 andan menos.
+  - A que antes chega deixaba o sitio por unha máis sinxela catro minutos posterior, e quen quedaba
+    diante era outra: o mesmo minuto, con 33 minutos a pé e non 9.
+  - De cada liña gardábase unha soa parella de postes; perdido ese bus, quedaba fóra o que aínda se
+    colle máis adiante. Gárdanse todas as que lle gañan a outra.
+- **Contra a busca á parte**: 2.585 preguntas máis, cidade e rede enteira, co aviso real: 0 chegan cinco
+  minutos tarde, 0 saen oito antes. `stressRoutes.ts` agora admite cinco minutos e non dez; con 4.017, 0.
+- **Queda igual que na publicada**: o paseo só vai primeiro se gaña cinco minutos. En 113 de 1.495 andando
+  chégase de un a catro minutos antes ca no bus que vai diante, andando 29 minutos e non 17 (medianas).
+- **O custo** de `planTrips` e de «chegar antes das» é o mesmo, medido alternando as versións.
+
+### As zonas
+
+O mapa de zonas viña do primeiro día e os puntos eran a ollo. Contra catro fontes (os barrios de OSM, os
+colexios da Xunta, Google Maps, un por un, e os nomes dos postes e das rúas): «A Cheda», «Acea de Olga»,
+«A Tolda», «Casás / Abella» e a metade leste de «A Piringalla» (que é Albeiros) estaban a un ou dous
+quilómetros, e o parque da Milagrosa non era «A Milagrosa».
+
+A primeira versión desta rolda tamén tocaba o que estaba ben, e o dono pediu revisala a fondo. Medida
+parada por parada, canto dista do sitio que os demais lle dan ao nome vello e ao novo: 17 quedaban máis
+lonxe. Volveron «Casco Histórico», A Ponte en Rda. do Carme 23-25, Fonte dos Ranchos nas rúas de ao lado da
+muralla, as Fontiñas, e O Ceao, HULA e As Gándaras nas aldeas do seu redor. Queda: 200 das 417 cambian
+desde a publicada, 183 máis preto, 7 igual e 8 máis lonxe, seis por levar o nome (Rda. Muralla, Fontiñas
+203 e 310, Ourense 6 «esq. Rda. Muralla», que cambia 83 m) ou por 42 m, e dúas en Monte Segade, ao outro
+lado do río e sen barrio. As outras dúas pasan de «Cemiterio», a 8 km, a «Rural». 28 zonas no canto de 22.
+Alfonso X e Agro da Torna seguen «Campus USC», como o Concello chama a ese treito da 1.1.
+
+Unha comprobación cambiou a propósito: «Piringalla» atopaba polo menos 20 paradas, dez delas de Albeiros;
+agora 8, e «Albeiros» 10.
+
+### A segunda pasada
+
+A ficha da liña xa a di («e de novo ás ~17:02»). En Ruta, medido: de 15.192 viaxes desde ou ata as
+paradas a menos de 500 m deses dous postes, 68 melloran. Tocaría o mapa, a lista e «Vou nesta»; non se fai.
+
+### A obra da avenida da Coruña, e a de San Fernando
+
+- **Coruña**: a app non a ten. O Concello publicouna o 20 de novembro coa etiqueta *Auga*, e só se le
+  *Tráfico*, que desde setembro non trouxo ningún corte. Un carril de saída pechado do 23 ao 25 ou 26, as
+  liñas que saen por alí desvíanse por Rev. Xosé Fernández Núñez e Manuel María, con dúas paradas
+  provisionais; o texto non di cales se suprimen, así que non cambiaría ningún taboleiro.
+- **San Fernando**: a nota do Concello do 19 de outubro tamén di «durante dúas semanas», por reparacións
+  urxentes do pavimento. Sen outra nova, dáse por rematada, que é o que a app xa fai.
+
+### Comprobado
+
+- As cinco portas: lint; 201 comprobacións; 26 políticas; as tres varridas; a build. As comprobacións novas
+  fallan co planificador e coas zonas de antes. `data:build`: 417 paradas, 24 liñas, e só cambia a zona.
+- `audit:browser` enteiro con Chrome 157: 254 medicións de 170 estados, secuencias e viaxes, 0 achados
+  (os 118 de contraste da rolda 92 eran de Brave). Na ficha da 6, a 375 px, a segunda pasada e as zonas.
+
+### Queda
+
+- Do dono: se se le tamén a etiqueta *Auga* do Concello (NOTAS, Pendente), se quedan as nove rutas da API
+  do servidor propio, e se o paseo debe ir primeiro cando gaña menos de cinco minutos.
+- As notificacións nun teléfono de verdade, sen probar.
+
+## Rolda 94: as novas do Concello, e o límite do mapa — 24 de novembro de 2026
+
+Pedido: ler tamén o que o Concello conta da auga, mirar seis meses das súas novas para saber como anuncia
+os cortes, revisar as zonas a fondo (na rolda 93, «As zonas») e pensar se o mapa debe ter límite.
+
+### Como anuncia o Concello
+
+473 notas do 24 de maio ao 24 de novembro, lidas da súa lista a dez segundos unha da outra, como pide o
+seu robots.txt, e 126 enteiras. O que lle valía a quen viaxa en bus, e a súa etiqueta: a fuga da avenida
+da Coruña (Auga), o reforzo e os desvíos do San Froilán (Buses urbanos), a carreira do 11 de setembro
+(Tráfico), os cortes do Cross Ponte Romana e do Corre con Nós (Deportes), os buses do Caudal Fest
+(Cultura) e os do Arde Lucus (Buses urbanos). San Fernando saíu só en Facebook. Coa etiqueta Tráfico e
+o titular, o de ata agora, entraba unha; coa de Auga ademais, dúas.
+
+Así que lese a lista enteira (`/es/actualidad`, unha petición, como antes) e escóllese polo que din o
+titular e a entradilla: un corte ou desvío **do tráfico** no titular, ou unha frase sobre o bus urbano que
+di que algo cambia. Entran tres, todas boas. Fóra quedan, a propósito, as que só o din no corpo, e os
+buses gratuítos, que unha comprobación xa deixaba fóra. A lista non dá hora: a pantalla di só o día.
+
+### E que se vexa
+
+Na app publicada non se vía ningunha: o worker non le o Concello, e o que trae el substitúe a copia. E a
+copia case nunca as tiña: desde GitHub o Concello contesta unha vez de cada dez (4 de 40 execucións, do 13
+ao 24 de novembro; as outras, esgotadas aos catro segundos). Agora a copia garda unha semana o que unha
+lectura trouxo, collido da que está publicada, e a app xúntalle as novas da copia ao que di o worker.
+Mirado nun sitio de mentira como o publicado: sae a da Coruña co seu día, e unha de nove días non. Se
+Cloudflare o consegue ler non se puido medir sen despregar (o banco de probas público non arranca).
+
+### O límite do mapa
+
+Os mapas paran a uns 10 km da última parada. Alonxando de todo nun teléfono vese a rede enteira; nunha
+pantalla de 1.920 abre igual ca antes. Xa non hai que ofrecer «volver a Lugo»: «Centrar» segue nos filtros.
+
+### Visto de camiño
+
+A Xunta obra en Serra de Meira desde o 22 de outubro, doce meses; o proxecto mantén as paradas das dúas
+marxes (4.2). O Concello anunciou o 16 de outubro un SAE, unha app con datos en directo e Google Maps.
+
+### Comprobado
+
+- As cinco portas: lint; 201 comprobacións; 26 políticas; as tres varridas; a build. O lector da lista, sobre
+  as 473 notas e sobre a páxina en castelán do día. As comprobacións do lector do RSS pasaron á lista; a dun
+  campo do RSS sen pechar, con el, e no seu sitio dúas de filas e titulares sen pechar.
+- `audit:browser` enteiro con Chrome 157: 254 medicións de 170 estados, secuencias e viaxes, 0 achados.
+- Ruta, a pantalla enteira cos paseos medidos, co código final: 1.998 viaxes novas, ben 1.960 na publicada e
+  1.988 agora (seis buses que saen no minuto da pregunta, catro dados por perdidos que aínda se collen);
+  «chegar antes das», 240, ben 192 e 240.
+
+### Queda
+
+- Se Cloudflare consegue ler ao Concello (NOTAS, Pendente 5); as nove rutas da API do servidor propio e o
+  paseo que gaña por menos de cinco minutos, do dono.
+- As notificacións nun teléfono de verdade, sen probar.

@@ -174,7 +174,7 @@ export const gl = {
     structuralSource: 'Escritos neste proxecto a partir de fontes municipais, non comprobados automaticamente coma os avisos de arriba. Poden quedar desactualizados.',
     newsTitle: 'Cortes e desvíos anunciados polo Concello',
     newsSubtitle:
-      'Notas de prensa municipais da última semana que anuncian un corte, un desvío ou unha restrición. Non son avisos do servizo: poden afectar aos buses, ou non.',
+      'Notas de prensa municipais da última semana que anuncian un corte, un desvío, unha restrición ou un cambio nos buses. Non son avisos do servizo: poden afectar aos buses, ou non.',
     sourceOperator: 'Aviso do operador',
     /** The operator prints no date on its notices; the only instant we have is our read. */
     seenAt: (d: string) => `Lido o ${d}`,
@@ -535,6 +535,8 @@ export const gl = {
     previousRun: 'Expedición anterior',
     nextRun: 'Expedición seguinte',
     savedSr: 'gardada',
+    /** Before the time a bus comes back by a pole its route passes twice. */
+    againAt: 'e de novo ás',
     busScheduledHere: 'Segundo o horario, o bus estaría chegando aquí',
     // "Segundo o horario" in the button too: it goes to a row the timetable marks, not to a bus anyone has seen.
     goToBus: 'Ir onde vai o bus, segundo o horario',

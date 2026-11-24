@@ -153,7 +153,7 @@ export const en: Dict = {
     structuralSource: 'Written into this project from municipal sources, not checked automatically the way the alerts above are. They can go out of date.',
     newsTitle: 'Closures and diversions announced by the council',
     newsSubtitle:
-      'Municipal press releases from the last week announcing a closure, a diversion or a restriction. Not service notices: they may reach the buses, or they may not.',
+      'Municipal press releases from the last week announcing a closure, a diversion, a restriction or a change to the buses. Not service notices: they may reach the buses, or they may not.',
     sourceOperator: 'Notice from the operator',
     seenAt: (d: string) => `Read on ${d}`,
     sourceConcello: 'Press release from the council',
@@ -482,6 +482,7 @@ export const en: Dict = {
     previousRun: 'Previous run',
     nextRun: 'Next run',
     savedSr: 'saved',
+    againAt: 'and again at',
     busScheduledHere: 'On the timetable, the bus would be reaching this stop now',
     goToBus: 'Go to where the bus would be, by the timetable',
     busCount: (n: number, of: number) => `${n} of ${of}`,

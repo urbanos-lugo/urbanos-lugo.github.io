@@ -97,9 +97,9 @@ for (const day of DAYS) {
     asked++;
     const { one, two } = soonest(lines, on, off, minute);
     const arrives = minute + head.slackMinutes + head.durationMinutes;
-    // A bus that saves neither five minutes nor five of walking is left out, and a walk leads when it wins by five.
+    // A bus that saves neither five minutes nor five of walking is left out, and a walk leads when it wins by five; the half is for the rounding.
     const better = Math.min(one, two);
-    if (arrives - better > 2 * WALK_MUST_BEAT_BUS_BY_MIN) fail(`an answer gets there well after ${better === one ? 'one bus does' : 'a change would'}`, `${where}: ${buses(head).map((seg) => seg.line?.number).join(' > ') || 'on foot'}, ${Math.round(arrives - better)} min later`);
+    if (arrives - better > WALK_MUST_BEAT_BUS_BY_MIN + 0.5) fail(`an answer gets there after ${better === one ? 'one bus does' : 'a change would'}`, `${where}: ${buses(head).map((seg) => seg.line?.number).join(' > ') || 'on foot'}, ${Math.round(arrives - better)} min later`);
 
     // «Chegar antes das»: no bus left to take would be in time setting off a quarter of an hour later.
     if (i % 11 !== 0 || minute < 10 * 60) continue;

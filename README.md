@@ -189,7 +189,9 @@ precisión e, nun teléfono con compás, cara a onde miras (no mapa da rede, aba
 camiño a pé, polas beirarrúas e calculado no dispositivo, chega ata a parada máis próxima.
 
 ### Mapa da rede
-MapLibre GL debuxa os tres mapas, sobre teselas vectoriais de OpenFreeMap. Nun
+MapLibre GL debuxa os tres mapas, sobre teselas vectoriais de OpenFreeMap, e non pasan duns
+10 km máis alá da última parada: fóra non hai nada desta rede, e as teselas doutro sitio botarían
+as de Lugo das 600 que se gardan para cando non hai rede. Nun
 dispositivo sen WebGL2 —ou cando o navegador perde o contexto WebGL e non o devolve en
 cinco segundos— no sitio do mapa hai un aviso que o di, e as listas din o mesmo. Os zooms
 deste texto son os de MapLibre. O **estilo é do repositorio**, derivado
@@ -615,8 +617,8 @@ vén cara a ela, e despois os de máis atrás; os que xa a pasaron, ao final. No
 posición medida: é a mesma marca que a lista xa levaba, calculada do cadro.
 
 Baixo o nome, que o operador forma coas dúas cabeceiras, vai **por onde pasa**: as catro
-zonas con máis paradas da liña, na orde do percorrido («Pasa por Campus USC · Sur / Ramón
-Ferreiro · Garabolos · O Ceao» na 1.1, que o Concello chama «Campus – Fingoi – O Ceao»).
+zonas con máis paradas da liña, na orde do percorrido («Pasa por Campus USC · A Milagrosa ·
+Garabolos · O Ceao» na 1.1, que o Concello chama «Campus – Fingoi – O Ceao»).
 Son as zonas do conxunto de datos, non nomes do Concello, e o buscador de liñas atopa
 tamén por elas: «Fingoi» non está no nome de ningunha das liñas que o serven. A ficha
 comparte o seu enderezo (`/linhas/1.4/`, [abaixo](#nun-aloxamento-estático-github-pages)) como
@@ -643,8 +645,11 @@ meu bus» pregúntase de pé nunha parada, e «canto custa o bono» lese unha ve
 
 **Avisos** (`/avisos`) trae os avisos de servizo do operador, e por separado —sen contar
 para o distintivo da navegación— os **cortes e desvíos que anuncia o Concello**: as notas
-de prensa da etiqueta *Tráfico* da última semana cuxo titular anuncia un corte, un desvío
-ou unha restrición. Unha nota de prensa municipal non é unha incidencia do servizo.
+de prensa da última semana, da lista enteira, cuxo titular anuncia un corte, un desvío ou unha
+restrición do tráfico, ou que din nunha frase que algo cambia nos buses urbanos. De 473 notas en
+seis meses (maio a novembro de 2026), o que lle valía a quen viaxa saíu con seis etiquetas, e
+pola de *Tráfico* só se vía unha; así entran tres, e ningunha de máis. Unha nota de prensa
+municipal non é unha incidencia do servizo.
 Ademais, os avisos estruturais escritos neste proxecto, cada un coa súa data de revisión.
 Revísanse cada mes contra as súas fontes: «Check the sources» falla o luns en que a última
 revisión pasa das cinco semanas, e a pantalla avisa a quen le cando pasa dos dous meses.
@@ -713,19 +718,20 @@ pero o primeiro bus da mañá xa para en Praza Bretaña. Fóra dos días do avis
 nin se risca.
 
 A consulta faise **desde o servidor** (o navegador non pode por CORS), contra buslugo.com e
-o feed de tráfico do Concello. Se non hai servidor —ou non responde— úsase a copia que
+a lista de novas do Concello. Se non hai servidor —ou non responde— úsase a copia que
 deixou a tarefa programada e amósase **cando se tomou**, en lugar de facela pasar por
 actual; se o que xa está na pantalla é máis novo ca a copia, queda iso, coa súa data. Coa app
 aberta pregúntase outra vez cando a última pregunta ten media hora, ou ao volver a ela: unha
 app instalada espértase e non se carga, e cunha pregunta por carga os avisos do luns seguían
 o mércores. Unha pregunta que falla repítese aos dous minutos, porque un teléfono esperta antes
 ca a súa rede. O tic de «todo normal» só vai sobre unha lectura de menos de doce horas, e non
-cando o servidor di que o operador non lle respondeu. O feed do Concello lese despois da páxina do operador e ten catro segundos. Cada
+cando o servidor di que o operador non lle respondeu. A lista do Concello lese despois da páxina do operador e ten catro segundos. Cada
 lectura deixa unha liña no rexistro do servidor, co que tardou e, se falla, o motivo.
-Desde Deno Deploy, onde estivo o worker ata novembro de 2026, o feed non conectaba, así
-que o worker só le buslugo.com; o feed léno a copia de cada hora, que desde GitHub conecta
-algunhas veces, e un `server.ts` propio. Na app publicada, logo, os avisos do Concello só
-aparecen cando se amosa esa copia.
+Desde Deno Deploy, onde estivo o worker ata novembro de 2026, o Concello non contestaba, así
+que o worker só le buslugo.com; a lista léna a copia de cada hora, que desde GitHub conecta
+unha vez de cada dez (4 de 40, do 13 ao 24 de novembro de 2026), e un `server.ts` propio. Por
+iso a copia garda unha semana o que unha lectura trouxo, e a app xúntalle ao que contesta o worker
+as novas do Concello da copia, cada unha coa súa data.
 
 **Tarifas** (`/tarifas`) leva os títulos de transporte tal e como os publica o operador,
 **cada un coa súa fonte enlazada**: billete ordinario, bono ordinario e bono social da
@@ -874,7 +880,7 @@ expedicións, as dos tres tipos de día, corra o día que corra). Medidas o 31 d
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/arquitectura-dark.png">
-  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: GitHub Pages serve a app e a copia de avisos ao navegador, onde o Service Worker a garda para usala sen rede; src/data/*.json alimenta o motor de horarios, co planificador nun worker, e este a SPA de React, que pide os trazados ao mapa de MapLibre, e o mapa as teselas a OpenFreeMap. A SPA pide /api ao worker de Cloudflare Workers, que le os avisos de buslugo.com e os minutos dun poste de info.urbanoslugo.com; autoaloxada, pídea a Express 5, co mesmo código, que le ademais o feed de tráfico do Concello.">
+  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: GitHub Pages serve a app e a copia de avisos ao navegador, onde o Service Worker a garda para usala sen rede; src/data/*.json alimenta o motor de horarios, co planificador nun worker, e este a SPA de React, que pide os trazados ao mapa de MapLibre, e o mapa as teselas a OpenFreeMap. A SPA pide /api ao worker de Cloudflare Workers, que le os avisos de buslugo.com e os minutos dun poste de info.urbanoslugo.com; autoaloxada, pídea a Express 5, co mesmo código, que le ademais a lista de novas do Concello.">
 </picture>
 
 O reparto que importa é ese: **todo o cálculo de horas ocorre no navegador**, sobre os
@@ -883,7 +889,7 @@ si mesmo, porque esas páxinas non serven CORS: os avisos de buslugo.com e os mi
 poste na páxina do operador detrás do seu QR. E segue funcionando sen ela. No sitio
 publicado en GitHub Pages, a API é un worker en Cloudflare Workers (`worker/index.ts`), e sen
 el os avisos saen da copia que a build toma cada hora. Quen a aloxe el mesmo ten Express
-(`server.ts`), co mesmo `src/services`, que ademais le o feed de tráfico do Concello. As
+(`server.ts`), co mesmo `src/services`, que ademais le a lista de novas do Concello. As
 outras rutas da [API REST](#api-rest) son de Express, para quen as queira usar; a app
 non chama ningunha.
 
@@ -1318,7 +1324,8 @@ Regras que evitan suxestións absurdas ou perigosas:
   o día. En «chegar antes das» é ao revés: todas chegan a tempo, e gaña a que sae máis tarde.
 - **Un bus máis ten que gañar algo.** Un bus no canto de andar, ou dous no canto dun, só se
   ofrece se chega cinco minutos antes ou aforra cinco de paseo: un cambio é outro billete e
-  outro bus que se pode perder.
+  outro bus que se pode perder. A que antes chega só lle deixa o sitio a esa máis sinxela, nunca a
+  outra que veña detrás dela. E entre dous postes no mesmo minuto impreso, o que menos fai andar.
 - **Nunca unha soa parada en bus.** Medido sobre 2.254 tramos ao mediodía, un tramo
   dunha parada son 1,2 min de viaxe tras 5,3 de espera, fronte a un paseo de 5 min entre
   eses dous postes: custa o que custa andar. Os nove que si lle gañaban ao paseo aforraban
@@ -1571,7 +1578,7 @@ lugar da páxina de erro de Express, limita o corpo das peticións a 32 KB e env
 `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`,
 `Cross-Origin-Opener-Policy` e `Cross-Origin-Resource-Policy`, e non `X-Powered-By`. Os
 nomes que se interpolan en HTML nos globos do mapa escápanse. As lecturas de buslugo.com,
-do feed do Concello e da páxina do poste non seguen redireccións. No navegador, o que
+da lista do Concello e da páxina do poste non seguen redireccións. No navegador, o que
 chega da API pásase pola mesma lectura ca a copia de cada hora: texto onde se espera
 texto, e ligazóns só a buslugo.com e concellodelugo.gal. Unha API comprometida pode
 equivocarse nos avisos, pero non romper a pantalla nin levar a outro sitio.
@@ -1908,7 +1915,7 @@ delas pon a Cache API —trinta minutos para os avisos, un se a lectura fallou, 
 para unha parada, tamén se a súa páxina non se puido ler—, que é a que mantén preto de unha por xanela as preguntas que chegan ao
 código, porque a caché en memoria dos módulos vive por illa. O teito que non depende de
 cantas illas haxa pono o propio código, en cada unha: buslugo.com como moito unha vez por
-minuto (o feed do Concello non o le), e a páxina do operador detrás do QR como moito 120
+minuto (a lista do Concello non a le), e a páxina do operador detrás do QR como moito 120
 veces por minuto en total, pregunte quen pregunte e pola parada que sexa.
 
 **Vai en Cloudflare Workers desde o 22 de novembro de 2026**, en
@@ -2071,7 +2078,7 @@ Iso di que unha viaxe se sostén, non que sexa boa. Ata novembro de 2026 unha re
 seis chegaba cinco minutos ou máis despois do que podía, e ningunha comprobación o vía porque
 ningunha tiña con que comparar fóra do planificador. `tools/stressRoutes.ts`, a terceira
 varrida de `check:deep`, busca a mellor viaxe á parte, só coas horas do cadro, e ningunha
-resposta pode chegar dez minutos despois ca ela nin facer saír un cuarto de hora antes.
+resposta pode chegar máis de cinco minutos despois ca ela nin facer saír un cuarto de hora antes.
 
 `pnpm test` pasa ese ficheiro en varias copias á vez, unha por núcleo ata oito
 (`TEST_JOBS` cambia o número). Cada copia percorre o ficheiro enteiro e só corre as
@@ -2360,9 +2367,11 @@ artefacto, para que unha regresión non dependa de que alguén se lembre.
   sen cadro horario, así que a aplicación non inventa unha liña: cando non hai servizo,
   o aviso remite á sección de avisos, que é onde aparecerían.
 - **Un poste polo que a liña pasa dúas veces** (a 3.1 e a 3.2 por Rda. Mercedes 53, a 6 por
-  Avda. Magoi 92): o seu taboleiro ten as dúas pasadas; Ruta e a ficha da liña, só a primeira.
-- **Zonas de parada**: asígnanse por proximidade e suavízanse por veciñanza. Aínda así,
-  arredor do 17% das paradas teñen algunha veciña a menos de 200 m nunha zona distinta,
+  Avda. Magoi 92): o taboleiro e a ficha da liña teñen as dúas pasadas; Ruta, só a primeira. De
+  15.192 viaxes desde ou ata as paradas a menos de 500 m deses postes, a segunda mellora 68.
+- **Zonas de parada**: asígnanse por proximidade a uns puntos (os dos barrios, onde os pon OSM ou onde
+  están o colexio, a rúa ou o poste que levan o nome) e suavízanse por veciñanza; a case 2 km
+  de todos, «Rural». Non son lindes: arredor do 22% das paradas teñen algunha veciña a menos de 200 m nunha zona distinta,
   o normal nas fronteiras entre barrios.
 - **Non hai historial de fiabilidade** («este bus non pasou»): necesita unha base de datos
   ([máis adiante](#historial-de-fiabilidade)).

@@ -1,6 +1,7 @@
 import type { BusStop, ServiceAlert } from '../types';
 import { BUS_LINES, BUS_STOPS, lineById } from '../data/transitData';
 import { buildRuns, callsAt, dayKind, isoDay, lineRunsOn } from './schedule';
+import { councilNews } from './operatorNotices';
 
 /**
  * What an operator notice changes, read out of its words so the app can use it and not
@@ -267,9 +268,10 @@ export function outlivedForecast(alert: ServiceAlert, now: Date): boolean {
 /**
  * Whether a notice's own days are all behind: one for «los días 3, 4, 5, 9, 10, 11 y 12 de
  * octubre» says nothing of the 13th, however long the operator's page keeps it. A notice
- * that names no day never ends by this.
+ * that names no day never ends by this; the council's news is old in a week besides.
  */
 export function noticeOver(alert: ServiceAlert, now: Date): boolean {
+  if (alert.source === 'concello' && !councilNews([alert], now.getTime()).length) return true;
   const days = daysIn(`${alert.description} ${alert.title}`, now);
   const today = serviceDay(now);
   return days.length > 0 && days.every((day) => day < today);

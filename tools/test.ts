@@ -60,7 +60,7 @@ import { noticesReviewDue } from './checkNoticesReviewed';
 import { refusedToEveryone } from './checkParsersUnchanged';
 import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
-import { POLE_SEEN_AT_OSM } from './lib';
+import { POLE_SEEN_AT_OSM, councilRow } from './lib';
 import { byRank, fareFor, planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
 import { answerJob, rejoin } from '../src/utils/plannerJob';
 import { estimateWalk, getNearbyStops, rankLandmarks, rankSites, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
@@ -1821,8 +1821,7 @@ ok('what the API sends is read, not trusted: text as text, and links only to the
   assert(notice.sections?.length === 1 && notice.sections[0].heading === '' && notice.sections[0].paragraphs.length === 0, 'a hostile section came through');
   assert(readSnapshot('nonsense').status === 'unreachable' && readSnapshot(null).alerts.length === 0, 'an answer that is not an object was not narrowed');
 
-  const day = new Date().toUTCString();
-  const feed = (link: string) => `<rss><channel><item><title>Corte de tráfico na rúa</title><pubDate>${day}</pubDate><link>${link}</link></item></channel></rss>`;
+  const feed = (link: string) => councilRow('Corte de tráfico na rúa', new Date(), link);
   assert(extractConcelloNotices(feed('https://concellodelugo.gal/es/noticia'))[0]?.link === 'https://concellodelugo.gal/es/noticia', 'the council feed lost its own link');
   assert(extractConcelloNotices(feed('https://example.net/'))[0]?.link === undefined, 'the council feed relayed a link to another site');
 
@@ -2520,6 +2519,16 @@ ok('a line that goes there is offered whole, and a bus more only where it earns 
   // was, at half past eight, was a wait of four hours, and was refused.
   const rural = planTrips('Estda. Nova Santiago (Monte Segade)', 'Pías 11', { now: new Date(2026, 7, 19, 8, 13) })[0];
   assert(rural.arrivalTime === '13:33' && rural.totalWaitMinutes < 30, `to Pías 11 from 08:13: ${rural.departureTime} -> ${rural.arrivalTime}, waiting ${rural.totalWaitMinutes} min`);
+  // Two poles in one printed minute are one minute to the reader, and the walk is not: the 1.3 to Ramón
+  // Ferreiro and nineteen minutes on foot was taken over riding on to Avda. Madrid and seven, there at the same time.
+  const teixo = planTrips('Avda. Paulo Fabio Máximo (desp. Inf. Elena)', 'Rúa do Teixo', { now: new Date(2026, 10, 24, 17, 32) })[0];
+  assert(teixo.arrivalTime === '18:12' && teixo.walkFromEndMeters < 700, `to Rúa do Teixo: there at ${teixo.arrivalTime}, with ${teixo.walkFromEndMeters} m to walk`);
+  // Left out for a simpler trip four minutes later, a change made way for one to the same minute, walking 33.
+  const tribunal = planTrips('Método Maravilla', 'Tribunal legal abogados', { now: new Date(2026, 11, 8, 12, 14) })[0];
+  assert(tribunal.arrivalTime === '12:57' && tribunal.durationMinutes < 40, `on a holiday at 12:14: ${tribunal.departureTime} -> ${tribunal.arrivalTime}`);
+  // Of the one pair of poles that was kept for a line the bus had gone by, and a pole further on still caught it.
+  const humanidades = planTrips('Miliario do Camiño de Santiago', 'Facultad Humanidades', { now: new Date(2026, 10, 29, 16, 4) })[0];
+  assert(humanidades.arrivalTime <= '16:39', `to Humanidades on a Sunday at 16:04: there at ${humanidades.arrivalTime}`);
   // Nothing on the list but what gets there five minutes sooner than a simpler trip, or spares five of walking.
   const walked = (plan: RoutePlanResult) => plan.segments.reduce((sum, seg) => sum + (seg.type === 'walk' ? seg.durationMinutes : 0), 0);
   const reached = (plan: RoutePlanResult) => plan.slackMinutes + plan.durationMinutes;
@@ -3400,17 +3409,15 @@ ok('a notice the operator writes out line by line comes out line by line', () =>
   assert.deepStrictEqual(elsewhere.map((a) => [a.title, (a.sections ?? []).length]), [['Cambios en las líneas por las fiestas', 0], ['INFORMACIÓN ESPECIAL', 3]]);
 });
 
-ok("the city's traffic feed is read for closures and diversions, and for nothing else", () => {
-  // Sixty days of three council feeds were audited: only the traffic tag carried anything a
-  // passenger could use, and it would have stayed on screen for two months. So: that tag,
-  // a headline announcing a closure, diversion or restriction, and a week.
-  const recent = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toUTCString();
-  const lastMonth = new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toUTCString();
-  const ancient = new Date(Date.now() - 200 * 24 * 60 * 60 * 1000).toUTCString();
-  const feed = (items: string) => `<rss><channel>${items}</channel></rss>`;
-  const item = (title: string, when: string, description = 'corpo da nova') =>
-    `<item><title>${title}</title><description>${description}</description>` +
-    `<pubDate>${when}</pubDate><link>https://concellodelugo.gal/x</link></item>`;
+ok("the city's news is read for closures, diversions and the city's buses, and for nothing else", () => {
+  // Sixty days of three council feeds were audited, then six months of all its news: what a
+  // passenger could use went out under six tags, so its whole list is read, for a headline
+  // announcing a closure or diversion or a sentence saying the city's buses change, and a week.
+  const recent = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+  const lastMonth = new Date(Date.now() - 20 * 24 * 60 * 60 * 1000);
+  const ancient = new Date(Date.now() - 200 * 24 * 60 * 60 * 1000);
+  const feed = (items: string) => `<div class="view-content">${items}</div>`;
+  const item = (title: string, when: Date, description = 'corpo da nova') => councilRow(title, when, '/es/noticias/x', description);
 
   const wanted = extractConcelloNotices(feed(item('El Ayuntamiento informa de los cortes de tráfico para este sábado con motivo de la carrera', recent)));
   assert(wanted.length === 1, `a headline announcing closures yielded ${wanted.length} notices, expected 1`);
@@ -3436,8 +3443,24 @@ ok("the city's traffic feed is read for closures and diversions, and for nothing
   const reopening = extractConcelloNotices(feed(item('El Ayuntamiento exige a Adif la apertura inmediata al tráfico de la calle Conde Fontao', recent)));
   assert(reopening.length === 0, `a demand about a street yielded ${reopening.length} notices`);
 
+  // A water main's repair, under «Water», sent nine lines round another way: the headline says nothing of it.
+  const lead = 'La intervención principal tendrá lugar el miércoles. Los trabajos también implicarán cambios en la circulación y en el recorrido de los autobuses urbanos, con dos paradas provisionales.';
+  const detour = extractConcelloNotices(feed(item('El Ayuntamiento ejecutará la próxima semana la reparación de la fuga de agua en la avenida da Coruña', recent, `<p>${lead}</p>`)));
+  assert(detour.length === 1 && detour[0].description.startsWith('Los trabajos también implicarán'), `the buses' detour: ${JSON.stringify(detour.map((n) => n.description))}`);
+  assert(detour[0].date.slice(0, 10) === recent.toISOString().slice(0, 10) && detour[0].link === 'https://concellodelugo.gal/es/noticias/x', `its day and link: ${detour[0].date}, ${detour[0].link}`);
+  // And what only looks like it, all of it published in those six months.
+  for (const [title, lead] of [
+    ['ACTUACIÓN PREVIA AL CORTE DE AGUA EN LA AVENIDA DA CORUÑA', ''],
+    ['El Ayuntamiento pone en marcha un plan de renovación de marquesinas de autobuses', 'El objetivo es mejorar las condiciones en las que la ciudadanía espera por el autobús urbano.'],
+    ['El Ayuntamiento trabaja en un acuerdo de mejoras para modernizar el transporte urbano', 'Las medidas incluyen una app con información en tiempo real y el pago con tarjeta.'],
+    ['El Ayuntamiento avanza en la reordenación del tráfico y de la movilidad en el entorno de Ramón Ferreiro', 'La actuación forma parte de la planificación municipal.'],
+    ['El Caudal Fest cierra con cerca de 40.000 asistentes', 'Sin incidencias destacables.'],
+  ]) assert(extractConcelloNotices(feed(item(title, recent, lead))).length === 0, `"${title}" is read as a change to the streets or the buses`);
+
   // A closure is news for about a week. The race closures published on a Thursday were
   // still on screen the Tuesday after the race, with fifty-odd days left to run.
+  const week = (days: number) => noticeOver({ ...wanted[0], date: new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString() }, new Date());
+  assert(!week(6) && week(8), 'a copy of the notices keeps the council’s news for more than a week, or less');
   const stale = extractConcelloNotices(feed(item('Cortes de tráfico por la carrera del sábado', lastMonth)));
   assert(stale.length === 0, 'a closure from three weeks ago is history, not news');
   const older = extractConcelloNotices(feed(item('Cortes de tráfico por la carrera del sábado', ancient)));
@@ -3764,7 +3787,8 @@ ok('hostile markup at the read cap parses in milliseconds, not minutes', () => {
   // for ratios of fractions of a millisecond; the old scans take 0.4 to 0.7 s at these sizes.
   const cases: [string, number, (kb: number) => string, (html: string) => unknown][] = [
     ['a <ul whose tag never ends', 64, (kb) => '<ul '.repeat((kb * 1024) / 4), extractAlertsFromHtml],
-    ['an item of unclosed <title>s', 128, (kb) => `<item>${'<title>'.repeat((kb * 1024) / 7)}</item>`, extractConcelloNotices],
+    ['a list of unclosed rows', MAX_BODY_BYTES / 1024, (kb) => '<div class="views-row texto-titular"><a href="'.repeat((kb * 1024) / 46), extractConcelloNotices],
+    ['a row of unclosed headings', MAX_BODY_BYTES / 1024, (kb) => `<div class="views-row ${'texto-titular"><a href="'.repeat((kb * 1024) / 24)}`, extractConcelloNotices],
     ['unclosed <script openings', 128, (kb) => '<script '.repeat((kb * 1024) / 8), plainText],
     ['unclosed departure blocks', MAX_BODY_BYTES / 1024, (kb) => '<div class="sae-content-info">'.repeat((kb * 1024) / 30), parseOperatorTimes],
     // The walker that reads a notice off the home page, linear from the start; this keeps it so.
@@ -4325,7 +4349,7 @@ ok('a street can be found by any of the names people give it', () => {
 
   // A neighbourhood is how people say where they are and the stop names do not carry it;
   // the zone scores below every match on the name itself.
-  for (const [area, least] of [['Piringalla', 20], ['O Ceao', 30], ['Campus USC', 20]] as const) {
+  for (const [area, least] of [['Piringalla', 8], ['Albeiros', 10], ['O Ceao', 30], ['Campus USC', 20], ['Magoi', 10], ['Casco Histórico', 6]] as const) {
     const found = BUS_STOPS.filter((s) => calculateRelevanceScore(s.name, s.code, s.id, area, s.zone) > 0);
     assert(found.length >= least, `"${area}" finds ${found.length} stops, expected at least ${least}`);
   }
@@ -5265,6 +5289,31 @@ ok('an area is where its name says, on the stops and in the search for a line', 
     if (metres < 300) assert(stop.zone === 'Cemiterio', `${stop.name}, ${metres} m from the cemetery, is in ${stop.zone}`);
     if (stop.name.startsWith('Czda. Gándaras')) assert(stop.zone !== 'A Piringalla', `${stop.name} is in ${stop.zone}`);
   }
+  // Where others say each is: OSM's neighbourhoods, and schools, streets and industrial estates of the name. The poles
+  // there are in it: «A Cheda», «Acea de Olga», «Casás / Abella» and «A Tolda» named poles one to two kilometres off.
+  const places: [zone: string, lat: number, lng: number][] = [
+    ['A Cheda', 43.00604, -7.56851], ['Acea de Olga', 43.002, -7.55929], ['Casás / Abella', 43.0169, -7.57051], ['Casás / Abella', 43.0139, -7.5742],
+    ['A Milagrosa', 43.01955, -7.56498], ['Albeiros', 43.0287, -7.563], ['As Gándaras', 43.02707, -7.54995], ['Fingoi', 42.99914, -7.5525],
+    ['Garabolos', 43.0294, -7.5705], ['Montirón', 43.00021, -7.54245], ['A Tolda', 42.99074, -7.53745], ['A Ponte', 43.00082, -7.56424],
+    ['O Carme', 43.0102, -7.5651], ['Sagrado Corazón', 43.0188, -7.5499], ['Fontiñas', 43.0047, -7.5472], ['O Ceao', 43.0467, -7.5677], ['Campus USC', 42.9926, -7.5464],
+  ];
+  for (const [zone, lat, lng] of places) {
+    const [nearest] = [...BUS_STOPS].sort((a, b) => getDistanceMeters(lat, lng, a.lat, a.lng) - getDistanceMeters(lat, lng, b.lat, b.lng));
+    assert(nearest.zone === zone, `${nearest.name}, the pole nearest ${zone}, is in ${nearest.zone}`);
+  }
+  // And a pole the operator names after an area, or for what stands in it.
+  const named: [RegExp, string][] = [
+    [/\(A Cheda\)/, 'A Cheda'], [/^A Tolda \(/, 'A Tolda'], [/Pq\. Milagrosa|P\. Milagrosa/, 'A Milagrosa'], [/Colexio Casás/, 'Casás / Abella'],
+    [/^Rda\. Muralla (?!163)/, 'Centro / Muralla'], [/^Fonte dos Ranchos/, 'Fonte dos Ranchos'], [/^Fontiñas (?!41$|\(esq)/, 'Fontiñas'], [/Gándaras \(|Polígono Gándaras/, 'As Gándaras'],
+    [/Facultade? |Fac\. Ciencias|Empresariales/, 'Campus USC'], [/Avda\. Garabolos/, 'Garabolos'], [/^HULA/, 'HULA'],
+  ];
+  for (const [words, zone] of named) {
+    const poles = BUS_STOPS.filter((stop) => words.test(stop.name) && !/^Czda\./.test(stop.name));
+    assert(poles.length, `no pole is named after ${zone}`);
+    for (const stop of poles) assert(stop.zone === zone, `${stop.name} is in ${stop.zone}`);
+  }
+  // A hamlet out on the road is nobody's neighbourhood.
+  for (const hamlet of ['Recimil', 'San Mamede', 'Conturiz (Iglesia)', 'A Brea 33']) assert(BUS_STOPS.find((stop) => stop.name === hamlet)!.zone === 'Rural', `${hamlet} is in the city`);
   const lines = BUS_LINES.filter((line) => lineZones(line).some(({ zone }) => matchesQuery(zone, 'cemiterio'))).map((line) => line.id);
   assert.deepEqual(lines, ['10', '11-Calde'], 'the lines an area’s name finds');
 });

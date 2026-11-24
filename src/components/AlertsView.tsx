@@ -29,7 +29,8 @@ const NOTICE_GRID = 'grid grid-cols-1 md:grid-cols-3 gap-4';
 function formatInstant(value: string | undefined, locale: string): string {
   if (!value) return '—';
   const at = new Date(value);
-  return Number.isNaN(at.getTime()) ? value : at.toLocaleString(locale);
+  if (Number.isNaN(at.getTime())) return value;
+  return value.length === 10 ? at.toLocaleDateString(locale, { timeZone: 'UTC' }) : at.toLocaleString(locale);
 }
 
 
@@ -216,9 +217,9 @@ export function AlertsView({ alerts, changes = null, favoriteStopIds = [], onSel
 
         {liveAlerts.length > 0 ? (
           <div className={NOTICE_GRID}>
-            {/* The council's feed dates its items; the operator's bell does not, so its `date` is the moment this app read the page, and says so. */}
+            {/* The operator's bell dates nothing, so its `date` is the moment this app read the page, and says so. */}
             {liveAlerts.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} when={alert.source === 'concello' ? formatInstant(alert.date, locale) : t.fares.seenAt(formatInstant(alert.date, locale))} source={alert.source === 'concello' ? t.fares.sourceConcello : t.fares.sourceOperator} />
+              <AlertCard key={alert.id} alert={alert} when={t.fares.seenAt(formatInstant(alert.date, locale))} source={t.fares.sourceOperator} />
             ))}
           </div>
         ) : (
@@ -279,7 +280,8 @@ export function AlertsView({ alerts, changes = null, favoriteStopIds = [], onSel
           <ul className="divide-y divide-line rounded-card border border-edge bg-surface/quiet">
             {councilNews.map((item) => (
               <li key={item.id} className="p-4 sm:p-5">
-                <span className="caps-label text-ink-3">{formatInstant(item.date, locale)}</span>
+                {/* The day: the council's list gives no hour. */}
+                <span className="caps-label text-ink-3">{formatInstant(item.date.slice(0, 10), locale)}</span>
                 <NoticeBody title={item.title} description={item.description} link={item.link} lang={NOTICE_LANG} />
               </li>
             ))}

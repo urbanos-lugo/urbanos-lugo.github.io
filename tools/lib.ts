@@ -7,6 +7,17 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /** The repository root, whatever directory the script was started from. */
+/** One row of the council's list of news, as its page writes it. */
+export function councilRow(title: string, when: Date, link: string, lead = ''): string {
+  const day = when.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  return (
+    `<div class="views-row views-row-1"><div class="views-field views-field-field-fecha"><span class="date-display-single">${day}</span></div>` +
+    `<div class="views-field views-field-title"><span class="field-content texto-titular"><a href="${link}">${title}</a></span></div>` +
+    `<div class="views-field views-field-field-entradilla"><div class="field-content">${lead}</div></div>` +
+    `<div class="views-field views-field-term-node-tid"><span class="field-content"><a href="/es/general-temas/agua">Agua</a></span></div></div>`
+  );
+}
+
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 /** A path under the root. */
 export const at = (...parts: string[]): string => join(ROOT, ...parts);

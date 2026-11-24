@@ -32,34 +32,61 @@ const KNOWN_COLORS: Record<string, string> = {
 };
 const FALLBACK_COLORS = ['#334155', '#b45309', '#047857', '#6d28d9', '#b91c1c', '#0f766e'];
 
-/** Anchors used only to give each stop a coarse, filterable zone label. */
+/**
+ * Anchors used only to give each stop a coarse, filterable zone label: a name is the zone of the
+ * stops nearest it. A neighbourhood's stands where somebody else says it is: OSM, a school or a
+ * street of that name, or a pole the operator names after it. Until November 2026 they were
+ * guessed: «A Cheda» was 1 km from Rúa Río Pambre (A Cheda), «Acea de Olga» 1.7 km from OSM's,
+ * and «Casás / Abella» named A Milagrosa's park.
+ */
 const ZONES: { name: string; lat: number; lng: number }[] = [
   { name: 'Centro / Muralla', lat: 43.0121, lng: -7.5559 },
+  { name: 'Centro / Muralla', lat: 43.0122, lng: -7.561 }, // the ring's west side, which was Fonte dos Ranchos's
   { name: 'Casco Histórico', lat: 43.0098, lng: -7.5562 },
-  { name: 'Estación', lat: 43.0185, lng: -7.5512 },
+  { name: 'Estación', lat: 43.0151, lng: -7.55216 },
+  { name: 'Sagrado Corazón', lat: 43.0173, lng: -7.5502 },
   { name: 'A Milagrosa', lat: 43.0205, lng: -7.5606 },
+  { name: 'A Milagrosa', lat: 43.0195, lng: -7.565 },
+  { name: 'A Milagrosa', lat: 43.0223, lng: -7.5633 }, // its park
+  { name: 'Albeiros', lat: 43.0287, lng: -7.563 },
+  { name: 'A Piringalla', lat: 43.0237, lng: -7.5704 },
   { name: 'Garabolos', lat: 43.0288, lng: -7.5721 },
   { name: 'O Ceao', lat: 43.0385, lng: -7.5671 },
+  { name: 'O Ceao', lat: 43.0467, lng: -7.5677 },
   { name: 'As Gándaras', lat: 43.0395, lng: -7.546 },
-  // The neighbourhood, as OSM places it, south of its industrial estate: with the estate alone, Czda. Gándaras was A Piringalla's.
-  { name: 'As Gándaras', lat: 43.02707, lng: -7.54995 },
+  { name: 'As Gándaras', lat: 43.034, lng: -7.5551 },
+  { name: 'As Gándaras', lat: 43.0271, lng: -7.55 }, // the neighbourhood, south of its industrial estate
+  { name: 'As Gándaras', lat: 43.0242, lng: -7.5527 },
   { name: 'HULA', lat: 43.0195, lng: -7.5332 },
   { name: 'Fontiñas', lat: 43.0065, lng: -7.5428 },
-  { name: 'A Tolda / Montirón', lat: 43.0018, lng: -7.5401 },
-  { name: 'Campus USC', lat: 42.9935, lng: -7.5538 },
+  { name: 'Fontiñas', lat: 43.0047, lng: -7.5472 },
+  { name: 'Fontiñas', lat: 43.0076, lng: -7.5487 },
+  { name: 'Montirón', lat: 43.0002, lng: -7.5425 },
+  { name: 'A Tolda', lat: 42.9907, lng: -7.5374 },
+  { name: 'A Tolda', lat: 42.9884, lng: -7.5351 },
+  { name: 'As Pedreiras', lat: 42.9934, lng: -7.5411 },
+  { name: 'Campus USC', lat: 42.9926, lng: -7.5464 },
+  { name: 'Campus USC', lat: 42.9914, lng: -7.544 },
+  { name: 'Campus USC', lat: 42.9937, lng: -7.5528 }, // along Alfonso X, as far as the council calls it that on the 1.1
+  { name: 'Magoi', lat: 42.9968, lng: -7.557 },
+  { name: 'Magoi', lat: 42.9945, lng: -7.5577 },
   { name: 'Fingoi', lat: 42.9982, lng: -7.5492 },
-  { name: 'Acea de Olga', lat: 42.9885, lng: -7.5495 },
+  { name: 'Fingoi', lat: 42.9991, lng: -7.5525 },
+  { name: 'Acea de Olga', lat: 43.002, lng: -7.5593 },
   { name: 'Sur / Ramón Ferreiro', lat: 43.0048, lng: -7.5528 },
+  { name: 'O Carme', lat: 43.0102, lng: -7.5651 },
   { name: 'Oeste / Américas', lat: 43.0118, lng: -7.5696 },
+  { name: 'A Cheda', lat: 43.006, lng: -7.5685 },
   { name: 'Fonte dos Ranchos', lat: 43.0135, lng: -7.5672 },
-  { name: 'A Piringalla', lat: 43.0265, lng: -7.5582 },
-  { name: 'A Piringalla', lat: 43.02375, lng: -7.57041 }, // where OSM places it, across Avda. Coruña
-  { name: 'Casás / Abella', lat: 43.0218, lng: -7.5684 },
-  { name: 'A Ponte', lat: 43.0012, lng: -7.5662 },
-  { name: 'A Cheda', lat: 42.9975, lng: -7.5741 },
+  { name: 'Fonte dos Ranchos', lat: 43.0132, lng: -7.5645 },
+  { name: 'Casás / Abella', lat: 43.014, lng: -7.5742 },
+  { name: 'Casás / Abella', lat: 43.0169, lng: -7.5705 },
+  { name: 'A Ponte', lat: 43.0008, lng: -7.5642 },
+  { name: 'A Ponte', lat: 43.0023, lng: -7.5637 },
+  { name: 'A Ponte', lat: 43.0052, lng: -7.5644 },
+  { name: 'A Ponte', lat: 42.9975, lng: -7.5741 }, // San Lázaro, across the river
   // San Froilán's, by the Friol road: at 43.0325, -7.5812 it named 16 stops of the N-VI, the nearest 5.4 km from it.
   { name: 'Cemiterio', lat: 42.9855, lng: -7.5807 },
-  { name: 'Rural', lat: 42.95, lng: -7.5 },
 ];
 
 function zoneFor(lat: number, lng: number): string {
@@ -72,7 +99,7 @@ function zoneFor(lat: number, lng: number): string {
       best = z;
     }
   }
-  return bestD > 3000 ? 'Rural' : best.name; // far from every anchor is genuinely out of town
+  return bestD > 1970 ? 'Rural' : best.name; // past A Brea, the last pole O Ceao has, and short of Conturiz: out of town
 }
 
 /** Metres along a polyline between two of its vertices. */

@@ -111,7 +111,7 @@ one third party that was giving neither the map nor the data.
 GitHub Pages runs no code, so the API is a separate small service on Cloudflare Workers
 (`worker/index.ts`; on Deno Deploy until 22 November 2026) that reads buslugo.com, and the operator's stop page behind the QR, on
 the browser's behalf, because those sites refuse a browser directly. (It read the council's
-traffic feed too until October 2026; from there the feed never answered.) It is sent a stop
+traffic feed too until October 2026; from there it never answered.) It is sent a stop
 code and nothing else — no identifier, no position. When it does not answer, or a site is
 built without one, the notices come from a copy the hourly build takes and publishes with
 the site, and the app says on screen when that copy was taken.
@@ -146,7 +146,7 @@ sweeps; nothing is written to disk, and restarting the process forgets it. Nothi
 about a request is recorded — there is no access log in this project. A request that fails
 with an error inside the server writes its method and path, never its query, to the
 server's error output, so the fault can be found; a planned trip's query is what you typed.
-When the server reads the council's traffic feed, it writes one line saying whether the feed
+When the server reads the council's list of news, it writes one line saying whether it
 answered and how long it took. That line carries nothing of the request that caused it.
 
 Whoever hosts it may of course be keeping their own logs. GitHub Pages does, and so does

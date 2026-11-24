@@ -42,6 +42,13 @@ const uiStrings = (t: Dict, region: string): Record<string, string> => ({
 });
 
 /**
+ * As far as a map goes: some 10 km past the last stop each way. There is nothing of this network beyond, a
+ * reader who drags out of it has the way back to find, and the tiles of elsewhere push Lugo's out of the
+ * 600 files kept for when there is no network.
+ */
+const AROUND_LUGO: [[number, number], [number, number]] = [[-7.72, 42.86], [-7.365, 43.16]];
+
+/**
  * One MapLibre map on a container, drawn from coordinates so it can turn: the style for the
  * palette, the zoom bar and, on the maps that turn, the compass, which shows once the map is
  * turned and puts north back; the accessible chrome; and the map the callers draw their
@@ -67,6 +74,7 @@ export function useMapLibre(containerRef: RefObject<HTMLDivElement | null>, { ce
       // Every zoom in the app is MapLibre's: its world is 512 px across at zoom 0 where Leaflet's
       // was 256, so each is one less than the Leaflet zoom that showed the same streets.
       maxZoom: 18,
+      maxBounds: AROUND_LUGO,
       // Turned, never tilted: a tilted map of a small city reads worse, and two fingers moving apart tilted it by accident.
       maxPitch: 0,
       pitchWithRotate: false,

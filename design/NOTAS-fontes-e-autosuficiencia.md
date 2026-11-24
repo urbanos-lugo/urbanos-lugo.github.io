@@ -304,10 +304,10 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
 4. **As notificacións, nun teléfono de verdade**, cousa do dono: desde a rolda 92 amósaas o
    *service worker* onde a páxina non pode, e só se probou no código
    ([`PROBA-no-telefono.md`](../docs/PROBA-no-telefono.md), apartado 3).
-5. **Tres zonas lonxe de onde OSM pon o barrio do mesmo nome** (rolda 92): «Acea de Olga»
-   (1,7 km), «O Ceao» (1,6) e «A Cheda» (1,1). Hai que saber que lle chama así a xente.
-6. **A segunda pasada polo mesmo poste, en Ruta e na ficha da liña** (3.1, 3.2 e 6): só a ten o
-   taboleiro (`callsAt`).
+5. **Se Cloudflare consegue ler ao Concello** (rolda 94): desde Deno non podía e desde GitHub pode unha
+   vez de cada dez. Só se sabe despregando; se pode, que o worker lea a lista por detrás da resposta.
+6. **A app e os datos que o Concello anuncia** (nota do 16 de outubro de 2026): un SAE novo, unha app con
+   onde van os buses e a rede en Google Maps, que pide un GTFS. Se sae, cambia «ningún dato en directo».
 
 ## Feito dende que se escribiu isto
 
@@ -401,8 +401,9 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
   acababa de debuxar, e cada un pedía repintar o lenzo. Agora segue só á selección, e o
   *runner* mide 403 e 860 ms, fronte a 908–1.242 co mesmo Chrome e sen o arranxo.
 
-- **O RSS do Concello** lese en cada sincronización e as notas de prensa amósanse á parte
-  dos avisos do servizo, sen contar para o distintivo. Dende o 15 de setembro de 2026, só a
+- **As notas de prensa do Concello** lense en cada sincronización e amósanse á parte
+  dos avisos do servizo, sen contar para o distintivo. Desde o 24 de novembro de 2026, da lista
+  enteira e non da etiqueta Tráfico (rolda 94). Antes, no RSS: Dende o 15 de setembro de 2026, só a
   etiqueta *Tráfico*, só a última semana, e só os titulares que anuncian un corte, un
   desvío ou unha restrición: auditados sesenta días de tres etiquetas, o que entraba era un
   récord de viaxeiros, unha declaración política e os cortes dunha carreira que seguirían

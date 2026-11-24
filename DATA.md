@@ -100,6 +100,10 @@ where no surveyed relation exists.
   Derivative Databases, ODbL. A place no source has is not found: it is added in OSM, and
   arrives with the next import.
 
+- **And to where a stop's zone is named from.** The anchors of `ZONES` in `tools/buildDataset.ts`
+  stand where OSM has the neighbourhood, the campus or the industrial estate of that name; they
+  were guessed until November 2026, and some stood one to two kilometres off.
+
 ## Places — AllThePlaces, SERGAS and the Xunta's school register
 
 `tools/importPlaces.ts` reads three more sources beside OSM, one request after another and
@@ -251,8 +255,8 @@ are not the same claim:
   terms as the timetables above: the items of the bell in its navigation and, when one
   links to the home page and that page writes the notice out line by line, its headings
   and paragraphs, word for word. The same page, read once; nothing more is requested.
-- The traffic feed (RSS) of the **Concello de Lugo**, read for closures and diversions
-  from the last week. These are municipal press releases, not incidents on the network, so
+- The list of news of the **Concello de Lugo** (<https://concellodelugo.gal/es/actualidad>),
+  read for closures, diversions and changes to the city's buses from the last week. These are municipal press releases, not incidents on the network, so
   they never count towards the navigation badge.
 
 Both are read **from the server**, never from the browser: neither sends CORS headers.
@@ -260,10 +264,11 @@ Each read is capped at 512 KB and given a deadline. Pages runs no server, so the
 site asks the worker, on Cloudflare Workers since 22 November 2026, and when that does not
 answer it shows the snapshot the hourly build takes and publishes with the site, and says
 when it was taken. The worker reads the operator's page only: from Deno Deploy, where it
-ran until then, the council's feed
+ran until then, the council's site
 never connected (seven logged reads on 6 and 13 October 2026, all timed out at four
-seconds). The scheduled snapshot and a self-hosted `server.ts` still read it, so on the
-published app the council's notices appear only when the screen falls back to that snapshot.
+seconds). The scheduled snapshot and a self-hosted `server.ts` read it; the snapshot keeps for
+a week what one read brought, and the published app adds the council's news in it to the
+worker's answer.
 
 ## The minutes behind the QR sticker — info.urbanoslugo.com
 

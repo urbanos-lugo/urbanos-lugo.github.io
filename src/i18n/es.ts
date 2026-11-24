@@ -142,7 +142,7 @@ export const es: Dict = {
     structuralSource: 'Escritos en este proyecto a partir de fuentes municipales, no comprobados automáticamente como los avisos de arriba. Pueden quedar desactualizados.',
     newsTitle: 'Cortes y desvíos anunciados por el Concello',
     newsSubtitle:
-      'Notas de prensa municipales de la última semana que anuncian un corte, un desvío o una restricción. No son avisos del servicio: pueden afectar a los buses, o no.',
+      'Notas de prensa municipales de la última semana que anuncian un corte, un desvío, una restricción o un cambio en los buses. No son avisos del servicio: pueden afectar a los buses, o no.',
     sourceOperator: 'Aviso del operador',
     seenAt: (d: string) => `Leído el ${d}`,
     sourceConcello: 'Nota de prensa del Concello',
@@ -471,6 +471,7 @@ export const es: Dict = {
     previousRun: 'Expedición anterior',
     nextRun: 'Expedición siguiente',
     savedSr: 'guardada',
+    againAt: 'y otra vez a las',
     busScheduledHere: 'Según el horario, el bus estaría llegando aquí',
     goToBus: 'Ir a donde va el bus, según el horario',
     busCount: (n: number, of: number) => `${n} de ${of}`,

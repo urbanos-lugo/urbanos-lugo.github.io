@@ -8,7 +8,7 @@ import { atStop, changesNow, runsUntil, type NoticeChanges } from '../utils/noti
 import { BUS_LINES, BUS_STOPS, poleCode, stopById } from '../data/transitData';
 import { busStopsInOrder, getScheduledBuses } from '../utils/vehicles';
 import { directionBoardingAt } from '../utils/arrivals';
-import { buildRuns, dayKind, formatMinutes, isHoliday, minutesNow, nextRunAt, scheduledDuration, type ScheduledRun } from '../utils/schedule';
+import { buildRuns, callsAt, dayKind, formatMinutes, isHoliday, minutesNow, nextRunAt, scheduledDuration, type ScheduledRun } from '../utils/schedule';
 import { daysLabel, directionLabel, frequencyLabel } from '../utils/serviceLabels';
 import { MAX_QUERY_LENGTH, matchesQuery } from '../utils/searchUtils';
 import { BackButton, ChoiceChip, IconButton, Notice, NoticeDisclosure, SaveStar, Segmented, asTyped } from './ui/controls';
@@ -541,6 +541,8 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
                 // The stop the page was opened from, so a route of up to 47 stops is read from where the reader is.
                 const isFrom = stop.id === fromStopId;
                 const passingMinutes = shownRun?.minutesByStopIndex[idx];
+                // A pole the route comes back by is listed once, with both its times, as its board has them.
+                const again = shownRun && callsAt(direction, stop.id, shownRun).find((call) => call.again);
                 // In minutes from now only on today's timetable: on another day's, the time alone.
                 const relativeMinutes = passingMinutes === undefined || !isToday ? null : Math.round(passingMinutes - minutesNow());
                 return (
@@ -628,6 +630,13 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
                             {passingMinutes !== undefined && derived(shownRun, idx) && <span className="sr-only">, {t.lines.estimatedSr}</span>}
                           </span>
                         </div>
+                        {again && (
+                          <span className="text-label text-ink-3">
+                            {t.lines.againAt} <Approx on title={t.lines.estimatedHint} />
+                            {formatMinutes(again.minutes)}
+                            <span className="sr-only">, {t.lines.estimatedSr}</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
