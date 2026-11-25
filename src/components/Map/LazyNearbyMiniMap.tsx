@@ -1,11 +1,12 @@
-import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useRef } from 'react';
+import { useSeen } from '../../hooks/useSeen';
 import type { NearbyMiniMapProps } from './NearbyMiniMap';
 
 /**
  * The mini map, and nothing of it until it is on screen. `lazy()` alone defers the chunk
  * until the component renders, and below lg the board stays mounted behind `hidden` — so
  * the map (Leaflet then) was being built inside `display: none` on every cold start (255 KB, 700 ms of
- * blocked main thread). An element with no box never intersects, which is the question.
+ * blocked main thread).
  */
 const NearbyMiniMap = lazy(() => import('./NearbyMiniMap').then((m) => ({ default: m.NearbyMiniMap })));
 
@@ -15,17 +16,7 @@ const Placeholder = () => <div className="h-map-card w-full bg-surface" />;
 /** Framed here, the control corner and the hairline; the space above it is the caller's. */
 export function LazyNearbyMiniMap({ className, ...props }: NearbyMiniMapProps & { className: string }) {
   const holder = useRef<HTMLDivElement>(null);
-  const [seen, setSeen] = useState(false);
-
-  useEffect(() => {
-    if (seen) return;
-    const el = holder.current;
-    if (!el || typeof IntersectionObserver === 'undefined') return setSeen(true);
-    // A little ahead of the fold, so scrolling down finds the map already there.
-    const observer = new IntersectionObserver((entries) => entries.some((e) => e.isIntersecting) && setSeen(true), { rootMargin: '200px' });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [seen]);
+  const seen = useSeen(holder);
 
   return (
     <div ref={holder} className={`overflow-hidden rounded-control border border-edge ${className}`}>

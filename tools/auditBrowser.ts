@@ -1130,7 +1130,7 @@ export const STATES: State[] = [
       if (!(await until(b))) return 'no buses layer button'; b().click(); await pause(1500); return true;`,
     tap: 'bus',
   },
-  { screen: 'mapa', name: 'filtros', phoneOnly: true, dialog: true, setup: `if (!press(seeText(T.controls))) return 'no controls button'; await pause(600); return true;` },
+  { screen: 'mapa', name: 'filtros', phoneOnly: true, dialog: true, setup: `if (!(await until(() => seeText(T.controls)))) return 'no controls button'; press(seeText(T.controls)); await pause(600); return true;` },
   // A stop opened on the map: the board sends the map to its stop, which is then at the
   // centre, and a click there on the map's canvas is what a tap on the stop is. Once the map
   // has drawn it (data-idle, held for a moment): after a fixed 2.5 s the throttled phone's

@@ -17,6 +17,7 @@ import { useShareLink } from '../hooks/useShareLink';
 import { tripSearch } from '../utils/links';
 import { boardingIsNow, type TripPlace } from '../utils/tripProgress';
 import type { Screen } from '../hooks/useTabRoute';
+import { useSeen } from '../hooks/useSeen';
 import { SectionLabel } from './ui/SectionLabel';
 import { EmptyState } from './ui/EmptyState';
 import { Figure } from './ui/Figure';
@@ -25,8 +26,9 @@ import { PlaceField, suggestionsFor, type Suggestion } from './planner/PlaceFiel
 import { TripOptions } from './planner/TripOptions';
 import { Itinerary } from './planner/Itinerary';
 import { answers, correctionFor, formatKm, measuredWalkFor, rankMeasured, withMeasuredWalk, type Endpoints } from './planner/walkCorrection';
-// The map renderer loads with the map, not with the app.
-const RouteMap = lazy(() => import('./Map/RouteMap').then((m) => ({ default: m.RouteMap })));
+// The map renderer loads with this screen, not with the app; the map is built once it is on screen.
+const loadRouteMap = () => import('./Map/RouteMap');
+const RouteMap = lazy(() => loadRouteMap().then((m) => ({ default: m.RouteMap })));
 
 const DEFAULT_ORIGIN = 'Fonte dos Ranchos';
 const DEFAULT_DEST = 'Hospital Lucus Augusti (HULA)';
@@ -168,6 +170,16 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
   const [swaps, setSwaps] = useState(0);
   /** Where the button on the map jumps to. */
   const stepsRef = useRef<HTMLDivElement>(null);
+  /**
+   * The trip's map, once it is on screen or somebody has started to ask: built behind a form nobody
+   * had touched, on a phone, it drew the trip it opens with and 414 KB of tiles and letters for it.
+   * Built only with the answer, the first one's took a second longer on a slow phone.
+   */
+  const mapHolder = useRef<HTMLDivElement>(null);
+  const mapSeen = useSeen(mapHolder);
+  const [touched, setTouched] = useState(false);
+  const touch = () => setTouched(true);
+  useEffect(() => void loadRouteMap().catch(() => undefined), []);
 
   /** A clock for the one thing here that changes on its own: whether the first bus is within ten minutes. */
   const now = useClock(30_000);
@@ -461,7 +473,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     <div className="page page-gutter py-4">
       {/* The form stays put while the itinerary scrolls beside it from lg up; below, the two take turns. */}
       <div className="lg:grid lg:grid-cols-12 lg:gap-6">
-        <div ref={formRef} className="space-y-4 lg:col-span-5 lg:sticky lg:top-4 lg:self-start">
+        <div ref={formRef} onPointerDown={touch} onFocus={touch} className="space-y-4 lg:col-span-5 lg:sticky lg:top-4 lg:self-start">
           {/* What you asked for, in one line, and the way in and out of the fields. */}
           {asked && (
             <button
@@ -844,9 +856,9 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                   </button>
                 </div>
                 <div className={`fold ${showMap ? '' : 'fold-closed'}`}>
-                  <div className="relative">
+                  <div ref={mapHolder} className="relative">
                     <Suspense fallback={<div className="map-placeholder h-map-card animate-waiting sm:h-map-card-sm" />}>
-                      <RouteMap plan={planResult} origin={endpoints.origin} destination={endpoints.destination} walkPaths={walkPaths} onSelectStop={onSelectStop} className="w-full h-map-card sm:h-map-card-sm rounded-card overflow-hidden border border-edge z-0" />
+                      {mapSeen || touched ? <RouteMap plan={planResult} origin={endpoints.origin} destination={endpoints.destination} walkPaths={walkPaths} onSelectStop={onSelectStop} className="w-full h-map-card sm:h-map-card-sm rounded-card overflow-hidden border border-edge z-0" /> : <div className="map-placeholder h-map-card sm:h-map-card-sm" />}
                     </Suspense>
                     {/* The map ends at the fold on a phone, so the chip that says the trip is written out further down sits on it. */}
                     <button

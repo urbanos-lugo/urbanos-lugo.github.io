@@ -7307,6 +7307,16 @@ as rúas se renoven soas.
 - Tempo ata ver o mapa, na 1.9.2, navegador novo cada vez: mediana de 2.516 ms con cable e 6.480 cun 4G lento (cinco de cada;
   unha das lentas non rematou en 40 s). O de despois, cando se publique.
 
+### O mapa que ninguén vía
+
+- Coas rúas, o CI parou: unha recarga de Ruta tardaba máis de cinco segundos en traer a resposta no *runner*, en dúas viaxes
+  de dúas quendas. Antes o audit negaba as teselas e non o vía. Abrir Ruta nun teléfono construía o mapa detrás do formulario,
+  agochado, co traxecto que ninguén pedira: 414 KB, e o debuxo; tamén coa 1.9.2 (364 KB, 6 ficheiros).
+- Agora constrúese ao tocar o formulario ou coa resposta. Móbil lento (CPU a un sexto, 4G lento), cinco de cada: abrir Ruta, 0 KB;
+  a resposta tras recargar, de 3.043 a 2.396 ms; o mapa da primeira resposta, de 1.958 a 2.310 se se tocara un campo, e 3.176
+  se só se construíse coa resposta, que foi o primeiro intento.
+- O estado «mapa/filtros» do audit premía o botón sen agardalo; agora agárdao.
+
 ### Comprobado
 
 - Lint, 205 comprobacións, 26 políticas, as tres varridas e a build (dist, 20 MB; eran 9). `audit:browser` enteiro con Chrome

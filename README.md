@@ -193,7 +193,8 @@ camiño a pé, polas beirarrúas e calculado no dispositivo, chega ata a parada 
 MapLibre GL debuxa os tres mapas, sobre teselas vectoriais cortadas do planeta de OpenFreeMap e
 servidas desde a propia web (`public/map`: 458 teselas, 7,5 MB, zooms 9 a 14, as letras e as iconas),
 e non pasan duns 10 km máis alá da última parada: fóra non hai nada desta rede nin teselas que
-debuxar. Ninguén baixa todo iso: abrir o mapa nun teléfono son catro teselas. As rúas
+debuxar. Ninguén baixa todo iso: abrir o mapa nun teléfono son catro teselas, e Ruta non baixa ningunha ata
+que se toca o formulario ou hai resposta. As rúas
 renóvanse unha vez ao mes, soas (`tools/importTiles.ts`, en `deploy-pages.yml`), e cando se
 pida á man; se deixan de renovarse, a revisión dos luns dío aos cincuenta días. Nun
 dispositivo sen WebGL2, no sitio do mapa hai un aviso que o di, e as listas din o mesmo. Se o
@@ -1012,6 +1013,7 @@ non chama ningunha.
 │   │   ├── useIsDark.ts            se a paleta escura está activa agora mesmo
 │   │   ├── useClock.ts             o reloxo, relido cada N segundos e ao espertar o teléfono: nada se descarga
 │   │   ├── useWalkPaths.ts         o camiño a pé real de cada tramo, calculado no dispositivo
+│   │   ├── useSeen.ts              se algo chegou á pantalla: ata entón non se constrúe o seu mapa
 │   │   ├── useShareLink.ts         compartir unha ligazón: o panel do teléfono, ou copiala
 │   │   └── useMapLibre.ts          un mapa de MapLibre: estilo por tema, zoom e compás, nome accesible, o aviso sen WebGL2
 │   ├── utils/
