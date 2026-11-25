@@ -61,11 +61,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
  */
 function daysIn(text: string, near: Date): string[] {
   const said = fold(text);
+  let walked = 0;
   for (const { index, 0: opening } of said.matchAll(DAYS)) {
+    // An opening inside a list that gave no day gives none either: read again from each, 64 KB of "os días 0 de mayo" took two seconds.
+    if (index < walked) continue;
     const days: string[] = [];
     AND_OF_ANOTHER.lastIndex = index + opening.length;
     do {
-      OF_A_MONTH.lastIndex = AND_OF_ANOTHER.lastIndex;
+      walked = OF_A_MONTH.lastIndex = AND_OF_ANOTHER.lastIndex;
       const named = OF_A_MONTH.exec(said);
       const month = named && MONTHS[named[2]];
       if (!named || !month) break;
@@ -100,11 +103,22 @@ const unmask = (text: string | undefined) => text?.replaceAll(LEADER, '.').trim(
 
 /** Words that carry a stop's name, without the street kinds that are written one way here and another there. */
 const SKIP = new Set(['de', 'da', 'do', 'das', 'dos', 'del', 'la', 'el', 'a', 'o', 'os', 'as', 'los', 'las', 'y', 'e', 'en', 'avda', 'av', 'avenida', 'rua', 'r', 'praza', 'plaza', 'pza', 'rda', 'ronda', 'esq', 'esquina']);
-const words = (name: string): string[] =>
-  fold(name)
+/** The longest stop name has eight words: more than this is no stop's, and is read as none. */
+const MAX_WORDS = 20;
+const words = (name: string): string[] => {
+  const said = fold(name)
     .replace(/[^a-z0-9]+/g, ' ')
     .split(' ')
     .filter((w) => w && !SKIP.has(w));
+  return said.length > MAX_WORDS ? [] : said;
+};
+/** A stop's words, worked out once: each name a notice gives is compared with every stop of its line. */
+const stopWords = new Map<string, string[]>();
+const wordsOf = ({ name }: BusStop): string[] => {
+  const known = stopWords.get(name) ?? words(name);
+  stopWords.set(name, known);
+  return known;
+};
 
 function oneEditApart(a: string, b: string): boolean {
   if (Math.abs(a.length - b.length) > 1) return false;
@@ -142,7 +156,7 @@ export function matchStop(name: string, candidates: BusStop[]): string | undefin
   let best: { id: string; score: number } | undefined;
   let tied = false;
   for (const stop of candidates) {
-    const have = words(stop.name);
+    const have = wordsOf(stop);
     const score = want.filter((w) => have.some((h) => sameWord(w, h))).length / Math.max(want.length, have.length);
     if (!best || score > best.score) {
       best = { id: stop.id, score };
@@ -155,7 +169,7 @@ export function matchStop(name: string, candidates: BusStop[]): string | undefin
   // bar above) and «R/Montevideo» «Rúa Montevideo 7 (Sanatorio NSOG)»; «Rda. Muralla», in
   // three of the 12's stops, is none of them.
   const covering = candidates.filter((stop) => {
-    const have = words(stop.name);
+    const have = wordsOf(stop);
     return want.every((w) => have.some((h) => sameWord(w, h)));
   });
   return covering.length === 1 ? covering[0].id : undefined;
@@ -179,7 +193,7 @@ function stretchStops(line: string, from: string, to: string, candidates: BusSto
   const start = matchStop(from, candidates);
   const want = words(to);
   if (!start || !want.length) return [];
-  const names = new Map(candidates.map((s) => [s.id, words(s.name)]));
+  const names = new Map(candidates.map((s) => [s.id, wordsOf(s)]));
   const reaches = (id: string) => want.every((w) => (names.get(id) ?? []).some((h) => sameWord(w, h)));
   const closed = new Set<string>();
   for (const direction of BUS_LINES.filter((l) => l.number === line || l.id === line).flatMap((l) => l.directions)) {
@@ -191,6 +205,14 @@ function stretchStops(line: string, from: string, to: string, candidates: BusSto
   return [...closed];
 }
 
+/**
+ * How much is read out of the prose, a paragraph for one line at a time, and how many stops out of
+ * one list. San Froilán 2026 was six lines of five paragraphs at most; 18 KB of lists of stops, every
+ * paragraph within its own bounds, took 1.1 s. Past this a line's changes stay prose, in the notice itself.
+ */
+const MAX_READ = 500;
+const MAX_LISTED = 40;
+
 /** Everything the operator's sectioned notices change, read at `near`, or null when none says anything this can use. */
 export function readNoticeChanges(alerts: ServiceAlert[], near: Date): NoticeChanges | null {
   const notices = alerts.filter((a) => a.source !== 'concello' && (a.sections?.length ?? 0) > 0);
@@ -198,12 +220,15 @@ export function readNoticeChanges(alerts: ServiceAlert[], near: Date): NoticeCha
   const days = [...new Set(notices.flatMap((n) => daysIn(`${n.description} ${n.title}`, near)))];
   const lines: LineChange[] = [];
   const general: string[] = [];
+  let read = 0;
   for (const section of notices.flatMap((n) => n.sections ?? [])) {
     if (!section.lines.length) {
       general.push(...section.paragraphs);
       continue;
     }
     for (const line of section.lines) {
+      read += 1 + section.paragraphs.length;
+      if (read > MAX_READ) break;
       const change: LineChange = { line, closed: [], moved: [] };
       const candidates = stopsOfLine(line);
       for (const paragraph of section.paragraphs.map(mask)) {
@@ -215,7 +240,7 @@ export function readNoticeChanges(alerts: ServiceAlert[], near: Date): NoticeCha
         const closedId = closed && matchStop(unmask(closed[1])!, candidates);
         if (closedId) change.closed.push({ stopId: closedId, instead: unmask(closed[2]) });
         const listed = CLOSED_LIST.exec(paragraph);
-        for (const name of listed ? listed[1].split(LIST_SEP) : []) {
+        for (const name of listed ? listed[1].split(LIST_SEP, MAX_LISTED) : []) {
           const id = matchStop(unmask(name)!, candidates);
           if (id && !change.closed.some((c) => c.stopId === id)) change.closed.push({ stopId: id });
         }

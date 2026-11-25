@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AlertSyncResult } from '../services/alertSyncService';
 import type { ServiceAlert } from '../types';
 import { isSnapshotStale } from '../utils/snapshotAge';
-import { councilNews, readNotice } from '../utils/operatorNotices';
+import { councilNews, MAX_NOTICES, readNotice } from '../utils/operatorNotices';
 import { noticeOver, outlivedForecast } from '../utils/noticeChanges';
 import { apiUrl } from '../services/apiUrl';
 import { isCrawler } from '../routes';
@@ -42,7 +42,7 @@ export function readSnapshot(raw: unknown): Snapshot {
     fetchedAt: typeof r.fetchedAt === 'string' ? r.fetchedAt : undefined,
     // An answer that does not say what it found is not one that found nothing.
     status: r.status === 'active_incidents' || r.status === 'operational_normal' ? r.status : 'unreachable',
-    alerts: Array.isArray(r.alerts) ? r.alerts.map(readNotice).filter((a): a is ServiceAlert => a !== null) : [],
+    alerts: Array.isArray(r.alerts) ? r.alerts.slice(0, MAX_NOTICES).map(readNotice).filter((a): a is ServiceAlert => a !== null) : [],
   };
 }
 

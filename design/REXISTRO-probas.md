@@ -7140,3 +7140,43 @@ marxes (4.2). O Concello anunciou o 16 de outubro un SAE, unha app con datos en 
 - Se Cloudflare consegue ler ao Concello (NOTAS, Pendente 5); as nove rutas da API do servidor propio e o
   paseo que gaña por menos de cinco minutos, do dono.
 - As notificacións nun teléfono de verdade, sen probar.
+
+## Rolda 95: tres achados dun escaneo de seguridade — 25 de novembro de 2026
+
+Pedido: un escaneo da base de código enteira (30 lecturas por compoñente e clase de fallo, e tres votos por
+achado), e arranxar o que saíse. Saíron tres, os tres de pouca gravidade. O escaneo só leu; todo o de aquí
+está medido.
+
+### O que había
+
+- **A campá.** `/class="[^"]*msg_list[^"]*"/`, o único patrón que quedaba en `bellList`: 19 ms con 16 KB, 308
+  con 64 e 19,9 s cos 512 do teito, dun servidor parado, se a páxina do operador repite o nome e non pecha as
+  comiñas. Agora córtase polas comiñas: 0,6 ms.
+- **O socket de Vite.** `pnpm dev` escoitaba en 127.0.0.1, pero Vite abría o seu en `::`, porto 24678, e
+  contestaba sen contrasinal nin orixe. Agora vai no porto da app, e a páxina conéctase alí.
+- **Un aviso sen fin.** `daysIn` volvía ler a lista desde cada «os días»: 2,0 s con 64 KB, no fío da páxina e
+  a cada minuto. Agora cada un léese unha vez, e `readNotice` corta textos, listas e avisos.
+
+### O que o escaneo non viu
+
+Co teito que propoñía non chegaba: cada parágrafo dentro dos límites de sempre, 18 KB de listas de paradas
+tardaban 1,1 s en `readNoticeChanges`, e 700 KB, 43 s. Agora hai tope ao que se le (500 parágrafos, cada un
+contado unha vez por liña, e 40 paradas por lista) e as palabras de cada parada calcúlanse unha vez: 89 ms.
+San Froilán 2026 foron seis liñas de cinco parágrafos como moito; dos tres avisos publicados o 25 de novembro,
+o máis longo ten catro apartados, dous parágrafos e 227 caracteres. Ningún se corta.
+
+### Descartado
+
+- `tools/importOfficialData.ts:162` tamén retrocede, rexeitado 2 a 1: só o dispara a páxina do operador, nunha
+  ferramenta que se corre a man ou unha vez por semana.
+
+### Comprobado
+
+- As cinco portas. Cada fallo, posto de volta, fai caer a súa comprobación; a suite pasa de 201 a 202.
+- `pnpm dev` no navegador: a páxina conéctase ao socket no porto da app («[vite] connected.»).
+- `audit:browser` non se correu aquí: audítao o CI no push de `develop`, antes de `main`.
+
+### Queda
+
+- Cun porto ocupado, `pnpm dev` dío e **non para**, e o README di que para. Vén de antes; o de agora xa non di
+  ademais que está dispoñible. Anotado en DECIDIDO, en «Quedou aberto», coas decisións da rolda.

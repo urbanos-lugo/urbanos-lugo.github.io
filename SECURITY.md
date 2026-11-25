@@ -28,8 +28,9 @@ So the interesting surface is small:
   buslugo.com and that list are read at most once a minute, and the stop page at most 120
   times a minute, per server process or worker instance, however many people ask. Anything
   that gets either of them to read a file, run a command, hammer an outside host, or spend
-  a long time on one request is worth a report. `pnpm dev` listens on localhost only, because in
-  development Vite serves every file in the working tree, ignored ones included.
+  a long time on one request is worth a report. `pnpm dev` listens on localhost only, Vite's
+  socket included, because in development Vite serves every file in the working tree, ignored
+  ones included.
 - **The Content Security Policy** in `src/security/csp.ts`. If you can execute script in
   a published build, that is a finding regardless of how it got there.
 - **The build and its dependencies.** A postinstall script that runs when it should not,
@@ -41,10 +42,10 @@ So the interesting surface is small:
 Besides its own and the map tiles' host, the static site trusts one origin: the worker's,
 `API_ORIGIN`, which the Content Security Policy admits and the app asks for notices and the
 operator's minutes.
-What comes back is narrowed in the browser before anything is drawn: text as text, and
-links only to buslugo.com or concellodelugo.gal. A hostile answer can be wrong about a
-notice, but it cannot run script, break the screen or send anyone elsewhere. If the worker
-named in `API_ORIGIN`, or the `workers.dev` subdomain or account behind it, is ever deleted,
+What comes back is narrowed in the browser before anything is drawn: text as text, each notice
+no longer than a notice is, and links only to buslugo.com or concellodelugo.gal. A hostile
+answer can be wrong about a notice, but it cannot run script, break the screen or send anyone
+elsewhere. If the worker named in `API_ORIGIN`, or the `workers.dev` subdomain or account behind it, is ever deleted,
 rebuild the site without it first: someone else could register the name that was freed, and
 the site would go on asking it. The Deno Deploy copy the site asked until 22 November 2026
 went the same way: the site stopped naming it first, and the app was deleted only once the

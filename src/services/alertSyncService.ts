@@ -5,7 +5,7 @@
  */
 import { readCapped } from './readCapped';
 import { asciiLower, plainText } from '../utils/html';
-import { COUNCIL_NEWS_MS, noticeLink } from '../utils/operatorNotices';
+import { clip, COUNCIL_NEWS_MS, MAX_PARAGRAPH, MAX_PARAGRAPHS, MAX_SECTIONS, noticeLink } from '../utils/operatorNotices';
 import { NoticeSection, ServiceAlert } from '../types';
 import { REPO_URL } from '../project';
 
@@ -100,8 +100,6 @@ function* blocks(text: string, lower: string, open: string, close: string): Gene
     from = end + close.length;
   }
 }
-
-const clip = (text: string, max: number) => (text.length > max ? `${text.slice(0, max - 3)}...` : text);
 
 /** What stands in a row after `from` and before `to`, or ''. With indexOf alone: nothing in a page that breaks off is walked twice. */
 function after(row: string, from: string, to: string): string {
@@ -212,7 +210,8 @@ function bellList(html: string, lower: string): string | null {
     if (open === -1) return null;
     const tagEnd = lower.indexOf('>', open);
     if (tagEnd === -1) return null;
-    if (/class="[^"]*msg_list[^"]*"/.test(lower.slice(open, tagEnd))) {
+    // Cut at its quotes: `/class="[^"]*msg_list[^"]*"/` took 20 s of a tag that repeats the name and never closes the quote.
+    if (lower.slice(open, tagEnd).split('"').some((value, i, parts) => i < parts.length - 1 && value.includes('msg_list') && parts[i - 1]?.endsWith('class='))) {
       const close = lower.indexOf('</ul>', tagEnd);
       return close === -1 ? null : html.slice(tagEnd + 1, close);
     }
@@ -249,10 +248,6 @@ function operatorLink(item: string): string | undefined {
 
 /** A heading that belongs to lines: "Línea 1.2 : …", "Líneas 9 y 12: …", "Liña 5ES - …". */
 const LINES_HEADING = /^l[ií](?:neas?|ñas?)\b/iu;
-/** Bounds on one notice, whatever the page holds: San Froilán 2026 ran to six lines and the rest, none over five paragraphs. */
-const MAX_SECTIONS = 40;
-const MAX_PARAGRAPHS = 30;
-const MAX_PARAGRAPH = 600;
 
 /**
  * Text out of one heading or paragraph: its tags off with nothing in their place, then the

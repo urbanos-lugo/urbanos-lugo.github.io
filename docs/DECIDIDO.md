@@ -753,9 +753,27 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   outubro; o aviso do operador segue en Avisos, dicindo que a súa previsión pasou.
 - **Os mapas paran a uns 10 km da última parada**, e non hai botón de volver.
 
+## Os tres achados do escaneo de seguridade — 25 de novembro de 2026
+
+- **Arránxanse os tres, aínda sendo de pouca gravidade** (rolda 95), directamente e cunha comprobación
+  cada un.
+- **Un aviso mide o que mide un aviso, tamén no navegador.** Do que contesta a API quedan 40 avisos, 40
+  apartados e 40 liñas en cada un, 30 parágrafos por apartado e 600 caracteres por texto; o que pase
+  córtase, e o texto acaba en «...». Os topes son os que o lector da páxina xa lles puña aos apartados. O
+  máis longo publicado ese día tiña catro apartados, dous parágrafos e 227 caracteres.
+- **E o que se lle le para os taboleiros ten tope propio:** 500 parágrafos en total, contando cada un unha
+  vez por liña, e 40 paradas por lista. Cos topes de lonxitude sós, 700 KB de listas paraban a páxina 43 s;
+  con este, 89 ms. Pasado del, os cambios desa liña quedan en prosa, no aviso.
+- **En desenvolvemento, un só porto, o da app.** O socket de Vite vai nel e só nesta máquina, coma a páxina;
+  `HOST=0.0.0.0` abre os dous a propósito.
+- **`tools/importOfficialData.ts:162` queda como está:** só o dispara a páxina do operador, nunha ferramenta
+  que non corre na app.
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).
+- Cun porto ocupado, `pnpm dev` dío e non para, e o README di que para (rolda 95): parar de verdade, ou
+  cambiar a frase.
 - Animacións ou efectos no mapa: non é prioridade e non se fai sen unha razón.
 - A «duración sen tráfico» da ficha de liña, que o plan da paleta deixou como dúbida —25
   minutos calculados fronte a 38 do cadro—, resolveuse quitando a tarxeta: a ficha da

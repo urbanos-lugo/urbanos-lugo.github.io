@@ -65,6 +65,7 @@ for (const kb of CAP) {
 
 console.log('\nthe operator home page, and the tag stripper under everything');
 for (const kb of CAP) time(`${kb} KB of <ul with no end to the tag`, () => extractAlertsFromHtml('<ul '.repeat((kb * 1024) / 4)));
+for (const kb of CAP) time(`${kb} KB of a <ul whose class never closes`, () => extractAlertsFromHtml(`<ul class="${'msg_list'.repeat((kb * 1024) / 8)}>`));
 for (const kb of CAP) time(`${kb} KB article of unclosed <script openings`, () => extractAlertsFromHtml(`<article>aviso de desvío ${'<script '.repeat((kb * 1024) / 8)}</article>`));
 for (const kb of CAP) for (const heading of ['<h2>', '<h2 ']) time(`${kb} KB article of unclosed ${heading} headings`, () => extractAlertsFromHtml(`<article>aviso de desvío na parada ${heading.repeat((kb * 1024) / 4)}</article>`));
 for (const kb of CAP) time(`${kb} KB of unclosed <style openings, stripped`, () => plainText('<style '.repeat((kb * 1024) / 7)));

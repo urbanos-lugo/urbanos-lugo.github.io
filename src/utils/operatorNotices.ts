@@ -22,25 +22,38 @@ export function noticeLink(href: unknown): string | undefined {
   }
 }
 
-const text = (value: unknown): string => (typeof value === 'string' ? value : '');
-const texts = (value: unknown): string[] => (Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : []);
+/** Bounds on the notices and on each, whatever the page or the answer holds: San Froilán 2026 ran to six lines and the rest, none over five paragraphs. */
+export const MAX_NOTICES = 40;
+export const MAX_SECTIONS = 40;
+const MAX_LINES = 40;
+export const MAX_PARAGRAPHS = 30;
+export const MAX_PARAGRAPH = 600;
+
+export const clip = (text: string, max: number) => (text.length > max ? `${text.slice(0, max - 3)}...` : text);
+
+const text = (value: unknown): string => (typeof value === 'string' ? clip(value, MAX_PARAGRAPH) : '');
+const texts = (value: unknown, max: number): string[] => (Array.isArray(value) ? value.slice(0, max).filter((v) => typeof v === 'string').map(text) : []);
 
 /**
  * One notice as the app will render it, whatever the API or the snapshot sent: text where
- * text is expected, lists that are lists, and a link only to a notice site. The live answer
- * reached the screen unread, so a malformed or hostile one broke it or linked anywhere.
+ * text is expected, lists that are lists, none of them without end, and a link only to a notice
+ * site. The live answer reached the screen unread, so a malformed or hostile one broke it or
+ * linked anywhere; and at any length, so 64 KB of one bell item stopped the page for two seconds.
  */
 export function readNotice(raw: unknown, index: number): ServiceAlert | null {
   if (!raw || typeof raw !== 'object') return null;
   const n = raw as Record<string, unknown>;
   const sections = Array.isArray(n.sections)
-    ? n.sections.filter((s): s is Record<string, unknown> => !!s && typeof s === 'object').map((s) => ({ heading: text(s.heading), lines: texts(s.lines), paragraphs: texts(s.paragraphs) }))
+    ? n.sections
+        .slice(0, MAX_SECTIONS)
+        .filter((s): s is Record<string, unknown> => !!s && typeof s === 'object')
+        .map((s) => ({ heading: text(s.heading), lines: texts(s.lines, MAX_LINES), paragraphs: texts(s.paragraphs, MAX_PARAGRAPHS) }))
     : undefined;
   return {
     id: text(n.id) || `notice-${index + 1}`,
     title: text(n.title),
     severity: n.severity === 'urgent' || n.severity === 'warning' ? n.severity : 'info',
-    linesAffected: texts(n.linesAffected),
+    linesAffected: texts(n.linesAffected, MAX_LINES),
     date: text(n.date),
     description: text(n.description),
     active: n.active !== false,

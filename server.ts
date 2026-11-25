@@ -1,5 +1,6 @@
 import express from 'express';
 import { existsSync } from 'fs';
+import http from 'http';
 import path from 'path';
 import { BUS_STOPS, BUS_LINES, FARE_INFO } from './src/data/transitData';
 import { getArrivalsForStop } from './src/utils/arrivals';
@@ -37,6 +38,7 @@ const ENCODINGS: [string, string][] = [
 async function startServer() {
   const isDev = process.argv.includes('--dev');
   const app = express();
+  const server = http.createServer(app);
   // A URL path is case-sensitive per RFC 3986; without this /api/PLAN reached the planner past the rate limiter's lower-case check.
   app.set('case sensitive routing', true);
   // Express names itself in every response unless told not to: a version to look up, for nothing.
@@ -124,7 +126,9 @@ async function startServer() {
   if (isDev) {
     // Only here: imported above, the built server would not start without a development tool.
     const { createServer } = await import('vite');
-    const vite = await createServer({ server: { middlewareMode: true }, appType: 'spa' });
+    // Its socket on this server: left to itself Vite opened another, on 24678 and every interface,
+    // which told whoever on the same network asked what was being edited, errors and paths included.
+    const vite = await createServer({ server: { middlewareMode: true, ws: { server } }, appType: 'spa' });
     app.use(vite.middlewares);
   } else if (existsSync(path.join(distPath, 'index.html'))) {
     // Serve the compressed copy the build already wrote (vite.config.ts), when the browser accepts one:
@@ -177,7 +181,7 @@ async function startServer() {
   // on the same Wi-Fi. HOST=0.0.0.0 opens it on purpose, to try the app on a phone. The built
   // server serves dist/ alone, and keeps listening everywhere, as self-hosting needs.
   const host = process.env.HOST ?? (isDev ? '127.0.0.1' : '0.0.0.0');
-  const server = app.listen(port, host, () => {
+  server.listen(port, host, () => {
     console.log(`\n======================================================`);
     console.log(` Urbanos Lugo Web App dispoñible en:`);
     console.log(` 👉 http://localhost:${port}`);

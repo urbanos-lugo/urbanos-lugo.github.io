@@ -1830,6 +1830,23 @@ ok('what the API sends is read, not trusted: text as text, and links only to the
   assert(readOperatorTimes({ departures: 'none' }) === null && readOperatorTimes('x') === null, 'an answer with no list of departures was not refused');
 });
 
+ok('an answer with no end to it is cut to what a notice is, and read in no time', () => {
+  // Nothing bounded a notice on its way to the screen. And the page's own bounds were not
+  // enough: 18 KB of lists of stops inside them took 1.1 s to read, 700 KB 43 s, every minute.
+  const section = { heading: 'Línea 1.1 '.repeat(500), lines: Array(500).fill('1.1'), paragraphs: Array(500).fill(`quedan suprimidas las paradas de ${'a,b,c,d,f,g,h,j,'.repeat(100)}`) };
+  const notice = { title: 'x'.repeat(5000), description: 'y'.repeat(5000), linesAffected: Array(500).fill('1.1'), sections: Array(500).fill(section) };
+  const { alerts } = readSnapshot({ status: 'active_incidents', alerts: Array(500).fill(notice) });
+  const [read] = alerts;
+  const longest = Math.max(read.title.length, read.description.length, ...read.sections!.flatMap((s) => [s.heading, ...s.paragraphs].map((t) => t.length)));
+  assert(longest === 600, `a text of ${longest} characters reached the screen`);
+  for (const [what, list, most] of [['notices', alerts, 40], ['lines', read.linesAffected, 40], ['sections', read.sections!, 40], ['lines of a section', read.sections![0].lines, 40], ['paragraphs', read.sections![0].paragraphs, 30]] as const) {
+    assert(list.length === most, `${list.length} ${what} came through, of ${most}`);
+  }
+  const since = performance.now();
+  readNoticeChanges(alerts, new Date(2026, 9, 7));
+  assert(performance.now() - since < 3000, `a page of lists of stops took ${Math.round(performance.now() - since)} ms to read`);
+});
+
 /** The San Froilán 2026 notice as the worker served it, the parts that change something. */
 const SAN_FROILAN: ServiceAlert = {
   id: 'nav-notice-1',
@@ -2937,6 +2954,16 @@ await okAsync('the development server answers this machine alone, and sends no p
       const reached = await ask(server.port, '/api/health', { host: outward }).then(() => true, () => false);
       assert(!reached, `the development server answers on ${outward}, so anyone on the same network reaches the project folder`);
     }
+    // Vite's socket is here too: it opened one of its own on 24678 of every interface, and told
+    // whoever on the same network asked what was being edited.
+    const upgraded = await new Promise<boolean>((resolve) => {
+      const headers = { Connection: 'Upgrade', Upgrade: 'websocket', 'Sec-WebSocket-Version': '13', 'Sec-WebSocket-Key': 'AAAAAAAAAAAAAAAAAAAAAA==', 'Sec-WebSocket-Protocol': 'vite-ping' };
+      const req = httpRequest({ host: '127.0.0.1', port: server.port, path: '/', headers }, (res) => resolve((res.resume(), false)));
+      req.on('upgrade', (_res, socket) => resolve((socket.destroy(), true)));
+      req.on('error', () => resolve(false));
+      req.end();
+    });
+    assert(upgraded, 'Vite’s socket is not on the development server’s own port, so it is on another and on every interface');
   } finally {
     await server.stop();
   }
@@ -3787,6 +3814,9 @@ ok('hostile markup at the read cap parses in milliseconds, not minutes', () => {
   // for ratios of fractions of a millisecond; the old scans take 0.4 to 0.7 s at these sizes.
   const cases: [string, number, (kb: number) => string, (html: string) => unknown][] = [
     ['a <ul whose tag never ends', 64, (kb) => '<ul '.repeat((kb * 1024) / 4), extractAlertsFromHtml],
+    // The pattern that was left in the bell took 20 s of it at the cap, and the days of a notice, in the reader's page, two of 64 KB.
+    ['a <ul whose class never closes', 64, (kb) => `<ul class="${'msg_list'.repeat((kb * 1024) / 8)}>`, extractAlertsFromHtml],
+    ['a bell of days that are none', 64, (kb) => `los dias 0 de mayo${',os dias 0 de mayo'.repeat((kb * 1024) / 18)}`, (said) => noticeOver({ ...SAN_FROILAN, description: said }, new Date(2026, 9, 7))],
     ['a list of unclosed rows', MAX_BODY_BYTES / 1024, (kb) => '<div class="views-row texto-titular"><a href="'.repeat((kb * 1024) / 46), extractConcelloNotices],
     ['a row of unclosed headings', MAX_BODY_BYTES / 1024, (kb) => `<div class="views-row ${'texto-titular"><a href="'.repeat((kb * 1024) / 24)}`, extractConcelloNotices],
     ['unclosed <script openings', 128, (kb) => '<script '.repeat((kb * 1024) / 8), plainText],
