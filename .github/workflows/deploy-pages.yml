@@ -11,6 +11,11 @@ on:
     - cron: '17 * * * *' # hourly, off the hour to avoid the busiest minute
     - cron: '47 4 3 * *' # the map's tiles, once a month
   workflow_dispatch:
+    inputs:
+      renew:
+        description: Renew the map's tiles now, as once a month (a street a bus uses has changed)
+        type: boolean
+        default: false
 
 # Least privilege at the top, then each job asks for what it needs. The build job
 # reads the tree and nothing more; only the deploy job may write to Pages.
@@ -67,11 +72,11 @@ jobs:
           restore-keys: map-tiles-
 
       - name: Renew the map's tiles
-        if: github.event.schedule == '47 4 3 * *'
+        if: github.event.schedule == '47 4 3 * *' || inputs.renew
         run: pnpm exec tsx tools/importTiles.ts --fetch || echo "tiles not renewed, keeping the last"
 
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: github.event.schedule == '47 4 3 * *' && hashFiles('.cache/map/version.json') != ''
+        if: (github.event.schedule == '47 4 3 * *' || inputs.renew) && hashFiles('.cache/map/version.json') != ''
         with:
           path: .cache/map
           key: map-tiles-${{ github.run_id }}

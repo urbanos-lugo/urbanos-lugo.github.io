@@ -58,6 +58,7 @@ import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
 import festivos from '../src/data/festivos.json';
 import { holidaysDue } from './checkHolidaysAhead';
 import { noticesReviewDue } from './checkNoticesReviewed';
+import { tilesRenewalDue } from './checkTilesRenewed';
 import { refusedToEveryone } from './checkParsersUnchanged';
 import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
@@ -5001,6 +5002,12 @@ ok('every tile, letter and icon a map can ask for is here', () => {
   };
   const stamp = JSON.parse(read('src/data/map-tiles.json')) as { version: string; tiles: number; bytes: number };
   assert(stamp.version && stamp.tiles === TILES.length, `the stamp says ${stamp.tiles} tiles of «${stamp.version}», and a map can ask for ${TILES.length}`);
+  assert.equal(JSON.parse(read('public/map/version.json')).version, stamp.version, 'the run the site says its tiles are from is not the one they are');
+  // A renewal that keeps failing keeps the old ones: the Monday job says so past fifty days.
+  const run = '20261122_124456_pt';
+  assert(tilesRenewalDue(run, new Date('2027-01-11T12:00:00Z')) === null, 'the tiles are called old at fifty days');
+  assert(tilesRenewalDue(run, new Date('2027-01-12T12:00:00Z'))?.includes('51 days'), 'nothing is said of tiles fifty-one days old');
+  assert(tilesRenewalDue('latest', new Date('2027-01-12T12:00:00Z')), 'tiles of no known day are not asked about');
   assert.equal(unfit(tile, stamp.bytes), null);
   // Torn, short or with a letter nobody kept, they are not put in place.
   assert(/missing/.test(unfit((key) => (key === TILES[7] ? null : tile(key)), stamp.bytes) ?? ''), 'a set with a tile missing is put in place');

@@ -7289,6 +7289,12 @@ as rúas se renoven soas.
 - A política de seguridade xa non admite ningunha orixe allea salvo a da API; o estilo perde a fonte do relevo, que ningunha
   capa debuxaba; o mapa leva `minZoom` 9.
 
+- **E se cambia unha rúa?** A revisión dos luns non mira as teselas, así que non falla por elas: mira os trazados das liñas
+  contra OSM, e se un se move dío, e agora di tamén que se renove o mapa a man (`workflow_dispatch`, coa renovación marcada).
+  O que non vía ninguén era que deixasen de renovarse: `tools/checkTilesRenewed.ts` pregúntallo cada luns á web publicada.
+- Do planeta do 15 ao do 22 de novembro cambiaron 16 das 323 teselas de zoom 14, 7 das 90 de 13 e unha das catro que abre un
+  teléfono; do 1 ao 22, 54, 30 e as catro. Por iso cada mes e non cada semana.
+
 ### Medido
 
 - O mesmo mapa desde OpenFreeMap (o publicado) e desde aquí, Chrome 157, oito vistas (dous temas; zooms 13, 15, 17 e afastado

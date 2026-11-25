@@ -208,6 +208,7 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
   const weekly = runs(workflow('check-source.yml')).join('\n');
   assert(weekly.includes('rules/branches/main') && weekly.includes('.context == "checks"') && weekly.includes('for branch in main develop'), 'check-source.yml no longer asks GitHub that main requires the checks and that main and develop cannot be rewritten');
   assert(weekly.includes('pnpm exec tsx tools/checkHolidaysAhead.ts'), 'check-source.yml no longer warns from November that next year’s holidays are missing');
+  assert(weekly.includes('pnpm exec tsx tools/checkTilesRenewed.ts'), 'check-source.yml no longer asks whether the map’s tiles are being renewed');
   assert(weekly.includes('pnpm exec tsx tools/checkNoticesReviewed.ts'), 'check-source.yml no longer asks every Monday for the structural notices to be reviewed');
   const pkg = JSON.parse(read('package.json'));
   assert(pkg.scripts['check:deep'] === 'tsx tools/stressInvariants.ts && tsx tools/stressPlanner.ts && tsx tools/stressRoutes.ts', `check:deep runs "${pkg.scripts['check:deep']}", not the three offline sweeps`);
@@ -249,7 +250,7 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
     if (name === 'check-source.yml') assert(/cron: '\S+ \S+ \* \* 1'/.test(text) && !/^\s*(push|pull_request):/m.test(text), 'check-source.yml reads other people’s sites on something other than its Monday schedule');
     else if (name === 'deploy-pages.yml') {
       assert(reaching.every((s) => /fetchAlerts|importTiles\.ts --fetch/.test(s)), `deploy-pages.yml reaches other sites beyond the notices and the map's tiles: ${reaching.join(' | ')}`);
-      const monthly = /if: github\.event\.schedule == '([^']+)'\s+run: pnpm exec tsx tools\/importTiles\.ts --fetch/.exec(text)?.[1] ?? '';
+      const monthly = /if: github\.event\.schedule == '([^']+)' \|\| inputs\.renew\s+run: pnpm exec tsx tools\/importTiles\.ts --fetch/.exec(text)?.[1] ?? '';
       assert(/^\d+ \d+ \d+ \* \*$/.test(monthly) && text.includes(`- cron: '${monthly}'`), `the map's tiles are asked for on "${monthly}", not once a month`);
       assert(reaching.filter((s) => /importTiles/.test(s)).length === 1, 'deploy-pages.yml asks for the map’s tiles in more than its one monthly step');
     }

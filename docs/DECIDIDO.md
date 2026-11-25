@@ -793,7 +793,10 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - **Dos ficheiros que OpenFreeMap publica para quen aloxa o mapa**, non do seu servidor de teselas, que nos
   seus termos (24 de novembro) deixa fóra a recollida automática.
 - **Renóvanse soas unha vez ao mes**, e só se están enteiras; se non, quedan as de antes. As do
-  repositorio son as de partida, e renóvanse a man cando convén.
+  repositorio son as de partida, e renóvanse a man cando convén. Non cada semana: dunha a outra
+  cambian 16 das 323 teselas de zoom 14, e cada renovación fai que quen entra a miúdo volva baixar as
+  que mira. Se cambia unha rúa por onde vai un bus, hai un botón; e se deixan de renovarse, a revisión
+  dos luns dío aos cincuenta días.
 - **Sen o relevo** (zoom 0 a 6): ningún mapa chega a eses zooms desde que paran a 10 km da última parada.
 
 ## Quedou aberto

@@ -128,7 +128,7 @@ async function main() {
   }
 
   if (moved.length || vanished.length || added.length || access.length) {
-    console.log('\nRe-run `pnpm data:osm` and `pnpm data:build`, then look at the diff.');
+    console.log('\nRe-run `pnpm data:osm` and `pnpm data:build`, then look at the diff. The street under the line is the map\'s: renew its tiles too (Actions, Deploy to GitHub Pages, Run workflow), once the week\'s planet has the change.');
     process.exitCode = 1;
   } else {
     console.log('\nEvery route is the same shape it was. Nothing to do.');

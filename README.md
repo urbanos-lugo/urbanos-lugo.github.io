@@ -194,7 +194,8 @@ MapLibre GL debuxa os tres mapas, sobre teselas vectoriais cortadas do planeta d
 servidas desde a propia web (`public/map`: 458 teselas, 7,5 MB, zooms 9 a 14, as letras e as iconas),
 e non pasan duns 10 km máis alá da última parada: fóra non hai nada desta rede nin teselas que
 debuxar. Ninguén baixa todo iso: abrir o mapa nun teléfono son catro teselas. As rúas
-renóvanse unha vez ao mes, soas (`tools/importTiles.ts`, en `deploy-pages.yml`). Nun
+renóvanse unha vez ao mes, soas (`tools/importTiles.ts`, en `deploy-pages.yml`), e cando se
+pida á man; se deixan de renovarse, a revisión dos luns dío aos cincuenta días. Nun
 dispositivo sen WebGL2, no sitio do mapa hai un aviso que o di, e as listas din o mesmo. Se o
 navegador perde o contexto WebGL e non o devolve en segundo e medio, como fan os móbiles coa app
 que se deixa por outra, o mapa constrúese de novo onde estaba; se tamén perde ese, sae o aviso, e ao
@@ -1081,6 +1082,7 @@ non chama ningunha.
 │   ├── checkParsersUnchanged.ts    o HTML de fóra segue tendo a forma esperada (semanal, 4 peticións)
 │   ├── checkHolidaysAhead.ts       SEMANAL — desde novembro, falla mentres falten os festivos do ano seguinte
 │   ├── checkNoticesReviewed.ts     SEMANAL — falla se un aviso permanente leva máis de cinco semanas sen revisar
+│   ├── checkTilesRenewed.ts        SEMANAL — falla se as teselas publicadas levan máis de cincuenta días sen renovarse
 │   ├── osm.ts                      Overpass, coseduras e metros restrinxidos
 │   ├── hydrateGeometry.ts          pon a xeometría viaria nas liñas, como fai o navegador
 │   ├── buildMapStyle.ts            o estilo do mapa base, derivado do par de OpenFreeMap

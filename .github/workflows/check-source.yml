@@ -107,6 +107,12 @@ jobs:
         if: always()
         run: pnpm exec tsx tools/checkHolidaysAhead.ts
 
+      # The map's tiles renew once a month in the Pages build, and a renewal that fails keeps the
+      # last ones, so nothing else would say they are ageing. One request, to this site itself.
+      - name: The published map was renewed in the last fifty days
+        if: always()
+        run: pnpm exec tsx tools/checkTilesRenewed.ts
+
       # The structural notices on Avisos are written by hand; two of three had gone wrong
       # when they were last read after seven weeks. Over five weeks, this fails. No request.
       - name: The structural notices were reviewed in the last five weeks

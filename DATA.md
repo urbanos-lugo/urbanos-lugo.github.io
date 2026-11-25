@@ -163,10 +163,15 @@ and are **redistributed here**: `public/map/tiles`, the 458 over the box the map
 planet OpenFreeMap publishes every week for whoever hosts the map themselves, one PMTiles archive
 of some 88 GB, by reading only the byte ranges Lugo is in: 43 requests and 5.7 MB on 25 November
 2026. Not from its tile server, `tiles.openfreemap.org`, whose terms leave automated collection
-out. `src/data/map-tiles.json` says which run they are from. `deploy-pages.yml` cuts them again
-once a month and publishes the new ones if they are whole: every tile, the layers the styles draw,
+out. `src/data/map-tiles.json`, and `version.json` beside them, say which run they are from.
+`deploy-pages.yml` cuts them again once a month, or when its run is started by hand with the
+renewal ticked, and publishes the new ones if they are whole: every tile, the layers the styles draw,
 about the size of the last, and no word the letters kept here cannot write. Else it publishes the
-committed ones.
+committed ones. A street changed in OpenStreetMap reaches the map with the next planet and the
+next renewal: five or six weeks at most, and nothing fails meanwhile, because nothing is worked
+out from a tile. What the bus lines are drawn from is compared with OpenStreetMap every Monday,
+apart; when that says a route moved, the renewal is asked for by hand. `tools/checkTilesRenewed.ts`
+asks every Monday how old the published tiles are, and fails past fifty days.
 
 The data is OpenStreetMap's, **ODbL 1.0**; the OpenMapTiles schema's design is **CC BY 4.0** and
 its code BSD. The map credits OpenFreeMap, OpenMapTiles and OpenStreetMap contributors in its own

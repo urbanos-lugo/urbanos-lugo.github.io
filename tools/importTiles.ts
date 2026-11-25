@@ -152,6 +152,8 @@ function apply(): void {
     bytes += statSync(to).size;
   }
   writeJson(STAMP, { version, tiles: TILES.length, bytes }, false);
+  // And beside the tiles, where the weekly job reads which run the published ones are from.
+  writeJson(join(OUT, 'version.json'), { version }, false);
   // A smaller box leaves tiles nobody asks for: they are named, to be deleted by hand.
   const kept = new Set(TILES);
   const stray: string[] = [];

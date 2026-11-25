@@ -218,7 +218,7 @@ servers this project does not own and has no agreement with.
 
 They are run by hand, or on a schedule — weekly in `.github/workflows/check-source.yml`,
 and in `deploy-pages.yml` `fetchAlerts.ts` before each hourly build and `importTiles.ts --fetch`
-once a month — and their answers
+once a month or by hand — and their answers
 are committed so a rebuild costs nothing (the notices' and the month's tiles go out with the
 builds that use them); `pnpm run check:policy` fails if any other
 workflow runs one. Do not put any of them in a loop, a watch, a retry or a per-turn
