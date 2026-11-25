@@ -7285,7 +7285,8 @@ as rúas se renoven soas.
   parecido ás de antes e sen unha letra que aquí non se garda. A primeira proba xa parou nunha: «Ḷḷuarca», nunha
   tesela de zoom 9, pedía un rango que faltaba (7680-7935).
 - `deploy-pages.yml` renóvaas unha vez ao mes, gárdaas na caché entre builds e publica as do repositorio se algo non
-  cadra; vai despois das probas, para que unhas teselas malas non paren os avisos. Sen probar no CI: agarda ao primeiro 3 do mes.
+  cadra; vai despois das probas, para que unhas teselas malas non paren os avisos. Probado en GitHub o mesmo día, a man: 43
+  peticións e 5,7 MB, as 458 no sitio e publicadas; e unha build corrente despois colleunas da caché sen pedir nada.
 - A política de seguridade xa non admite ningunha orixe allea salvo a da API; o estilo perde a fonte do relevo, que ningunha
   capa debuxaba; o mapa leva `minZoom` 9.
 
@@ -7305,7 +7306,8 @@ as rúas se renoven soas.
 - GitHub Pages comprime os `.pbf`: 46.059 bytes por 76.044, noutra web aloxada alí. Contesta en 65-88 ms e OpenFreeMap en
   70-107, oito veces cada un, alternando.
 - Tempo ata ver o mapa, na 1.9.2, navegador novo cada vez: mediana de 2.516 ms con cable e 6.480 cun 4G lento (cinco de cada;
-  unha das lentas non rematou en 40 s). O de despois, cando se publique.
+  unha das lentas non rematou en 40 s). Na 1.10.0, coa mesma sonda, 2.685 e 6.354 (tres de cinco lentas); e medido dentro da páxina,
+  sete de cada, 2.154 e 5.559, sen ningunha que non rematase. Con esta dispersión (5,5 a 7,5 s as lentas) son o mesmo.
 
 ### O mapa que ninguén vía
 
