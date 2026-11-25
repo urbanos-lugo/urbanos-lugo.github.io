@@ -742,6 +742,17 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   seu diagrama). `API_ORIGIN` cambiou o 22 de novembro de 2026 (1.8.2), e o traballo de
   Deno saíu na rolda 91, e o que quedaba del no worker, coa app xa borrada alí, na 92.
 
+## Rutas, API propia, San Fernando e mapa — 24 de novembro de 2026
+
+- **O paseo enteiro só vai primeiro se gaña cinco minutos.** Queda así: en 113 de 1.495 preguntas
+  andando chégase de un a catro minutos antes ca no bus que vai diante, pero andando 29 minutos e non
+  17 (medianas, rolda 93). Segue na lista.
+- **As nove rutas da API do servidor propio quedan.** Están documentadas e probadas, e o sitio publicado
+  non as ten.
+- **O corte de San Fernando dáse por rematado.** A nota do Concello dicía dúas semanas desde o 19 de
+  outubro; o aviso do operador segue en Avisos, dicindo que a súa previsión pasou.
+- **Os mapas paran a uns 10 km da última parada**, e non hai botón de volver.
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).
