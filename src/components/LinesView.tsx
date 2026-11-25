@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import { Bus, Calendar, Check, ChevronRight, Clock, MapPin, Route, Share2, Star, TriangleAlert } from 'lucide-react';
 import { useLang, useT } from '../i18n';
 import { BusLine, BusStop, DayKind, ServiceAlert } from '../types';
@@ -153,12 +154,18 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
     setBusTurn(0);
   }, [currentLine.id, direction.id, day, fromStopId]);
 
-  const busesOnLine = buses.filter((b) => b.lineId === currentLine.id && (b.direction === direction.id || currentLine.directions.length === 1));
+  const busesOn = (way: (typeof currentLine.directions)[number]) => buses.filter((b) => b.lineId === currentLine.id && (b.direction === way.id || currentLine.directions.length === 1));
+  const busesOnLine = busesOn(direction);
   // The rows the list marks "the bus would be arriving here", in the order the button visits them.
-  const busStops = isToday ? busStopsInOrder(direction.stops, new Set(busesOnLine.map((b) => b.nextStopId)), fromIndex) : [];
+  const busStopsOn = (way: typeof direction, from: number) => (isToday ? busStopsInOrder(way.stops, new Set(busesOn(way).map((b) => b.nextStopId)), from) : []);
+  // This way's, or, with none on it, the other's: the button was there only for who had picked the way the bus was going.
+  const busWay = busesOnLine.length ? directionIdx : Math.max(0, currentLine.directions.findIndex((way) => busesOn(way).length > 0));
+  const busStops = busStopsOn(currentLine.directions[busWay], busWay === directionIdx ? fromIndex : -1);
   const busNumber = busStops.length ? (busTurn % busStops.length) + 1 : 0;
   // To the row, and the focus with it: a screen reader hears the stop and that the bus is there by the timetable.
   const goToBus = () => {
+    // The other way's rows have to be there to go to one.
+    if (busWay !== directionIdx) flushSync(() => setDirectionIndex(busWay));
     const row = document.getElementById(`line-stop-${busStops[busNumber - 1]}`);
     if (!row) return;
     row.focus({ preventScroll: true });
@@ -524,6 +531,7 @@ export function LinesView({ selectedLine, lineOpen, fromStopId, onOpenLine, onBa
                 <button type="button" onClick={goToBus} className="btn btn-secondary btn-dense">
                   <Bus className="h-3.5 w-3.5 shrink-0 text-official" aria-hidden="true" />
                   {t.lines.goToBus}
+                  {busWay !== directionIdx ? ` · ${directionLabel(currentLine.directions[busWay], lang)}` : null}
                   {busStops.length > 1 ? ` (${t.lines.busCount(busNumber, busStops.length)})` : null}
                 </button>
               </div>

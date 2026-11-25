@@ -14,6 +14,8 @@ interface MenuDrawerProps extends SettingsProps {
   open: boolean;
   onClose: () => void;
   onOpenTab: (tab: Tab) => void;
+  /** To the first screen of the tab the app opens on. */
+  onHome: () => void;
   alertCount: number;
 }
 
@@ -21,14 +23,20 @@ interface MenuDrawerProps extends SettingsProps {
  * Everything consulted now and then, out of the way of everything consulted every time.
  * Favourites are deliberately NOT here: they are the home screen.
  */
-export function MenuDrawer({ open, onClose, onOpenTab, alertCount, ...settings }: MenuDrawerProps) {
+export function MenuDrawer({ open, onClose, onOpenTab, onHome, alertCount, ...settings }: MenuDrawerProps) {
   const t = useT();
   const lang = useLang();
 
   return (
     <Drawer open={open} onClose={onClose} label={t.menu.open} closeLabel={t.menu.close}>
       <div className="flex items-center justify-between border-b border-edge px-cap-4.5 py-4">
-        <Wordmark />
+        <Wordmark
+          start={settings.start}
+          onHome={() => {
+            onHome();
+            onClose();
+          }}
+        />
         <CloseButton label={t.menu.close} onClick={onClose} />
       </div>
 

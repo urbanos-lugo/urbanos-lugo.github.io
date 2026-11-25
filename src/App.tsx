@@ -153,6 +153,8 @@ export default function App() {
     if ((screen.stop || screen.line || screen.trip) && !screen.ride) return screen.over ? window.history.back() : go({ tab }, true);
     mainRef.current?.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   };
+  /** The app's name: the first screen of the tab it opens on, where the bar goes back to what was last open on it. Not over a ride. */
+  const goHome = () => (activeTab === start || (start === 'plan' && companion.trip) ? goToTab(start) : go({ tab: start }));
   /**
    * A stop's board or a line's page. Opened from its own tab's list it goes over the list, and
    * the way back is the history's; from anywhere else it is a step of its own. Side by side,
@@ -219,7 +221,7 @@ export default function App() {
         <a href="#contido" className="sr-only focus:not-sr-only focus:absolute focus:z-dialog focus:m-2 focus:rounded-tag focus:bg-accent focus:px-3 focus:py-2 focus:text-body focus:font-bold focus:text-on-accent">
           {t.nav.skipToContent}
         </a>
-        <SideNav activeTab={activeTab} setActiveTab={goToTab} alertCount={alerts.announcedIncidents} tripActive={companion.trip !== null} setLang={setLang} theme={theme} setTheme={setTheme} start={start} setStart={setStart} />
+        <SideNav activeTab={activeTab} setActiveTab={goToTab} onHome={goHome} alertCount={alerts.announcedIncidents} tripActive={companion.trip !== null} setLang={setLang} theme={theme} setTheme={setTheme} start={start} setStart={setStart} />
         <div className="flex min-w-0 flex-1 flex-col">
           <TopBar
             onOpenFavorites={() => setIsFavoritesOpen(true)}
@@ -388,7 +390,7 @@ export default function App() {
           <BottomNav activeTab={activeTab} setActiveTab={goToTab} tripActive={companion.trip !== null} />
         </div>
 
-        <MenuDrawer open={isMenuOpen} onClose={() => setIsMenuOpen(false)} onOpenTab={goToTab} alertCount={alerts.announcedIncidents} setLang={setLang} theme={theme} setTheme={setTheme} start={start} setStart={setStart} />
+        <MenuDrawer open={isMenuOpen} onClose={() => setIsMenuOpen(false)} onOpenTab={goToTab} onHome={goHome} alertCount={alerts.announcedIncidents} setLang={setLang} theme={theme} setTheme={setTheme} start={start} setStart={setStart} />
         <FavoritesDrawer
           isOpen={isFavoritesOpen}
           onClose={() => setIsFavoritesOpen(false)}

@@ -583,8 +583,8 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   que se pediu (26 de outubro, arriba). As liñas en paralelo fanas o renderizador
   (`line-offset`), as frechas son unha capa de símbolos sobre a liña, e as paradas unha capa
   de círculos; os nomes seguen nun lenzo propio, na letra da app, dereitos xire como xire.
-- **Sen WebGL2, un aviso e as listas.** Un navegador sen WebGL2, ou que perde o contexto e
-  non o devolve en cinco segundos, ve no sitio do mapa unha frase que o di e que as listas
+- **Sen WebGL2, un aviso e as listas.** Un navegador sen WebGL2, ou que perde o contexto, non
+  o devolve e perde tamén o do mapa construído de novo (rolda 96), ve no sitio do mapa unha frase que o di e que as listas
   din o mesmo. Non hai mapa ráster de respaldo: sería un segundo mapa, con outro código e
   outros fallos, para uns poucos navegadores. `tile.openstreetmap.org` sae da política de
   seguridade, do service worker e de PRIVACY.md.
@@ -769,8 +769,22 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - **`tools/importOfficialData.ts:162` queda como está:** só o dispara a páxina do operador, nunha ferramenta
   que non corre na app.
 
+## O bus que non paga a pena, o botón do bus e o nome da app — 25 de novembro de 2026
+
+- **Un bus que aforra pouco paseo ten que gañalo.** Se aforra menos de dez minutos andando, réstaselle o
+  que a viaxe dura de máis, e o que quede ten que ser cinco. Con dez ou máis queda coma antes: hai quen
+  non pode andar 63 minutos e quere o que lle deixa 43. O paseo enteiro segue sen ir primeiro se non gaña
+  por cinco, e vese sempre que ningún bus dos que se ven chegue antes.
+- **«Ver onde está o bus, segundo o horario»**, e nos dous sentidos: un toque e non dous. «Segundo o
+  horario» queda, porque ninguén publica onde está.
+- **O nome da app leva á primeira pantalla da pestana de inicio**, no menú do móbil e no escritorio.
+- **Un mapa que perde os gráficos constrúese de novo antes de darse por perdido** (rolda 96).
+- **«Paseo do Cine» queda:** existe, aínda que Google Maps non o teña.
+
 ## Quedou aberto
 
+- De quen son as teselas do mapa: seguir con OpenFreeMap, que a lista dun bloqueador pode parar, ou servir
+  as de Lugo desde a propia web (rolda 96).
 - O filete dos bordos a 1,37:1 (arriba).
 - Cun porto ocupado, `pnpm dev` dío e non para, e o README di que para (rolda 95): parar de verdade, ou
   cambiar a frase.

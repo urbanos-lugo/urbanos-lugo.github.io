@@ -79,7 +79,7 @@ Antes de empezar: o teléfono en galego ou non, dá igual; a app en galego desde
 4. Abrir unha liña desde o taboleiro dunha parada que non sexa a primeira nin a última. O
    título do horario debe dicir «Pasos pola túa parada» e o nome da parada, e a súa fila,
    «A túa parada».
-5. «Ir onde vai o bus, segundo o horario»: o foco debe ir á fila que o horario marca e
+5. «Ver onde está o bus, segundo o horario»: o foco debe ir á fila que o horario marca e
    lela, co «segundo o horario» dito.
 
 ## 4. Mapa
@@ -181,7 +181,7 @@ páxina. Logo inglés: 1.1 e 2.4.
 | 3.1 Filas como ligazóns | | | |
 | 3.2 Frechas e saída seleccionada | | | |
 | 3.4 Pasos pola túa parada | | | |
-| 3.5 Ir onde vai o bus | | | |
+| 3.5 Ver onde está o bus | | | |
 | 4.1 Rexión do mapa | | | |
 | 4.3 Liñas do mapa | | | |
 | 4.4 Filtros e capas: orde e retención | | | |

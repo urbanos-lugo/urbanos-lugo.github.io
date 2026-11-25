@@ -1969,6 +1969,41 @@ async function siteDataRefused(): Promise<Finding[]> {
   return findings;
 }
 
+/**
+ * The map's drawing context taken away and not given back, as a phone does with an app left for
+ * another. The map was blank, and then a notice, until the page was reloaded. Built again, it
+ * looks where it was looking; lost once more it is the notice, and coming back to the page
+ * tries again.
+ */
+async function contextLost(browser: Browser): Promise<Finding[]> {
+  const where = 'contexto do mapa';
+  const page = await browser.newPage();
+  const map = `document.querySelector('.maplibregl-map[data-idle] canvas.maplibregl-canvas')`;
+  const lose = `(() => { const c = document.querySelector('canvas.maplibregl-canvas'); window.__lost = c; c.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext(); return true; })()`;
+  const view = `document.querySelector('.maplibregl-map').dataset.view`;
+  const within = async (ms: number, expression: string) => {
+    for (const until = Date.now() + ms; Date.now() < until; await sleep(200)) if (await page.evaluate<boolean>(`!!(${expression})`)) return true;
+    return false;
+  };
+  try {
+    await guard(page, () => 'quiet');
+    await page.send('Emulation.setDeviceMetricsOverride', PHONE);
+    await page.goto(`${BASE}/mapa/`);
+    if (!(await within(20000, map))) return [{ kind: 'reach', where, detail: 'the map never drew' }];
+    const before = await page.evaluate<string>(view);
+    await page.evaluate(lose);
+    if (!(await within(8000, `${map} && ${map} !== window.__lost`))) return [{ kind: 'flow', where, detail: 'with its context lost and not given back, the map is blank until a reload' }];
+    const after = await page.evaluate<string>(view);
+    if (after !== before) return [{ kind: 'flow', where, detail: `built again, the map looks somewhere else: ${before} became ${after}` }];
+    await page.evaluate(lose);
+    if (!(await within(12000, `!document.querySelector('canvas.maplibregl-canvas') && document.querySelector('main [role=status]')`))) return [{ kind: 'flow', where, detail: 'lost again on the map built for it, the context is neither back nor said to be gone' }];
+    await page.evaluate(`document.dispatchEvent(new Event('visibilitychange'))`);
+    return (await within(12000, map)) ? [] : [{ kind: 'flow', where, detail: 'the page come back to, the map is not tried again' }];
+  } finally {
+    await page.close();
+  }
+}
+
 /* ------------------------------------------------------------------------------------- */
 /* The run                                                                               */
 /* ------------------------------------------------------------------------------------- */
@@ -2045,6 +2080,7 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
       await sequence('site data refused', () => siteDataRefused());
       await sequence('the bottom bar where the screen ends, with the page itself scrolled', () => pinnedBar(browser));
       await sequence('a stop’s rows held still under a finger while the board is read again', () => heldBoard(browser));
+      await sequence('map: its context lost and not given back', () => contextLost(browser));
       await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
     }
     // Imported here and not at the top: journeys.ts builds its page helpers from this file's,

@@ -1,7 +1,7 @@
 import { LocateFixed, MapPin, X } from 'lucide-react';
 import { useRef } from 'react';
 import { useT } from '../../i18n';
-import { MAX_QUERY_LENGTH } from '../../utils/searchUtils';
+import { MAX_QUERY_LENGTH, normalizeText } from '../../utils/searchUtils';
 import { rankLandmarks, rankPlaces, rankStops } from '../../utils/places';
 import { PoleCode } from '../ui/PoleCode';
 import { asTyped, walkRows } from '../ui/controls';
@@ -15,16 +15,26 @@ export interface Suggestion {
   score: number;
 }
 
-/** The best eight stops, places and streets for what was typed. */
+/**
+ * The best eight stops, places and streets for what was typed, each name once: a row is picked by
+ * its name, so a place and a street of one name were two rows of one answer. Two stops are told apart by their code.
+ */
 export function suggestionsFor(query: string): Suggestion[] {
   const q = query.trim();
   if (!q || q === 'my_location') return [];
+  const offered = new Set<string>();
   return [
     ...rankStops(q).map(({ stop, score }): Suggestion => ({ id: stop.id, name: stop.name, code: stop.code, type: 'stop', score })),
     ...rankLandmarks(q).map(({ landmark, score }, idx): Suggestion => ({ id: `lm-${idx}`, name: landmark.name, type: 'landmark', score })),
     ...rankPlaces(q).map(({ place, score }, idx): Suggestion => ({ id: `pl-${idx}`, name: place.name, type: 'place', score })),
   ]
     .sort((a, b) => b.score - a.score)
+    .filter(({ name, type }) => {
+      const key = normalizeText(name);
+      const again = offered.has(key);
+      offered.add(key);
+      return type === 'stop' || !again;
+    })
     .slice(0, 8);
 }
 

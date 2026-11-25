@@ -7180,3 +7180,83 @@ o máis longo ten catro apartados, dous parágrafos e 227 caracteres. Ningún se
 
 - Cun porto ocupado, `pnpm dev` dío e **non para**, e o README di que para. Vén de antes; o de agora xa non di
   ademais que está dispoñible. Anotado en DECIDIDO, en «Quedou aberto», coas decisións da rolda.
+
+## Rolda 96: un bus que non paga a pena, e un nome dúas veces — 25 de novembro de 2026
+
+Pedido: tres cousas vistas nun teléfono. Un bus de dous minutos con catro de espera e o resto andando; o mapa,
+en branco ao volver á app, tamén despois de recargar; e «Paseo do Cine» dúas veces ao buscar «cine» en Ruta.
+
+### O bus que non paga a pena
+
+De Fonte dos Ranchos a Cine Cristal, o mércores ás 11:45, andando son 22 minutos e chégase ás 12:07. O que se
+amosaba, cos paseos estimados: o 3.2, 20 andando e 3 en bus, ás 12:08, e diante; o 8 e o 4.2, ás 12:09, con 11 e
+9 andando; e o 7, 17 andando, 4 de espera e 2 en bus, ás 12:11. O paseo, quinto, non se vía.
+
+- **O 3.2 era un erro.** O paseo xa o facía innecesario, pero volvía á lista por ser o que antes chega: a regra
+  miraba se o facía innecesario a que encabeza, e o paseo encabeza só se gaña por cinco. Agora mira tamén o paseo.
+- **O paseo escondido, tamén.** Cinco minutos de vantaxe pídenselle para ir primeiro, non para saír: se ningún bus
+  dos que se ven chega antes, é un deles.
+- **O 7 é unha regra nova.** Aforraba cinco minutos de paseo, o xusto, e duraba un máis. Se o bus aforra menos de
+  dez, agora réstaselle o que a viaxe dura de máis. Con dez ou máis queda coma antes: quen non poida andar 63
+  minutos quere o que lle deixa 43, aínda que tarde 18 máis.
+
+En 1.453 preguntas entre paradas, tres días, cos paseos estimados:
+
+| | antes | agora |
+| :--- | ---: | ---: |
+| encabeza un bus que chega despois do paseo e aforra menos de cinco | 2 | 0 |
+| o paseo chega antes ca todo o que se ve, e non se ve | 27 | 0 |
+| amósase un bus que, restado o que dura de máis, aforra menos de cinco | 231 | 137 |
+| dous minutos ou menos en bus con dez ou máis andando | 82 | 65 |
+
+Os 137 que quedan aforran dez minutos ou máis de paseo. Os 65, cinco despois de restar o que duran de máis, ou
+chegan cinco antes: pouco bus, pero gaña.
+
+### O nome dúas veces
+
+Os campos de Ruta xuntan sitios e rúas, e a fila escóllese polo seu nome: un sitio e unha rúa do mesmo nome
+eran dúas filas da mesma resposta. Das 6.355 buscas dun nome ou dunha palabra de un, 176 amosaban algo dúas veces
+e 7 máis, só co acento distinto; agora, 21, as de tres parellas de postes co mesmo nome e distinto código. O
+buscador de arriba xa non repetía nome (rolda 92).
+
+### O mapa en branco: eran dúas cousas
+
+- **Un bloqueador.** EasyPrivacy, lista que uBlock Origin e Brave traen acesa, leva `||tiles.openfreemap.org/planet`
+  (liña 18147 da copia de uBlock do 25 de novembro, 09:09 UTC). Baixo ese enderezo están o TileJSON e todas as teselas.
+  Medido en Firefox 161, negando só iso: quedan o fondo, as 24 liñas e as paradas, e faltan as rúas e os nomes. É un
+  falso positivo para todos os sitios de OpenFreeMap, con aviso aberto (easylist/easylist 26522), onde o autor de
+  OpenFreeMap pide que a saquen.
+- **Volver á app.** O móbil quítalle o contexto gráfico á app que se deixa por outra. Se o navegador non o devolvía,
+  o mapa quedaba baleiro cinco segundos e despois era o aviso, ata recargar: o da captura, sen fondo nin liña, cos
+  puntos e os botóns. Agora, ao segundo e medio o mapa constrúese de novo, no seu lenzo e onde estaba; se perde
+  tamén ese, o aviso; e ao volver á páxina téntase outra vez. Se o navegador nega o contexto ao construír, o aviso, e
+  non a pantalla caída.
+- Medido en Chrome 157, coa extensión e sen devolvelo: o do trayecto, o da rede e o da parada volven coa mesma vista
+  e os mesmos puntos (3, 0 e 5). O Firefox 161 de escritorio devólveo só, matándolle o proceso da GPU, unha vez á
+  vista e dúas minimizado. No teléfono de onde veu, sen probar.
+- Unha vez pareceu reproducirse en Firefox e non era iso: detrás doutra xanela non lle daba ningún fotograma á páxina
+  (0 nun segundo, 159 antes), e ao traela diante o mapa completouse.
+
+### O bus dunha liña, e o nome da app
+
+- **«Ver onde está o bus, segundo o horario»**, no canto de «Ir onde vai o bus». Se no sentido aberto non vai ningún e no
+  outro si, o botón sae igual, di cara a onde e cambia no mesmo toque. Nun laborable, de cinco en cinco minutos das 06:00
+  ás 23:00: das 3.237 veces que unha liña de dous sentidos ten un bus, en 2.924 vai só nun, e en 1.404 non é o que se abre.
+- **O nome da app**, no menú do móbil e na barra do escritorio, leva á primeira pantalla da pestana de inicio.
+
+### O «Paseo do Cine» existe
+
+É o paseo do parque de Frigsa coas placas dos actores, da Semana de Cine. En OSM leva nome desde o 26 de
+setembro de 2026 (vía 234729385, versión 12); Google Maps aínda non o ten. Queda.
+
+### Comprobado
+
+- Lint, 204 comprobacións, 26 políticas, as tres varridas e a build. Cada fallo das de Ruta, posto de volta, fai caer a súa.
+- `audit:browser`: as secuencias enteiras, 0 achados, coa nova do contexto perdido, que co código de antes falla; e as
+  viaxes do bus e do nome, nos dous móbiles, a fluxo e volta. O resto, no CI.
+
+### Queda
+
+- **De quen son as teselas.** Da lista dun bloqueador non se pode depender: servidas desde a propia web non as pararía
+  ninguén, e quen mira o mapa non lle diría a ninguén máis que o mira. Entre zoom 0 e 14, o cadro dos mapas son 469
+  ficheiros; oito de zoom 14 medidos, de 7 a 185 KB, cinco deles por debaixo de 10. En DECIDIDO, «Quedou aberto».

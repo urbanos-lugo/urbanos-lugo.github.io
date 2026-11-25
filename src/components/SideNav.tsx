@@ -9,6 +9,8 @@ import { Wordmark } from './ui/Wordmark';
 interface SideNavProps extends SettingsProps {
   activeTab: Tab;
   setActiveTab: (tab: Tab) => void;
+  /** To the first screen of the tab the app opens on. */
+  onHome: () => void;
   alertCount: number;
   /** A ride is being followed: the Ruta row says so from any other section. */
   tripActive?: boolean;
@@ -21,14 +23,14 @@ const row = (on: boolean) => `flex h-tap items-center gap-3 rounded-control px-3
  * where a pointer lives instead of where a thumb reaches, with the settings at its foot.
  * Never rendered below lg.
  */
-export function SideNav({ activeTab, setActiveTab, alertCount, tripActive = false, ...settings }: SideNavProps) {
+export function SideNav({ activeTab, setActiveTab, onHome, alertCount, tripActive = false, ...settings }: SideNavProps) {
   const t = useT();
   const lang = useLang();
   return (
     // A landmark, so a screen reader moving by landmark does not meet a rail with holes in it.
     <aside aria-label={t.nav.appName} className="hidden w-rail shrink-0 flex-col border-r border-line bg-bg lg:flex">
       <div className="px-5 pb-4 pt-5">
-        <Wordmark />
+        <Wordmark start={settings.start} onHome={onHome} />
       </div>
 
       <nav className="flex flex-col gap-0.5 px-2.5" aria-label={t.nav.main}>

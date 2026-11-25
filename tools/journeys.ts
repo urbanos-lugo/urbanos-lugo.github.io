@@ -141,7 +141,7 @@ const firstDeparture = `[...document.querySelectorAll('main ul li .figure')].fin
 const lineHeading = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.classList.contains('text-emph'))`;
 /** A searched place's sheet on the map: its "how to get here". */
 const placeRoute = `[...document.querySelectorAll('[role=dialog][aria-modal=true] button')].find((b) => shown(b) && b.textContent.includes(T.arrivals.planTo))`;
-/** A line's "go to the bus" button: its words lead, and a count follows when there are more. */
+/** A line's "go to the bus" button: its words lead, the way follows when the bus is on the other, and a count when there are more. */
 const goToBus = `[...document.querySelectorAll('main button')].find((b) => shown(b) && b.textContent.startsWith(T.lines.goToBus))`;
 /** Where it went: a stop's row has the focus, and the timetable puts a bus there. */
 const atTheBus = `(() => { const a = document.activeElement; return a && a.id.startsWith('line-stop-') && a.textContent.includes(T.lines.busScheduledHere) ? a : null; })()`;
@@ -366,6 +366,18 @@ export const JOURNEYS: Journey[] = [
     steps: [
       tab('T.nav.lines'),
       { tap: `document.getElementById('line-card-1.2')`, wait: lineHeading },
+      { tap: goToBus, stack: 'none', wait: atTheBus },
+    ],
+    answer: stopRowFocused,
+  },
+  {
+    // The button was there only for who had picked the way the bus was going: the 1.1, whose only bus then is on its second.
+    task: 'where the bus would be',
+    entry: 'a line, its button, the bus on the other way',
+    start: {},
+    steps: [
+      tab('T.nav.lines'),
+      { tap: `document.getElementById('line-card-1.1')`, wait: lineHeading },
       { tap: goToBus, stack: 'none', wait: atTheBus },
     ],
     answer: stopRowFocused,
@@ -721,6 +733,17 @@ export const JOURNEYS: Journey[] = [
     start: { night: true },
     steps: [{ tap: `[...document.querySelectorAll('button')].find((b) => shown(b) && b.querySelector('svg.lucide-moon'))`, wait: `document.getElementById('sync-alerts-btn')` }],
     answer: `document.getElementById('sync-alerts-btn')`,
+  },
+  {
+    // The tab the app opens on, set to Ruta: from the lines' own address, by the app's name at the head of the menu.
+    task: 'the first screen',
+    entry: 'menu, the app’s name',
+    start: { path: 'linhas/', stored: { 'urbanos-lugo-start': 'plan' } },
+    steps: [
+      { tap: `labelled(T.menu.open)`, wait: `css('[role=dialog][aria-modal=true]')` },
+      { tap: `all().filter(shown).find((a) => a.closest('[role=dialog]') && a.textContent.trim() === T.nav.appName)`, wait: `!css('[role=dialog][aria-modal=true]') && tabLink(T.nav.plan).getAttribute('aria-current') === 'page'` },
+    ],
+    answer: `[...document.querySelectorAll('main button')].find((b) => shown(b) && b.textContent.includes(T.planner.calculate))`,
   },
   {
     task: 'fares',

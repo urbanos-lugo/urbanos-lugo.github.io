@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useReducer, useRef, lazy, Suspense } from
 import { Navigation, MapPin, ArrowDownUp, Clock, Bus, Footprints, AlertCircle, ArrowRight, ChevronDown, Check, Share2 } from 'lucide-react';
 import { useLang, useT } from '../i18n';
 import { BusStop, BusLine, RoutePlanResult } from '../types';
-import { planTrips, plannedFrom } from '../utils/planner';
+import { MAX_OPTIONS, planTrips, plannedFrom } from '../utils/planner';
 import type { PlanJob } from '../utils/plannerJob';
 import { askPlanner, Superseded } from './planner/askPlanner';
 import { changesNow, pastTimetable, runsUntil, setsOff, underNotice, type NoticeChanges } from '../utils/noticeChanges';
@@ -30,8 +30,6 @@ const RouteMap = lazy(() => import('./Map/RouteMap').then((m) => ({ default: m.R
 
 const DEFAULT_ORIGIN = 'Fonte dos Ranchos';
 const DEFAULT_DEST = 'Hospital Lucus Augusti (HULA)';
-/** More than this and the alternatives stop helping and start being a wall. */
-const MAX_OPTIONS = 4;
 
 const toPoint = (r: { name: string; lat: number; lng: number } | null) => (r ? { name: r.name, lat: r.lat, lng: r.lng } : undefined);
 

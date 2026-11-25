@@ -120,7 +120,8 @@ Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e 
    copiar desde el e pegar en Notas: ten `?parada=`. Na ficha dunha liña, o enderezo da
    liña: `/linhas/1.4/` (en castelán, `/es/lineas/1.4/`). Abrir esa ligazón noutra lapela
    abre a liña, e o título da lapela é o seu.
-4. **Mapa**: debuxa (é MapLibre, WebGL2); pinza e xiro van fluídos; os nomes das paradas
+4. **Mapa**: debuxa (é MapLibre, WebGL2); pasar a outra app, agardar un minuto e volver, e segue
+   debuxado, tamén o do traxecto en Ruta, sen recargar; pinza e xiro van fluídos; os nomes das paradas
    lense; a folla de controis sobe desde abaixo e non queda tapada pola barra de inicio
    (é onde `100dvh` e as zonas seguras rompen). Xirado con dous dedos aparece o compás
    debaixo do zoom, e tocalo volve o norte arriba. «A miña localización» unha vez segue co

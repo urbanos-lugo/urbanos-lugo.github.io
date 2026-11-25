@@ -61,7 +61,8 @@ import { refusedToEveryone } from './checkParsersUnchanged';
 import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
 import { POLE_SEEN_AT_OSM, councilRow } from './lib';
-import { byRank, fareFor, planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
+import { suggestionsFor } from '../src/components/planner/PlaceField';
+import { byRank, fareFor, planTrips, MAX_HEADLINE_WALK_MIN, MAX_OPTIONS, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
 import { answerJob, rejoin } from '../src/utils/plannerJob';
 import { estimateWalk, getNearbyStops, rankLandmarks, rankSites, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
 import { busKey, directionBoardingAt, dueWatches, getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
@@ -673,6 +674,31 @@ ok('walking is always offered', () => {
   assert(onFoot, 'no walking-only option offered');
   assert(onFoot!.fare?.busLegs === 0, 'walking option charges a fare');
   assert(onFoot!.totalWaitMinutes === 0, 'walking option has a wait');
+});
+
+ok('a bus that spares little of a walk and gets there after it is not offered, and the walk is', () => {
+  // Four minutes' wait and two of riding, seventeen on foot, for a walk of 22 that got there first; the answer
+  // above it was twenty on foot and three riding, a minute after the walk; and the walk, fifth, was not shown.
+  const minutes = (plan: RoutePlanResult, type: string) => plan.segments.reduce((sum, seg) => sum + (seg.type === type ? seg.durationMinutes : 0), 0);
+  const there = (plan: RoutePlanResult) => plan.slackMinutes + plan.durationMinutes;
+  const isWalk = (plan: RoutePlanResult) => !plan.segments.some((seg) => seg.type === 'bus');
+  const questions: [string, string, Date][] = [['Fonte dos Ranchos', 'Cine Cristal', new Date(2026, 10, 25, 11, 45)]];
+  for (let i = 0; i < 60; i++) questions.push([BUS_STOPS[(i * 53 + 7) % BUS_STOPS.length].id, BUS_STOPS[(i * 131 + 17) % BUS_STOPS.length].id, new Date(2026, 10, 25, 7 + (i % 14), (i * 37) % 60)]);
+  for (const [from, to, now] of questions) {
+    const plans = planTrips(from, to, { now });
+    const walk = plans.find(isWalk);
+    if (!walk) continue;
+    for (const plan of plans) {
+      if (isWalk(plan) || there(walk) - there(plan) >= 5) continue;
+      const spared: number = minutes(walk, 'walk') - minutes(plan, 'walk');
+      const longer: number = plan.durationMinutes - walk.durationMinutes;
+      assert(spared >= 5, `${from} -> ${to}: a bus that spares ${spared} min of a walk is offered`);
+      assert(spared >= 10 || spared - longer >= 5, `${from} -> ${to}: a bus that spares ${spared} min of a walk and takes ${longer} longer is offered`);
+    }
+    if (plans.slice(0, MAX_OPTIONS).every((plan) => there(plan) >= there(walk))) {
+      assert(plans.indexOf(walk) < MAX_OPTIONS, `${from} -> ${to}: the walk gets there before every answer shown and is not one of them`);
+    }
+  }
 });
 
 ok('walking wins when it is genuinely quicker', () => {
@@ -5282,6 +5308,29 @@ ok('a bus whose time is past is never said to be arriving', () => {
     assert.equal(dueWord(lang, { etaMinutes: 0, overdueMinutes: 3 }), common.overdue(3));
     assert.equal(dueWord(lang, { etaMinutes: 0 }), common.arrivingNow);
     assert.equal(dueWord(lang, { etaMinutes: 4 }), null);
+  }
+});
+
+ok('a place and a street of one name are one row under the trip fields', () => {
+  // A row is picked by its name, so the second was the first again: "cine" offered one street twice, and
+  // 176 of 6,355 searches of a name or a word of one offered something twice. Two poles keep their codes.
+  const seen = new Set<string>();
+  const twice = new Set<string>();
+  for (const { name } of [...BUS_STOPS, ...LUGO_LANDMARKS, ...PLACES, ...OFFICIAL_PLACES, ...STREETS]) {
+    const key = normalizeText(name);
+    if (seen.has(key)) twice.add(name);
+    seen.add(key);
+  }
+  assert(twice.size > 30, `only ${twice.size} names are on two lists: this check has nothing to stand on`);
+  for (const q of ['cine', ...twice]) {
+    const rows = suggestionsFor(q);
+    const before = new Set<string>();
+    for (const { name, type } of rows) {
+      const key = normalizeText(name);
+      assert(type === 'stop' || !before.has(key), `"${q}" offers ${name} twice`);
+      before.add(key);
+    }
+    if (q === 'cine') assert(before.has('paseo do cine'), 'the street is not offered at all');
   }
 });
 

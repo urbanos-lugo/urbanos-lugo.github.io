@@ -473,7 +473,7 @@ export const es: Dict = {
     savedSr: 'guardada',
     againAt: 'y otra vez a las',
     busScheduledHere: 'Según el horario, el bus estaría llegando aquí',
-    goToBus: 'Ir a donde va el bus, según el horario',
+    goToBus: 'Ver dónde está el bus, según el horario',
     busCount: (n: number, of: number) => `${n} de ${of}`,
   },
 

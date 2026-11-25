@@ -49,6 +49,11 @@ const AT_THE_POLE_M = 50;
 
 /** What one bus more has to earn, in minutes of the trip or of walking: a change is a second ticket and a bus that can be missed. */
 const BUS_MUST_EARN_MIN = 5;
+/** Sparing less of a walk than this, a bus has to spare those five on top of what it makes the trip longer: waiting four minutes and riding two spared five, and got there after the walk. */
+const SMALL_SAVING_MIN = 10;
+
+/** How many of the answers a screen shows: more, and the alternatives stop helping and start being a wall. */
+export const MAX_OPTIONS = 4;
 
 /** How far back to look for a departure that still arrives in time. */
 const ARRIVE_BY_LOOKBACK_MIN = 180;
@@ -309,8 +314,13 @@ export function planTrips(fromQuery: string, toQuery: string, options: PlanOptio
       : planDeparting(lang, question, plannedFrom(day, options.departAt));
   let plans = found.filter((plan) => !found.some((simpler) => makesNeedless(simpler, plan)));
   // The soonest there gives way to a simpler trip, not to what comes after it: for a 2 four minutes later a change
-  // was left out, and the trip that led was one to the same minute with 33 of them on foot and not nine.
-  if (plans[0] !== found[0] && !makesNeedless(plans[0], found[0])) plans = [found[0], ...plans];
+  // was left out, and the trip that led was one to the same minute with 33 of them on foot and not nine. The walk is
+  // that simpler trip without leading: a bus that got there after it, twenty minutes on foot of its 22, came back to lead.
+  const onFoot = found.find(isWalkOnly);
+  if (plans[0] !== found[0] && ![plans[0], onFoot].some((simpler) => simpler && makesNeedless(simpler, found[0]))) plans = [found[0], ...plans];
+  // Not first unless it wins by five, the walk is still one of those shown when no bus of them gets there before it.
+  const walkAt = plans.findIndex(isWalkOnly);
+  if (walkAt >= MAX_OPTIONS && costOf(plans[walkAt]) <= costOf(plans[0])) plans.splice(MAX_OPTIONS - 1, 0, ...plans.splice(walkAt, 1));
   if (!tomorrow) return plans;
   // That day's buses answer it, as they always have «chegar antes das»: one that does not run
   // then carries a notice worded from that day, "non presta servizo hoxe", read the day before.
@@ -463,11 +473,12 @@ export const byRank = (a: RoutePlanResult, b: RoutePlanResult): number => (isBet
  * for two minutes that saves neither time nor walking, and no change of one for as little. Not
  * a matter of rank: the soonest there still leads, among the trips that make sense.
  */
-const makesNeedless = (simpler: RoutePlanResult, plan: RoutePlanResult): boolean =>
-  simpler.isServiceActive &&
-  busLegCount(simpler) < busLegCount(plan) &&
-  costOf(simpler) - costOf(plan) < BUS_MUST_EARN_MIN &&
-  walkMinutes(simpler) - walkMinutes(plan) < BUS_MUST_EARN_MIN;
+const makesNeedless = (simpler: RoutePlanResult, plan: RoutePlanResult): boolean => {
+  if (!simpler.isServiceActive || busLegCount(simpler) >= busLegCount(plan) || costOf(simpler) - costOf(plan) >= BUS_MUST_EARN_MIN) return false;
+  const spared = walkMinutes(simpler) - walkMinutes(plan);
+  const longer = isWalkOnly(simpler) && spared < SMALL_SAVING_MIN ? Math.max(0, plan.durationMinutes - simpler.durationMinutes) : 0;
+  return spared - longer < BUS_MUST_EARN_MIN;
+};
 
 interface BoardingCandidate {
   stop: BusStop;

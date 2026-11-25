@@ -178,7 +178,8 @@ debaixo, **preto de min**, que precisa permiso de localización e non inventa di
 se llo negas.
 
 Quen vai sempre directo a outra pestana pode escollela no menú, en **Abrir en**
-(Paradas, Liñas, Mapa ou Ruta): o enderezo de entrada, e a app instalada, abren nela. Só
+(Paradas, Liñas, Mapa ou Ruta): o enderezo de entrada, e a app instalada, abren nela, e o nome
+da app, no menú do móbil e na barra do escritorio, leva á súa primeira pantalla. Só
 se garda a escolla, neste dispositivo, e unha ligazón que nomea unha pestana, unha parada
 ou unha liña segue abrindo o que nomea.
 
@@ -192,8 +193,11 @@ camiño a pé, polas beirarrúas e calculado no dispositivo, chega ata a parada 
 MapLibre GL debuxa os tres mapas, sobre teselas vectoriais de OpenFreeMap, e non pasan duns
 10 km máis alá da última parada: fóra non hai nada desta rede, e as teselas doutro sitio botarían
 as de Lugo das 600 que se gardan para cando non hai rede. Nun
-dispositivo sen WebGL2 —ou cando o navegador perde o contexto WebGL e non o devolve en
-cinco segundos— no sitio do mapa hai un aviso que o di, e as listas din o mesmo. Os zooms
+dispositivo sen WebGL2, no sitio do mapa hai un aviso que o di, e as listas din o mesmo. Se o
+navegador perde o contexto WebGL e non o devolve en segundo e medio, como fan os móbiles coa app
+que se deixa por outra, o mapa constrúese de novo onde estaba; se tamén perde ese, sae o aviso, e ao
+volver á páxina téntase outra vez. Un bloqueador que pare as teselas deixa o mapa sen rúas nin
+nomes, coas liñas e as paradas enteiras (rolda 96). Os zooms
 deste texto son os de MapLibre. O **estilo é do repositorio**, derivado
 do publicado por OpenFreeMap e xerado por `tools/buildMapStyle.ts`: as teselas, os sprites
 e os glifos seguen sendo os seus, as cores son nosas. Están medidas contra o que se debuxa
@@ -609,9 +613,12 @@ cada liña en cada parada que non é a primeira nin a última). Se o aviso do op
 esa parada para esa liña, o cadro dío. Desde a lista de liñas ou o buscador, non hai
 ningunha marcada.
 
-**«Ir onde vai o bus, segundo o horario».** Hoxe, cando o horario pon buses na estrada
-nese sentido, un botón sobre o percorrido leva á fila que marca «o bus estaría chegando
-aquí» e pásalle o foco, así que tamén se usa co teclado e co lector de pantalla. Con varios
+**«Ver onde está o bus, segundo o horario».** Hoxe, cando o horario pon buses na estrada,
+un botón sobre o percorrido leva á fila que marca «o bus estaría chegando aquí» e pásalle o
+foco, así que tamén se usa co teclado e co lector de pantalla. Se nese sentido non vai ningún
+e no outro si, o botón dío e cambia de sentido no mesmo toque. Nun laborable, de cinco en cinco
+minutos, das 3237 veces que unha liña de dous sentidos ten un bus na estrada, en 2924 vai só
+nun, e en 1404 non vai no que se abre. Con varios
 buses, cada toque vai ao seguinte («1 de 2»). Aberta desde unha parada, o primeiro é o que
 vén cara a ela, e despois os de máis atrás; os que xa a pasaron, ao final. Non é unha
 posición medida: é a mesma marca que a lista xa levaba, calculada do cadro.
@@ -1324,8 +1331,11 @@ Regras que evitan suxestións absurdas ou perigosas:
   o día. En «chegar antes das» é ao revés: todas chegan a tempo, e gaña a que sae máis tarde.
 - **Un bus máis ten que gañar algo.** Un bus no canto de andar, ou dous no canto dun, só se
   ofrece se chega cinco minutos antes ou aforra cinco de paseo: un cambio é outro billete e
-  outro bus que se pode perder. A que antes chega só lle deixa o sitio a esa máis sinxela, nunca a
-  outra que veña detrás dela. E entre dous postes no mesmo minuto impreso, o que menos fai andar.
+  outro bus que se pode perder. Fronte a ir andando, se aforra menos de dez de paseo, eses cinco
+  cóntanse despois de restar o que a viaxe dura de máis: agardar catro minutos para ir dous en bus
+  aforraba cinco de 22 e chegaba despois. A que antes chega só lle deixa o sitio a esa máis sinxela
+  ou ao paseo, nunca a outra que veña detrás dela. E entre dous postes no mesmo minuto impreso, o
+  que menos fai andar.
 - **Nunca unha soa parada en bus.** Medido sobre 2.254 tramos ao mediodía, un tramo
   dunha parada son 1,2 min de viaxe tras 5,3 de espera, fronte a un paseo de 5 min entre
   eses dous postes: custa o que custa andar. Os nove que si lle gañaban ao paseo aforraban
@@ -1333,7 +1343,8 @@ Regras que evitan suxestións absurdas ou perigosas:
   sobrevive a un bus con retraso, e a diferenza do paseo non o controlas ti.
 - **O paseo enteiro só lidera se gaña claro.** Ten que sacarlle cinco minutos ao mellor
   bus, e nunca encabeza por riba de 75 minutos: un paseo de tres horas non é unha
-  suxestión, é unha broma. Por debaixo diso ofrécese igual, ordenado como calquera outra.
+  suxestión, é unha broma. Por debaixo diso ofrécese igual, ordenado como calquera outra, e se
+  ningún bus chega antes ca el, é sempre unha das catro que se ven.
 
 Se ningunha combinación funciona, dise.
 

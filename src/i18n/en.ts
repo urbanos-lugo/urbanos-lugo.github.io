@@ -484,7 +484,7 @@ export const en: Dict = {
     savedSr: 'saved',
     againAt: 'and again at',
     busScheduledHere: 'On the timetable, the bus would be reaching this stop now',
-    goToBus: 'Go to where the bus would be, by the timetable',
+    goToBus: 'See where the bus is, by the timetable',
     busCount: (n: number, of: number) => `${n} of ${of}`,
   },
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { Map as MapLibre, NavigationControl, type MapMouseEvent } from 'maplibre-gl';
-import { CONTEXT_GRACE_MS, MAP_STYLES, giveUpOnWebGL, hasWebGL2 } from '../components/Map/mapStyle';
+import { CONTEXT_GRACE_MS, MAP_STYLES, REBUILD_AFTER_MS, askWebGL2Again, giveUpOnWebGL, hasWebGL2 } from '../components/Map/mapStyle';
 import { isClaimed } from '../components/Map/mapLayers';
 import { useIsDark } from './useIsDark';
 import { useT, type Dict } from '../i18n';
@@ -52,8 +52,9 @@ const AROUND_LUGO: [[number, number], [number, number]] = [[-7.72, 42.86], [-7.3
  * One MapLibre map on a container, drawn from coordinates so it can turn: the style for the
  * palette, the zoom bar and, on the maps that turn, the compass, which shows once the map is
  * turned and puts north back; the accessible chrome; and the map the callers draw their
- * layers on. Without WebGL2, or with a context lost and not given back, there is no map: the
- * caller draws MapUnavailable where it would be.
+ * layers on. A context lost and not given back is a map built again, where the last one was
+ * looking. Without WebGL2, or with that one lost too, there is no map: the caller draws
+ * MapUnavailable where it would be.
  */
 export function useMapLibre(containerRef: RefObject<HTMLDivElement | null>, { center, zoom, scrollZoom = true, region, turns = false }: MapOptions): MapHandle {
   const [map, setMap] = useState<MapLibre | null>(null);
@@ -62,15 +63,27 @@ export function useMapLibre(containerRef: RefObject<HTMLDivElement | null>, { ce
   const isDark = useIsDark();
   const t = useT();
   const palette = useRef(isDark);
+  /** Counts the maps built on this container: the first, and one for each context not given back. */
+  const [build, setBuild] = useState(0);
+  /** Built again since the page was come back to: once, so a context that keeps going is said and not chased. */
+  const rebuilt = useRef(false);
+  /** Where the map before this one was looking. */
+  const left = useRef<Pick<MapOptions, 'center' | 'zoom'> & { bearing: number }>({ center, zoom, bearing: 0 });
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el || unavailable) return;
-    const instance = new MapLibre({
+    const from = left.current;
+    const noMap = () => {
+      giveUpOnWebGL();
+      setUnavailable(true);
+    };
+    const options: ConstructorParameters<typeof MapLibre>[0] = {
       container: el,
       style: isDark ? MAP_STYLES.dark : MAP_STYLES.light,
-      center: [center[1], center[0]],
-      zoom,
+      center: [from.center[1], from.center[0]],
+      zoom: from.zoom,
+      bearing: from.bearing,
       // Every zoom in the app is MapLibre's: its world is 512 px across at zoom 0 where Leaflet's
       // was 256, so each is one less than the Leaflet zoom that showed the same streets.
       maxZoom: 18,
@@ -84,7 +97,14 @@ export function useMapLibre(containerRef: RefObject<HTMLDivElement | null>, { ce
       renderWorldCopies: false,
       attributionControl: { compact: false },
       locale: uiStrings(t, region),
-    });
+    };
+    let instance: MapLibre;
+    try {
+      instance = new MapLibre(options);
+    } catch {
+      // A browser that answered the probe and refuses the map's own context: the screen fell over with it.
+      return noMap();
+    }
     palette.current = isDark;
     if (!turns) {
       instance.touchZoomRotate.disableRotation();
@@ -124,16 +144,20 @@ export function useMapLibre(containerRef: RefObject<HTMLDivElement | null>, { ce
     instance.on('click', onClick);
     instance.on('dblclick', () => window.clearTimeout(pending));
 
-    // A context lost and not given back within CONTEXT_GRACE_MS, counted while the page shows.
+    // A context lost and not given back in time, counted while the page shows.
     let lost = false;
     let grace = 0;
     const arm = () => {
       window.clearTimeout(grace);
-      grace = window.setTimeout(() => {
-        if (!lost || document.visibilityState !== 'visible') return;
-        giveUpOnWebGL();
-        setUnavailable(true);
-      }, CONTEXT_GRACE_MS);
+      grace = window.setTimeout(
+        () => {
+          if (!lost || document.visibilityState !== 'visible') return;
+          if (rebuilt.current) return noMap();
+          rebuilt.current = true;
+          setBuild((n) => n + 1);
+        },
+        rebuilt.current ? CONTEXT_GRACE_MS : REBUILD_AFTER_MS,
+      );
     };
     instance.on('webglcontextlost', () => {
       lost = true;
@@ -145,7 +169,7 @@ export function useMapLibre(containerRef: RefObject<HTMLDivElement | null>, { ce
     });
     // The map stays mounted behind display:none between tab visits, and a phone unlocked again resized nothing.
     const onVisible = () => {
-      if (document.visibilityState !== 'visible') return;
+      if (document.visibilityState !== 'visible') return void (rebuilt.current = false);
       instance.resize();
       if (lost) arm();
     };
@@ -161,10 +185,24 @@ export function useMapLibre(containerRef: RefObject<HTMLDivElement | null>, { ce
       observer?.disconnect();
       document.removeEventListener('visibilitychange', onVisible);
       window.removeEventListener('pageshow', onVisible);
+      const { lng, lat } = instance.getCenter();
+      left.current = { center: [lat, lng], zoom: instance.getZoom(), bearing: instance.getBearing() };
       instance.remove();
       setMap(null);
+      // The next map's style is not loaded yet: drawn for the last one's, its layers had no style to go on.
+      setLoaded(null);
     };
-    // Built once: a later centre moves the view rather than rebuilding the map.
+    // Built once, and once for each context not given back: a later centre moves the view rather than rebuilding the map.
+  }, [unavailable, build]);
+
+  // What could not be drawn is tried again on coming back to the page: it took a reload to have the map again.
+  useEffect(() => {
+    if (!unavailable) return;
+    const again = () => {
+      if (document.visibilityState === 'visible' && askWebGL2Again()) setUnavailable(false);
+    };
+    document.addEventListener('visibilitychange', again);
+    return () => document.removeEventListener('visibilitychange', again);
   }, [unavailable]);
 
   // The other palette's style, loaded whole: the layers drawn over it come back with `styled`.

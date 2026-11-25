@@ -19,10 +19,17 @@ setWorkerUrl(maplibreWorkerUrl);
 export const MAP_STYLES = { light: lightStyle as unknown as StyleSpecification, dark: darkStyle as unknown as StyleSpecification };
 
 /**
- * How long a lost WebGL context is given to come back. "WebGL context lost" was seen in a
- * production console; a browser that restores a context does so within a second or two, so
- * five is past that and still a hiccup rather than a screen. Counted only while the page is
- * visible: a phone that hands the context back on return must not come back to no map.
+ * How long a lost WebGL context is given to come back before the map is built again on a
+ * canvas of its own: a phone takes the context away from an app left for another, and Firefox
+ * did not always give it back, so the map was blank until the page was reloaded. Counted only
+ * while the page is visible.
+ */
+export const REBUILD_AFTER_MS = 1_500;
+
+/**
+ * And how long one lost again, on the map built for it, before there is no map. "WebGL context
+ * lost" was seen in a production console; a browser that restores a context does so within a
+ * second or two, so five is past that and still a hiccup rather than a screen.
  */
 export const CONTEXT_GRACE_MS = 5_000;
 
@@ -38,7 +45,13 @@ export function hasWebGL2(): boolean {
   return webgl2;
 }
 
-/** A context that went away and did not come back: no map for the rest of the visit. */
+/** A context that went away, and the one after it: no map until the page is come back to. */
 export function giveUpOnWebGL(): void {
   webgl2 = false;
+}
+
+/** The answer asked again, on coming back to the page: what the browser could not draw then it may now. */
+export function askWebGL2Again(): boolean {
+  webgl2 = null;
+  return hasWebGL2();
 }
