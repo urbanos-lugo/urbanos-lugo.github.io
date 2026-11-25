@@ -1,9 +1,9 @@
 /**
  * The points of a PMTiles v3 archive of vector tiles, read with zlib alone: the header, the
  * directories and the tiles over a box, each asked for as one byte range of a file that may
- * be gigabytes (AllThePlaces publishes one of 6 GB a week). The caller supplies `read`, so
- * this file makes no request of its own: importPlaces.ts does, by hand. Only point features
- * are decoded; MVT lines and polygons are skipped.
+ * be gigabytes (AllThePlaces publishes one of 6 GB a week, OpenFreeMap a planet of 88). The
+ * caller supplies `read`, so this file makes no request of its own: importPlaces.ts and
+ * importTiles.ts do, by hand. Only point features are decoded; of lines and polygons, the words.
  */
 import { gunzipSync } from 'node:zlib';
 
@@ -181,17 +181,77 @@ export function decodePoints(tile: Uint8Array, z: number, x: number, y: number):
   return points;
 }
 
+/** The words a tile writes: the values of `keys` on every feature of every layer it has, and the layers' names. */
+export function wordsOf(tile: Uint8Array, keys: ReadonlySet<string>): { layers: string[]; words: string[] } {
+  const layers: string[] = [];
+  const words: string[] = [];
+  const top = new Reader(tile);
+  while (!top.done) {
+    const key = top.varint();
+    if (key >> 3 !== 3) {
+      top.skip(key & 7);
+      continue;
+    }
+    const layer = new Reader(top.bytes());
+    const named: string[] = [];
+    const values: string[] = [];
+    const tags: number[][] = [];
+    while (!layer.done) {
+      const k = layer.varint();
+      const field = k >> 3;
+      if (field === 1) layers.push(layer.string());
+      else if (field === 3) named.push(layer.string());
+      else if (field === 4) {
+        const v = new Reader(layer.bytes());
+        let text = '';
+        while (!v.done) {
+          const vk = v.varint();
+          if (vk >> 3 === 1) text = v.string();
+          else v.skip(vk & 7);
+        }
+        values.push(text);
+      } else if (field === 2) {
+        const f = new Reader(layer.bytes());
+        while (!f.done) {
+          const fk = f.varint();
+          if (fk >> 3 !== 2) {
+            f.skip(fk & 7);
+            continue;
+          }
+          const p = new Reader(f.bytes());
+          const pairs: number[] = [];
+          while (!p.done) pairs.push(p.varint());
+          tags.push(pairs);
+        }
+      } else layer.skip(k & 7);
+    }
+    for (const pairs of tags) for (let i = 0; i + 1 < pairs.length; i += 2) if (keys.has(named[pairs[i]]) && values[pairs[i + 1]]) words.push(values[pairs[i + 1]]);
+  }
+  return { layers, words };
+}
+
+/** The tiles over [south, west, north, east] from one zoom to another, as z/x/y. */
+export function tilesOver([south, west, north, east]: Box, from: number, to: number): string[] {
+  const tiles: string[] = [];
+  for (let z = from; z <= to; z++) {
+    const [x0, y0] = tileOf(north, west, z);
+    const [x1, y1] = tileOf(south, east, z);
+    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) tiles.push(`${z}/${x}/${y}`);
+  }
+  return tiles;
+}
+
 const tileOf = (lat: number, lng: number, z: number) => {
   const n = 2 ** z;
   const rad = (lat * Math.PI) / 180;
   return [Math.floor(((lng + 180) / 360) * n), Math.floor(((1 - Math.asinh(Math.tan(rad)) / Math.PI) / 2) * n)];
 };
 
-/**
- * Every point in the archive's tiles over [south, west, north, east] at its deepest zoom,
- * where nothing has been dropped to thin the map. Directories are read once each.
- */
-export async function pointsInBox(read: ReadRange, [south, west, north, east]: [number, number, number, number]): Promise<{ points: TilePoint[]; tiles: number }> {
+/** [south, west, north, east] */
+export type Box = [number, number, number, number];
+
+/** An archive read as far as its directories, each once, as they are needed: where each tile is. */
+async function open(read: ReadRange) {
   const head = await read(0, 127);
   const view = new DataView(head.buffer, head.byteOffset, head.byteLength);
   if (new TextDecoder().decode(head.subarray(0, 7)) !== 'PMTiles' || head[7] !== 3) throw new Error('not a PMTiles v3 archive');
@@ -207,25 +267,63 @@ export async function pointsInBox(read: ReadRange, [south, west, north, east]: [
     if (!dirs.has(key)) dirs.set(key, directory(unpack(await read(offset, length), internalGzip)));
     return dirs.get(key)!;
   };
-  const [x0, y0] = tileOf(north, west, z);
-  const [x1, y1] = tileOf(south, east, z);
+  /** Where a tile is in the file, or null for one it does not have. */
+  const locate = async (id: number): Promise<{ offset: number; length: number } | null> => {
+    let [offset, length] = [rootOffset, rootLength];
+    for (let depth = 0; depth < 4; depth++) {
+      const e = find(await dir(offset, length), id);
+      if (!e) return null;
+      if (e.runLength > 0) return { offset: dataOffset + e.offset, length: e.length };
+      [offset, length] = [leafOffset + e.offset, e.length];
+    }
+    return null;
+  };
+  return { z, locate, tile: (raw: Uint8Array) => unpack(raw, tileGzip) };
+}
+
+/**
+ * Every point in the archive's tiles over [south, west, north, east] at its deepest zoom,
+ * where nothing has been dropped to thin the map.
+ */
+export async function pointsInBox(read: ReadRange, [south, west, north, east]: Box): Promise<{ points: TilePoint[]; tiles: number }> {
+  const { z, locate, tile } = await open(read);
   const points: TilePoint[] = [];
   let tiles = 0;
-  for (let x = x0; x <= x1; x++) {
-    for (let y = y0; y <= y1; y++) {
-      const id = tileId(z, x, y);
-      let [offset, length] = [rootOffset, rootLength];
-      for (let depth = 0; depth < 4; depth++) {
-        const e = find(await dir(offset, length), id);
-        if (!e) break;
-        if (e.runLength > 0) {
-          tiles++;
-          points.push(...decodePoints(unpack(await read(dataOffset + e.offset, e.length), tileGzip), z, x, y));
-          break;
-        }
-        [offset, length] = [leafOffset + e.offset, e.length];
-      }
-    }
+  for (const key of tilesOver([south, west, north, east], z, z)) {
+    const [, x, y] = key.split('/').map(Number);
+    const where = await locate(tileId(z, x, y));
+    if (!where) continue;
+    tiles++;
+    points.push(...decodePoints(tile(await read(where.offset, where.length)), z, x, y));
   }
   return { points: points.filter((p) => p.lat >= south && p.lat <= north && p.lng >= west && p.lng <= east), tiles };
+}
+
+/** Bytes between two tiles worth reading along with them rather than asking twice. */
+const NEAR_BYTES = 32 * 1024;
+
+/**
+ * The archive's tiles over [south, west, north, east] from one zoom to another, unpacked, by
+ * z/x/y. Tiles that lie together in the file are one request: it is ordered along a curve that
+ * keeps neighbours close.
+ */
+export async function tilesInBox(read: ReadRange, box: Box, from: number, to: number): Promise<Map<string, Uint8Array>> {
+  const { locate, tile } = await open(read);
+  const found: { key: string; offset: number; length: number }[] = [];
+  for (const key of tilesOver(box, from, to)) {
+    const [z, x, y] = key.split('/').map(Number);
+    const where = await locate(tileId(z, x, y));
+    if (where) found.push({ key, ...where });
+  }
+  found.sort((a, b) => a.offset - b.offset);
+  const tiles = new Map<string, Uint8Array>();
+  for (let i = 0; i < found.length; ) {
+    const start = found[i].offset;
+    let end = start + found[i].length;
+    let j = i + 1;
+    while (j < found.length && found[j].offset - end <= NEAR_BYTES) end = Math.max(end, found[j].offset + found[j++].length);
+    const run = await read(start, end - start);
+    for (; i < j; i++) tiles.set(found[i].key, tile(run.subarray(found[i].offset - start, found[i].offset - start + found[i].length)));
+  }
+  return tiles;
 }

@@ -336,7 +336,7 @@
       "items": [
         "festivos.json e structuralNotices.ts escríbense a man",
         "map-style-*.json: buildMapStyle.ts adapta o estilo de OpenFreeMap",
-        "fetchAlerts escribe public/alerts.json cada hora, fóra de src/data/"
+        "fetchAlerts escribe public/alerts.json cada hora; importTiles, public/map cada mes"
       ]
     }
   ]

@@ -1277,7 +1277,7 @@ interface Result {
 
 const noise = /\[vite\]|React DevTools|Download the React/;
 /** What refusing every other host makes the page say, which is this audit's doing and not the app's. */
-const refused = /ERR_BLOCKED_BY_CLIENT|ERR_INTERNET_DISCONNECTED|openfreemap|Failed to fetch|AJAXError|NetworkError|status code 500|500 \(Internal Server Error\)/;
+const refused = /ERR_BLOCKED_BY_CLIENT|ERR_INTERNET_DISCONNECTED|Failed to fetch|AJAXError|NetworkError|status code 500|500 \(Internal Server Error\)/;
 
 export interface Worker {
   page: Session;

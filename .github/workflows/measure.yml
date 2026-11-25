@@ -15,8 +15,7 @@ name: Measure in a browser
 #
 # Network: the built server answers /api/alerts by reading buslugo.com and the Concello's
 # traffic feed once, then from memory for half an hour -- the same handful of requests
-# check-source.yml makes, once a week, and nothing in a loop. The map round also fetches
-# OpenFreeMap tiles as any visit does.
+# check-source.yml makes, once a week, and nothing in a loop.
 on:
   schedule:
     - cron: '41 6 * * 1' # Mondays, after check-source, off the hour

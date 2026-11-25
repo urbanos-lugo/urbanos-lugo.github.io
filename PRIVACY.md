@@ -89,19 +89,17 @@ and nothing sent anywhere.
 
 ## What your browser requests from other people
 
-Opening any web page tells the servers it contacts your IP address. This one contacts:
+Opening any web page tells the servers it contacts your IP address. Besides its own, this one contacts:
 
 | Host | What for | When |
 | :--- | :--- | :--- |
-| `tiles.openfreemap.org` | the map background | when you open a map |
 | the API, if one is configured (on the published site, `urbanos-lugo-api.urbanos-lugo.workers.dev`) | service notices, and the operator's own minutes behind a QR | each time the app opens, again if it is on screen half an hour later (every two minutes while it does not answer), and when you ask it to check; and on a stop you reached by scanning its pole or by a shared stop link |
 
 That is the whole list. The published site has an API configured, so an ordinary visit
-meets it once, for the notices, and once more for every half hour it stays in use, and meets
-the map's host when you open a map. The map's
-host necessarily learns roughly which part of Lugo you are looking at, because that is
-what a tile request is. None of them is asked to identify you, and no identifier of ours
-travels with any of these requests.
+meets it once, for the notices, and once more for every half hour it stays in use. The map's
+background, its letters and its icons come from this site, as everything else does, so no
+other company learns which part of Lugo you are looking at. The API is not asked to identify
+you, and no identifier of ours travels with any of these requests.
 
 **The typeface used to be on that list** — it came from Google's CDN, so every visit told
 Google you had opened a bus timetable. It is served from this site now

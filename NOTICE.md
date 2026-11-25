@@ -59,7 +59,10 @@ The full account, with what each source permits, is in `DATA.md`.
 - Chemists, health centres and hospitals: **Servizo Galego de Saúde**; schools: **Consellería
   de Educación**; both through the open data of the **Xunta de Galicia**, CC BY-SA 4.0. They
   ship in `src/data/official-places.json` under that licence.
-- Map tiles: **OpenFreeMap**, serving the **OpenMapTiles** schema built from OpenStreetMap.
+- Map tiles, redistributed in `public/map`: **OpenFreeMap**'s, in the **OpenMapTiles** schema
+  (design CC BY 4.0) built from OpenStreetMap (ODbL 1.0). The letters on them are **Noto Sans**,
+  The Noto Project Authors, SIL Open Font License 1.1, whose text travels with them in
+  `public/map/fonts/OFL.txt`; the icons are **Maki**'s, CC0.
 - Routing: the **OSRM** project's public demo server, at build time only. The walking
   network is built from OpenStreetMap at build time as well and routed on the reader's
   own device, so nothing is asked of anybody while the app is being used.

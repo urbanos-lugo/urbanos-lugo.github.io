@@ -18,6 +18,16 @@ export function metresBetween(lat1: number, lon1: number, lat2: number, lon2: nu
 export const getDistanceMeters = (lat1: number, lon1: number, lat2: number, lon2: number): number =>
   Math.round(metresBetween(lat1, lon1, lat2, lon2));
 
+/**
+ * As far as a map goes, [lng, lat] south-west and north-east: some 10 km past the last stop each
+ * way. There is nothing of this network beyond, and a reader who drags out of it has the way back
+ * to find. The map's tiles are kept for this box (tools/importTiles.ts), so it cannot grow alone.
+ */
+export const AROUND_LUGO: [[number, number], [number, number]] = [[-7.72, 42.86], [-7.365, 43.16]];
+
+/** The zooms those tiles are kept at: a map inside the box on the narrowest screen asks for none under the first, and the renderer draws past the last from it. */
+export const TILE_ZOOMS = { min: 9, max: 14 };
+
 /** What a device orientation event carries, as far as a heading needs it; iOS adds its own two fields. */
 export interface OrientationReading {
   alpha: number | null;

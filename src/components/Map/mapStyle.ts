@@ -1,22 +1,43 @@
-import { setWorkerUrl, type StyleSpecification } from 'maplibre-gl';
+import { setWorkerUrl, type StyleSpecification, type VectorSourceSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import darkStyle from '../../data/map-style-dark.json';
 import lightStyle from '../../data/map-style-light.json';
+import tiles from '../../data/map-tiles.json';
 
 // The renderer works out where its worker lives at runtime, which no bundler can see, so
 // the file is never emitted and the map draws nothing. Naming the vendor file itself as a
 // worker entry makes Vite emit it same-origin, which is what keeps worker-src at 'self'.
 setWorkerUrl(maplibreWorkerUrl);
 
+/** Where the tiles, the letters and the icons are: beside the page (public/map). */
+const FILES = `${window.location.origin}${import.meta.env.BASE_URL}map/`;
+
 /**
- * The map: OpenFreeMap's vector tiles, drawn with a style of our own (tools/buildMapStyle.ts)
- * so the phone draws the map from coordinates — sharp at any zoom, turned any way, and dark at
- * eleven at night. No key, no account; the terms ask only that the attribution stay visible,
- * which the style's sources carry. The price is WebGL2: without it the map says so
+ * The style with its files' whole addresses, which the renderer asks for. The tiles' carries the
+ * run they were cut from: renewed, they are asked for again, where the service worker keeps what
+ * an address gave for thirty days.
+ */
+const here = (style: StyleSpecification): StyleSpecification => {
+  const base = style.sources.openmaptiles as VectorSourceSpecification;
+  return {
+    ...style,
+    sprite: FILES + style.sprite,
+    glyphs: FILES + style.glyphs,
+    sources: { ...style.sources, openmaptiles: { ...base, tiles: base.tiles!.map((tile) => `${FILES}${tile}?v=${tiles.version}`) } },
+  };
+};
+
+/**
+ * The map: Lugo's vector tiles, cut from OpenFreeMap's planet and served from here
+ * (tools/importTiles.ts), drawn with a style of our own (tools/buildMapStyle.ts) so the phone
+ * draws the map from coordinates — sharp at any zoom, turned any way, and dark at eleven at
+ * night. Nobody else is asked for any of it, so nobody is told what is looked at, and a
+ * blocker's list that stopped OpenFreeMap's host stops nothing. The credit stays visible, as
+ * the style's sources carry it. The price is WebGL2: without it the map says so
  * (MapUnavailable) and the lists beside it do the work.
  */
-export const MAP_STYLES = { light: lightStyle as unknown as StyleSpecification, dark: darkStyle as unknown as StyleSpecification };
+export const MAP_STYLES = { light: here(lightStyle as unknown as StyleSpecification), dark: here(darkStyle as unknown as StyleSpecification) };
 
 /**
  * How long a lost WebGL context is given to come back before the map is built again on a

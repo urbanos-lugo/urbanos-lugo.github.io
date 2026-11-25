@@ -781,10 +781,23 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - **Un mapa que perde os gráficos constrúese de novo antes de darse por perdido** (rolda 96).
 - **«Paseo do Cine» queda:** existe, aínda que Google Maps non o teña.
 
+## As teselas do mapa, desde a propia web — 25 de novembro de 2026
+
+- **Sérvense aquí**, no canto de pedilas a OpenFreeMap, que se collera en agosto por non pedir clave nin
+  conta: unha regra dunha lista (EasyPrivacy, 24 de novembro, `||tiles.openfreemap.org/planet`) deixou sen
+  rúas o mapa de quen a usa, e uBlock Origin e Brave tráena acesa. De paso, ninguén máis sabe que zona
+  mira quen mira, e o mapa non depende de que outro servidor responda.
+- **Non se gardan todas no teléfono ao entrar.** O 18 de novembro mediuse iso mesmo para usar o mapa sen
+  rede (100 ficheiros, 2,2 MB máis para cada visita) e descartouse. Segue descartado: pídense ao abrir un
+  mapa, catro nun teléfono, e o que pesan é o mesmo que pesaban.
+- **Dos ficheiros que OpenFreeMap publica para quen aloxa o mapa**, non do seu servidor de teselas, que nos
+  seus termos (24 de novembro) deixa fóra a recollida automática.
+- **Renóvanse soas unha vez ao mes**, e só se están enteiras; se non, quedan as de antes. As do
+  repositorio son as de partida, e renóvanse a man cando convén.
+- **Sen o relevo** (zoom 0 a 6): ningún mapa chega a eses zooms desde que paran a 10 km da última parada.
+
 ## Quedou aberto
 
-- De quen son as teselas do mapa: seguir con OpenFreeMap, que a lista dun bloqueador pode parar, ou servir
-  as de Lugo desde a propia web (rolda 96).
 - O filete dos bordos a 1,37:1 (arriba).
 - Cun porto ocupado, `pnpm dev` dío e non para, e o README di que para (rolda 95): parar de verdade, ou
   cambiar a frase.

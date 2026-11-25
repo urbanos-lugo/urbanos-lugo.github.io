@@ -112,9 +112,9 @@
     },
     {
       "id": "tiles",
-      "type": "external",
-      "label": "OpenFreeMap",
-      "sublabel": "teselas vectoriais",
+      "type": "cloud",
+      "label": "public/map",
+      "sublabel": "o mapa, desde Pages",
       "pos": [
         870,
         60
@@ -316,7 +316,7 @@
       "dot": "amber",
       "title": "Fóra",
       "items": [
-        "Teselas de OpenFreeMap; sen WebGL2, un aviso no sitio do mapa",
+        "O mapa non: é desta web; sen WebGL2, un aviso no sitio",
         "Sen API, os avisos saen da copia que a build toma cada hora",
         "Ningunha fonte do dataset se chama en execución"
       ]

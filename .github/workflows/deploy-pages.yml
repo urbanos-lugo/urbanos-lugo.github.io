@@ -3,12 +3,13 @@ name: Deploy to GitHub Pages
 # Pushes deploy the app. The schedule re-deploys with a fresh snapshot of the operator's
 # service notices, which is the only piece of data that changes on its own — the browser
 # cannot fetch buslugo.com directly because of CORS, and a static host has no server to
-# do it at runtime.
+# do it at runtime. And once a month it renews the map's streets.
 on:
   push:
     branches: [main]
   schedule:
     - cron: '17 * * * *' # hourly, off the hour to avoid the busiest minute
+    - cron: '47 4 3 * *' # the map's tiles, once a month
   workflow_dispatch:
 
 # Least privilege at the top, then each job asks for what it needs. The build job
@@ -53,6 +54,31 @@ jobs:
       # Best effort: if buslugo.com is unreachable the committed snapshot is used as is.
       - name: Refresh service notices
         run: pnpm exec tsx tools/fetchAlerts.ts || echo "notice refresh failed, keeping the committed snapshot"
+
+      # The map's streets, cut once a month from the planet OpenFreeMap publishes for whoever
+      # hosts the map, and kept in the cache for the builds in between, which ask nobody. Put in
+      # place only if they are whole and newer than the committed ones (tools/importTiles.ts):
+      # else, or with the cache gone, the committed ones are published. After the tests on
+      # purpose, so a set that is not fit never stops the notices.
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/map
+          key: map-tiles-${{ github.run_id }}
+          restore-keys: map-tiles-
+
+      - name: Renew the map's tiles
+        if: github.event.schedule == '47 4 3 * *'
+        run: pnpm exec tsx tools/importTiles.ts --fetch || echo "tiles not renewed, keeping the last"
+
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: github.event.schedule == '47 4 3 * *' && hashFiles('.cache/map/version.json') != ''
+        with:
+          path: .cache/map
+          key: map-tiles-${{ github.run_id }}
+
+      - name: Put the renewed tiles in place
+        if: hashFiles('.cache/map/version.json') != ''
+        run: pnpm exec tsx tools/importTiles.ts --apply || echo "tiles not fit, keeping the committed ones"
 
       # Project sites live at https://<user>.github.io/<repo>/. A repository named
       # <owner>.github.io is its owner's own site, served at the root, and is built for the

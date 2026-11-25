@@ -28,6 +28,7 @@ import PLACES from '../src/data/places.json';
 import OFFICIAL_PLACES from '../src/data/official-places.json';
 import { mergePlaces, tidyName } from './importPlaces';
 import { tileId } from './pmtiles';
+import { RANGES, TILES, unfit } from './importTiles';
 import STREETS from '../src/data/streets.json';
 import { LANGS, translations } from '../src/i18n';
 import type { RoutePlanResult, ServiceAlert, TripSegment } from '../src/types';
@@ -49,7 +50,7 @@ import { LANG_PREFIX, PATHS, SLUGS, isCrawler, lineSlug, parsePath, pathFor, pic
 import { fetchWalkingPath, hopFromOrigin, walkHopKey, walkHopsOf, type WalkPaths } from '../src/services/walkingPath';
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
 import { projectOnto, routeOnFoot } from '../src/utils/walkRouter';
-import { accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
+import { AROUND_LUGO, TILE_ZOOMS, accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
 import { giveWay, nameAt, nameBox, placeNames, placeOn, sideOf } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
 import { HOLIDAY_YEARS, buildRuns, dayKind, daysUntilKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, isoDay, anchorIndex, nextRunAt, scheduledDuration } from '../src/utils/schedule';
@@ -60,7 +61,7 @@ import { noticesReviewDue } from './checkNoticesReviewed';
 import { refusedToEveryone } from './checkParsersUnchanged';
 import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
-import { POLE_SEEN_AT_OSM, councilRow } from './lib';
+import { POLE_SEEN_AT_OSM, at, councilRow } from './lib';
 import { suggestionsFor } from '../src/components/planner/PlaceField';
 import { byRank, fareFor, planTrips, MAX_HEADLINE_WALK_MIN, MAX_OPTIONS, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
 import { answerJob, rejoin } from '../src/utils/plannerJob';
@@ -2645,7 +2646,7 @@ await okAsync('the address the app calls for /api is the one its policy admits, 
   // Without the setting the app asks beside the page, and the policy names no other origin to ask.
   assert(apiUrl('alerts', { VITE_API_ORIGIN: undefined, BASE_URL: '/' }) === '/api/alerts', 'without VITE_API_ORIGIN the app asks somewhere other than beside the page');
   const connect = CSP_HEADER.match(/connect-src ([^;]+)/)?.[1].split(' ') ?? [];
-  assert(connect.filter((s) => s.startsWith('https://')).every((s) => /openfreemap/.test(s)), `with no API origin set, connect-src admits ${connect.join(' ')}`);
+  assert(connect.join(' ') === "'self'", `with no API origin set, connect-src admits ${connect.join(' ')}`);
 });
 
 ok('a star or a recent stop set in one open copy of the app survives another copy', () => {
@@ -4977,11 +4978,9 @@ ok('the basemap style is still ours, and still credits who it came from', () => 
     assert(style.version === 8, `${theme}: style version is ${style.version}`);
     assert(style.layers.length > 40, `${theme}: only ${style.layers.length} layers survived`);
 
-    // Tiles, sprites and glyphs stay on the one host the policy in src/security/csp.ts
-    // admits. Pointing any of them elsewhere is a policy change, not a style change.
-    for (const url of [style.sprite, style.glyphs]) {
-      assert(url.startsWith('https://tiles.openfreemap.org/'), `${theme}: ${url} is not served by OpenFreeMap, so the policy would block it`);
-    }
+    // Tiles, sprites and glyphs are beside the page, in public/map: the policy in
+    // src/security/csp.ts admits no host to ask for them, and nobody is told what is looked at.
+    assert(!/https?:/.test(JSON.stringify([style.sprite, style.glyphs, Object.values(style.sources).map(({ attribution: _, ...source }) => source)])), `${theme}: the style names another host, which the policy would block`);
     // Their terms ask for the credit and the file carries it as well as the map control,
     // so a style lifted out of here on its own still says where it came from.
     for (const [name, source] of Object.entries(style.sources)) {
@@ -4990,6 +4989,35 @@ ok('the basemap style is still ours, and still credits who it came from', () => 
         assert(credit.includes(owed), `${theme}: source ${name} does not credit ${owed}`);
       }
     }
+  }
+});
+
+ok('every tile, letter and icon a map can ask for is here', () => {
+  // The map's files are this site's since a blocker's list stopped the host they came from. One
+  // that is missing is a hole in the map, or a name that never draws, and nothing else says so.
+  const tile = (key: string) => {
+    const file = at('public', 'map', 'tiles', `${key}.pbf`);
+    return existsSync(file) ? readFileSync(file) : null;
+  };
+  const stamp = JSON.parse(read('src/data/map-tiles.json')) as { version: string; tiles: number; bytes: number };
+  assert(stamp.version && stamp.tiles === TILES.length, `the stamp says ${stamp.tiles} tiles of «${stamp.version}», and a map can ask for ${TILES.length}`);
+  assert.equal(unfit(tile, stamp.bytes), null);
+  // Torn, short or with a letter nobody kept, they are not put in place.
+  assert(/missing/.test(unfit((key) => (key === TILES[7] ? null : tile(key)), stamp.bytes) ?? ''), 'a set with a tile missing is put in place');
+  assert(/bytes/.test(unfit(tile, stamp.bytes * 2) ?? ''), 'a set half the size of the last is put in place');
+  for (const [theme, style] of Object.entries(mapStyles())) {
+    const source = style.sources.openmaptiles as unknown as { minzoom: number; maxzoom: number; bounds: number[] };
+    assert.deepEqual([source.minzoom, source.maxzoom, source.bounds], [TILE_ZOOMS.min, TILE_ZOOMS.max, AROUND_LUGO.flat()], `${theme}: the style asks for tiles other than the ones kept`);
+    for (const { layout } of style.layers as { layout?: Record<string, unknown> }[]) {
+      for (const face of (layout?.['text-font'] as string[] | undefined) ?? []) {
+        for (const range of RANGES) assert(existsSync(at('public', 'map', 'fonts', face, `${range}.pbf`)), `${theme}: ${face} ${range} is not kept`);
+      }
+    }
+  }
+  for (const sprite of ['sprite', 'sprite@2x']) {
+    const icons = JSON.parse(read(`public/map/${sprite}.json`)) as Record<string, unknown>;
+    for (const kind of ['hospital', 'railway', 'bus', 'town_hall', 'place_of_worship', 'museum', 'park', 'attraction']) assert(icons[kind], `${sprite} has no icon for a ${kind}`);
+    assert(existsSync(at('public', 'map', `${sprite}.png`)), `${sprite}.png is not kept`);
   }
 });
 

@@ -7260,3 +7260,49 @@ setembro de 2026 (vía 234729385, versión 12); Google Maps aínda non o ten. Qu
 - **De quen son as teselas.** Da lista dun bloqueador non se pode depender: servidas desde a propia web non as pararía
   ninguén, e quen mira o mapa non lle diría a ninguén máis que o mira. Entre zoom 0 e 14, o cadro dos mapas son 469
   ficheiros; oito de zoom 14 medidos, de 7 a 185 KB, cinco deles por debaixo de 10. En DECIDIDO, «Quedou aberto».
+
+## Rolda 97: o mapa, desde a propia web — 25 de novembro de 2026
+
+Pedido: que ningún bloqueador deixe o mapa sen rúas, sen que ninguén baixe máis nin agarde máis por velo, e que
+as rúas se renoven soas.
+
+### O que había
+
+- **A regra.** `||tiles.openfreemap.org/planet` entrou en EasyPrivacy o 24 de novembro ás 23:11 UTC, para
+  simpleflying.com e sen limitala a ela, e seguía ás 11:58 do 25 (easylist/easylist 26522).
+- **Xa se estudara.** O 18 de novembro, para usar o mapa sen rede: 100 ficheiros e 2,2 MB máis para cada visita,
+  e descartouse. Non quedara anotado en DECIDIDO; agora si.
+- **Os termos.** Os de OpenFreeMap, do 24 de novembro, deixan fóra recoller datos do servizo de xeito automático. As
+  460 teselas que se pediran esa mañá para pesalas saíran del, unha a unha; non se usan. As de agora son dos ficheiros
+  que publican para quen aloxa o mapa: o planeta da semana (un PMTiles de 87.618.190.068 bytes), lido só polos
+  anacos de Lugo, 43 peticións e 5,7 MB en 24 s; as letras e as iconas, dos seus arquivos, unha vez.
+
+### O que hai
+
+- `public/map`: 458 teselas (zooms 9 a 14 sobre o cadro onde paran os mapas), 7,5 MB; 15 ficheiros de letras e as iconas.
+  As 458 son byte a byte as que servía o servidor de teselas.
+- `tools/importTiles.ts` só as pon no sitio se están enteiras: todas, coas capas que debuxan os estilos, dun peso
+  parecido ás de antes e sen unha letra que aquí non se garda. A primeira proba xa parou nunha: «Ḷḷuarca», nunha
+  tesela de zoom 9, pedía un rango que faltaba (7680-7935).
+- `deploy-pages.yml` renóvaas unha vez ao mes, gárdaas na caché entre builds e publica as do repositorio se algo non
+  cadra; vai despois das probas, para que unhas teselas malas non paren os avisos. Sen probar no CI: agarda ao primeiro 3 do mes.
+- A política de seguridade xa non admite ningunha orixe allea salvo a da API; o estilo perde a fonte do relevo, que ningunha
+  capa debuxaba; o mapa leva `minZoom` 9.
+
+### Medido
+
+- O mesmo mapa desde OpenFreeMap (o publicado) e desde aquí, Chrome 157, oito vistas (dous temas; zooms 13, 15, 17 e afastado
+  de todo): 0 píxeles distintos de 469.300 en cada unha.
+- En Firefox 161, negando todo OpenFreeMap: ningunha petición que negar, e o mapa enteiro.
+- O primeiro mapa nun teléfono, na 1.9.2: 8 ficheiros (TileJSON, sprite, letras e 4 teselas). O segundo, 0. Ningunha tesela
+  antes de abrir un mapa.
+- GitHub Pages comprime os `.pbf`: 46.059 bytes por 76.044, noutra web aloxada alí. Contesta en 65-88 ms e OpenFreeMap en
+  70-107, oito veces cada un, alternando.
+- Tempo ata ver o mapa, na 1.9.2, navegador novo cada vez: mediana de 2.516 ms con cable e 6.480 cun 4G lento (cinco de cada;
+  unha das lentas non rematou en 40 s). O de despois, cando se publique.
+
+### Comprobado
+
+- Lint, 205 comprobacións, 26 políticas, as tres varridas e a build (dist, 20 MB; eran 9). `audit:browser` enteiro con Chrome
+  157: 254 medidas de 170 estados, secuencias e viaxes, 0 achados; o que non chega a 44 px segue sendo os créditos do mapa. Cada
+  fallo das teselas, posto de volta (unha que falta, un xogo de medio peso, outros zooms), fai caer a comprobación.

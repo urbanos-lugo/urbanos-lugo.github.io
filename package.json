@@ -41,6 +41,7 @@
     "data:amenities": "tsx tools/importStopAmenities.ts",
     "data:squares": "tsx tools/importSquares.ts",
     "data:places": "tsx tools/importPlaces.ts",
+    "data:tiles": "tsx tools/importTiles.ts",
     "data:alerts": "tsx tools/fetchAlerts.ts",
     "diagrams": "tsx tools/buildDiagrams.ts",
     "calibrate:walking": "tsx tools/calibrateWalking.ts",

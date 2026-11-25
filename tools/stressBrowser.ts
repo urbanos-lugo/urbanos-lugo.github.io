@@ -159,9 +159,9 @@ async function coldStart(browser: Browser): Promise<void> {
   const mapBytes = bytes(requests.filter((r) => /palette-|maplibre|route-geometry|NearbyMiniMap|useMapChrome/.test(r.url)));
   console.log('');
   budget('map code pulled by the home screen', mapBytes / 1024, 1, 'KB');
-  if (requests.some((r) => /openfreemap|ofm\.json|tiles\./.test(r.url))) {
+  if (requests.some((r) => /\/map\/(tiles|fonts|sprite)/.test(r.url))) {
     failures++;
-    report('off-origin tile style fetched', 'yes', '<-- for a map nobody opened');
+    report('map tiles fetched', 'yes', '<-- for a map nobody opened');
   }
 
   report('JSON.parse of the bundled datasets', `${(await bundledJsonParseMs(page)).toFixed(1)} ms`, `main thread, ${CPU_THROTTLE}x`);

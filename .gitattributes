@@ -6,3 +6,5 @@
 
 *.png binary
 *.svg text
+# The map's tiles and letters: a small one with no zero byte in it reads as text.
+*.pbf binary

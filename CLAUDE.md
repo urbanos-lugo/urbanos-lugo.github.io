@@ -76,6 +76,7 @@ hand.
 
 Hit somebody else's server — see the network block before running any of these:
 `pnpm run data:fetch`, `pnpm run data:osm`, `pnpm run data:amenities`, `pnpm run data:squares`, `pnpm run data:places`,
+`pnpm run data:tiles`,
 `pnpm run data:alerts`, `pnpm run data:walk`, `pnpm run data:elevation`,
 `pnpm run reconcile`, `pnpm run compare:operator`, `pnpm run compare:walk`,
 `pnpm run calibrate:walking`, `pnpm run check:landmarks`, `pnpm run check:parsers`,
@@ -207,18 +208,19 @@ build-time dataset instead.
 
 `reconcile.ts`, `checkFares.ts`, `checkOsmGeometry.ts`, `compareOperatorTimes.ts`,
 `importOfficialData.ts`, `importOsmRoutes.ts`, `importStopAmenities.ts`, `importSquares.ts`, `importPlaces.ts`,
-`fetchAlerts.ts`, `calibrateWalking.ts`, `importFonts.ts`, `checkParsersUnchanged.ts`
+`importTiles.ts` (without `--apply`), `fetchAlerts.ts`, `calibrateWalking.ts`, `importFonts.ts`, `checkParsersUnchanged.ts`
 (`pnpm run check:parsers`, four to six requests), `importWalkNetwork.ts`,
 `importElevation.ts`, `checkLandmarks.ts`, `compareWalkRouter.ts` and `buildMapStyle.ts
 --fetch` read `buslugo.com`, the council's feed, the Overpass API, Wikidata, the IGN's
-elevation tiles, FOSSGIS's public routers, OpenFreeMap, the fonts' source, and (for
+elevation tiles, FOSSGIS's public routers, OpenFreeMap's published files, the fonts' source, and (for
 `importPlaces.ts`) AllThePlaces' archive, SERGAS's map and the Xunta's open-data portal —
 servers this project does not own and has no agreement with.
 
 They are run by hand, or on a schedule — weekly in `.github/workflows/check-source.yml`,
-and `fetchAlerts.ts` before each hourly build in `deploy-pages.yml` — and their answers
-are committed so a rebuild costs nothing (the notices' goes out with the build that fetched
-them); `pnpm run check:policy` fails if any other
+and in `deploy-pages.yml` `fetchAlerts.ts` before each hourly build and `importTiles.ts --fetch`
+once a month — and their answers
+are committed so a rebuild costs nothing (the notices' and the month's tiles go out with the
+builds that use them); `pnpm run check:policy` fails if any other
 workflow runs one. Do not put any of them in a loop, a watch, a retry or a per-turn
 check — including an automated loop of your own, such as a `/goal` condition that re-runs
 one of them every turn. One accidental loop is hundreds of requests against somebody else's site.

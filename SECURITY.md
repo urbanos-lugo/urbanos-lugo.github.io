@@ -39,7 +39,7 @@ So the interesting surface is small:
 
 ## The worker's address
 
-Besides its own and the map tiles' host, the static site trusts one origin: the worker's,
+Besides its own, the static site trusts one origin: the worker's,
 `API_ORIGIN`, which the Content Security Policy admits and the app asks for notices and the
 operator's minutes.
 What comes back is narrowed in the browser before anything is drawn: text as text, each notice

@@ -5,7 +5,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFi
 import path from 'path';
 import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { CSP_META, MAP_ORIGINS } from './src/security/csp';
+import { CSP_META } from './src/security/csp';
 import { THEME_INIT_SOURCE } from './src/security/themeInit';
 import { LINE_PAGES, SITE_LANGS, SITE_PATHS, pageHtml, robotsTxt, siteHeadTags, siteUrl, sitemapXml } from './src/seo';
 import { PATHS, pathFor } from './src/routes';
@@ -196,22 +196,19 @@ export default defineConfig({
         // The Spanish and English copies of each page, and the 24 lines' pages, are for crawlers
         // and first loads; offline, a navigation falls back to index.html and the app reads the
         // language and the line from the address.
-        globIgnores: ['es/**', 'en/**', 'linhas/*/**', 'notification-click.js'],
+        // Nothing of the map's: it is kept as it is looked at, below, and is for whoever opens one.
+        globIgnores: ['es/**', 'en/**', 'linhas/*/**', 'map/**', 'notification-click.js'],
         navigateFallback: `${base}index.html`,
         navigateFallbackDenylist: [/\/api\//],
         runtimeCaching: [
           {
-            // Map data: show what was seen before rather than grey squares offline. The
-            // vector tiles, glyphs and sprites come from the one host; a device with no WebGL2
-            // gets no map, so there is no raster to keep.
-            // The hosts are the policy's own list, so the worker never caches a host it may not fetch.
-            urlPattern: new RegExp(`^(${MAP_ORIGINS.map((origin) => origin.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')).join('|')})/.*`, 'i'),
+            // Map data (public/map): show what was seen before rather than grey squares offline.
+            // The tiles' address names the run they were cut from, so renewed ones are asked for.
+            urlPattern: new RegExp(`^https?://[^/]+${base.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}map/`),
             handler: 'CacheFirst',
             options: {
               cacheName: 'map-tiles',
               expiration: { maxEntries: 600, maxAgeSeconds: 60 * 60 * 24 * 30 },
-              // 200 only. An opaque response (status 0) is charged at megabytes of quota
-              // whatever its size, and the host answers with CORS, so there is none to keep.
               cacheableResponse: { statuses: [200] },
             },
           },

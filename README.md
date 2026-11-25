@@ -190,17 +190,19 @@ precisión e, nun teléfono con compás, cara a onde miras (no mapa da rede, aba
 camiño a pé, polas beirarrúas e calculado no dispositivo, chega ata a parada máis próxima.
 
 ### Mapa da rede
-MapLibre GL debuxa os tres mapas, sobre teselas vectoriais de OpenFreeMap, e non pasan duns
-10 km máis alá da última parada: fóra non hai nada desta rede, e as teselas doutro sitio botarían
-as de Lugo das 600 que se gardan para cando non hai rede. Nun
+MapLibre GL debuxa os tres mapas, sobre teselas vectoriais cortadas do planeta de OpenFreeMap e
+servidas desde a propia web (`public/map`: 458 teselas, 7,5 MB, zooms 9 a 14, as letras e as iconas),
+e non pasan duns 10 km máis alá da última parada: fóra non hai nada desta rede nin teselas que
+debuxar. Ninguén baixa todo iso: abrir o mapa nun teléfono son catro teselas. As rúas
+renóvanse unha vez ao mes, soas (`tools/importTiles.ts`, en `deploy-pages.yml`). Nun
 dispositivo sen WebGL2, no sitio do mapa hai un aviso que o di, e as listas din o mesmo. Se o
 navegador perde o contexto WebGL e non o devolve en segundo e medio, como fan os móbiles coa app
 que se deixa por outra, o mapa constrúese de novo onde estaba; se tamén perde ese, sae o aviso, e ao
-volver á páxina téntase outra vez. Un bloqueador que pare as teselas deixa o mapa sen rúas nin
-nomes, coas liñas e as paradas enteiras (rolda 96). Os zooms
+volver á páxina téntase outra vez. Ningunha petición do mapa sae desta web, así que ningún
+bloqueador a para (rolda 97). Os zooms
 deste texto son os de MapLibre. O **estilo é do repositorio**, derivado
 do publicado por OpenFreeMap e xerado por `tools/buildMapStyle.ts`: as teselas, os sprites
-e os glifos seguen sendo os seus, as cores son nosas. Están medidas contra o que se debuxa
+e os glifos son os seus, as cores son nosas. Están medidas contra o que se debuxa
 enriba — as 24 cores de liña quedan a 1,45 ou máis sobre calquera das tres capas de rúa
 que cruzan, e ningún rótulo do mapa baixa de 4,5. As decisións e as cifras están en
 [`docs/DECIDIDO.md`](docs/DECIDIDO.md).
@@ -887,7 +889,7 @@ expedicións, as dos tres tipos de día, corra o día que corra). Medidas o 31 d
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/arquitectura-dark.png">
-  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: GitHub Pages serve a app e a copia de avisos ao navegador, onde o Service Worker a garda para usala sen rede; src/data/*.json alimenta o motor de horarios, co planificador nun worker, e este a SPA de React, que pide os trazados ao mapa de MapLibre, e o mapa as teselas a OpenFreeMap. A SPA pide /api ao worker de Cloudflare Workers, que le os avisos de buslugo.com e os minutos dun poste de info.urbanoslugo.com; autoaloxada, pídea a Express 5, co mesmo código, que le ademais a lista de novas do Concello.">
+  <img src="docs/diagrams/arquitectura-light.png" alt="Diagrama da arquitectura: GitHub Pages serve a app e a copia de avisos ao navegador, onde o Service Worker a garda para usala sen rede; src/data/*.json alimenta o motor de horarios, co planificador nun worker, e este a SPA de React, que pide os trazados ao mapa de MapLibre, e o mapa as teselas de Lugo, tamén a GitHub Pages. A SPA pide /api ao worker de Cloudflare Workers, que le os avisos de buslugo.com e os minutos dun poste de info.urbanoslugo.com; autoaloxada, pídea a Express 5, co mesmo código, que le ademais a lista de novas do Concello.">
 </picture>
 
 O reparto que importa é ese: **todo o cálculo de horas ocorre no navegador**, sobre os
@@ -1058,7 +1060,8 @@ non chama ningunha.
 │   ├── importStopAmenities.ts      equipamentos de parada desde OSM
 │   ├── importSquares.ts            as prazas como áreas, desde OSM, para o seu nome no mapa
 │   ├── importPlaces.ts             os sitios a un paseo dunha parada, de OSM, as cadeas, o SERGAS e a Xunta, para a busca de Ruta
-│   ├── pmtiles.ts                  le os puntos dun arquivo PMTiles por anacos, só con zlib (o de AllThePlaces)
+│   ├── importTiles.ts              o mapa de Lugo, cortado do planeta de OpenFreeMap e gardado en public/map
+│   ├── pmtiles.ts                  le por anacos un arquivo PMTiles, só con zlib (o de AllThePlaces, o de OpenFreeMap)
 │   ├── buildDataset.ts             xera stops.json e lines.json (rápido)
 │   ├── importOsmRoutes.ts          relacións de ruta desde Overpass
 │   ├── importWalkNetwork.ts        as vías camiñables de Lugo desde Overpass
@@ -1413,8 +1416,7 @@ O escaneo de QR usa `BarcodeDetector`, nativo do navegador: sen dependencia exte
 A aplicación é unha PWA instalable. Todo o que calcula —horarios, chegadas, rutas—
 execútase en local sobre datos empaquetados, así que unha vez instalada segue a
 funcionar sen cobertura, que é xusto o que pasa nunha marquesiña. As teselas do mapa
-cachéanse segundo se van vendo —só as respostas con CORS, porque unha resposta opaca
-cóntalle ao Chrome megabytes de espazo sexa do tamaño que sexa— e os avisos oficiais
+cachéanse segundo se van vendo, trinta días e ata 600 ficheiros, e os avisos oficiais
 pídense á rede e, se non responde, amósase a copia que vai coa build, coa hora á que se
 tomou.
 
@@ -1524,12 +1526,10 @@ mais as actions, e CodeQL o código en cada push a `main` e unha vez á semana.
 **Content Security Policy.** `script-src 'self'` máis o hash do script do tema, sen
 `unsafe-inline` nin `unsafe-eval`: ese é o único script en liña, os únicos workers son o
 do renderizador do mapa e o do planificador, e sérvense desde esta orixe, non hai wasm, e o escáner QR usa o
-`BarcodeDetector` do navegador en vez dunha librería. As únicas orixes remotas
-permitidas son as que a app usa de verdade — OpenFreeMap polas teselas vectoriais,
-tamén en `connect-src`: servida como cabeceira, a política é tamén a do service worker,
-que volve pedir con `fetch` as teselas que garda, e sen iso o mapa autoaloxado quedaría en
-gris. `font-src` é `'self'` a secas: a tipografía sérvese desde aquí, así que abrir un
-horario de bus non llo conta a Google. buslugo.com tampouco está: só o servidor o
+`BarcodeDetector` do navegador en vez dunha librería. A única orixe remota
+permitida é a da API, se a build leva unha: as teselas do mapa, as súas letras e as súas
+iconas sérvense desde aquí, e a tipografía tamén (`font-src` é `'self'` a secas), así que abrir
+un horario ou un mapa non llo conta a ninguén. buslugo.com tampouco está: só o servidor o
 consulta, nunca o navegador.
 
 A política escríbese unha vez en [`src/security/csp.ts`](src/security/csp.ts) e vai a
@@ -1852,7 +1852,8 @@ máis baixa ca o chan do mapa, 380 px, volve baixar a páxina.
 **A aplicación non precisa servidor.** Horarios, chegadas, planificador, mapa e busca
 calcúlanse no navegador a partir dos datos empaquetados, así que todo son ficheiros
 estáticos. `.github/workflows/deploy-pages.yml` publica en Pages en cada `push` a `main`
-e por calendario, refrescando antes a copia dos avisos oficiais. O calendario di cada hora;
+e por calendario, refrescando antes a copia dos avisos oficiais e, unha vez ao mes, as rúas do
+mapa, que se publican só se están enteiras. O calendario di cada hora;
 GitHub execútao cando pode, e na práctica foron entre cinco e sete veces ao día en setembro
 de 2026 e catro o 7 e o 8 de outubro, con ocos de ata oito horas. Por iso a copia leva a
 súa data en pantalla e deixa de contar incidencias ás doce horas.
@@ -2419,7 +2420,7 @@ Para un fallo de seguridade, [`SECURITY.md`](SECURITY.md).
 ou un correo a [urbanos-lugo@proton.me](mailto:urbanos-lugo@proton.me), para quen non ten
 conta en GitHub. O menú da app leva os dous.
 
-Cartografía © OpenStreetMap contributors, teselas de OpenFreeMap © OpenMapTiles.
+Cartografía © OpenStreetMap contributors, teselas cortadas das de OpenFreeMap © OpenMapTiles.
 
 ---
 

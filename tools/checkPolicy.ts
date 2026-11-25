@@ -233,7 +233,7 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
   // Every install is the locked one, and pnpm comes from packageManager, not from a workflow.
   // The same list as CLAUDE.md's network block. The walking network, the heights, the landmarks,
   // the walk router and the published map styles were missing from both until 31 October 2026.
-  const network = /importOfficialData|importOsmRoutes|importStopAmenities|importSquares|importPlaces|fetchAlerts|calibrateWalking|importFonts|checkParsersUnchanged|reconcile\.ts|checkFares|checkOsmGeometry|compareOperatorTimes|importWalkNetwork|importElevation|checkLandmarks|compareWalkRouter|buildMapStyle\.ts --fetch|map:style --fetch|data:(fetch|osm|amenities|squares|alerts|walk|elevation)\b|pnpm (run )?reconcile\b|compare:(operator|walk)|calibrate:walking|check:landmarks|fonts:import|check:parsers/;
+  const network = /importOfficialData|importOsmRoutes|importStopAmenities|importSquares|importPlaces|fetchAlerts|calibrateWalking|importFonts|checkParsersUnchanged|reconcile\.ts|checkFares|checkOsmGeometry|compareOperatorTimes|importWalkNetwork|importElevation|checkLandmarks|compareWalkRouter|importTiles\.ts(?! --apply)|buildMapStyle\.ts --fetch|map:style --fetch|data:(fetch|osm|amenities|squares|places|alerts|walk|elevation|tiles)\b|pnpm (run )?reconcile\b|compare:(operator|walk)|calibrate:walking|check:landmarks|fonts:import|check:parsers/;
   for (const name of readdirSync(join(root, '.github', 'workflows')).filter((f) => /\.ya?ml$/.test(f))) {
     const text = workflow(name);
     for (const step of runs(text).filter((s) => /pnpm (i|install)\b/.test(s))) assert(step === 'pnpm install --frozen-lockfile', `${name}: "${step}" is not the locked install`);
@@ -243,11 +243,16 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
     // to 26.04 from 19 October 2026. A new image is a change made on purpose, with an audit.
     const images = [...text.matchAll(/runs-on:\s*(\S+)/g)].map((m) => m[1]);
     assert(images.length > 0 && images.every((image) => image === 'ubuntu-24.04'), `${name} runs on ${images.join(', ')}, not the pinned ubuntu-24.04`);
-    // Somebody else's site only on the clock: Mondays in check-source.yml, and the notices
-    // snapshot in the hourly Pages build. Never in the gates.
+    // Somebody else's site only on the clock: Mondays in check-source.yml, and in the Pages build
+    // the notices every hour and the map's tiles once a month. Never in the gates.
     const reaching = runs(text).filter((s) => network.test(s));
     if (name === 'check-source.yml') assert(/cron: '\S+ \S+ \* \* 1'/.test(text) && !/^\s*(push|pull_request):/m.test(text), 'check-source.yml reads other people’s sites on something other than its Monday schedule');
-    else if (name === 'deploy-pages.yml') assert(reaching.every((s) => /fetchAlerts/.test(s)), `deploy-pages.yml reaches other sites beyond the notices: ${reaching.join(' | ')}`);
+    else if (name === 'deploy-pages.yml') {
+      assert(reaching.every((s) => /fetchAlerts|importTiles\.ts --fetch/.test(s)), `deploy-pages.yml reaches other sites beyond the notices and the map's tiles: ${reaching.join(' | ')}`);
+      const monthly = /if: github\.event\.schedule == '([^']+)'\s+run: pnpm exec tsx tools\/importTiles\.ts --fetch/.exec(text)?.[1] ?? '';
+      assert(/^\d+ \d+ \d+ \* \*$/.test(monthly) && text.includes(`- cron: '${monthly}'`), `the map's tiles are asked for on "${monthly}", not once a month`);
+      assert(reaching.filter((s) => /importTiles/.test(s)).length === 1, 'deploy-pages.yml asks for the map’s tiles in more than its one monthly step');
+    }
     else assert(reaching.length === 0, `${name} runs a tool that reads somebody else’s site: ${reaching.join(' | ')}`);
   }
 
@@ -284,6 +289,8 @@ ok('the documents name every data file, every bundled library and every host a v
   // and NOTICE.md counts the files that are really there.
   const ofl = read('src/fonts/OFL.txt');
   assert(/Atkinson Hyperlegible Next/.test(ofl) && /Atkinson Hyperlegible Mono/.test(ofl), 'src/fonts/OFL.txt no longer carries the copyright of both families');
+  // And the map's letters, redistributed since the map's files are this site's.
+  assert(/Noto Project Authors/.test(read('public/map/fonts/OFL.txt')) && /Noto Sans/.test(notice), 'the map’s letters go without their licence, or NOTICE.md does not credit them');
   const words = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'];
   const woff = readdirSync(join(root, 'src', 'fonts')).filter((f) => f.endsWith('.woff2')).length;
   assert(new RegExp(`\\b${words[woff]} files\\b`, 'i').test(notice), `src/fonts has ${woff} font files and NOTICE.md says otherwise`);
