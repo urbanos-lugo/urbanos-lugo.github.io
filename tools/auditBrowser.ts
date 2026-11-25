@@ -34,8 +34,10 @@
  * Nothing here reads anybody else's server. Every request that leaves the host being
  * audited is refused at the browser, the two API answers are fixtures, and the page's
  * clock is pinned (a Tuesday at 09:12, or 03:00 for the night), so a run is the same at any
- * hour and on any machine, and can run on every push. The basemap's tiles are refused with
- * the rest: the map is measured for its controls, never its picture.
+ * hour and on any machine, and can run on every push. The basemap's tiles are refused too,
+ * though they are this site's: the map is measured for its controls, never its picture, and
+ * with the streets drawn in software CI's runner was left without frames for the rest.
+ * AUDIT_STREETS=1 lets them through, and one sequence always does (ownMap).
  *
  * Exits 1 on any WCAG finding, any state not reached and any check that proved nothing;
  * the 44 px and 12 px bars are this project's own and are printed, not gated.
@@ -270,7 +272,7 @@ const audited = new URL(BASE).host;
  * answered from the fixtures, and anything else is refused. Service workers are bypassed so
  * no request can leave through one.
  */
-async function guard(page: Session, mode: () => Api, seen: (url: URL) => void = () => {}): Promise<void> {
+async function guard(page: Session, mode: () => Api, seen: (url: URL) => void = () => {}, streets = !!process.env.AUDIT_STREETS): Promise<void> {
   await page.send('Network.setBypassServiceWorker', { bypass: true });
   await page.send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
   page.on('Fetch.requestPaused', (p) => {
@@ -287,6 +289,7 @@ async function guard(page: Session, mode: () => Api, seen: (url: URL) => void = 
         })
         .catch(() => undefined);
     if (url.host !== audited) return void page.send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }).catch(() => undefined);
+    if (!streets && /\/map\/(tiles|fonts|sprite)/.test(url.pathname)) return void page.send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }).catch(() => undefined);
     const m = mode();
     if (url.pathname.endsWith('/alerts.json') && m === 'offline') return void page.send('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' }).catch(() => undefined);
     if (url.pathname.endsWith('/alerts.json') && m === 'unread') return send(200, { ...QUIET, fetchedAt: iso });
@@ -2004,6 +2007,46 @@ async function contextLost(browser: Browser): Promise<Finding[]> {
   }
 }
 
+/**
+ * The map drawn whole, from this site alone: its tiles, letters and icons asked for and given,
+ * and nothing asked of any other host. Everywhere else in this audit they are refused.
+ */
+async function ownMap(browser: Browser): Promise<Finding[]> {
+  const where = 'o mapa desta web';
+  const page = await browser.newPage(true);
+  const asked = { tiles: 0, fonts: 0, sprite: 0 };
+  const outside: string[] = [];
+  try {
+    await guard(
+      page,
+      () => 'quiet',
+      (url) => {
+        const kind = /\/map\/(tiles|fonts|sprite)/.exec(url.pathname)?.[1] as keyof typeof asked | undefined;
+        if (kind) asked[kind]++;
+        if (/^https?:$/.test(url.protocol) && url.host !== audited) outside.push(url.href);
+      },
+      true,
+    );
+    const said: string[] = [];
+    page.on('Log.entryAdded', (p) => void ((p.entry as { level: string }).level === 'error' && said.push(String((p.entry as { text: string }).text).slice(0, 200))));
+    page.on('Runtime.consoleAPICalled', (p) => void (p.type === 'error' && said.push(JSON.stringify((p.args as { value?: unknown; description?: string }[]).map((a) => a.value ?? a.description)).slice(0, 200))));
+    await page.send('Log.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', PHONE);
+    await page.goto(`${BASE}/mapa/`);
+    const drawn = `!!document.querySelector('.maplibregl-map[data-idle] canvas.maplibregl-canvas')`;
+    let idle = false;
+    for (const until = Date.now() + 30000; !idle && Date.now() < until; await sleep(200)) idle = await page.evaluate<boolean>(drawn);
+    if (!idle) return [{ kind: 'reach', where, detail: 'the map never finished drawing' }];
+    const findings: Finding[] = [];
+    if (asked.tiles < 4 || !asked.fonts || !asked.sprite) findings.push({ kind: 'flow', where, detail: `the map asked for ${asked.tiles} tiles, ${asked.fonts} sets of letters and ${asked.sprite} files of icons` });
+    if (outside.length) findings.push({ kind: 'flow', where, detail: `the map asks another host: ${outside[0]}` });
+    if (said.length) findings.push({ kind: 'console', where, detail: said[0] });
+    return findings;
+  } finally {
+    await page.close();
+  }
+}
+
 /* ------------------------------------------------------------------------------------- */
 /* The run                                                                               */
 /* ------------------------------------------------------------------------------------- */
@@ -2080,6 +2123,7 @@ if (process.argv[1] && /auditBrowser\.ts$/.test(process.argv[1])) {
       await sequence('site data refused', () => siteDataRefused());
       await sequence('the bottom bar where the screen ends, with the page itself scrolled', () => pinnedBar(browser));
       await sequence('a stop’s rows held still under a finger while the board is read again', () => heldBoard(browser));
+      await sequence('map: drawn whole, from this site alone', () => ownMap(browser));
       await sequence('map: its context lost and not given back', () => contextLost(browser));
       await sequence('promises: the policy in force, the camera off, a scanned pole’s minutes gone', () => promises(browser));
     }
