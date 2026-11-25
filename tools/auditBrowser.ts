@@ -34,7 +34,7 @@
  * Nothing here reads anybody else's server. Every request that leaves the host being
  * audited is refused at the browser, the two API answers are fixtures, and the page's
  * clock is pinned (a Tuesday at 09:12, or 03:00 for the night), so a run is the same at any
- * hour and on any machine, and can run on every push. The basemap's tiles are refused too,
+ * hour and on any machine, and can run on every push. The basemap's tiles come empty,
  * though they are this site's: the map is measured for its controls, never its picture, and
  * with the streets drawn in software CI's runner was left without frames for the rest.
  * AUDIT_STREETS=1 lets them through, and one sequence always does (ownMap).
@@ -289,7 +289,7 @@ async function guard(page: Session, mode: () => Api, seen: (url: URL) => void = 
         })
         .catch(() => undefined);
     if (url.host !== audited) return void page.send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }).catch(() => undefined);
-    if (!streets && /\/map\/(tiles|fonts|sprite)/.test(url.pathname)) return void page.send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }).catch(() => undefined);
+    if (!streets && url.pathname.includes('/map/tiles/')) return void page.send('Fetch.fulfillRequest', { requestId, responseCode: 200, body: '' }).catch(() => undefined);
     const m = mode();
     if (url.pathname.endsWith('/alerts.json') && m === 'offline') return void page.send('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' }).catch(() => undefined);
     if (url.pathname.endsWith('/alerts.json') && m === 'unread') return send(200, { ...QUIET, fetchedAt: iso });
@@ -2009,7 +2009,7 @@ async function contextLost(browser: Browser): Promise<Finding[]> {
 
 /**
  * The map drawn whole, from this site alone: its tiles, letters and icons asked for and given,
- * and nothing asked of any other host. Everywhere else in this audit they are refused.
+ * and nothing asked of any other host. Everywhere else in this audit its tiles come empty.
  */
 async function ownMap(browser: Browser): Promise<Finding[]> {
   const where = 'o mapa desta web';

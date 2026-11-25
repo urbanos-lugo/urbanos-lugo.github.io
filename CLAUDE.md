@@ -62,7 +62,7 @@ touch, and the way back (`JOURNEYS=<pattern>` narrows, `JOURNEYS=full` adds the 
 languages, large text, the phone turned and offline; `JOURNEY_SHOTS=<dir>` photographs).
 `AUDIT_EVIDENCE=<dir>` writes the screen and the findings of every failing state and journey
 (CI sets it and uploads the folder on failure); `AUDIT_RUNNER=1` runs like CI's runner: no
-mouse, and Node and the page on UTC. The map's tiles are refused in it but for one sequence;
+mouse, and Node and the page on UTC. The map's tiles come empty in it but for one sequence;
 `AUDIT_STREETS=1` lets them through. Run it before pushing a harness change. CI runs the audit
 in five parts side by side (`AUDIT_PART=states|sequences|journeys`, with `AUDIT_PASSES` for the
 states), each about two and a half minutes like the runner. A change

@@ -7313,7 +7313,7 @@ as rúas se renoven soas.
   de Ruta tardaba máis de cinco segundos en traer a resposta no *runner*; outra, porque un botón se movía debaixo do dedo, con
   catro páxinas debuxando rúas por software e sen fotogramas. O primeiro tiña un motivo de verdade: abrir Ruta nun teléfono
   construía o mapa detrás do formulario, agochado, co traxecto que ninguén pedira: 414 KB, e o debuxo; tamén coa 1.9.2 (364 KB,
-  6 ficheiros). Arranxado iso, o audit volve negalas, como di a súa cabeceira («the map is measured for its controls, never its
+  6 ficheiros). Arranxado iso, o audit dálle teselas baleiras (negadas, o renderizador escribía un erro por cada unha), como di a súa cabeceira («the map is measured for its controls, never its
   picture»), e unha secuencia nova debuxa o mapa enteiro e mira que non se lle pida nada a ninguén máis; `AUDIT_STREETS=1` déixaas
   pasar en todo, e así correu enteiro neste equipo.
 - Agora constrúese ao tocar o formulario ou coa resposta. Móbil lento (CPU a un sexto, 4G lento), cinco de cada: abrir Ruta, 0 KB;
